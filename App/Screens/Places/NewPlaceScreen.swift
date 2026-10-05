@@ -31,7 +31,7 @@ struct NewPlaceScreen: View {
         let start = source?.coordinate ?? CLLocationCoordinate2D(latitude: 0, longitude: 0)
         _center = State(initialValue: start)
         if let source {
-            _position = State(initialValue: .region(MKCoordinateRegion(center: source.coordinate, latitudinalMeters: source.radius * 5, longitudinalMeters: source.radius * 5)))
+            _position = State(initialValue: .region(PinPickerMap.region(around: source.coordinate, meters: max(source.radius * 5, 600))))
         } else {
             _position = State(initialValue: .userLocation(fallback: .automatic))
         }
@@ -112,7 +112,7 @@ struct NewPlaceScreen: View {
             guard existing == nil, abs(center.latitude) < 0.0001, abs(center.longitude) < 0.0001 else { return }
             if let location = await LocationService.shared.currentLocation() {
                 withAnimation(Motion.standard) {
-                    position = .region(MKCoordinateRegion(center: location.coordinate, latitudinalMeters: 900, longitudinalMeters: 900))
+                    position = .region(PinPickerMap.region(around: location.coordinate, meters: 900))
                 }
             }
         }
@@ -215,7 +215,7 @@ struct NewPlaceScreen: View {
         Task {
             guard let location = await LocationService.shared.currentLocation() else { return }
             withAnimation(Motion.standard) {
-                position = .region(MKCoordinateRegion(center: location.coordinate, latitudinalMeters: max(radius * 5, 600), longitudinalMeters: max(radius * 5, 600)))
+                position = .region(PinPickerMap.region(around: location.coordinate, meters: max(radius * 5, 600)))
             }
         }
     }
@@ -232,7 +232,7 @@ struct NewPlaceScreen: View {
         }
         searchFocused = false
         withAnimation(Motion.standard) {
-            position = .region(MKCoordinateRegion(center: item.placemark.coordinate, latitudinalMeters: max(radius * 5, 600), longitudinalMeters: max(radius * 5, 600)))
+            position = .region(PinPickerMap.region(around: item.placemark.coordinate, meters: max(radius * 5, 600)))
         }
     }
 

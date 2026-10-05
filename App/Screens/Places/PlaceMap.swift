@@ -122,6 +122,18 @@ struct PinPickerMap: View {
     @Binding var position: MapCameraPosition
     let radius: Double
 
+    // The search field covers the top of the map, so the pin sits below the center.
+    private static let pinShare = 0.6
+
+    static func region(around coordinate: CLLocationCoordinate2D, meters: Double) -> MKCoordinateRegion {
+        let shift = meters / 111_000 * (pinShare - 0.5)
+        return MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: coordinate.latitude + shift, longitude: coordinate.longitude), latitudinalMeters: meters, longitudinalMeters: meters)
+    }
+
+    private func pinCoordinate(_ region: MKCoordinateRegion) -> CLLocationCoordinate2D {
+        CLLocationCoordinate2D(latitude: region.center.latitude - region.span.latitudeDelta * (PinPickerMap.pinShare - 0.5), longitude: region.center.longitude)
+    }
+
     @State private var moving = false
     @Environment(\.mapsEnabled) private var mapsEnabled
 
@@ -130,11 +142,7 @@ struct PinPickerMap: View {
             map
         } else {
             Palette.mapBackground
-                .overlay {
-                    Pin()
-                        .frame(width: 44, height: 57)
-                        .offset(y: -28.5)
-                }
+                .overlay { pin(lift: 0) }
         }
     }
 
@@ -147,23 +155,27 @@ struct PinPickerMap: View {
         .mapStyle(.rema)
         .mapControlVisibility(.hidden)
         .onMapCameraChange(frequency: .continuous) { context in
-            center = context.region.center
+            center = pinCoordinate(context.region)
             if !moving {
                 withAnimation(Motion.small) { moving = true }
             }
         }
         .onMapCameraChange(frequency: .onEnd) { context in
-            center = context.region.center
+            center = pinCoordinate(context.region)
             withAnimation(Motion.small) { moving = false }
             Feedback.play(.select)
         }
-        .overlay {
+        .overlay { pin(lift: moving ? 10 : 0) }
+    }
+
+    private func pin(lift: CGFloat) -> some View {
+        GeometryReader { proxy in
             Pin()
                 .frame(width: 44, height: 57)
-                .shadow(color: .black.opacity(moving ? 0.25 : 0.12), radius: moving ? 8 : 3, y: moving ? 10 : 3)
-                .offset(y: -28.5 - (moving ? 10 : 0))
-                .allowsHitTesting(false)
+                .shadow(color: .black.opacity(lift > 0 ? 0.25 : 0.12), radius: lift > 0 ? 8 : 3, y: lift > 0 ? 10 : 3)
+                .position(x: proxy.size.width / 2, y: proxy.size.height * PinPickerMap.pinShare - 28.5 - lift)
         }
+        .allowsHitTesting(false)
     }
 }
 
