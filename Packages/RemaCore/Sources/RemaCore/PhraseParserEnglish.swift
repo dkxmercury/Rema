@@ -77,10 +77,13 @@ extension PhraseParser {
         let list = "\(PhraseParser.englishWeekdays)((\\s*(,|and|&)\\s*)\(PhraseParser.englishWeekdays))*"
         take("(every|on) \(list)", text, &state) { m, s in
             guard let whole = Range(m.range, in: text) else { return false }
-            let words = text[whole].split { !$0.isLetter }.map(String.init).filter { $0 != "every" && $0 != "on" && $0 != "and" }
+            let matched = String(text[whole])
+            let skipped: Set<String> = ["every", "on", "and"]
+            let pieces: [String] = matched.split(whereSeparator: { !$0.isLetter }).map(String.init)
+            let words = pieces.filter { !skipped.contains($0) }
             let days = words.compactMap(self.englishWeekday)
             guard !days.isEmpty else { return false }
-            let plural = text[whole].contains("days") || text[whole].hasPrefix("every")
+            let plural = matched.contains("days") || matched.hasPrefix("every")
             guard plural else { return false }
             s.weekdays = Array(Set(days)).sorted()
             s.rule = .weekly(s.weekdays)
@@ -222,6 +225,14 @@ extension PhraseParser {
         take("(persistently|until (?:i do it|it's done|i mark it|done)|keep reminding me|nag me)", text, &state) { _, s in s.nag = true; return true }
     }
 
+    private func englishPlace(_ word: String) -> String? {
+        let plain = word.replacingOccurrences(of: "'s", with: "")
+        return places.first { place in
+            let name = place.lowercased()
+            return name == word || name == plain
+        }
+    }
+
     private func englishPlaces(_ text: String, _ state: inout State) {
         guard !places.isEmpty else { return }
         let triggers = "when i('m| am| get| arrive| come| leave| go| head) (?:back )?(?:to |at |from |out of |home)?(?:the |my )?"
@@ -231,7 +242,7 @@ extension PhraseParser {
             if let whole = Range(m.range, in: text), text[whole].contains("home") {
                 words.append("home")
             }
-            let found = words.compactMap { word in places.first { $0.lowercased() == word || $0.lowercased() == word.replacingOccurrences(of: "'s", with: "") } }
+            let found = words.compactMap(englishPlace)
             guard !found.isEmpty else { return false }
             s.placeTrigger = ["leave", "go", "head"].contains(verb) ? .leave : .arrive
             s.placeNames = Array(Set(found)).sorted()
