@@ -18,13 +18,15 @@ public struct PhraseParser {
     public let morning: LocalTime
     public let evening: LocalTime
     public let places: [String]
+    public let preferred: String?
 
-    public init(now: Date, calendar: Calendar, morning: LocalTime, evening: LocalTime, places: [String] = []) {
+    public init(now: Date, calendar: Calendar, morning: LocalTime, evening: LocalTime, places: [String] = [], preferred: String? = nil) {
         self.now = now
         self.calendar = calendar
         self.morning = morning
         self.evening = evening
         self.places = places
+        self.preferred = preferred
     }
 
     private static let months = ["январ", "феврал", "март", "апрел", "ма", "июн", "июл", "август", "сентябр", "октябр", "ноябр", "декабр"]
@@ -52,6 +54,9 @@ public struct PhraseParser {
     public func parse(_ input: String) -> ParsedPhrase {
         if !input.unicodeScalars.contains(where: { (0x0400...0x04FF).contains($0.value) }), input.contains(where: \.isLetter) {
             return parseEnglish(input)
+        }
+        if PhraseParser.looksUkrainian(input, preferred: preferred) {
+            return parseUkrainian(input)
         }
         let text = input.lowercased().replacingOccurrences(of: "ё", with: "е")
         var state = State()

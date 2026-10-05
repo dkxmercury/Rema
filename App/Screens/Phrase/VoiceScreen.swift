@@ -24,7 +24,7 @@ struct VoiceScreen: View {
     }
 
     private var parsed: ParsedPhrase {
-        PhraseParser(now: now, calendar: calendar, morning: store.settings.morning, evening: store.settings.evening, places: store.activePlaces.map(\.name)).parse(recognizer.transcript)
+        PhraseParser(now: now, calendar: calendar, morning: store.settings.morning, evening: store.settings.evening, places: store.activePlaces.map(\.name), preferred: Bundle.main.preferredLocalizations.first).parse(recognizer.transcript)
     }
 
     private var describer: Describer {

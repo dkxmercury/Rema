@@ -15,7 +15,7 @@ struct AddReminderIntent: AppIntent {
     func perform() async throws -> some IntentResult & ProvidesDialog & ShowsSnippetView {
         let store = Store.shared
         let now = Date()
-        let parsed = PhraseParser(now: now, calendar: .current, morning: store.settings.morning, evening: store.settings.evening, places: store.activePlaces.map(\.name)).parse(phrase)
+        let parsed = PhraseParser(now: now, calendar: .current, morning: store.settings.morning, evening: store.settings.evening, places: store.activePlaces.map(\.name), preferred: Bundle.main.preferredLocalizations.first).parse(phrase)
         guard !parsed.title.isEmpty else {
             throw $phrase.needsValueError(IntentDialog("What should I remind about?"))
         }

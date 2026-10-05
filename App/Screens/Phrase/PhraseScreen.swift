@@ -49,7 +49,7 @@ struct PhraseScreen: View {
     }
 
     private var parser: PhraseParser {
-        PhraseParser(now: now, calendar: calendar, morning: store.settings.morning, evening: store.settings.evening, places: store.activePlaces.map(\.name))
+        PhraseParser(now: now, calendar: calendar, morning: store.settings.morning, evening: store.settings.evening, places: store.activePlaces.map(\.name), preferred: Bundle.main.preferredLocalizations.first)
     }
 
     private var parsed: ParsedPhrase {
