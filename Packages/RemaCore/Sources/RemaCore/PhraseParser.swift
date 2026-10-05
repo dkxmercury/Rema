@@ -52,6 +52,9 @@ public struct PhraseParser {
     }
 
     public func parse(_ input: String) -> ParsedPhrase {
+        if PhraseParser.looksArabic(input) {
+            return parseArabic(input)
+        }
         if !input.unicodeScalars.contains(where: { (0x0400...0x04FF).contains($0.value) }), input.contains(where: \.isLetter) {
             switch PhraseParser.latinLanguage(input, preferred: preferred) {
             case "de": return parseGerman(input)
