@@ -91,6 +91,7 @@ private extension ScreenSnapshots {
             screen
                 .environment(\.locale, Locale(identifier: "ru_RU"))
                 .environment(\.colorScheme, style == .dark ? .dark : .light)
+                .environment(\.mapsEnabled, false)
         )
         let device = ViewImageConfig.iPhone13
         let config = ViewImageConfig(safeArea: device.safeArea, size: CGSize(width: 390, height: height), traits: device.traits)

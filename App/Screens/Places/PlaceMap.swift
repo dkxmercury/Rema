@@ -43,6 +43,17 @@ extension Place {
     }
 }
 
+private struct MapsEnabledKey: EnvironmentKey {
+    static let defaultValue = true
+}
+
+extension EnvironmentValues {
+    var mapsEnabled: Bool {
+        get { self[MapsEnabledKey.self] }
+        set { self[MapsEnabledKey.self] = newValue }
+    }
+}
+
 extension MapStyle {
     static var rema: MapStyle {
         .standard(elevation: .flat, emphasis: .muted, pointsOfInterest: .excludingAll, showsTraffic: false)
@@ -55,8 +66,20 @@ struct PlacesMap: View {
     var radius: CGFloat = 20
 
     @State private var position: MapCameraPosition = .automatic
+    @Environment(\.mapsEnabled) private var mapsEnabled
 
     var body: some View {
+        if mapsEnabled {
+            map
+        } else {
+            Palette.mapBackground
+                .frame(height: height)
+                .clipShape(RoundedRectangle(cornerRadius: radius, style: .circular))
+                .panel(radius: radius)
+        }
+    }
+
+    private var map: some View {
         Map(position: $position, interactionModes: [.pan, .zoom]) {
             ForEach(places) { place in
                 MapCircle(center: place.coordinate, radius: place.radius)
@@ -100,8 +123,22 @@ struct PinPickerMap: View {
     let radius: Double
 
     @State private var moving = false
+    @Environment(\.mapsEnabled) private var mapsEnabled
 
     var body: some View {
+        if mapsEnabled {
+            map
+        } else {
+            Palette.mapBackground
+                .overlay {
+                    Pin()
+                        .frame(width: 44, height: 57)
+                        .offset(y: -28.5)
+                }
+        }
+    }
+
+    private var map: some View {
         Map(position: $position) {
             MapCircle(center: center, radius: radius)
                 .foregroundStyle(Palette.accent.opacity(0.14))
