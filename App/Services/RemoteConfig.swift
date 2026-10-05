@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import RemaCore
 
 struct RemoteConfig: Codable, Equatable {
     struct Announcement: Codable, Equatable {
