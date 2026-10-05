@@ -14,6 +14,9 @@ settings:
 packages:
   RemaCore:
     path: Packages/RemaCore
+  SnapshotTesting:
+    url: https://github.com/pointfreeco/swift-snapshot-testing
+    exactVersion: 1.19.6
 targets:
   Rema:
     type: application
@@ -36,4 +39,18 @@ targets:
         SWIFT_EMIT_LOC_STRINGS: YES
         ENABLE_PREVIEWS: YES
     scheme:
+      testTargets:
+        - RemaSnapshots
       gatherCoverageData: false
+  RemaSnapshots:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Snapshots
+    dependencies:
+      - target: Rema
+      - package: SnapshotTesting
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: uz.dkx.rema.snapshots

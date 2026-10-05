@@ -39,10 +39,22 @@ jobs:
           grep -E "error:|warning:|BUILD (SUCCEEDED|FAILED)" build.log || true
           grep -q "BUILD SUCCEEDED" build.log
 
-      - name: Build log
+      - name: Screens
+        run: |
+          DEVICE=$(xcrun simctl list devices available -j | python3 -c "import json,sys;d=json.load(sys.stdin)['devices'];print(next(x['udid'] for k,v in sorted(d.items(),reverse=True) if 'iOS' in k for x in v if x['name'].startswith('iPhone')))")
+          mkdir -p screens
+          TEST_RUNNER_SNAPSHOT_DIR="$PWD/screens" xcodebuild -project Rema.xcodeproj -scheme Rema \
+            -destination "id=$DEVICE" CODE_SIGNING_ALLOWED=NO test > test.log 2>&1 || true
+          grep -E "error:|Test Case .* (passed|failed|skipped)|TEST (SUCCEEDED|FAILED)" test.log | tail -40 || true
+          ls -la screens
+
+      - name: Logs and screens
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: build-log
-          path: build.log
+          name: logs-and-screens
+          path: |
+            build.log
+            test.log
+            screens
           if-no-files-found: ignore
