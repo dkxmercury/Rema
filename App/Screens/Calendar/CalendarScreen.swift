@@ -233,7 +233,7 @@ struct CalendarScreen: View {
         } else {
             VStack(spacing: 0) {
                 ForEach(rows) { row in
-                    AgendaRow(row: row, minHeight: 50, showsSubtitle: false, onToggle: { toggle(row) })
+                    AgendaRow(row: row, minHeight: 50, showsSubtitle: false, onToggle: { toggle(row) }, onDelete: { delete(row.reminderID) })
                         .contentShape(Rectangle())
                         .onTapGesture { open(row.reminderID) }
                         .transition(.opacity)
@@ -303,6 +303,10 @@ struct CalendarScreen: View {
                 store.complete(row.reminderID, through: row.occurrence)
             }
         }
+    }
+
+    private func delete(_ id: UUID) {
+        withAnimation(Motion.standard) { store.delete(id) }
     }
 
     private func open(_ id: UUID) {

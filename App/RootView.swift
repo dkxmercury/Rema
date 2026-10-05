@@ -89,7 +89,10 @@ struct RootView: View {
                 },
                 onCalendar: { showingCalendar = true },
                 onSettings: { path.append(.settings) },
-                zoom: zoom
+                zoom: zoom,
+                onDelete: { id in
+                    withAnimation(Motion.standard) { store.delete(id) }
+                }
             )
         }
     }

@@ -12,3 +12,14 @@ enum Motion {
         reduceMotion ? fade : animation
     }
 }
+
+private struct IntroAnimationsKey: EnvironmentKey {
+    static let defaultValue = true
+}
+
+extension EnvironmentValues {
+    var introAnimations: Bool {
+        get { self[IntroAnimationsKey.self] }
+        set { self[IntroAnimationsKey.self] = newValue }
+    }
+}

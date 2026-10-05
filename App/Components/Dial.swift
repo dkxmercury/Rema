@@ -16,8 +16,8 @@ struct DialMarker: Identifiable {
 
 struct Dial: View {
     var size: CGFloat = 236
-    var nowHour: Int
-    var nowMinute: Int
+    var handMinutes: Double
+    var markerProgress: Double = 1
     var markers: [DialMarker]
     var windowTime: String
     var windowCaption: String
@@ -47,6 +47,14 @@ struct Dial: View {
             }
             .frame(width: size, height: size)
 
+            DialMarkersLayer(markers: markers, progress: markerProgress)
+                .frame(width: size, height: size)
+                .animation(.easeOut(duration: 0.7), value: markerProgress)
+
+            DialHandLayer(minutes: handMinutes)
+                .frame(width: size, height: size)
+                .animation(Motion.hand, value: handMinutes)
+
             window
                 .frame(width: 100 * unit, height: 38 * unit)
                 .offset(x: 68 * unit, y: 72 * unit)
@@ -69,10 +77,14 @@ struct Dial: View {
                         .font(.app(.jost, 17, weight: 500))
                         .foregroundStyle(Palette.dialWindowText)
                         .frame(height: 19)
+                        .contentTransition(.numericText())
                     Text(verbatim: windowCaption)
                         .font(.app(.golos, 10, weight: 600))
                         .foregroundStyle(Palette.accentOnDark)
+                        .contentTransition(.numericText())
                 }
+                .animation(Motion.standard, value: windowTime)
+                .animation(Motion.standard, value: windowCaption)
             }
     }
 
@@ -109,26 +121,75 @@ struct Dial: View {
             context.draw(label, at: place(geometry.point(angle: Double(index) * 45, radius: 90)), anchor: .center)
         }
 
-        for marker in markers {
-            let center = geometry.point(angle: geometry.angle(hour: marker.hour, minute: marker.minute), radius: 133)
-            switch marker.kind {
-            case .done:
-                dot(center, radius: 5, color: Palette.dialDone)
-            case .upcoming:
-                dot(center, radius: 5, color: Palette.dialUpcoming)
-            case .next:
-                dot(center, radius: 7.5, color: Palette.dialNextRing)
-                dot(center, radius: 5.5, color: Palette.accent)
+    }
+}
+
+private struct DialMarkersLayer: View, Animatable {
+    let markers: [DialMarker]
+    var progress: Double
+
+    private let geometry = DialGeometry()
+
+    var animatableData: Double {
+        get { progress }
+        set { progress = newValue }
+    }
+
+    var body: some View {
+        Canvas { context, canvas in
+            let scale = canvas.width / 280
+            let count = Double(max(markers.count, 1))
+            for (index, marker) in markers.enumerated() {
+                let share = min(max(progress * (count + 1) - Double(index), 0), 1)
+                guard share > 0 else { continue }
+                let center = geometry.point(angle: geometry.angle(hour: marker.hour, minute: marker.minute), radius: 133)
+                let point = CGPoint(x: center.x * scale, y: center.y * scale)
+                func dot(_ radius: Double, _ color: Color) {
+                    let r = radius * scale * (0.6 + 0.4 * share)
+                    context.fill(Path(ellipseIn: CGRect(x: point.x - r, y: point.y - r, width: 2 * r, height: 2 * r)), with: .color(color.opacity(share)))
+                }
+                switch marker.kind {
+                case .done:
+                    dot(5, Palette.dialDone)
+                case .upcoming:
+                    dot(5, Palette.dialUpcoming)
+                case .next:
+                    dot(7.5, Palette.dialNextRing)
+                    dot(5.5, Palette.accent)
+                }
             }
         }
+    }
+}
 
-        let handAngle = geometry.angle(hour: nowHour, minute: nowMinute)
-        var hand = Path()
-        hand.move(to: place(geometry.point(angle: handAngle + 180, radius: 18)))
-        hand.addLine(to: place(geometry.point(angle: handAngle, radius: 104)))
-        context.stroke(hand, with: .color(Palette.accent), style: StrokeStyle(lineWidth: 3.2 * scale, lineCap: .round))
+private struct DialHandLayer: View, Animatable {
+    var minutes: Double
 
-        dot(SVGPoint(geometry.center, geometry.center), radius: 7, color: Palette.dialCap)
-        dot(SVGPoint(geometry.center, geometry.center), radius: 2.6, color: Palette.accent)
+    private let geometry = DialGeometry()
+
+    var animatableData: Double {
+        get { minutes }
+        set { minutes = newValue }
+    }
+
+    var body: some View {
+        Canvas { context, canvas in
+            let scale = canvas.width / 280
+            func place(_ point: SVGPoint) -> CGPoint {
+                CGPoint(x: point.x * scale, y: point.y * scale)
+            }
+            func dot(_ radius: Double, _ color: Color) {
+                let point = place(SVGPoint(geometry.center, geometry.center))
+                let r = radius * scale
+                context.fill(Path(ellipseIn: CGRect(x: point.x - r, y: point.y - r, width: 2 * r, height: 2 * r)), with: .color(color))
+            }
+            let angle = minutes / 1440 * 360
+            var hand = Path()
+            hand.move(to: place(geometry.point(angle: angle + 180, radius: 18)))
+            hand.addLine(to: place(geometry.point(angle: angle, radius: 104)))
+            context.stroke(hand, with: .color(Palette.accent), style: StrokeStyle(lineWidth: 3.2 * scale, lineCap: .round))
+            dot(7, Palette.dialCap)
+            dot(2.6, Palette.accent)
+        }
     }
 }

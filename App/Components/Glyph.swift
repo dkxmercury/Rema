@@ -56,6 +56,7 @@ enum Icons {
     static let shop = ["M3 4h2.5l2 11h10l2-8H7", circle(9.5, 19, 1.5), circle(16.5, 19, 1.5)]
     static let search = [circle(11, 11, 6.5), "M20 20l-4.2-4.2"]
     static let locate = ["M20 4L4 10.5l7 2.5 2.5 7z"]
+    static let trash = ["M5 7h14", "M10 11v6M14 11v6", "M6.5 7l1 12.5a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 0 1.5-1.5L17.5 7", "M9.5 7V4.5h5V7"]
     static let folder = ["M3.5 7.5a2 2 0 0 1 2-2h4l2 2.5h7a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"]
     static let globe = [circle(12, 12, 8.5), "M3.5 12h17M12 3.5c2.5 2.4 3.8 5.3 3.8 8.5s-1.3 6.1-3.8 8.5c-2.5-2.4-3.8-5.3-3.8-8.5s1.3-6.1 3.8-8.5z"]
 

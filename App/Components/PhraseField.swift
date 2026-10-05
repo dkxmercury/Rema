@@ -96,7 +96,10 @@ final class PhraseTextView: UITextView {
     private let face = UIFont.app(.golos, 24, weight: 600)
     private let lineHeight: CGFloat = 32
     private var marks: [NSRange] = []
+    private var markStarts: [NSRange: CFTimeInterval] = [:]
     private var applied: (text: String, highlights: [Range<Int>], pending: Range<Int>?)?
+    private var link: CADisplayLink?
+    private let markDuration: CFTimeInterval = 0.28
 
     override init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
@@ -148,8 +151,40 @@ final class PhraseTextView: UITextView {
         }
         textStorage.endEditing()
         typingAttributes = baseAttributes
-        marks = highlights.compactMap(characterRange)
+        let now = CACurrentMediaTime()
+        let updated = highlights.compactMap(characterRange)
+        var starts: [NSRange: CFTimeInterval] = [:]
+        for mark in updated {
+            starts[mark] = markStarts[mark] ?? (window == nil ? 0 : now)
+        }
+        markStarts = starts
+        marks = updated
+        if starts.values.contains(where: { now - $0 < markDuration }) {
+            startLink()
+        }
         setNeedsDisplay()
+    }
+
+    private func startLink() {
+        guard link == nil else { return }
+        let link = CADisplayLink(target: self, selector: #selector(step))
+        link.add(to: .main, forMode: .common)
+        self.link = link
+    }
+
+    @objc private func step() {
+        setNeedsDisplay()
+        let now = CACurrentMediaTime()
+        if !markStarts.values.contains(where: { now - $0 < markDuration }) {
+            link?.invalidate()
+            link = nil
+        }
+    }
+
+    override func removeFromSuperview() {
+        link?.invalidate()
+        link = nil
+        super.removeFromSuperview()
     }
 
     private func characterRange(_ range: Range<Int>) -> NSRange? {
@@ -168,10 +203,14 @@ final class PhraseTextView: UITextView {
     override func draw(_ rect: CGRect) {
         guard !marks.isEmpty, let context = UIGraphicsGetCurrentContext() else { return }
         let height = glyphHeight
-        let fill = UIPalette.accent.withAlphaComponent(0.18).cgColor
         let underline = UIPalette.accent.cgColor
         let inset = textContainerInset
+        let now = CACurrentMediaTime()
         for range in marks {
+            let elapsed = now - (markStarts[range] ?? 0)
+            let linear = min(1, max(0, elapsed / markDuration))
+            let eased = 1 - pow(1 - linear, 3)
+            let fill = UIPalette.accent.withAlphaComponent(0.18 * eased).cgColor
             let glyphs = layoutManager.glyphRange(forCharacterRange: range, actualCharacterRange: nil)
             layoutManager.enumerateEnclosingRects(forGlyphRange: glyphs, withinSelectedGlyphRange: NSRange(location: NSNotFound, length: 0), in: textContainer) { box, _ in
                 let frame = CGRect(x: box.minX + inset.left, y: box.midY + inset.top - height / 2, width: box.width, height: height)
@@ -181,7 +220,7 @@ final class PhraseTextView: UITextView {
                 context.setFillColor(fill)
                 context.fill(frame)
                 context.setFillColor(underline)
-                context.fill(CGRect(x: frame.minX, y: frame.maxY - 2, width: frame.width, height: 2))
+                context.fill(CGRect(x: frame.minX, y: frame.maxY - 2, width: frame.width * eased, height: 2))
                 context.restoreGState()
             }
         }

@@ -9,7 +9,10 @@ struct HomeScreen: View {
     var onCalendar: () -> Void = {}
     var onSettings: () -> Void = {}
     var zoom: Namespace.ID?
+    var onDelete: (UUID) -> Void = { _ in }
     @State private var addPressed = false
+    @State private var intro = false
+    @Environment(\.introAnimations) private var introAnimations
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
@@ -19,8 +22,8 @@ struct HomeScreen: View {
             VStack(spacing: 0) {
                 header
                 Dial(
-                    nowHour: content.nowHour,
-                    nowMinute: content.nowMinute,
+                    handMinutes: shown ? Double(content.nowHour * 60 + content.nowMinute) : 0,
+                    markerProgress: shown ? 1 : 0,
                     markers: content.markers,
                     windowTime: content.next?.time ?? content.nowText,
                     windowCaption: content.next?.countdown ?? String(localized: "now")
@@ -55,6 +58,14 @@ struct HomeScreen: View {
         }
         .foregroundStyle(Palette.text)
         .animation(Motion.adaptive(Motion.standard, reduceMotion: reduceMotion), value: content.rows.map(\.id))
+        .onAppear {
+            guard !intro else { return }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) { intro = true }
+        }
+    }
+
+    private var shown: Bool {
+        intro || !introAnimations || reduceMotion
     }
 
     private var header: some View {
@@ -115,7 +126,7 @@ struct HomeScreen: View {
     private var list: some View {
         VStack(spacing: 0) {
             ForEach(content.rows) { row in
-                AgendaRow(row: row, onToggle: { onToggle(row) })
+                AgendaRow(row: row, onToggle: { onToggle(row) }, onDelete: { onDelete(row.reminderID) })
                     .contentShape(Rectangle())
                     .onTapGesture { onOpen(row.reminderID) }
                     .transition(.opacity.combined(with: .move(edge: .top)))
@@ -194,7 +205,9 @@ struct HomeScreen: View {
 struct PressableStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .scaleEffect(configuration.isPressed ? 0.94 : 1)
+            .scaleEffect(configuration.isPressed ? 0.95 : 1)
+            .offset(y: configuration.isPressed ? 1 : 0)
+            .brightness(configuration.isPressed ? -0.04 : 0)
             .animation(Motion.press, value: configuration.isPressed)
     }
 }
