@@ -56,6 +56,12 @@ final class ScreenSnapshots: XCTestCase {
         try render(SoundScreen(store: sampleStore(), choice: .constant(.custom(SampleData.gong.id)), locale: russian, onBack: {}), name: "D-Sound", style: .light)
     }
 
+    func testPlaces() throws {
+        try render(PlacesScreen(store: sampleStore(), title: "Забрать посылку на почте", placeIDs: .constant([SampleData.work.id, SampleData.gym.id]), trigger: .constant(.leave), onNewPlace: {}, onBack: {}), name: "D-Places", style: .light)
+        try render(PlacesListScreen(store: sampleStore(), onOpen: { _ in }, onAdd: {}, onBack: {}), name: "D-PlacesList", style: .light)
+        try render(NewPlaceScreen(store: sampleStore(), prefill: SampleData.gym, onSaved: { _ in }, onBack: {}), name: "D-NewPlace", style: .light)
+    }
+
     private var russian: Locale { Locale(identifier: "ru_RU") }
 
     private func sampleStore() -> Store {

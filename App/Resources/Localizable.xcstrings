@@ -145,6 +145,16 @@
         }
       }
     },
+    "%lld m": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld м"
+          }
+        }
+      }
+    },
     "%lld minutes before": {
       "localizations": {
         "en": {
@@ -289,6 +299,16 @@
         }
       }
     },
+    "Add place": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Добавить место"
+          }
+        }
+      }
+    },
     "Add reminder": {
       "localizations": {
         "ru": {
@@ -355,6 +375,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Язык приложения"
+          }
+        }
+      }
+    },
+    "Arrived: %@": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пришли: %@"
           }
         }
       }
@@ -459,6 +489,16 @@
         }
       }
     },
+    "Country house": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дача"
+          }
+        }
+      }
+    },
     "Custom time": {
       "localizations": {
         "ru": {
@@ -505,6 +545,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Удалить"
+          }
+        }
+      }
+    },
+    "Delete place": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Удалить место"
+          }
+        }
+      }
+    },
+    "Delete place?": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Удалить место?"
           }
         }
       }
@@ -639,6 +699,16 @@
         }
       }
     },
+    "Favourite": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Избранное"
+          }
+        }
+      }
+    },
     "Feedback": {
       "localizations": {
         "ru": {
@@ -659,12 +729,52 @@
         }
       }
     },
+    "Fires when you arrive at any of the chosen places": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сработает, когда придёте в любое отмеченное место"
+          }
+        }
+      }
+    },
+    "Fires when you leave any of the chosen places": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сработает, когда уйдёте из любого отмеченного места"
+          }
+        }
+      }
+    },
+    "For example, Gym": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Например, Спортзал"
+          }
+        }
+      }
+    },
     "For example, remind me tomorrow at 9 to call mom": {
       "localizations": {
         "ru": {
           "stringUnit": {
             "state": "translated",
             "value": "Например, напомни завтра в 9 позвонить маме"
+          }
+        }
+      }
+    },
+    "Home": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дом"
           }
         }
       }
@@ -801,6 +911,16 @@
         }
       }
     },
+    "Leaving: %@": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ушли: %@"
+          }
+        }
+      }
+    },
     "Light": {
       "localizations": {
         "ru": {
@@ -891,6 +1011,16 @@
         }
       }
     },
+    "My location": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Моё местоположение"
+          }
+        }
+      }
+    },
     "My places": {
       "localizations": {
         "ru": {
@@ -901,12 +1031,42 @@
         }
       }
     },
+    "Name, anything you like": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Название, любое"
+          }
+        }
+      }
+    },
+    "Nature": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Природа"
+          }
+        }
+      }
+    },
     "Never": {
       "localizations": {
         "ru": {
           "stringUnit": {
             "state": "translated",
             "value": "Никогда"
+          }
+        }
+      }
+    },
+    "New place": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Новое место"
           }
         }
       }
@@ -1101,6 +1261,16 @@
         }
       }
     },
+    "Place name": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Название места"
+          }
+        }
+      }
+    },
     "Places": {
       "localizations": {
         "ru": {
@@ -1147,6 +1317,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Предыдущая неделя"
+          }
+        }
+      }
+    },
+    "Radius": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Радиус"
           }
         }
       }
@@ -1421,12 +1601,42 @@
         }
       }
     },
+    "Save place": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сохранить место"
+          }
+        }
+      }
+    },
+    "Search address": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Поиск адреса"
+          }
+        }
+      }
+    },
     "Settings": {
       "localizations": {
         "ru": {
           "stringUnit": {
             "state": "translated",
             "value": "Настройки"
+          }
+        }
+      }
+    },
+    "Shop": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Магазин"
           }
         }
       }
@@ -1527,6 +1737,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Для этого языка распознавание речи пока недоступно."
+          }
+        }
+      }
+    },
+    "Sport": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Спорт"
+          }
+        }
+      }
+    },
+    "Study": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Учёба"
           }
         }
       }
@@ -1641,6 +1871,16 @@
         }
       }
     },
+    "Up to 20 places. Any name, only you see it.": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Мест до 20. Название любое, его видите только вы."
+          }
+        }
+      }
+    },
     "Urgent": {
       "localizations": {
         "ru": {
@@ -1707,6 +1947,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "О чём напомнить"
+          }
+        }
+      }
+    },
+    "When I arrive": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Когда приду"
+          }
+        }
+      }
+    },
+    "When I leave": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Когда уйду"
           }
         }
       }
@@ -2189,6 +2449,16 @@
         }
       }
     },
+    "no reminders": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "нет напоминаний"
+          }
+        }
+      }
+    },
     "none": {
       "localizations": {
         "ru": {
@@ -2305,6 +2575,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "тихие щелчки, молчат в беззвучном режиме"
+          }
+        }
+      }
+    },
+    "radius %lld m": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "радиус %lld м"
           }
         }
       }

@@ -32,11 +32,13 @@ targets:
         TARGETED_DEVICE_FAMILY: "1"
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: Rema
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
         INFOPLIST_KEY_NSMicrophoneUsageDescription: "The microphone is used only while you dictate a reminder."
         INFOPLIST_KEY_NSSpeechRecognitionUsageDescription: "Speech is turned into text to create a reminder."
+        INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: "Location is used to remind you when you arrive at or leave your places."
         LOCALIZATION_PREFERS_STRING_CATALOGS: YES
         SWIFT_EMIT_LOC_STRINGS: YES
         ENABLE_PREVIEWS: YES

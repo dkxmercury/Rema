@@ -15,6 +15,8 @@ struct ComposeTarget: Identifiable {
 enum RootRoute: Hashable {
     case settings
     case defaultSound
+    case places
+    case place(UUID?)
 }
 
 struct RootView: View {
@@ -31,9 +33,13 @@ struct RootView: View {
         } destination: { route in
             switch route {
             case .settings:
-                SettingsScreen(store: store, onSound: { path.append(.defaultSound) }, onBack: { path.removeLast() })
+                SettingsScreen(store: store, onSound: { path.append(.defaultSound) }, onPlaces: { path.append(.places) }, onBack: { path.removeLast() })
             case .defaultSound:
                 SoundScreen(store: store, choice: defaultSound) { path.removeLast() }
+            case .places:
+                PlacesListScreen(store: store, onOpen: { path.append(.place($0.id)) }, onAdd: { path.append(.place(nil)) }, onBack: { path.removeLast() })
+            case .place(let id):
+                NewPlaceScreen(store: store, existing: store.places.first { $0.id == id }, onSaved: { _ in path.removeLast() }, onBack: { path.removeLast() })
             }
         }
         .fullScreenCover(item: $editing) { target in

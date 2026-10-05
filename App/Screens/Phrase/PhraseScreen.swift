@@ -5,6 +5,8 @@ enum PhraseRoute: Hashable {
     case repeating
     case early
     case sound
+    case places
+    case newPlace
 }
 
 struct PhraseScreen: View {
@@ -29,6 +31,8 @@ struct PhraseScreen: View {
         var schedule: Schedule?
         var preAlerts: [Int]?
         var sound: SoundChoice?
+        var placeIDs: [UUID]?
+        var placeTrigger: PlaceTrigger?
     }
 
     init(store: Store, text: String = "", now: Date = Date(), calendar: Calendar = .current, locale: Locale = .current, startWithVoice: Bool = false, autofocus: Bool = true, onClose: @escaping () -> Void) {
@@ -64,8 +68,8 @@ struct PhraseScreen: View {
             preAlerts: overrides.preAlerts ?? result.preAlerts,
             nag: result.nag,
             urgent: overrides.urgent ?? result.urgent,
-            placeIDs: result.placeNames.compactMap { name in store.activePlaces.first { $0.name == name }?.id },
-            placeTrigger: result.placeTrigger ?? .arrive,
+            placeIDs: overrides.placeIDs ?? result.placeNames.compactMap { name in store.activePlaces.first { $0.name == name }?.id },
+            placeTrigger: overrides.placeTrigger ?? result.placeTrigger ?? .arrive,
             sound: overrides.sound ?? .standard,
             createdAt: now
         )
@@ -90,6 +94,13 @@ struct PhraseScreen: View {
                     EarlyScreen(draft: draftBinding, now: now, calendar: calendar, locale: locale) { path.removeLast() }
                 case .sound:
                     SoundScreen(store: store, choice: soundBinding, locale: locale) { path.removeLast() }
+                case .places:
+                    PlacesScreen(store: store, title: parsed.title, placeIDs: placesBinding, trigger: triggerBinding, onNewPlace: { path.append(.newPlace) }, onBack: { path.removeLast() })
+                case .newPlace:
+                    NewPlaceScreen(store: store, onSaved: { place in
+                        overrides.placeIDs = reminder.placeIDs + [place.id]
+                        path.removeLast()
+                    }, onBack: { path.removeLast() })
                 }
             }
             if listening {
@@ -127,6 +138,14 @@ struct PhraseScreen: View {
             listening = false
             focused = true
         }
+    }
+
+    private var placesBinding: Binding<[UUID]> {
+        Binding(get: { reminder.placeIDs }, set: { overrides.placeIDs = $0 })
+    }
+
+    private var triggerBinding: Binding<PlaceTrigger> {
+        Binding(get: { reminder.placeTrigger }, set: { overrides.placeTrigger = $0 })
     }
 
     private var soundBinding: Binding<SoundChoice> {
@@ -219,7 +238,7 @@ struct PhraseScreen: View {
         FlowLayout(spacing: 8) {
             Chip(title: "Repeat", selected: reminder.schedule?.rule != nil, icon: Icons.plus) { path.append(.repeating) }
             Chip(title: "In advance", selected: !reminder.preAlerts.isEmpty, icon: Icons.plus) { path.append(.early) }
-            Chip(title: "Place", selected: !reminder.placeIDs.isEmpty, icon: Icons.plus) {}
+            Chip(title: "Place", selected: !reminder.placeIDs.isEmpty, icon: Icons.plus) { path.append(.places) }
             Chip(title: "Urgent", selected: reminder.urgent, icon: Icons.plus) {
                 overrides.urgent = !reminder.urgent
                 Feedback.play(.toggle)

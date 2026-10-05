@@ -7,6 +7,7 @@ struct SettingsScreen: View {
     let store: Store
     var locale: Locale = .current
     var onSound: () -> Void = {}
+    var onPlaces: () -> Void = {}
     let onBack: () -> Void
 
     @AppStorage(Feedback.hapticsKey) private var haptics = true
@@ -65,7 +66,7 @@ struct SettingsScreen: View {
                     }
                     section("Places") {
                         PanelList {
-                            NavigationRow(icon: Icons.pin, iconColor: Palette.text, title: "My places", minHeight: 52, action: {}) {
+                            NavigationRow(icon: Icons.pin, iconColor: Palette.text, title: "My places", minHeight: 52, action: onPlaces) {
                                 value(String(localized: "\(store.activePlaces.count) of \(20)"))
                             }
                         }

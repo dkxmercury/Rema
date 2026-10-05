@@ -5,6 +5,8 @@ enum EditorRoute: Hashable {
     case repeating
     case early
     case sound
+    case places
+    case newPlace
 }
 
 struct EditorScreen: View {
@@ -47,6 +49,13 @@ struct EditorScreen: View {
                 EarlyScreen(draft: $draft, now: now, calendar: calendar, locale: locale) { pop() }
             case .sound:
                 SoundScreen(store: store, choice: $draft.sound, locale: locale) { pop() }
+            case .places:
+                PlacesScreen(store: store, title: draft.title, placeIDs: $draft.placeIDs, trigger: $draft.placeTrigger, onNewPlace: { path.append(.newPlace) }, onBack: pop)
+            case .newPlace:
+                NewPlaceScreen(store: store, onSaved: { place in
+                    draft.placeIDs.append(place.id)
+                    pop()
+                }, onBack: pop)
             }
         }
         .fullScreenCover(isPresented: $pickingDate) {
@@ -181,7 +190,7 @@ struct EditorScreen: View {
                 }
             }
             Hairline()
-            NavigationRow(icon: Icons.pin, iconColor: Palette.text, title: "By place", action: {}) {
+            NavigationRow(icon: Icons.pin, iconColor: Palette.text, title: "By place", action: { path.append(.places) }) {
                 Text(verbatim: placeValue)
                     .font(.app(.golos, 14))
                     .foregroundStyle(Palette.secondary)

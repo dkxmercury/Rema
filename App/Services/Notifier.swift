@@ -1,3 +1,4 @@
+import CoreLocation
 import RemaCore
 import UIKit
 import UserNotifications
@@ -24,6 +25,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         return [
             UNNotificationCategory(identifier: "reminder", actions: [done, tenMinutes, hour, morning], intentIdentifiers: []),
             UNNotificationCategory(identifier: "nag", actions: [done, fifteenMinutes, skip], intentIdentifiers: []),
+            UNNotificationCategory(identifier: "place", actions: [done], intentIdentifiers: []),
         ]
     }
 
@@ -53,8 +55,12 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         guard status == .authorized || status == .provisional || status == .ephemeral else { return }
         let now = Date()
         let plan = Scheduler.plan(reminders: store.reminders, settings: store.settings, now: now, calendar: .current)
+        let places = placeRequests()
         center.removeAllPendingNotificationRequests()
-        for item in plan {
+        for request in places {
+            try? await center.add(request)
+        }
+        for item in plan.prefix(max(0, 60 - places.count)) {
             let content = UNMutableNotificationContent()
             content.title = item.title
             content.body = body(for: item, now: now)
@@ -67,6 +73,34 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
             let trigger = UNCalendarNotificationTrigger(dateMatching: parts, repeats: false)
             try? await center.add(UNNotificationRequest(identifier: item.identifier, content: content, trigger: trigger))
         }
+    }
+
+    private func placeRequests() -> [UNNotificationRequest] {
+        guard LocationService.shared.allowed else { return [] }
+        var requests: [UNNotificationRequest] = []
+        for reminder in store.activeReminders where !reminder.placeIDs.isEmpty {
+            if reminder.isPlaceOnly, reminder.completedThrough != nil { continue }
+            for placeID in reminder.placeIDs {
+                guard let place = store.activePlaces.first(where: { $0.id == placeID }) else { continue }
+                let region = CLCircularRegion(center: place.coordinate, radius: max(place.radius, 100), identifier: "\(reminder.id.uuidString).\(place.id.uuidString)")
+                region.notifyOnEntry = reminder.placeTrigger == .arrive
+                region.notifyOnExit = reminder.placeTrigger == .leave
+                let content = UNMutableNotificationContent()
+                content.title = reminder.title
+                content.body = reminder.placeTrigger == .leave ? String(localized: "Leaving: \(place.name)") : String(localized: "Arrived: \(place.name)")
+                content.sound = SoundPlayer.notificationSound(reminder.sound, settings: store.settings, sounds: store.sounds)
+                content.categoryIdentifier = "place"
+                content.interruptionLevel = reminder.urgent ? .timeSensitive : .active
+                content.threadIdentifier = reminder.id.uuidString
+                content.userInfo = ["reminder": reminder.id.uuidString]
+                let trigger = UNLocationNotificationTrigger(region: region, repeats: true)
+                requests.append(UNNotificationRequest(identifier: "place.\(region.identifier)", content: content, trigger: trigger))
+                if requests.count >= Place.maximumCount {
+                    return requests
+                }
+            }
+        }
+        return requests
     }
 
     private func soundFor(_ item: PlannedNotification) -> SoundChoice {

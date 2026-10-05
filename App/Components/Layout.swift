@@ -96,6 +96,7 @@ struct Chip: View {
     let title: LocalizedStringKey
     var selected = false
     var icon: [String]?
+    var horizontalPadding: CGFloat = 15.5
     let action: () -> Void
 
     var body: some View {
@@ -108,7 +109,7 @@ struct Chip: View {
                     .font(.app(.golos, 14, weight: 600))
             }
             .foregroundStyle(selected ? Palette.onSegment : Palette.text)
-            .padding(.horizontal, 15.5)
+            .padding(.horizontal, horizontalPadding)
             .frame(height: 44)
             .background {
                 RoundedRectangle(cornerRadius: 12, style: .circular)

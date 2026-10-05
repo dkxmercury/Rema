@@ -39,7 +39,7 @@ struct SoundScreen: View {
                             row(
                                 title: describer.builtInName(sound),
                                 selected: effective == .builtIn(sound.rawValue),
-                                height: last ? 50 : 51,
+                                height: 50,
                                 duration: nil,
                                 playable: sound != .silent,
                                 choice: .builtIn(sound.rawValue)
@@ -54,7 +54,7 @@ struct SoundScreen: View {
                         .padding(.top, 18)
                     PanelList {
                         ForEach(customSounds) { sound in
-                            row(title: sound.name, selected: effective == .custom(sound.id), height: 53, duration: sound.duration, playable: true, choice: .custom(sound.id))
+                            row(title: sound.name, selected: effective == .custom(sound.id), height: 52, duration: sound.duration, playable: true, choice: .custom(sound.id))
                                 .contextMenu {
                                     Button(role: .destructive) {
                                         remove(sound)
