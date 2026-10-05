@@ -112,6 +112,11 @@ extension LocalDate {
         self.init(year: parts.year!, month: parts.month!, day: parts.day!)
     }
 
+    public init(_ date: Date, in calendar: Calendar) {
+        let parts = calendar.dateComponents([.year, .month, .day], from: date)
+        self.init(year: parts.year ?? 2000, month: parts.month ?? 1, day: parts.day ?? 1)
+    }
+
     public func adding(days: Int) -> LocalDate {
         LocalDate(noon.addingTimeInterval(Double(days) * 86_400))
     }

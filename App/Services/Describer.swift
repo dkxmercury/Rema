@@ -95,6 +95,50 @@ struct Describer {
         return String(format: "%02d:%02d", parts.hour ?? 0, parts.minute ?? 0)
     }
 
+    func dayTitle(_ date: Date) -> String {
+        date.formatted(Date.FormatStyle(locale: locale, calendar: calendar, timeZone: calendar.timeZone).weekday(.wide).day().month(.wide)).capitalizedFirst(locale)
+    }
+
+    func fullDate(_ date: Date) -> String {
+        "\(dayTitle(date)), \(time(date))"
+    }
+
+    func repeatValue(_ schedule: Schedule?) -> String {
+        guard let schedule, let rule = schedule.rule else { return String(localized: "No repeat") }
+        switch rule {
+        case .yearly(let month, let day):
+            let reference = calendar.date(from: DateComponents(year: 2000, month: month, day: day, hour: 12)) ?? Date()
+            let date = reference.formatted(Date.FormatStyle(locale: locale, calendar: calendar, timeZone: calendar.timeZone).day().month(.abbreviated)).replacingOccurrences(of: ".", with: "")
+            return String(localized: "Every year, \(date)")
+        case .monthlyOnDay(let day):
+            return String(localized: "Every month, day \(day)")
+        default:
+            return repeatText(rule).capitalizedFirst(locale)
+        }
+    }
+
+    func soundName(_ choice: SoundChoice, settings: Settings, sounds: [CustomSound]) -> String {
+        switch choice {
+        case .standard:
+            return soundName(settings.defaultSound, settings: settings, sounds: sounds)
+        case .builtIn(let id):
+            return builtInName(BuiltInSound(rawValue: id) ?? .mechanika)
+        case .custom(let id):
+            return sounds.first { $0.id == id }?.name ?? builtInName(.mechanika)
+        }
+    }
+
+    func builtInName(_ sound: BuiltInSound) -> String {
+        switch sound {
+        case .mechanika: return String(localized: "Mechanika")
+        case .bell: return String(localized: "Little bell")
+        case .drops: return String(localized: "Drops")
+        case .ticktock: return String(localized: "Tick-tock")
+        case .soft: return String(localized: "Soft")
+        case .silent: return String(localized: "No sound")
+        }
+    }
+
     func dateLine(_ date: Date) -> String {
         date.formatted(Date.FormatStyle(locale: locale, calendar: calendar, timeZone: calendar.timeZone).weekday(.wide).day().month(.wide))
     }

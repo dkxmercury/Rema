@@ -6,6 +6,7 @@ import RemaCore
 final class Store {
     private(set) var reminders: [Reminder] = []
     private(set) var places: [Place] = []
+    private(set) var sounds: [CustomSound] = []
     private(set) var settings: Settings
 
     @ObservationIgnored private let url: URL
@@ -95,6 +96,28 @@ final class Store {
         persist()
     }
 
+    func sound(_ id: UUID) -> CustomSound? {
+        sounds.first { $0.id == id }
+    }
+
+    func save(_ sound: CustomSound) {
+        if let index = sounds.firstIndex(where: { $0.id == sound.id }) {
+            sounds[index] = sound
+        } else {
+            sounds.append(sound)
+        }
+        persist()
+    }
+
+    func seed(reminders: [Reminder], places: [Place], sounds: [CustomSound]) {
+        self.reminders = reminders
+        self.places = places
+        self.sounds = sounds
+        persist()
+    }
+
+    static let shared = Store()
+
     func update(_ change: (inout Settings) -> Void) {
         change(&settings)
         settings.updatedAt = Date()
@@ -105,6 +128,7 @@ final class Store {
         var reminders: [Reminder]
         var places: [Place]
         var settings: Settings
+        var sounds: [CustomSound]?
     }
 
     private func load() {
@@ -113,10 +137,11 @@ final class Store {
         reminders = snapshot.reminders
         places = snapshot.places
         settings = snapshot.settings
+        sounds = snapshot.sounds ?? []
     }
 
     private func persist() {
-        let snapshot = Snapshot(reminders: reminders, places: places, settings: settings)
+        let snapshot = Snapshot(reminders: reminders, places: places, settings: settings, sounds: sounds)
         if let data = try? JSONEncoder().encode(snapshot) {
             try? data.write(to: url, options: .atomic)
         }

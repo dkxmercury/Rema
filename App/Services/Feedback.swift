@@ -9,6 +9,7 @@ enum Feedback {
         case select
         case delete
         case save
+        case error
     }
 
     static let hapticsKey = "feedback.haptics"
@@ -43,6 +44,8 @@ enum Feedback {
             UINotificationFeedbackGenerator().notificationOccurred(.warning)
         case .save:
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        case .error:
+            UINotificationFeedbackGenerator().notificationOccurred(.error)
         }
     }
 

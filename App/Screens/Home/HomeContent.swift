@@ -149,7 +149,19 @@ enum SampleData {
 
     static var places: [Place] { [work, gym] }
 
-    static var reminders: [Reminder] {
+    static let gong = CustomSound(name: "гонг.mp3", duration: 8, createdAt: now)
+
+    static let server = Reminder(
+        title: "Оплатить сервер",
+        schedule: Schedule(start: LocalDate(year: 2026, month: 10, day: 6), time: LocalTime(hour: 10, minute: 0), rule: .yearly(month: 10, day: 6)),
+        preAlerts: [10_080, 1_440],
+        nag: true,
+        urgent: true,
+        sound: .custom(gong.id),
+        createdAt: now
+    )
+
+    static let reminders: [Reminder] = {
         var vitamins = Reminder(
             title: "Выпить витамины",
             schedule: Schedule(start: LocalDate(year: 2026, month: 10, day: 1), time: LocalTime(hour: 9, minute: 0), rule: .daily),
@@ -163,9 +175,9 @@ enum SampleData {
             Reminder(title: "Купить хлеб и молоко", schedule: Schedule(start: LocalDate(year: 2026, month: 10, day: 5), time: LocalTime(hour: 19, minute: 0)), createdAt: now),
             Reminder(title: "Полить цветы", schedule: Schedule(start: LocalDate(year: 2026, month: 10, day: 1), time: LocalTime(hour: 21, minute: 30), rule: .weekly([.monday, .thursday])), createdAt: now),
             Reminder(title: "Забрать посылку", schedule: nil, placeIDs: [work.id, gym.id], placeTrigger: .leave, createdAt: now),
-            Reminder(title: "Оплатить сервер", schedule: Schedule(start: LocalDate(year: 2026, month: 10, day: 6), time: LocalTime(hour: 10, minute: 0), rule: .yearly(month: 10, day: 6)), preAlerts: [10_080, 1_440], nag: true, urgent: true, createdAt: now),
+            server,
         ]
-    }
+    }()
 
     static var home: HomeContent {
         HomeContent.make(reminders: reminders, places: places, now: now, calendar: calendar, locale: Locale(identifier: "ru_RU"))

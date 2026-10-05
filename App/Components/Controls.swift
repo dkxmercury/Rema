@@ -95,7 +95,6 @@ struct LeverToggle: View {
             .animation(Motion.small, value: isOn)
         }
         .buttonStyle(.plain)
-        .sensoryFeedback(.selection, trigger: isOn)
         .accessibilityAddTraits(.isToggle)
         .accessibilityValue(Text(isOn ? LocalizedStringKey("On") : LocalizedStringKey("Off")))
     }
@@ -139,7 +138,7 @@ struct Segmented<Value: Hashable>: View {
                 .insetShadow(well, Palette.segmentWell, blur: 3, y: 1)
         }
         .animation(Motion.small, value: selection)
-        .sensoryFeedback(.selection, trigger: selection)
+        .onChange(of: selection) { _, _ in Feedback.play(.select) }
     }
 }
 

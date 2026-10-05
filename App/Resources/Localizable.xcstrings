@@ -21,6 +21,26 @@
         }
       }
     },
+    "%@ · you can pick several": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ · можно выбрать несколько"
+          }
+        }
+      }
+    },
+    "%@, reminding in advance": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@, напоминаю заранее"
+          }
+        }
+      }
+    },
     "%lld days before": {
       "localizations": {
         "en": {
@@ -187,6 +207,46 @@
         }
       }
     },
+    "After 10 times": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "После 10 раз"
+          }
+        }
+      }
+    },
+    "After 3 times": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "После 3 раз"
+          }
+        }
+      }
+    },
+    "After 5 times": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "После 5 раз"
+          }
+        }
+      }
+    },
+    "Back": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Назад"
+          }
+        }
+      }
+    },
     "By place": {
       "localizations": {
         "ru": {
@@ -207,6 +267,136 @@
         }
       }
     },
+    "Close": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Закрыть"
+          }
+        }
+      }
+    },
+    "Custom time": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Своё время"
+          }
+        }
+      }
+    },
+    "Date and time": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дата и время"
+          }
+        }
+      }
+    },
+    "Delete": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Удалить"
+          }
+        }
+      }
+    },
+    "Delete reminder": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Удалить напоминание"
+          }
+        }
+      }
+    },
+    "Delete reminder?": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Удалить напоминание?"
+          }
+        }
+      }
+    },
+    "Done": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Готово"
+          }
+        }
+      }
+    },
+    "Drops": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Капли"
+          }
+        }
+      }
+    },
+    "Ends": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Окончание"
+          }
+        }
+      }
+    },
+    "Every N days": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Каждые N дней"
+          }
+        }
+      }
+    },
+    "Every day": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Каждый день"
+          }
+        }
+      }
+    },
+    "Every month": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Каждый месяц"
+          }
+        }
+      }
+    },
+    "Every month, day %lld": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Каждый месяц, %lld-го"
+          }
+        }
+      }
+    },
     "Every year": {
       "localizations": {
         "ru": {
@@ -217,12 +407,124 @@
         }
       }
     },
+    "Every year, %@": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Каждый год, %@"
+          }
+        }
+      }
+    },
     "I'll also remind %@": {
       "localizations": {
         "ru": {
           "stringUnit": {
             "state": "translated",
             "value": "напомню ещё %@"
+          }
+        }
+      }
+    },
+    "I'll repeat in %lld minutes until you tap Done.": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "I'll repeat in %lld minute until you tap Done."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "I'll repeat in %lld minutes until you tap Done."
+                }
+              }
+            }
+          }
+        },
+        "ru": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Повторю через %lld минуты, пока не нажмёте «Готово»."
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Повторю через %lld минут, пока не нажмёте «Готово»."
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Повторю через %lld минуту, пока не нажмёте «Готово»."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Повторю через %lld минуты, пока не нажмёте «Готово»."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "In 10 minutes": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Через 10 минут"
+          }
+        }
+      }
+    },
+    "In 15 minutes": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Через 15 минут"
+          }
+        }
+      }
+    },
+    "In advance": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Заранее"
+          }
+        }
+      }
+    },
+    "In an hour": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Через час"
+          }
+        }
+      }
+    },
+    "Little bell": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Колокольчик"
           }
         }
       }
@@ -247,12 +549,72 @@
         }
       }
     },
+    "Mechanika": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Механика"
+          }
+        }
+      }
+    },
+    "Never": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Никогда"
+          }
+        }
+      }
+    },
     "New reminder": {
       "localizations": {
         "ru": {
           "stringUnit": {
             "state": "translated",
             "value": "Новое напоминание"
+          }
+        }
+      }
+    },
+    "Next week": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Следующая неделя"
+          }
+        }
+      }
+    },
+    "No": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нет"
+          }
+        }
+      }
+    },
+    "No repeat": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нет"
+          }
+        }
+      }
+    },
+    "No sound": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Без звука"
           }
         }
       }
@@ -287,12 +649,412 @@
         }
       }
     },
+    "On Saturday": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "В субботу"
+          }
+        }
+      }
+    },
+    "On days of the week": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "По дням недели"
+          }
+        }
+      }
+    },
+    "On weekdays": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "По будням"
+          }
+        }
+      }
+    },
+    "Once": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Один раз"
+          }
+        }
+      }
+    },
+    "Persistent": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Настойчиво"
+          }
+        }
+      }
+    },
+    "Play sound": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Прослушать звук"
+          }
+        }
+      }
+    },
+    "Previous week": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Предыдущая неделя"
+          }
+        }
+      }
+    },
+    "Remind 3 times": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напомню три раза"
+          }
+        }
+      }
+    },
+    "Remind 4 times": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напомню четыре раза"
+          }
+        }
+      }
+    },
+    "Remind 5 times": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напомню пять раз"
+          }
+        }
+      }
+    },
+    "Remind 6 times": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напомню шесть раз"
+          }
+        }
+      }
+    },
+    "Remind 7 times": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напомню семь раз"
+          }
+        }
+      }
+    },
+    "Remind many times": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напомню много раз"
+          }
+        }
+      }
+    },
+    "Remind once": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напомню один раз"
+          }
+        }
+      }
+    },
+    "Remind twice": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напомню два раза"
+          }
+        }
+      }
+    },
+    "Reminder": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напоминание"
+          }
+        }
+      }
+    },
+    "Reminder text": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Текст напоминания"
+          }
+        }
+      }
+    },
+    "Reminding for the 10th time": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напоминаю в десятый раз"
+          }
+        }
+      }
+    },
+    "Reminding for the 11th time": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напоминаю в одиннадцатый раз"
+          }
+        }
+      }
+    },
+    "Reminding for the 12th time": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напоминаю в двенадцатый раз"
+          }
+        }
+      }
+    },
+    "Reminding for the 13th time": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напоминаю в тринадцатый раз"
+          }
+        }
+      }
+    },
+    "Reminding for the 2nd time": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напоминаю во второй раз"
+          }
+        }
+      }
+    },
+    "Reminding for the 3rd time": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напоминаю в третий раз"
+          }
+        }
+      }
+    },
+    "Reminding for the 4th time": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напоминаю в четвёртый раз"
+          }
+        }
+      }
+    },
+    "Reminding for the 5th time": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напоминаю в пятый раз"
+          }
+        }
+      }
+    },
+    "Reminding for the 6th time": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напоминаю в шестой раз"
+          }
+        }
+      }
+    },
+    "Reminding for the 7th time": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напоминаю в седьмой раз"
+          }
+        }
+      }
+    },
+    "Reminding for the 8th time": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напоминаю в восьмой раз"
+          }
+        }
+      }
+    },
+    "Reminding for the 9th time": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напоминаю в девятый раз"
+          }
+        }
+      }
+    },
+    "Repeat": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повтор"
+          }
+        }
+      }
+    },
+    "Save": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сохранить"
+          }
+        }
+      }
+    },
+    "Skip today": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пропустить сегодня"
+          }
+        }
+      }
+    },
+    "Snoozed reminder": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отложенное напоминание"
+          }
+        }
+      }
+    },
+    "Soft": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Мягкий"
+          }
+        }
+      }
+    },
+    "Sound": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Звук"
+          }
+        }
+      }
+    },
+    "This evening": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Вечером"
+          }
+        }
+      }
+    },
+    "Through Do Not Disturb": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сквозь «Не беспокоить»"
+          }
+        }
+      }
+    },
+    "Tick-tock": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Тик-так"
+          }
+        }
+      }
+    },
     "Today": {
       "localizations": {
         "ru": {
           "stringUnit": {
             "state": "translated",
             "value": "Сегодня"
+          }
+        }
+      }
+    },
+    "Tomorrow morning": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завтра утром"
+          }
+        }
+      }
+    },
+    "Until the end of the year": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "До конца года"
           }
         }
       }
@@ -313,6 +1075,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "О чём и когда напомнить?"
+          }
+        }
+      }
+    },
+    "What to remind about": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "О чём напомнить"
           }
         }
       }
@@ -347,6 +1119,58 @@
         }
       }
     },
+    "after %lld times": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "after %lld time"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "after %lld times"
+                }
+              }
+            }
+          }
+        },
+        "ru": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "после %lld раз"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "после %lld раз"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "после %lld раза"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "после %lld раза"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "an hour before": {
       "localizations": {
         "ru": {
@@ -363,6 +1187,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "приду"
+          }
+        }
+      }
+    },
+    "at %@, next": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "в %@, ближайшие"
+          }
+        }
+      }
+    },
+    "choose": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "выбрать"
           }
         }
       }
@@ -419,6 +1263,58 @@
         }
       }
     },
+    "every %lld minutes, until I mark it": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "every minute, until I mark it"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "every %lld minutes, until I mark it"
+                }
+              }
+            }
+          }
+        },
+        "ru": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "каждые %lld минуты, пока не отмечу"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "каждые %lld минут, пока не отмечу"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "каждую %lld минуту, пока не отмечу"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "каждые %lld минуты, пока не отмечу"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "every day": {
       "localizations": {
         "ru": {
@@ -445,6 +1341,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "каждый год"
+          }
+        }
+      }
+    },
+    "for payments and birthdays": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "для оплат и дней рождения"
           }
         }
       }
@@ -489,6 +1395,16 @@
         }
       }
     },
+    "marked Urgent": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "с пометкой «Срочно»"
+          }
+        }
+      }
+    },
     "monthly on day %lld": {
       "localizations": {
         "ru": {
@@ -499,12 +1415,42 @@
         }
       }
     },
+    "none": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "нет"
+          }
+        }
+      }
+    },
     "now": {
       "localizations": {
         "ru": {
           "stringUnit": {
             "state": "translated",
             "value": "сейчас"
+          }
+        }
+      }
+    },
+    "on day %lld": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld-го числа"
+          }
+        }
+      }
+    },
+    "on time": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "в срок"
           }
         }
       }
@@ -545,6 +1491,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "завтра в %@"
+          }
+        }
+      }
+    },
+    "until %@": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "до %@"
           }
         }
       }

@@ -12,6 +12,34 @@ final class ScreenSnapshots: XCTestCase {
     func testSafeAreaProbe() throws {
         try render(SafeAreaProbe(), name: "Probe", style: .light)
     }
+
+    func testEditor() throws {
+        let store = sampleStore()
+        for (name, style) in [("D-Editor", UIUserInterfaceStyle.light), ("D-Editor-Dark", .dark)] {
+            try render(EditorScreen(draft: SampleData.server, isNew: false, store: store, now: SampleData.now, calendar: SampleData.calendar, locale: russian, onClose: {}), name: name, style: style)
+        }
+    }
+
+    func testDateTime() throws {
+        let initial = SampleData.calendar.date(from: DateComponents(year: 2026, month: 10, day: 6, hour: 10, minute: 0))!
+        try render(DateTimeScreen(initial: initial, now: SampleData.now, settings: .standard(at: SampleData.now), calendar: SampleData.calendar, locale: russian, onDone: { _ in }, onClose: {}), name: "D-DateTime", style: .light)
+    }
+
+    func testRepeat() throws {
+        try render(RepeatScreen(draft: .constant(SampleData.server), now: SampleData.now, calendar: SampleData.calendar, locale: russian, onBack: {}), name: "D-Repeat", style: .light)
+    }
+
+    func testEarly() throws {
+        try render(EarlyScreen(draft: .constant(SampleData.server), now: SampleData.now, calendar: SampleData.calendar, locale: russian, onBack: {}), name: "D-Before", style: .light)
+    }
+
+    private var russian: Locale { Locale(identifier: "ru_RU") }
+
+    private func sampleStore() -> Store {
+        let store = Store(directory: FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString))
+        store.seed(reminders: SampleData.reminders, places: SampleData.places, sounds: [SampleData.gong])
+        return store
+    }
 }
 
 private struct SafeAreaProbe: View {

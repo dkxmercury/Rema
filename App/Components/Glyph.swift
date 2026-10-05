@@ -33,6 +33,17 @@ enum Icons {
     static let pin = ["M12 21s-6.5-6.2-6.5-11.2a6.5 6.5 0 0 1 13 0C18.5 14.8 12 21 12 21z", circle(12, 9.8, 2.3)]
     static let star = ["M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8L3.5 9.7l5.9-.9z"]
     static let check = ["M5 12.5l4.5 4.5L19 7.5"]
+    static let close = ["M6.5 6.5l11 11M17.5 6.5l-11 11"]
+    static let back = ["M14.5 6l-6 6 6 6"]
+    static let chevron = ["M9.5 6l6 6-6 6"]
+    static let repeatArrows = ["M17 3l3.5 3.5L17 10", "M4 12v-1.5A4 4 0 0 1 8 6.5h12.5", "M7 21l-3.5-3.5L7 14", "M20 12v1.5a4 4 0 0 1-4 4H3.5"]
+    static let early = ["M4.5 12a7.5 7.5 0 1 0 2.2-5.3", "M4 4v3.5h3.5", "M12 8v4l2.5 1.5"]
+    static let bell = ["M6.5 9.5a5.5 5.5 0 0 1 11 0c0 5 2.3 7 2.3 7H4.2s2.3-2 2.3-7z", "M10 20a2.2 2.2 0 0 0 4 0", "M3 5.5a8 8 0 0 1 2.2-3M21 5.5a8 8 0 0 0-2.2-3"]
+    static let bolt = ["M13 2.5L5 13.5h6l-1 8 8-11h-6l1-8z"]
+    static let note = ["M9 18V5.5l11-2V16", circle(6.5, 18, 2.5), circle(17.5, 16, 2.5)]
+    static let play = ["M7 4.5v15l13-7.5z"]
+    static let microphone = [rect(9, 3, 6, 11.5, 3), "M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"]
+    static let globe = [circle(12, 12, 8.5), "M3.5 12h17M12 3.5c2.5 2.4 3.8 5.3 3.8 8.5s-1.3 6.1-3.8 8.5c-2.5-2.4-3.8-5.3-3.8-8.5s1.3-6.1 3.8-8.5z"]
 
     static func circle(_ cx: Double, _ cy: Double, _ r: Double) -> String {
         "M\(cx - r) \(cy)a\(r) \(r) 0 1 0 \(2 * r) 0a\(r) \(r) 0 1 0 \(-2 * r) 0z"
@@ -46,15 +57,21 @@ enum Icons {
 struct Glyph: View {
     let paths: [String]
     var size: CGFloat
-    var lineWidth: CGFloat
+    var lineWidth: CGFloat = 2
     var color: Color
+    var filled = false
 
     var body: some View {
         Canvas { context, canvas in
             let scale = canvas.width / 24
-            let style = StrokeStyle(lineWidth: lineWidth * scale, lineCap: .round, lineJoin: .round)
+            let transform = CGAffineTransform(scaleX: scale, y: scale)
             for data in paths {
-                context.stroke(Path(svg: data).applying(CGAffineTransform(scaleX: scale, y: scale)), with: .color(color), style: style)
+                let path = Path(svg: data).applying(transform)
+                if filled {
+                    context.fill(path, with: .color(color))
+                } else {
+                    context.stroke(path, with: .color(color), style: StrokeStyle(lineWidth: lineWidth * scale, lineCap: .round, lineJoin: .round))
+                }
             }
         }
         .frame(width: size, height: size)

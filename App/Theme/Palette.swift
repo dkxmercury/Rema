@@ -36,6 +36,10 @@ enum Palette {
     static let segmentShadow = Color(light: 0x1C1B19, lightAlpha: 0.25, dark: 0x000000, darkAlpha: 0.5)
     static let segmentWell = Color(light: 0x1C1B19, lightAlpha: 0.12, dark: 0x000000, darkAlpha: 0.5)
     static let track = Color(light: 0xE3E0DA, dark: 0x1E1D1B)
+    static let tagBorder = Color(light: 0x1C1B19, lightAlpha: 0.25, dark: 0xF1EFEA, darkAlpha: 0.25)
+    static let radioBorder = Color(light: 0x1C1B19, lightAlpha: 0.22, dark: 0xF1EFEA, darkAlpha: 0.22)
+    static let faint = Color(light: 0xA39E95, dark: 0x5F5B55)
+    static let timelineLine = Color(hex: 0xF26A1B, alpha: 0.40)
 
     static let well = Color(light: 0xFBFAF8, dark: 0x1E1D1B)
     static let wellBorder = Color(light: 0x1C1B19, lightAlpha: 0.18, dark: 0xF1EFEA, darkAlpha: 0.20)
@@ -57,6 +61,8 @@ enum Palette {
     static let dialWindow = Color(light: 0x1C1B19, dark: 0x0F0E0D)
     static let dialWindowText = Color(light: 0xF7F6F3, dark: 0xF1EFEA)
     static let dialWindowBorder = Color(light: 0x000000, lightAlpha: 0, dark: 0xFFFFFF, darkAlpha: 0.08)
+    static let miniFace = Color(light: 0xFBFAF8, dark: 0x232220)
+    static let miniRim = Color(light: 0x1C1B19, lightAlpha: 0.14, dark: 0xF1EFEA, darkAlpha: 0.14)
 }
 
 extension Color {

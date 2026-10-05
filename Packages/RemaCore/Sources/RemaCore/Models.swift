@@ -208,3 +208,38 @@ public struct Settings: Codable, Hashable, Sendable {
         )
     }
 }
+
+public enum BuiltInSound: String, CaseIterable, Codable, Sendable {
+    case mechanika
+    case bell
+    case drops
+    case ticktock
+    case soft
+    case silent
+
+    public var fileName: String? {
+        self == .silent ? nil : "sound-\(rawValue).caf"
+    }
+}
+
+public struct CustomSound: Codable, Identifiable, Hashable, Sendable {
+    public static let maximumSeconds = 30.0
+
+    public var id: UUID
+    public var name: String
+    public var duration: Double
+    public var createdAt: Date
+    public var deletedAt: Date?
+
+    public init(id: UUID = UUID(), name: String, duration: Double, createdAt: Date, deletedAt: Date? = nil) {
+        self.id = id
+        self.name = name
+        self.duration = min(duration, Self.maximumSeconds)
+        self.createdAt = createdAt
+        self.deletedAt = deletedAt
+    }
+
+    public var fileName: String {
+        "custom-\(id.uuidString).caf"
+    }
+}
