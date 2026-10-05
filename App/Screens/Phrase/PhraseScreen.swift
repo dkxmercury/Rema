@@ -312,7 +312,10 @@ struct PhraseScreen: View {
             }
             var symbols = calendar
             symbols.locale = locale
-            let weekday = symbols.shortWeekdaySymbols[calendar.component(.weekday, from: date) - 1]
+            var weekday = symbols.shortWeekdaySymbols[calendar.component(.weekday, from: date) - 1]
+            if ["ru", "uk", "uz", "fr"].contains(locale.language.languageCode?.identifier ?? "") {
+                weekday = weekday.lowercased(with: locale)
+            }
             let day = date.formatted(Date.FormatStyle(locale: locale, calendar: calendar, timeZone: calendar.timeZone).day().month(.abbreviated)).replacingOccurrences(of: ".", with: "")
             return "\(weekday) \(day), \(describer.shortTime(date))"
         }
