@@ -19,7 +19,7 @@ struct TimeDrums: View {
                 Text(verbatim: ":")
                     .font(.app(.jost, 40, weight: 500))
                     .offset(y: -4)
-                Drum(values: minuteValues, selection: $minute)
+                Drum(values: Array(0..<60), selection: $minute)
                     .frame(width: 96)
             }
         }
@@ -27,14 +27,5 @@ struct TimeDrums: View {
         .frame(maxWidth: .infinity)
         .clipShape(RoundedRectangle(cornerRadius: 22, style: .circular))
         .panel()
-    }
-
-    private var minuteValues: [Int] {
-        var values = Array(stride(from: 0, to: 60, by: 5))
-        if !values.contains(minute) {
-            values.append(minute)
-            values.sort()
-        }
-        return values
     }
 }

@@ -25,6 +25,21 @@ struct PhraseScreen: View {
     @State private var listening: Bool
     @State private var pickingDate = false
     @State private var focused = false
+    @State private var memo = Memo()
+
+    // Body reads the parse result a dozen times per keystroke; parsing once per text keeps typing smooth.
+    final class Memo {
+        struct Key: Equatable {
+            var text: String
+            var places: [String]
+            var morning: LocalTime
+            var evening: LocalTime
+        }
+
+        var key: Key?
+        var parsed: ParsedPhrase?
+        var examples: [String: String] = [:]
+    }
 
     struct Overrides: Equatable {
         var urgent: Bool?
@@ -53,7 +68,14 @@ struct PhraseScreen: View {
     }
 
     private var parsed: ParsedPhrase {
-        parser.parse(text)
+        let key = Memo.Key(text: text, places: store.activePlaces.map(\.name), morning: store.settings.morning, evening: store.settings.evening)
+        if memo.key == key, let parsed = memo.parsed {
+            return parsed
+        }
+        let parsed = parser.parse(text)
+        memo.key = key
+        memo.parsed = parsed
+        return parsed
     }
 
     private var describer: Describer {
@@ -198,7 +220,8 @@ struct PhraseScreen: View {
             .disabled(parsed.title.isEmpty)
         }
         .foregroundStyle(Palette.text)
-        .animation(Motion.standard, value: text)
+        .animation(Motion.standard, value: when)
+        .animation(Motion.standard, value: reminder.placeIDs)
         .animation(Motion.standard, value: overrides)
     }
 
@@ -269,7 +292,7 @@ struct PhraseScreen: View {
                         Text(verbatim: "«\(sample)»")
                             .font(.app(.golos, 15))
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        Text(verbatim: exampleValue(sample))
+                        Text(verbatim: cachedExampleValue(sample))
                             .font(exampleIsPlace(sample) ? .app(.golos, 15, weight: 500) : .app(.jost, 15, weight: 500))
                             .foregroundStyle(Palette.accentText)
                     }
@@ -290,6 +313,15 @@ struct PhraseScreen: View {
 
     private func exampleIsPlace(_ sample: String) -> Bool {
         ["когда", "коли", "when", "quand", "wenn", "عندما"].contains { sample.hasPrefix($0) } || sample.hasSuffix("ganimda") || sample.hasSuffix("ганимда")
+    }
+
+    private func cachedExampleValue(_ sample: String) -> String {
+        if let value = memo.examples[sample] {
+            return value
+        }
+        let value = exampleValue(sample)
+        memo.examples[sample] = value
+        return value
     }
 
     private func exampleValue(_ sample: String) -> String {

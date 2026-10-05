@@ -12,6 +12,24 @@ public struct ParsedPhrase: Equatable, Sendable {
     public var hasExplicitTime: Bool
 }
 
+// The field reparses the phrase on every keystroke, and compiling a pattern costs far more than matching it.
+final class PatternCache: @unchecked Sendable {
+    static let shared = PatternCache()
+    private let lock = NSLock()
+    private var compiled: [String: NSRegularExpression] = [:]
+
+    func regex(_ pattern: String) -> NSRegularExpression? {
+        lock.lock()
+        defer { lock.unlock() }
+        if let regex = compiled[pattern] {
+            return regex
+        }
+        let regex = try? NSRegularExpression(pattern: "(?<![\\p{L}\\d])" + pattern + "(?![\\p{L}\\d])", options: [.caseInsensitive])
+        compiled[pattern] = regex
+        return regex
+    }
+}
+
 public struct PhraseParser {
     public let now: Date
     public let calendar: Calendar
@@ -95,7 +113,7 @@ public struct PhraseParser {
     }
 
     func matches(_ pattern: String, in text: String) -> [NSTextCheckingResult] {
-        guard let regex = try? NSRegularExpression(pattern: "(?<![\\p{L}\\d])" + pattern + "(?![\\p{L}\\d])", options: [.caseInsensitive]) else { return [] }
+        guard let regex = PatternCache.shared.regex(pattern) else { return [] }
         return regex.matches(in: text, range: NSRange(text.startIndex..., in: text))
     }
 
