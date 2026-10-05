@@ -207,6 +207,16 @@
         }
       }
     },
+    "%lld more today": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ещё %lld сегодня"
+          }
+        }
+      }
+    },
     "%lld of %lld": {
       "localizations": {
         "ru": {
@@ -585,6 +595,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Удалить напоминание?"
+          }
+        }
+      }
+    },
+    "Dial": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Циферблат"
           }
         }
       }
@@ -981,6 +1001,16 @@
         }
       }
     },
+    "Mark reminder": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отметить напоминание"
+          }
+        }
+      }
+    },
     "Mechanika": {
       "localizations": {
         "ru": {
@@ -1091,6 +1121,16 @@
         }
       }
     },
+    "Next reminder": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ближайшее"
+          }
+        }
+      }
+    },
     "Next week": {
       "localizations": {
         "ru": {
@@ -1131,6 +1171,16 @@
         }
       }
     },
+    "Nothing ahead": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дальше ничего"
+          }
+        }
+      }
+    },
     "Nothing for today": {
       "localizations": {
         "ru": {
@@ -1167,6 +1217,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "OK"
+          }
+        }
+      }
+    },
+    "Occurrence": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Срок"
           }
         }
       }
@@ -1781,6 +1841,16 @@
         }
       }
     },
+    "The day on a 24-hour dial and the next reminder.": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "День на циферблате 24 часа и ближайшее напоминание."
+          }
+        }
+      }
+    },
     "Theme": {
       "localizations": {
         "ru": {
@@ -1847,6 +1917,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Сегодня"
+          }
+        }
+      }
+    },
+    "Today's reminders, mark them right on the widget.": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напоминания на сегодня, отмечайте прямо на виджете."
           }
         }
       }
@@ -1937,6 +2017,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "О чём и когда напомнить?"
+          }
+        }
+      }
+    },
+    "What is next and how soon.": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Что дальше и через сколько."
           }
         }
       }
@@ -2129,6 +2219,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "приду"
+          }
+        }
+      }
+    },
+    "at %@": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "в %@"
           }
         }
       }
@@ -2369,6 +2469,26 @@
         }
       }
     },
+    "h": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ч"
+          }
+        }
+      }
+    },
+    "in": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "через"
+          }
+        }
+      }
+    },
     "in %lld h": {
       "localizations": {
         "ru": {
@@ -2415,6 +2535,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "с пометкой «Срочно»"
+          }
+        }
+      }
+    },
+    "min": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "мин"
           }
         }
       }

@@ -1,6 +1,7 @@
 import Foundation
 import Observation
 import RemaCore
+import WidgetKit
 
 @Observable
 final class Store {
@@ -9,20 +10,20 @@ final class Store {
     private(set) var sounds: [CustomSound] = []
     private(set) var settings: Settings
 
-    @ObservationIgnored private let url: URL
+    @ObservationIgnored private let directory: URL
+    @ObservationIgnored private let shared: Bool
+    @ObservationIgnored private var loadedAt: Date?
     @ObservationIgnored var onChange: (() -> Void)?
 
     init(directory: URL? = nil) {
-        let base = directory ?? Store.defaultDirectory
-        try? FileManager.default.createDirectory(at: base, withIntermediateDirectories: true)
-        url = base.appendingPathComponent("store.json")
+        if directory == nil {
+            SharedStore.moveLocalFileToGroup()
+        }
+        self.directory = directory ?? SharedStore.directory
+        shared = directory == nil
+        try? FileManager.default.createDirectory(at: self.directory, withIntermediateDirectories: true)
         settings = .standard(at: Date())
         load()
-    }
-
-    static var defaultDirectory: URL {
-        FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("Rema", isDirectory: true)
     }
 
     var activeReminders: [Reminder] {
@@ -124,27 +125,28 @@ final class Store {
         persist()
     }
 
-    private struct Snapshot: Codable {
-        var reminders: [Reminder]
-        var places: [Place]
-        var settings: Settings
-        var sounds: [CustomSound]?
+    func reloadIfChanged() {
+        guard let modified = SharedStore.modified(in: directory), modified != loadedAt else { return }
+        load()
+        onChange?()
     }
 
     private func load() {
-        guard let data = try? Data(contentsOf: url),
-              let snapshot = try? JSONDecoder().decode(Snapshot.self, from: data) else { return }
+        guard let snapshot = SharedStore.load(from: directory) else { return }
         reminders = snapshot.reminders
         places = snapshot.places
         settings = snapshot.settings
         sounds = snapshot.sounds ?? []
+        loadedAt = SharedStore.modified(in: directory)
     }
 
     private func persist() {
-        let snapshot = Snapshot(reminders: reminders, places: places, settings: settings, sounds: sounds)
-        if let data = try? JSONEncoder().encode(snapshot) {
-            try? data.write(to: url, options: .atomic)
-        }
+        let snapshot = StoreSnapshot(reminders: reminders, places: places, settings: settings, sounds: sounds)
+        try? SharedStore.save(snapshot, to: directory)
+        loadedAt = SharedStore.modified(in: directory)
         onChange?()
+        if shared {
+            WidgetCenter.shared.reloadAllTimelines()
+        }
     }
 }

@@ -233,10 +233,3 @@ struct DateTimeScreen: View {
         return calendar.date(byAdding: .day, value: -shift, to: calendar.startOfDay(for: date)) ?? date
     }
 }
-
-extension String {
-    func capitalizedFirst(_ locale: Locale) -> String {
-        guard let first else { return self }
-        return String(first).uppercased(with: locale) + dropFirst()
-    }
-}

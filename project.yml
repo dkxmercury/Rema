@@ -23,12 +23,17 @@ targets:
     platform: iOS
     sources:
       - path: App
+      - path: Shared
     dependencies:
       - package: RemaCore
+      - target: RemaWidgets
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: uz.dkx.rema
         PRODUCT_NAME: Rema
+        CODE_SIGN_ENTITLEMENTS: App/Rema.entitlements
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: $(inherited) APP
+        INFOPLIST_KEY_NSSupportsLiveActivities: YES
         TARGETED_DEVICE_FAMILY: "1"
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: Rema
@@ -49,6 +54,43 @@ targets:
       commandLineArguments:
         "-AppleLanguages (ru)": true
         "-AppleLocale ru_RU": true
+  RemaWidgets:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: Widgets
+        excludes:
+          - "*.entitlements"
+          - Info.plist
+      - path: Shared
+      - path: App/Theme
+      - path: App/Services/Describer.swift
+      - path: App/Components/Glyph.swift
+      - path: App/Components/CheckBox.swift
+      - path: App/Components/Dial.swift
+      - path: App/Screens/Home/HomeContent.swift
+      - path: App/Resources/Fonts
+        buildPhase: resources
+      - path: App/Resources/Localizable.xcstrings
+    dependencies:
+      - package: RemaCore
+      - sdk: WidgetKit.framework
+      - sdk: SwiftUI.framework
+    info:
+      path: Widgets/Info.plist
+      properties:
+        CFBundleDisplayName: Rema
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: uz.dkx.rema.widgets
+        PRODUCT_NAME: RemaWidgets
+        TARGETED_DEVICE_FAMILY: "1"
+        CODE_SIGN_ENTITLEMENTS: Widgets/RemaWidgets.entitlements
+        LOCALIZATION_PREFERS_STRING_CATALOGS: YES
+        SWIFT_EMIT_LOC_STRINGS: YES
+        SKIP_INSTALL: YES
   RemaSnapshots:
     type: bundle.unit-test
     platform: iOS

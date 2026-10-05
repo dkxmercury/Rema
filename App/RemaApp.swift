@@ -24,8 +24,15 @@ struct RemaApp: App {
                 }
         }
         .onChange(of: scenePhase) { _, phase in
-            if phase == .active {
+            switch phase {
+            case .active:
+                Store.shared.reloadIfChanged()
                 Notifier.shared.scheduleSoon()
+                LiveActivities.refresh(store: Store.shared)
+            case .background:
+                LiveActivities.refresh(store: Store.shared)
+            default:
+                break
             }
         }
     }
