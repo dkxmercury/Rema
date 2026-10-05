@@ -72,6 +72,15 @@ final class ScreenSnapshots: XCTestCase {
         try render(PlacesScreen(store: store, title: "Забрать посылку", placeIDs: .constant([SampleData.work.id]), trigger: .constant(.leave), onNewPlace: {}, onBack: {}), name: "Dark-Places", style: .dark)
     }
 
+    func testEmptyAndRightToLeft() throws {
+        let empty = HomeContent.make(reminders: [], places: [], now: SampleData.now, calendar: SampleData.calendar, locale: russian)
+        try render(HomeScreen(content: empty), name: "Home-Empty", style: .light)
+        try render(HomeScreen(content: SampleData.home).environment(\.layoutDirection, .rightToLeft), name: "RTL-Home", style: .light)
+        let store = sampleStore()
+        try render(EditorScreen(draft: SampleData.server, isNew: false, store: store, now: SampleData.now, calendar: SampleData.calendar, locale: russian, onClose: {}).environment(\.layoutDirection, .rightToLeft), name: "RTL-Editor", style: .light)
+        try render(CalendarScreen(store: store, now: SampleData.now, calendar: SampleData.calendar, locale: russian, onClose: {}).environment(\.layoutDirection, .rightToLeft), name: "RTL-Calendar", style: .light)
+    }
+
     private var russian: Locale { Locale(identifier: "ru_RU") }
 
     private func sampleStore() -> Store {
