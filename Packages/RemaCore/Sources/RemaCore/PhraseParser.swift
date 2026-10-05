@@ -53,7 +53,11 @@ public struct PhraseParser {
 
     public func parse(_ input: String) -> ParsedPhrase {
         if !input.unicodeScalars.contains(where: { (0x0400...0x04FF).contains($0.value) }), input.contains(where: \.isLetter) {
-            return parseEnglish(input)
+            switch PhraseParser.latinLanguage(input, preferred: preferred) {
+            case "de": return parseGerman(input)
+            case "fr": return parseFrench(input)
+            default: return parseEnglish(input)
+            }
         }
         if PhraseParser.looksUkrainian(input, preferred: preferred) {
             return parseUkrainian(input)
