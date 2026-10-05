@@ -4,6 +4,7 @@ import SwiftUI
 enum PhraseRoute: Hashable {
     case repeating
     case early
+    case sound
 }
 
 struct PhraseScreen: View {
@@ -27,6 +28,7 @@ struct PhraseScreen: View {
         var urgent: Bool?
         var schedule: Schedule?
         var preAlerts: [Int]?
+        var sound: SoundChoice?
     }
 
     init(store: Store, text: String = "", now: Date = Date(), calendar: Calendar = .current, locale: Locale = .current, startWithVoice: Bool = false, autofocus: Bool = true, onClose: @escaping () -> Void) {
@@ -64,6 +66,7 @@ struct PhraseScreen: View {
             urgent: overrides.urgent ?? result.urgent,
             placeIDs: result.placeNames.compactMap { name in store.activePlaces.first { $0.name == name }?.id },
             placeTrigger: result.placeTrigger ?? .arrive,
+            sound: overrides.sound ?? .standard,
             createdAt: now
         )
         reminder.id = draft.id
@@ -85,6 +88,8 @@ struct PhraseScreen: View {
                     RepeatScreen(draft: draftBinding, now: now, calendar: calendar, locale: locale) { path.removeLast() }
                 case .early:
                     EarlyScreen(draft: draftBinding, now: now, calendar: calendar, locale: locale) { path.removeLast() }
+                case .sound:
+                    SoundScreen(store: store, choice: soundBinding, locale: locale) { path.removeLast() }
                 }
             }
             if listening {
@@ -122,6 +127,10 @@ struct PhraseScreen: View {
             listening = false
             focused = true
         }
+    }
+
+    private var soundBinding: Binding<SoundChoice> {
+        Binding(get: { reminder.sound }, set: { overrides.sound = $0 })
     }
 
     private var draftBinding: Binding<Reminder> {
@@ -215,7 +224,7 @@ struct PhraseScreen: View {
                 overrides.urgent = !reminder.urgent
                 Feedback.play(.toggle)
             }
-            Chip(title: "Sound", selected: false, icon: Icons.plus) {}
+            Chip(title: "Sound", selected: overrides.sound != nil, icon: Icons.plus) { path.append(.sound) }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -276,8 +285,11 @@ struct PhraseScreen: View {
             if calendar.isDate(date, inSameDayAs: now) {
                 return String(localized: "today, \(describer.shortTime(date))")
             }
-            let day = date.formatted(Date.FormatStyle(locale: locale, calendar: calendar, timeZone: calendar.timeZone, capitalizationContext: .middleOfSentence).weekday(.abbreviated).day().month(.abbreviated)).replacingOccurrences(of: ".", with: "").replacingOccurrences(of: ",", with: "")
-            return "\(day), \(describer.shortTime(date))"
+            var symbols = calendar
+            symbols.locale = locale
+            let weekday = symbols.shortWeekdaySymbols[calendar.component(.weekday, from: date) - 1]
+            let day = date.formatted(Date.FormatStyle(locale: locale, calendar: calendar, timeZone: calendar.timeZone).day().month(.abbreviated)).replacingOccurrences(of: ".", with: "")
+            return "\(weekday) \(day), \(describer.shortTime(date))"
         }
     }
 

@@ -379,6 +379,16 @@
         }
       }
     },
+    "Built-in": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Готовые"
+          }
+        }
+      }
+    },
     "By place": {
       "localizations": {
         "ru": {
@@ -409,12 +419,32 @@
         }
       }
     },
+    "Choose from Files": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выбрать из «Файлов»"
+          }
+        }
+      }
+    },
     "Close": {
       "localizations": {
         "ru": {
           "stringUnit": {
             "state": "translated",
             "value": "Закрыть"
+          }
+        }
+      }
+    },
+    "Could not read this file": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось прочитать файл"
           }
         }
       }
@@ -1091,6 +1121,16 @@
         }
       }
     },
+    "Play: %@": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Прослушать: %@"
+          }
+        }
+      }
+    },
     "Previous month": {
       "localizations": {
         "ru": {
@@ -1701,6 +1741,16 @@
         }
       }
     },
+    "Your own": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Свои"
+          }
+        }
+      }
+    },
     "a day before": {
       "localizations": {
         "ru": {
@@ -2115,6 +2165,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "каждый месяц, %lld-го"
+          }
+        }
+      }
+    },
+    "mp3, m4a or wav will do. Files longer than 30 seconds are trimmed, iOS requires it.": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Подойдёт mp3, m4a или wav. Файл длиннее 30 секунд обрежем, так требует iOS."
           }
         }
       }

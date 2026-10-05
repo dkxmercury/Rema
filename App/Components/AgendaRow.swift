@@ -3,6 +3,7 @@ import SwiftUI
 struct AgendaRow: View {
     let row: HomeContent.Row
     var minHeight: CGFloat?
+    var showsSubtitle = true
     let onToggle: () -> Void
 
     var body: some View {
@@ -17,7 +18,7 @@ struct AgendaRow: View {
                     .font(.app(.golos, 16, weight: row.highlighted ? 600 : 400))
                     .strikethrough(row.done)
                     .foregroundStyle(row.done ? Palette.secondary : Palette.text)
-                if let subtitle = row.subtitle {
+                if showsSubtitle, let subtitle = row.subtitle {
                     Text(verbatim: subtitle)
                         .font(.app(.golos, 12))
                         .foregroundStyle(Palette.secondary)
@@ -32,7 +33,7 @@ struct AgendaRow: View {
             .padding(.trailing, -9)
             .accessibilityLabel(Text(row.done ? LocalizedStringKey("Mark as not done") : LocalizedStringKey("Mark as done")))
         }
-        .frame(minHeight: minHeight ?? (row.subtitle == nil ? 46 : 52))
+        .frame(minHeight: minHeight ?? (row.subtitle == nil || !showsSubtitle ? 46 : 52))
     }
 
     private var timeColor: Color {

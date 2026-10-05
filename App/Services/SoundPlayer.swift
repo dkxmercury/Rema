@@ -25,7 +25,7 @@ enum SoundPlayer {
             return nil
         case .builtIn(let id):
             guard let file = BuiltInSound(rawValue: id)?.fileName else { return nil }
-            return Bundle.main.url(forResource: file, withExtension: nil)
+            return librarySounds.appendingPathComponent(file)
         case .custom(let id):
             guard let sound = sounds.first(where: { $0.id == id }) else { return nil }
             return librarySounds.appendingPathComponent(sound.fileName)

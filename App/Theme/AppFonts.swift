@@ -33,6 +33,11 @@ extension Font {
 }
 
 extension View {
+    func lineHeight(_ height: CGFloat, _ face: Typeface, _ size: CGFloat, weight: Int = 400) -> some View {
+        let extra = height - UIFont.app(face, size, weight: weight).lineHeight
+        return lineSpacing(max(extra, 0)).padding(.vertical, extra / 2)
+    }
+
     func lineBox(_ height: CGFloat, _ face: Typeface, _ size: CGFloat, weight: Int = 400) -> some View {
         padding(.vertical, (height - UIFont.app(face, size, weight: weight).lineHeight) / 2)
     }

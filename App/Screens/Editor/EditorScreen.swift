@@ -4,6 +4,7 @@ import SwiftUI
 enum EditorRoute: Hashable {
     case repeating
     case early
+    case sound
 }
 
 struct EditorScreen: View {
@@ -44,6 +45,8 @@ struct EditorScreen: View {
                 RepeatScreen(draft: $draft, now: now, calendar: calendar, locale: locale) { pop() }
             case .early:
                 EarlyScreen(draft: $draft, now: now, calendar: calendar, locale: locale) { pop() }
+            case .sound:
+                SoundScreen(store: store, choice: $draft.sound, locale: locale) { pop() }
             }
         }
         .fullScreenCover(isPresented: $pickingDate) {
@@ -205,7 +208,9 @@ struct EditorScreen: View {
     private var soundRow: some View {
         HStack(spacing: 12) {
             Glyph(paths: Icons.note, size: 20, lineWidth: 2, color: Palette.text)
-            Button {} label: {
+            Button {
+                path.append(.sound)
+            } label: {
                 HStack(spacing: 12) {
                     Text("Sound")
                         .font(.app(.golos, 16, weight: 500))

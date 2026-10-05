@@ -6,6 +6,7 @@ import UserNotifications
 struct SettingsScreen: View {
     let store: Store
     var locale: Locale = .current
+    var onSound: () -> Void = {}
     let onBack: () -> Void
 
     @AppStorage(Feedback.hapticsKey) private var haptics = true
@@ -44,7 +45,7 @@ struct SettingsScreen: View {
                     section("Account", top: 14) { account }
                     section("Sound") {
                         PanelList {
-                            NavigationRow(icon: Icons.note, iconColor: Palette.text, title: "Default sound", minHeight: 52, action: {}) {
+                            NavigationRow(icon: Icons.note, iconColor: Palette.text, title: "Default sound", minHeight: 52, action: onSound) {
                                 value(describer.soundName(store.settings.defaultSound, settings: store.settings, sounds: store.sounds))
                             }
                         }
@@ -150,7 +151,7 @@ struct SettingsScreen: View {
                         .font(.app(.golos, 16, weight: 600))
                     Text("They will live in your account and appear on any of your phones.")
                         .font(.app(.golos, 13))
-                        .lineSpacing(2)
+                        .lineHeight(18, .golos, 13)
                         .foregroundStyle(Palette.secondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -192,7 +193,7 @@ struct SettingsScreen: View {
                 Glyph(paths: Icons.bell, size: 20, lineWidth: 2, color: Palette.text)
                 Text("Repeat for persistent")
                     .font(.app(.golos, 16, weight: 500))
-                    .lineLimit(1)
+                    .lineLimit(2)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 value(String(localized: "every \(store.settings.nagInterval) minutes"))
                 Glyph(paths: Icons.chevron, size: 16, lineWidth: 2, color: Palette.secondary)

@@ -49,6 +49,7 @@ enum Icons {
     static let moon = ["M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"]
     static let vibration = [rect(7, 3.5, 10, 17, 2.5), "M3.5 9v6M20.5 9v6"]
     static let speaker = ["M4.5 9.5h3l4.5-4v13l-4.5-4h-3z", "M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"]
+    static let folder = ["M3.5 7.5a2 2 0 0 1 2-2h4l2 2.5h7a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"]
     static let globe = [circle(12, 12, 8.5), "M3.5 12h17M12 3.5c2.5 2.4 3.8 5.3 3.8 8.5s-1.3 6.1-3.8 8.5c-2.5-2.4-3.8-5.3-3.8-8.5s1.3-6.1 3.8-8.5z"]
 
     static func circle(_ cx: Double, _ cy: Double, _ r: Double) -> String {

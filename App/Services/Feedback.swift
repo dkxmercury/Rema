@@ -2,7 +2,7 @@ import AudioToolbox
 import UIKit
 
 enum Feedback {
-    enum Event: String {
+    enum Event: String, CaseIterable {
         case check
         case uncheck
         case toggle
@@ -54,7 +54,8 @@ enum Feedback {
             AudioServicesPlaySystemSound(id)
             return
         }
-        guard let url = Bundle.main.url(forResource: "ui-\(event.rawValue)", withExtension: "caf") else { return }
+        let url = SoundLibrary.url(event)
+        guard FileManager.default.fileExists(atPath: url.path) else { return }
         var id: SystemSoundID = 0
         guard AudioServicesCreateSystemSoundID(url as CFURL, &id) == noErr else { return }
         sounds[event] = id

@@ -4,6 +4,7 @@ import UIKit
 final class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         AppFonts.register()
+        SoundLibrary.prepare()
         Notifier.shared.configure()
         Store.shared.onChange = { Notifier.shared.scheduleSoon() }
         return true

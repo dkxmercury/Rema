@@ -233,7 +233,7 @@ struct CalendarScreen: View {
         } else {
             VStack(spacing: 0) {
                 ForEach(rows) { row in
-                    AgendaRow(row: row, minHeight: 50, onToggle: { toggle(row) })
+                    AgendaRow(row: row, minHeight: 50, showsSubtitle: false, onToggle: { toggle(row) })
                         .contentShape(Rectangle())
                         .onTapGesture { open(row.reminderID) }
                         .transition(.opacity)

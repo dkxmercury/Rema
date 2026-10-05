@@ -52,6 +52,10 @@ final class ScreenSnapshots: XCTestCase {
         try render(SettingsScreen(store: sampleStore(), locale: russian, onBack: {}), name: "D-Settings", style: .light, height: 1210)
     }
 
+    func testSound() throws {
+        try render(SoundScreen(store: sampleStore(), choice: .constant(.custom(SampleData.gong.id)), locale: russian, onBack: {}), name: "D-Sound", style: .light)
+    }
+
     private var russian: Locale { Locale(identifier: "ru_RU") }
 
     private func sampleStore() -> Store {

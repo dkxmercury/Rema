@@ -14,6 +14,7 @@ struct ComposeTarget: Identifiable {
 
 enum RootRoute: Hashable {
     case settings
+    case defaultSound
 }
 
 struct RootView: View {
@@ -30,7 +31,9 @@ struct RootView: View {
         } destination: { route in
             switch route {
             case .settings:
-                SettingsScreen(store: store, onBack: { path.removeLast() })
+                SettingsScreen(store: store, onSound: { path.append(.defaultSound) }, onBack: { path.removeLast() })
+            case .defaultSound:
+                SoundScreen(store: store, choice: defaultSound) { path.removeLast() }
             }
         }
         .fullScreenCover(item: $editing) { target in
@@ -44,6 +47,13 @@ struct RootView: View {
                 .zoomDestination("calendar", in: zoom)
         }
         .preferredColorScheme(colorScheme)
+    }
+
+    private var defaultSound: Binding<SoundChoice> {
+        Binding(
+            get: { store.settings.defaultSound },
+            set: { value in store.update { $0.defaultSound = value } }
+        )
     }
 
     private var colorScheme: ColorScheme? {
