@@ -63,7 +63,8 @@ extension HomeContent {
         let markers = today.enumerated().map { index, item -> DialMarker in
             let parts = calendar.dateComponents([.hour, .minute], from: item.occurrence)
             let kind: DialMarker.Kind = item.done ? .done : (isNext(item) ? .next : .upcoming)
-            return DialMarker(id: index, hour: parts.hour ?? 0, minute: parts.minute ?? 0, kind: kind)
+            let movable = !item.done && byID[item.reminderID].map { $0.schedule?.rule == nil } == true
+            return DialMarker(id: index, hour: parts.hour ?? 0, minute: parts.minute ?? 0, kind: kind, reminderID: item.reminderID, occurrence: item.occurrence, movable: movable)
         }
 
         let rows = today.compactMap { item -> Row? in

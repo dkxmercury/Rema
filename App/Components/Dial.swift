@@ -12,6 +12,20 @@ struct DialMarker: Identifiable {
     let hour: Int
     let minute: Int
     let kind: Kind
+    var reminderID: UUID?
+    var occurrence: Date?
+    var movable = false
+}
+
+struct DialLift: Equatable {
+    let reminderID: UUID
+    let occurrence: Date
+    let original: Int
+    var minutes: Int
+
+    func holds(_ marker: DialMarker) -> Bool {
+        marker.reminderID == reminderID && marker.occurrence == occurrence
+    }
 }
 
 struct Dial: View {
@@ -23,6 +37,7 @@ struct Dial: View {
     var windowCaption: String
     var windowFontSize: CGFloat = 17
     var windowTitleOnly = false
+    var lift: DialLift?
 
     private let geometry = DialGeometry()
 
@@ -49,13 +64,24 @@ struct Dial: View {
             }
             .frame(width: size, height: size)
 
-            DialMarkersLayer(markers: markers, progress: markerProgress)
+            DialMarkersLayer(markers: markers, progress: markerProgress, lift: lift)
                 .frame(width: size, height: size)
                 .animation(.easeOut(duration: 0.7), value: markerProgress)
 
             DialHandLayer(minutes: handMinutes)
                 .frame(width: size, height: size)
                 .animation(Motion.hand, value: handMinutes)
+
+            if let lift {
+                let origin = geometry.point(angle: Double(lift.original) / 1440 * 360, radius: 133)
+                DialLiftLayer(minutes: Double(lift.minutes), original: Double(lift.original))
+                    .frame(width: size, height: size)
+                    .animation(Motion.press, value: lift.minutes)
+                    .transition(.asymmetric(
+                        insertion: .scale(scale: 0.4, anchor: UnitPoint(x: origin.x / 280, y: origin.y / 280)).combined(with: .opacity),
+                        removal: .opacity
+                    ))
+            }
 
             window
                 .frame(width: 100 * unit, height: 38 * unit)
@@ -132,6 +158,7 @@ struct Dial: View {
 private struct DialMarkersLayer: View, Animatable {
     let markers: [DialMarker]
     var progress: Double
+    let lift: DialLift?
 
     private let geometry = DialGeometry()
 
@@ -146,7 +173,7 @@ private struct DialMarkersLayer: View, Animatable {
             let count = Double(max(markers.count, 1))
             for (index, marker) in markers.enumerated() {
                 let share = min(max(progress * (count + 1) - Double(index), 0), 1)
-                guard share > 0 else { continue }
+                guard share > 0, lift?.holds(marker) != true else { continue }
                 let center = geometry.point(angle: geometry.angle(hour: marker.hour, minute: marker.minute), radius: 133)
                 let point = CGPoint(x: center.x * scale, y: center.y * scale)
                 func dot(_ radius: Double, _ color: Color) {
@@ -163,6 +190,48 @@ private struct DialMarkersLayer: View, Animatable {
                     dot(5.5, Palette.accent)
                 }
             }
+        }
+    }
+}
+
+private struct DialLiftLayer: View, Animatable {
+    var minutes: Double
+    let original: Double
+
+    private let geometry = DialGeometry()
+
+    var animatableData: Double {
+        get { minutes }
+        set { minutes = newValue }
+    }
+
+    var body: some View {
+        Canvas { context, canvas in
+            let scale = canvas.width / 280
+            func place(_ value: Double) -> CGPoint {
+                let point = geometry.point(angle: value / 1440 * 360, radius: 133)
+                return CGPoint(x: point.x * scale, y: point.y * scale)
+            }
+            func circle(_ center: CGPoint, _ radius: Double) -> Path {
+                let r = radius * scale
+                return Path(ellipseIn: CGRect(x: center.x - r, y: center.y - r, width: 2 * r, height: 2 * r))
+            }
+            if abs(minutes - original) >= 1 {
+                var arc = Path()
+                let steps = max(Int(abs(minutes - original) / 2), 1)
+                arc.move(to: place(original))
+                for step in 1...steps {
+                    arc.addLine(to: place(original + (minutes - original) * Double(step) / Double(steps)))
+                }
+                context.stroke(arc, with: .color(Palette.accent.opacity(0.7)), style: StrokeStyle(lineWidth: 3 * scale, lineCap: .round, dash: [3 * scale, 5 * scale]))
+            }
+            let end = place(minutes)
+            context.stroke(circle(place(original), 6), with: .color(Palette.accent.opacity(0.55)), lineWidth: 2 * scale)
+            context.fill(circle(end, 17), with: .color(Palette.accent.opacity(0.18)))
+            context.fill(circle(end, 9), with: .color(Palette.accent))
+            context.stroke(circle(end, 9), with: .color(Palette.dialFace), lineWidth: 2.5 * scale)
+            context.fill(circle(end, 25), with: .color(Palette.text.opacity(0.07)))
+            context.stroke(circle(end, 25), with: .color(Palette.text.opacity(0.16)), lineWidth: 1.5 * scale)
         }
     }
 }

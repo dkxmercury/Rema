@@ -8,9 +8,29 @@ struct RemaWidgets: WidgetBundle {
     }
 
     var body: some Widget {
+        if #available(iOS 18.0, *) {
+            return withControls
+        } else {
+            return widgets
+        }
+    }
+
+    @WidgetBundleBuilder
+    private var widgets: some Widget {
         DialWidget()
         NextWidget()
         TodayWidget()
         ReminderLiveActivity()
+    }
+
+    @available(iOS 18.0, *)
+    @WidgetBundleBuilder
+    private var withControls: some Widget {
+        DialWidget()
+        NextWidget()
+        TodayWidget()
+        ReminderLiveActivity()
+        ListenControl()
+        ComposeControl()
     }
 }

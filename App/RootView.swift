@@ -30,6 +30,11 @@ final class RootNavigation {
     var path: [RootRoute] = []
     var languageCode = AppLanguage.current.rawValue
     var showingSignIn = !Account.shared.isSignedIn && !UserDefaults.standard.bool(forKey: RootNavigation.welcomeKey)
+    var composeRequest: ComposeTarget?
+
+    func requestCompose(voice: Bool) {
+        composeRequest = ComposeTarget(voice: voice)
+    }
 }
 
 struct LocalizedRoot<Content: View>: View {
@@ -104,7 +109,11 @@ struct RootView: View {
             Text(verbatim: announcement.flatMap { remote.text($0.text) } ?? "")
         }
         .onChange(of: remote.config) { _, _ in showAnnouncementIfNew() }
-        .onAppear { showAnnouncementIfNew() }
+        .onChange(of: navigation.composeRequest?.id) { _, _ in openRequestedCompose() }
+        .onAppear {
+            showAnnouncementIfNew()
+            openRequestedCompose()
+        }
         .preferredColorScheme(colorScheme)
     }
 
@@ -182,6 +191,21 @@ struct RootView: View {
         }
     }
 
+    // A control or the Action button can open the app while another screen is up; that one closes first.
+    private func openRequestedCompose() {
+        guard let request = navigation.composeRequest else { return }
+        navigation.composeRequest = nil
+        guard !navigation.showingSignIn else { return }
+        if editing != nil || showingCalendar || composing != nil {
+            editing = nil
+            showingCalendar = false
+            composing = nil
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { composing = request }
+        } else {
+            composing = request
+        }
+    }
+
     private func showAnnouncementIfNew() {
         guard announcement == nil, let next = remote.activeAnnouncement,
               UserDefaults.standard.string(forKey: "announcementSeen") != next.id else { return }
@@ -232,8 +256,24 @@ struct RootView: View {
                 zoom: zoom,
                 onDelete: { id in
                     withAnimation(Motion.standard) { store.delete(id) }
-                }
+                },
+                onMove: move
             )
+        }
+    }
+
+    private func move(_ id: UUID, to date: Date) -> (() -> Void)? {
+        guard let original = store.reminder(id), original.schedule?.rule == nil else { return nil }
+        let parts = Calendar.current.dateComponents([.hour, .minute], from: date)
+        var moved = original
+        moved.schedule = Schedule(start: LocalDate(date, in: .current), time: LocalTime(hour: parts.hour ?? 0, minute: parts.minute ?? 0))
+        moved.snoozedUntil = nil
+        withAnimation(Motion.standard) { store.save(moved) }
+        return {
+            guard var current = store.reminder(id) else { return }
+            current.schedule = original.schedule
+            current.snoozedUntil = original.snoozedUntil
+            withAnimation(Motion.standard) { store.save(current) }
         }
     }
 

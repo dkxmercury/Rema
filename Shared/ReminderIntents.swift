@@ -56,6 +56,30 @@ struct ToggleReminderIntent: AppIntent {
     }
 }
 
+struct ListenIntent: AppIntent {
+    static let title: LocalizedStringResource = "Say a reminder"
+    static let openAppWhenRun = true
+
+    func perform() async throws -> some IntentResult {
+        #if APP
+        await MainActor.run { RootNavigation.shared.requestCompose(voice: true) }
+        #endif
+        return .result()
+    }
+}
+
+struct ComposeIntent: AppIntent {
+    static let title: LocalizedStringResource = "New reminder"
+    static let openAppWhenRun = true
+
+    func perform() async throws -> some IntentResult {
+        #if APP
+        await MainActor.run { RootNavigation.shared.requestCompose(voice: false) }
+        #endif
+        return .result()
+    }
+}
+
 struct CompleteActivityIntent: LiveActivityIntent {
     static let title: LocalizedStringResource = "Done"
     static let isDiscoverable = false

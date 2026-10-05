@@ -186,7 +186,7 @@ struct CalendarScreen: View {
         guard !needle.isEmpty else { return ([], []) }
         var upcoming: [Match] = []
         var earlier: [Match] = []
-        for reminder in store.reminders where reminder.title.range(of: needle, options: [.caseInsensitive, .diacriticInsensitive], locale: locale) != nil {
+        for reminder in store.activeReminders where reminder.title.range(of: needle, options: [.caseInsensitive, .diacriticInsensitive], locale: locale) != nil {
             guard let schedule = reminder.schedule else {
                 upcoming.append(Match(reminder: reminder, date: nil, done: false))
                 continue
