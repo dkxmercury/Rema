@@ -43,6 +43,7 @@ private struct CheckMark: View {
             .trim(from: 0, to: progress)
             .stroke(Palette.onAccent, style: StrokeStyle(lineWidth: 3 * size / 24, lineCap: .round, lineJoin: .round))
             .frame(width: size, height: size)
+            .environment(\.layoutDirection, .leftToRight)
             .onAppear {
                 guard progress < 1 else { return }
                 withAnimation(.easeOut(duration: 0.18).delay(0.06)) { progress = 1 }

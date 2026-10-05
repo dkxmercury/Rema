@@ -6,6 +6,12 @@ struct PushStack<Route: Hashable, Root: View, Destination: View>: View {
     @ViewBuilder var destination: (Route) -> Destination
     @State private var drag: CGFloat = 0
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.layoutDirection) private var direction
+
+    // The swipe runs in screen coordinates, while offsets follow the mirrored layout in right-to-left languages.
+    private var sign: CGFloat {
+        direction == .rightToLeft ? -1 : 1
+    }
 
     var body: some View {
         GeometryReader { proxy in
@@ -32,12 +38,12 @@ struct PushStack<Route: Hashable, Root: View, Destination: View>: View {
     private func edgeSwipe(width: CGFloat) -> some Gesture {
         DragGesture(minimumDistance: 8, coordinateSpace: .global)
             .onChanged { value in
-                guard value.startLocation.x < 28 else { return }
-                drag = max(0, value.translation.width)
+                guard fromEdge(value.startLocation.x, width: width) else { return }
+                drag = max(0, sign * value.translation.width)
             }
             .onEnded { value in
-                guard value.startLocation.x < 28 else { return }
-                if value.predictedEndTranslation.width > width * 0.5 || value.translation.width > width * 0.35 {
+                guard fromEdge(value.startLocation.x, width: width) else { return }
+                if sign * value.predictedEndTranslation.width > width * 0.5 || sign * value.translation.width > width * 0.35 {
                     withAnimation(Motion.standard) {
                         path.removeLast()
                         drag = 0
@@ -46,5 +52,9 @@ struct PushStack<Route: Hashable, Root: View, Destination: View>: View {
                     withAnimation(Motion.standard) { drag = 0 }
                 }
             }
+    }
+
+    private func fromEdge(_ x: CGFloat, width: CGFloat) -> Bool {
+        direction == .rightToLeft ? x > width - 28 : x < 28
     }
 }
