@@ -3,6 +3,30 @@
   "strings" : {
     "Mark done in ${applicationName}" : {
       "localizations" : {
+        "ar" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "ضع علامة منجز في ${applicationName}"
+            ]
+          }
+        },
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Als erledigt markieren in ${applicationName}"
+            ]
+          }
+        },
+        "fr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Marque comme fait dans ${applicationName}"
+            ]
+          }
+        },
         "ru" : {
           "stringSet" : {
             "state" : "translated",
@@ -15,6 +39,30 @@
     },
     "New reminder in ${applicationName}" : {
       "localizations" : {
+        "ar" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "تذكير جديد في ${applicationName}"
+            ]
+          }
+        },
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Erinnerung anlegen in ${applicationName}"
+            ]
+          }
+        },
+        "fr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Nouveau rappel dans ${applicationName}"
+            ]
+          }
+        },
         "ru" : {
           "stringSet" : {
             "state" : "translated",
@@ -27,6 +75,30 @@
     },
     "Next reminder in ${applicationName}" : {
       "localizations" : {
+        "ar" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "التذكير التالي في ${applicationName}"
+            ]
+          }
+        },
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Nächste Erinnerung in ${applicationName}"
+            ]
+          }
+        },
+        "fr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Prochain rappel dans ${applicationName}"
+            ]
+          }
+        },
         "ru" : {
           "stringSet" : {
             "state" : "translated",
@@ -39,6 +111,33 @@
     },
     "Remind me in ${applicationName}" : {
       "localizations" : {
+        "ar" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "ذكّرني في ${applicationName}",
+              "أنشئ تذكيرًا في ${applicationName}"
+            ]
+          }
+        },
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Erinnere mich in ${applicationName}",
+              "Neue Erinnerung in ${applicationName}"
+            ]
+          }
+        },
+        "fr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Rappelle-moi dans ${applicationName}",
+              "Crée un rappel dans ${applicationName}"
+            ]
+          }
+        },
         "ru" : {
           "stringSet" : {
             "state" : "translated",
@@ -52,6 +151,30 @@
     },
     "Snooze in ${applicationName}" : {
       "localizations" : {
+        "ar" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "أجّل التذكير في ${applicationName}"
+            ]
+          }
+        },
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Erinnerung verschieben in ${applicationName}"
+            ]
+          }
+        },
+        "fr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Reporte le rappel dans ${applicationName}"
+            ]
+          }
+        },
         "ru" : {
           "stringSet" : {
             "state" : "translated",
@@ -64,6 +187,30 @@
     },
     "What is next in ${applicationName}" : {
       "localizations" : {
+        "ar" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "ما التالي في ${applicationName}"
+            ]
+          }
+        },
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Was steht an in ${applicationName}"
+            ]
+          }
+        },
+        "fr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Qu’est-ce qui vient dans ${applicationName}"
+            ]
+          }
+        },
         "ru" : {
           "stringSet" : {
             "state" : "translated",

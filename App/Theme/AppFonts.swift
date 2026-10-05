@@ -10,10 +10,17 @@ enum AppFonts {
         }
     }
 
+    // Jost has no Ukrainian, Uzbek or Arabic letters, mixing fonts inside a word looks broken.
+    static let jostCoversLanguage: Bool = {
+        let code = Bundle.main.preferredLocalizations.first ?? "en"
+        return !(code.hasPrefix("uk") || code.hasPrefix("uz") || code.hasPrefix("ar"))
+    }()
+
     static func ctFont(_ face: Typeface, _ size: CGFloat, weight: Int) -> CTFont {
         let weightAxis = NSNumber(value: 0x7767_6874)
+        let family = face == .jost && !jostCoversLanguage ? Typeface.golos.rawValue : face.rawValue
         let attributes: [String: Any] = [
-            kCTFontFamilyNameAttribute as String: face.rawValue,
+            kCTFontFamilyNameAttribute as String: family,
             kCTFontVariationAttribute as String: [weightAxis: NSNumber(value: weight)],
         ]
         let descriptor = CTFontDescriptorCreateWithAttributes(attributes as CFDictionary)

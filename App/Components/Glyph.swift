@@ -89,6 +89,7 @@ struct Glyph: View {
             }
         }
         .frame(width: size, height: size)
+        .flipsForRightToLeftLayoutDirection(paths == Icons.back || paths == Icons.chevron)
         .accessibilityHidden(true)
     }
 }

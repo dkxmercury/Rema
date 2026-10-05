@@ -4,13 +4,49 @@
     "CFBundleDisplayName" : {
       "extractionState" : "extracted_with_value",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rema"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rema"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "new",
             "value" : "Rema"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rema"
+          }
+        },
         "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rema"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rema"
+          }
+        },
+        "uz-Cyrl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rema"
+          }
+        },
+        "uz-Latn" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rema"
@@ -21,10 +57,28 @@
     "NSLocationWhenInUseUsageDescription" : {
       "extractionState" : "extracted_with_value",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يُستخدم الموقع لتذكيرك عند وصولك إلى أماكنك أو مغادرتها."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Standort wird verwendet, um dich beim Ankommen an deinen Orten oder beim Verlassen zu erinnern."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "new",
             "value" : "Location is used to remind you when you arrive at or leave your places."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La localisation sert à vous rappeler quand vous arrivez dans vos lieux ou les quittez."
           }
         },
         "ru" : {
@@ -32,16 +86,52 @@
             "state" : "translated",
             "value" : "Геопозиция нужна, чтобы напомнить, когда вы придёте на своё место или уйдёте с него."
           }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Геопозиція потрібна, щоб нагадати, коли ви прийдете на своє місце або підете з нього."
+          }
+        },
+        "uz-Cyrl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Жойлашув ўз жойингизга келганингизда ёки ундан кетганингизда эслатиш учун керак."
+          }
+        },
+        "uz-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Joylashuv o‘z joyingizga kelganingizda yoki undan ketganingizda eslatish uchun kerak."
+          }
         }
       }
     },
     "NSMicrophoneUsageDescription" : {
       "extractionState" : "extracted_with_value",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يُستخدم الميكروفون فقط أثناء إملاء التذكير."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Mikrofon wird nur verwendet, während du eine Erinnerung diktierst."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "new",
             "value" : "The microphone is used only while you dictate a reminder."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le micro n’est utilisé que pendant que vous dictez un rappel."
           }
         },
         "ru" : {
@@ -49,22 +139,76 @@
             "state" : "translated",
             "value" : "Микрофон работает, только пока вы диктуете напоминание."
           }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Мікрофон працює, лише поки ви диктуєте нагадування."
+          }
+        },
+        "uz-Cyrl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Микрофон фақат эслатмани айтиб ёзаётганингизда ишлайди."
+          }
+        },
+        "uz-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mikrofon faqat eslatmani aytib yozayotganingizda ishlaydi."
+          }
         }
       }
     },
     "NSSpeechRecognitionUsageDescription" : {
       "extractionState" : "extracted_with_value",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يُحوَّل الكلام إلى نص لإنشاء تذكير."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sprache wird in Text umgewandelt, um eine Erinnerung zu erstellen."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "new",
             "value" : "Speech is turned into text to create a reminder."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La parole est convertie en texte pour créer un rappel."
+          }
+        },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Речь превращается в текст, чтобы создать напоминание."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Мовлення перетворюється на текст, щоб створити нагадування."
+          }
+        },
+        "uz-Cyrl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Эслатма яратиш учун нутқ матнга айлантирилади."
+          }
+        },
+        "uz-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eslatma yaratish uchun nutq matnga aylantiriladi."
           }
         }
       }
