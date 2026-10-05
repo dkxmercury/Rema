@@ -56,8 +56,12 @@ public struct PhraseParser {
             switch PhraseParser.latinLanguage(input, preferred: preferred) {
             case "de": return parseGerman(input)
             case "fr": return parseFrench(input)
+            case "uz": return parseUzbek(input)
             default: return parseEnglish(input)
             }
+        }
+        if PhraseParser.looksUzbekCyrillic(input, preferred: preferred) {
+            return parseUzbek(input)
         }
         if PhraseParser.looksUkrainian(input, preferred: preferred) {
             return parseUkrainian(input)

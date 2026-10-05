@@ -23,14 +23,17 @@ extension PhraseParser {
         var german = words.filter { germanWords.contains($0) }.count
         var french = words.filter { frenchWords.contains($0) }.count
         let english = words.filter { englishWords.contains($0) }.count
+        let uzbekText = uzbekLatin(lower).0
+        var uzbek = uzbekText.split(whereSeparator: { !$0.isLetter && $0 != "'" }).map(String.init).filter { uzbekWords.contains($0) }.count
         if lower.contains(where: { "äöüß".contains($0) }) { german += 2 }
         if lower.contains(where: { "éèêàçœù".contains($0) }) { french += 2 }
-        let best = max(german, french, english)
+        if uzbekText.contains("o'") || uzbekText.contains("g'") { uzbek += 2 }
+        let best = max(german, french, english, uzbek)
         if best == 0 {
             let code = preferred.map { String($0.prefix(2)) } ?? "en"
-            return ["de", "fr"].contains(code) ? code : "en"
+            return ["de", "fr", "uz"].contains(code) ? code : "en"
         }
-        let leaders = [("de", german), ("fr", french), ("en", english)].filter { $0.1 == best }.map(\.0)
+        let leaders = [("de", german), ("fr", french), ("en", english), ("uz", uzbek)].filter { $0.1 == best }.map(\.0)
         if leaders.count == 1 { return leaders[0] }
         let code = preferred.map { String($0.prefix(2)) } ?? "en"
         return leaders.contains(code) ? code : (leaders.contains("en") ? "en" : leaders[0])
