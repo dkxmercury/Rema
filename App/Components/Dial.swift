@@ -21,6 +21,8 @@ struct Dial: View {
     var markers: [DialMarker]
     var windowTime: String
     var windowCaption: String
+    var windowFontSize: CGFloat = 17
+    var windowTitleOnly = false
 
     private let geometry = DialGeometry()
 
@@ -74,14 +76,17 @@ struct Dial: View {
             .overlay {
                 VStack(spacing: 0) {
                     Text(verbatim: windowTime)
-                        .font(.app(.jost, 17, weight: 500))
+                        .font(.app(.jost, windowFontSize, weight: 500))
+                        .tracking(windowTitleOnly ? windowFontSize * 0.02 : 0)
                         .foregroundStyle(Palette.dialWindowText)
-                        .frame(height: 19)
+                        .frame(height: max(19, windowFontSize + 2))
                         .contentTransition(.numericText())
-                    Text(verbatim: windowCaption)
-                        .font(.app(.golos, 10, weight: 600))
-                        .foregroundStyle(Palette.accentOnDark)
-                        .contentTransition(.numericText())
+                    if !windowTitleOnly {
+                        Text(verbatim: windowCaption)
+                            .font(.app(.golos, 10, weight: 600))
+                            .foregroundStyle(Palette.accentOnDark)
+                            .contentTransition(.numericText())
+                    }
                 }
                 .animation(Motion.standard, value: windowTime)
                 .animation(Motion.standard, value: windowCaption)

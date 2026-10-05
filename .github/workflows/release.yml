@@ -70,7 +70,10 @@ jobs:
           done
 
       - name: Project
+        env:
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
         run: |
+          printf 'GOOGLE_CLIENT_ID = %s\n' "$GOOGLE_CLIENT_ID" > Config/Secrets.xcconfig
           brew install xcodegen
           xcodegen generate
 

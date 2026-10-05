@@ -15,7 +15,7 @@ struct EditorScreen: View {
     let store: Store
     var now: Date = Date()
     var calendar: Calendar = .current
-    var locale: Locale = .current
+    var locale: Locale = AppLanguage.current.locale
     let onClose: () -> Void
 
     @State private var path: [EditorRoute] = []

@@ -10,11 +10,12 @@ enum AppFonts {
         }
     }
 
+    nonisolated(unsafe) static var languageCode = Bundle.main.preferredLocalizations.first ?? "en"
+
     // Jost has no Ukrainian, Uzbek or Arabic letters, mixing fonts inside a word looks broken.
-    static let jostCoversLanguage: Bool = {
-        let code = Bundle.main.preferredLocalizations.first ?? "en"
-        return !(code.hasPrefix("uk") || code.hasPrefix("uz") || code.hasPrefix("ar"))
-    }()
+    static var jostCoversLanguage: Bool {
+        !(languageCode.hasPrefix("uk") || languageCode.hasPrefix("uz") || languageCode.hasPrefix("ar"))
+    }
 
     static func ctFont(_ face: Typeface, _ size: CGFloat, weight: Int) -> CTFont {
         let weightAxis = NSNumber(value: 0x7767_6874)

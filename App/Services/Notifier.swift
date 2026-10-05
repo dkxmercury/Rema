@@ -108,7 +108,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
     }
 
     private func body(for item: PlannedNotification, now: Date) -> String {
-        let describer = Describer()
+        let describer = Describer(locale: AppLanguage.current.locale)
         let when = describer.dayAndTime(item.occurrence, now: item.fireDate).capitalizedFirst(.current)
         switch item.kind {
         case .main:

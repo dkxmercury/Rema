@@ -21,6 +21,9 @@ targets:
   Rema:
     type: application
     platform: iOS
+    configFiles:
+      Debug: Config/App.xcconfig
+      Release: Config/App.xcconfig
     sources:
       - path: App
         excludes:

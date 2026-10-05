@@ -13,7 +13,7 @@ struct VoiceScreen: View {
     @State private var finishing = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-    init(store: Store, now: Date = Date(), calendar: Calendar = .current, locale: Locale = .current, recognizer: VoiceRecognizer = VoiceRecognizer(), live: Bool = true, onFinish: @escaping (String?) -> Void) {
+    init(store: Store, now: Date = Date(), calendar: Calendar = .current, locale: Locale = AppLanguage.current.locale, recognizer: VoiceRecognizer = VoiceRecognizer(), live: Bool = true, onFinish: @escaping (String?) -> Void) {
         self.store = store
         self.now = now
         self.calendar = calendar
@@ -24,7 +24,7 @@ struct VoiceScreen: View {
     }
 
     private var parsed: ParsedPhrase {
-        PhraseParser(now: now, calendar: calendar, morning: store.settings.morning, evening: store.settings.evening, places: store.activePlaces.map(\.name), preferred: Bundle.main.preferredLocalizations.first).parse(recognizer.transcript)
+        PhraseParser(now: now, calendar: calendar, morning: store.settings.morning, evening: store.settings.evening, places: store.activePlaces.map(\.name), preferred: AppLanguage.current.rawValue).parse(recognizer.transcript)
     }
 
     private var describer: Describer {

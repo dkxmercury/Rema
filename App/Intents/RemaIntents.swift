@@ -15,7 +15,7 @@ struct AddReminderIntent: AppIntent {
     func perform() async throws -> some IntentResult & ProvidesDialog & ShowsSnippetView {
         let store = Store.shared
         let now = Date()
-        let parsed = PhraseParser(now: now, calendar: .current, morning: store.settings.morning, evening: store.settings.evening, places: store.activePlaces.map(\.name), preferred: Bundle.main.preferredLocalizations.first).parse(phrase)
+        let parsed = PhraseParser(now: now, calendar: .current, morning: store.settings.morning, evening: store.settings.evening, places: store.activePlaces.map(\.name), preferred: AppLanguage.current.rawValue).parse(phrase)
         guard !parsed.title.isEmpty else {
             throw $phrase.needsValueError(IntentDialog("What should I remind about?"))
         }
@@ -53,7 +53,7 @@ struct NextReminderIntent: AppIntent {
               let reminder = store.reminder(next.reminderID) else {
             return .result(dialog: IntentDialog("Nothing ahead."), view: ReminderSnippet(title: String(localized: "Nothing ahead"), when: ""))
         }
-        let describer = Describer()
+        let describer = Describer(locale: AppLanguage.current.locale)
         let when = "\(describer.dayAndTime(next.occurrence, now: now).capitalizedFirst(.current)), \(describer.countdown(from: now, to: next.occurrence))"
         return .result(dialog: IntentDialog(stringLiteral: "\(reminder.title). \(when)."), view: ReminderSnippet(title: reminder.title, when: when))
     }
@@ -143,7 +143,7 @@ enum IntentSupport {
     }
 
     static func when(_ reminder: Reminder, store: Store, now: Date) -> String {
-        let describer = Describer()
+        let describer = Describer(locale: AppLanguage.current.locale)
         if let schedule = reminder.schedule, let date = Recurrence.next(schedule, after: now.addingTimeInterval(-60), limit: 1, calendar: .current).first {
             return describer.dayAndTime(date, now: now).capitalizedFirst(.current)
         }

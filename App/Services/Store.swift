@@ -14,6 +14,7 @@ final class Store {
     @ObservationIgnored private let shared: Bool
     @ObservationIgnored private var loadedAt: Date?
     @ObservationIgnored var onChange: (() -> Void)?
+    @ObservationIgnored var onEdit: (() -> Void)?
 
     init(directory: URL? = nil) {
         if directory == nil {
@@ -141,6 +142,26 @@ final class Store {
 
     static let shared = Store()
 
+    var snapshot: StoreSnapshot {
+        StoreSnapshot(reminders: reminders, places: places, settings: settings, sounds: sounds)
+    }
+
+    func replace(with snapshot: StoreSnapshot) {
+        reminders = snapshot.reminders
+        places = snapshot.places
+        settings = snapshot.settings
+        sounds = snapshot.sounds ?? []
+        persist(edit: false)
+    }
+
+    func reset() {
+        reminders = []
+        places = []
+        sounds = []
+        settings = .standard(at: Date())
+        persist(edit: false)
+    }
+
     func update(_ change: (inout Settings) -> Void) {
         change(&settings)
         settings.updatedAt = Date()
@@ -151,6 +172,7 @@ final class Store {
         guard let modified = SharedStore.modified(in: directory), modified != loadedAt else { return }
         load()
         onChange?()
+        onEdit?()
     }
 
     private func load() {
@@ -162,11 +184,13 @@ final class Store {
         loadedAt = SharedStore.modified(in: directory)
     }
 
-    private func persist() {
-        let snapshot = StoreSnapshot(reminders: reminders, places: places, settings: settings, sounds: sounds)
+    private func persist(edit: Bool = true) {
         try? SharedStore.save(snapshot, to: directory)
         loadedAt = SharedStore.modified(in: directory)
         onChange?()
+        if edit {
+            onEdit?()
+        }
         if shared {
             WidgetCenter.shared.reloadAllTimelines()
         }

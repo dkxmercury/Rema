@@ -2,12 +2,19 @@ import ActivityKit
 import Foundation
 import RemaCore
 
+@MainActor
 enum LiveActivities {
-    private static let window: TimeInterval = 3_600
+    private static var window: TimeInterval {
+        max(5, min(Remote.shared.number(.liveActivityLead), 240)) * 60
+    }
 
     static func refresh(store: Store, now: Date = Date()) {
         guard ActivityAuthorizationInfo().areActivitiesEnabled else { return }
         let running = Activity<ReminderActivity>.activities
+        guard Remote.shared.isOn(.liveActivity) else {
+            end(running)
+            return
+        }
         let next = Agenda.upcoming(after: now, reminders: store.activeReminders, calendar: .current, limit: 1).first
         guard let next, next.occurrence.timeIntervalSince(now) <= window, let reminder = store.reminder(next.reminderID) else {
             end(running)

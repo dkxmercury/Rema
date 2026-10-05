@@ -6,7 +6,7 @@ import UniformTypeIdentifiers
 struct SoundScreen: View {
     let store: Store
     @Binding var choice: SoundChoice
-    var locale: Locale = .current
+    var locale: Locale = AppLanguage.current.locale
     let onBack: () -> Void
 
     @State private var importing = false

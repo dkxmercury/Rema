@@ -22,7 +22,7 @@ struct CalendarScreen: View {
     @Namespace private var selection
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-    init(store: Store, now: Date = Date(), calendar: Calendar = .current, locale: Locale = .current, onClose: @escaping () -> Void) {
+    init(store: Store, now: Date = Date(), calendar: Calendar = .current, locale: Locale = AppLanguage.current.locale, onClose: @escaping () -> Void) {
         self.store = store
         self.now = now
         self.calendar = calendar

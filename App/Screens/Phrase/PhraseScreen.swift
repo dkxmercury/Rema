@@ -13,7 +13,7 @@ struct PhraseScreen: View {
     let store: Store
     var now: Date = Date()
     var calendar: Calendar = .current
-    var locale: Locale = .current
+    var locale: Locale = AppLanguage.current.locale
     var startWithVoice = false
     var autofocus = true
     let onClose: () -> Void
@@ -50,7 +50,7 @@ struct PhraseScreen: View {
         var placeTrigger: PlaceTrigger?
     }
 
-    init(store: Store, text: String = "", now: Date = Date(), calendar: Calendar = .current, locale: Locale = .current, startWithVoice: Bool = false, autofocus: Bool = true, onClose: @escaping () -> Void) {
+    init(store: Store, text: String = "", now: Date = Date(), calendar: Calendar = .current, locale: Locale = AppLanguage.current.locale, startWithVoice: Bool = false, autofocus: Bool = true, onClose: @escaping () -> Void) {
         self.store = store
         self.now = now
         self.calendar = calendar
@@ -64,7 +64,7 @@ struct PhraseScreen: View {
     }
 
     private var parser: PhraseParser {
-        PhraseParser(now: now, calendar: calendar, morning: store.settings.morning, evening: store.settings.evening, places: store.activePlaces.map(\.name), preferred: Bundle.main.preferredLocalizations.first)
+        PhraseParser(now: now, calendar: calendar, morning: store.settings.morning, evening: store.settings.evening, places: store.activePlaces.map(\.name), preferred: AppLanguage.current.rawValue)
     }
 
     private var parsed: ParsedPhrase {

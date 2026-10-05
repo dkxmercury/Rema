@@ -59,6 +59,15 @@ enum Icons {
     static let trash = ["M5 7h14", "M10 11v6M14 11v6", "M6.5 7l1 12.5a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 0 1.5-1.5L17.5 7", "M9.5 7V4.5h5V7"]
     static let folder = ["M3.5 7.5a2 2 0 0 1 2-2h4l2 2.5h7a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"]
     static let globe = [circle(12, 12, 8.5), "M3.5 12h17M12 3.5c2.5 2.4 3.8 5.3 3.8 8.5s-1.3 6.1-3.8 8.5c-2.5-2.4-3.8-5.3-3.8-8.5s1.3-6.1 3.8-8.5z"]
+    static let chevronDown = ["M6 9.5l6 6 6-6"]
+    static let envelope = [rect(3, 5.5, 18, 13, 2.5), "M3.5 7l8.5 6 8.5-6"]
+    static let eye = ["M2.5 12c1-2 4.5-6.5 9.5-6.5s8.5 4.5 9.5 6.5c-1 2-4.5 6.5-9.5 6.5S3.5 14 2.5 12z", circle(12, 12, 3)]
+    static let eyeOff = ["M3 3l18 18", "M10.6 5.6A9.6 9.6 0 0 1 12 5.5c5 0 8.5 4.5 9.5 6.5-.5 1-1.6 2.6-3.2 4M6.3 6.8C4.3 8.1 3 10 2.5 12c1 2 4.5 6.5 9.5 6.5 1.6 0 3-.4 4.3-1.1", "M9.9 10a3 3 0 0 0 4.1 4.1"]
+    static let person = [circle(12, 8.5, 3.5), "M5 19.5c1.2-3.3 3.9-5 7-5s5.8 1.7 7 5"]
+    static let clock = [circle(12, 12, 8.5), "M12 7.5V12l3 2"]
+    static let instagram = [rect(3.5, 3.5, 17, 17, 5), circle(12, 12, 4), "M17 7h.01"]
+    static let document = ["M7 3.5h7l4 4v13H7z", "M14 3.5v4h4", "M9.5 12h6M9.5 15.5h6"]
+    static let external = ["M10 5H5.5v13.5H19V14", "M13.5 4.5H19.5V10.5", "M19 5l-8 8"]
 
     static func circle(_ cx: Double, _ cy: Double, _ r: Double) -> String {
         "M\(cx - r) \(cy)a\(r) \(r) 0 1 0 \(2 * r) 0a\(r) \(r) 0 1 0 \(-2 * r) 0z"

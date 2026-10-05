@@ -49,7 +49,7 @@ final class ScreenSnapshots: XCTestCase {
     }
 
     func testSettings() throws {
-        try render(SettingsScreen(store: sampleStore(), locale: russian, onBack: {}), name: "D-Settings", style: .light, height: 1210)
+        try render(SettingsScreen(store: sampleStore(), locale: russian, onBack: {}), name: "D-Settings", style: .light, height: 1500)
     }
 
     func testSound() throws {
@@ -79,6 +79,19 @@ final class ScreenSnapshots: XCTestCase {
         let store = sampleStore()
         try render(EditorScreen(draft: SampleData.server, isNew: false, store: store, now: SampleData.now, calendar: SampleData.calendar, locale: russian, onClose: {}).environment(\.layoutDirection, .rightToLeft), name: "RTL-Editor", style: .light)
         try render(CalendarScreen(store: store, now: SampleData.now, calendar: SampleData.calendar, locale: russian, onClose: {}).environment(\.layoutDirection, .rightToLeft), name: "RTL-Calendar", style: .light)
+    }
+
+    func testAccountScreens() throws {
+        try render(WelcomeScreen(onEmail: {}, onLanguage: {}, onSkip: {}, onSignedIn: {}), name: "D-Welcome", style: .light)
+        try render(WelcomeScreen(onEmail: {}, onLanguage: {}, onSkip: {}, onSignedIn: {}), name: "Dark-Welcome", style: .dark)
+        try render(EmailScreen(mode: .signIn, email: "name@example.com", password: String(repeating: "x", count: 10), onReset: { _ in }, onSignedIn: {}, onBack: {}), name: "D-SignIn", style: .light)
+        try render(EmailScreen(mode: .signUp, email: "name@example.com", password: String(repeating: "x", count: 10), onReset: { _ in }, onSignedIn: {}, onBack: {}), name: "D-SignUp", style: .light)
+        try render(ResetScreen(email: "name@example.com", sentAt: SampleData.now, onBack: {}), name: "D-Reset", style: .light)
+        try render(LanguageScreen(onClose: {}), name: "D-Language", style: .light)
+        let summary = AccountScreen.Summary(email: "name@example.com", method: .apple, status: .saved, savedAt: Date(), reminders: 24, places: 4)
+        try render(AccountScreen(summary: summary, locale: russian, onBack: {}), name: "D-Account", style: .light)
+        try render(AccountScreen(summary: summary, locale: russian, onBack: {}), name: "Dark-Account", style: .dark)
+        try render(SettingsScreen(store: sampleStore(), locale: russian, account: summary, onBack: {}), name: "Settings-SignedIn", style: .light, height: 1500)
     }
 
     private var russian: Locale { Locale(identifier: "ru_RU") }

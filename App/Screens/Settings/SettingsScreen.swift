@@ -5,16 +5,19 @@ import UserNotifications
 
 struct SettingsScreen: View {
     let store: Store
-    var locale: Locale = .current
+    var locale: Locale = AppLanguage.current.locale
+    var account: AccountScreen.Summary?
     var onSound: () -> Void = {}
     var onPlaces: () -> Void = {}
+    var onSignIn: () -> Void = {}
+    var onAccount: () -> Void = {}
+    var onLanguage: () -> Void = {}
     let onBack: () -> Void
 
     @AppStorage(Feedback.hapticsKey) private var haptics = true
     @AppStorage(Feedback.soundsKey) private var sounds = true
     @State private var editingTime: TimeTarget?
     @State private var permissions = Permissions()
-    @State private var signInSoon = false
     @Environment(\.scenePhase) private var scenePhase
 
     struct TimeTarget: Identifiable {
@@ -42,7 +45,7 @@ struct SettingsScreen: View {
             Palette.background.ignoresSafeArea()
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
-                    section("Account", top: 14) { account }
+                    section("Account", top: 14) { accountPanel }
                     section("Sound") {
                         PanelList {
                             NavigationRow(icon: Icons.note, iconColor: Palette.text, title: "Default sound", minHeight: 52, action: onSound) {
@@ -89,8 +92,8 @@ struct SettingsScreen: View {
                     }
                     section("Language") {
                         PanelList {
-                            NavigationRow(icon: Icons.globe, iconColor: Palette.text, title: "App language", minHeight: 52, action: openSystemSettings) {
-                                value(languageName)
+                            NavigationRow(icon: Icons.globe, iconColor: Palette.text, title: "App language", minHeight: 52, action: onLanguage) {
+                                value(AppLanguage.current.nativeName)
                             }
                         }
                     }
@@ -103,6 +106,7 @@ struct SettingsScreen: View {
                             permissionRow("Location", granted: locationGranted, text: locationText, height: 50, action: openSystemSettings)
                         }
                     }
+                    about
                 }
                 .padding(.horizontal, 18)
                 .padding(.bottom, 40)
@@ -128,11 +132,6 @@ struct SettingsScreen: View {
                 editingTime = nil
             }
         }
-        .alert("Sign-in is coming soon", isPresented: $signInSoon) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text("Accounts and sync will arrive after testing. Everything is saved on this phone for now.")
-        }
         .task(id: scenePhase) {
             await refreshPermissions()
         }
@@ -148,7 +147,39 @@ struct SettingsScreen: View {
         .padding(.top, top)
     }
 
-    private var account: some View {
+    @ViewBuilder
+    private var accountPanel: some View {
+        if let account {
+            Button(action: onAccount) {
+                HStack(spacing: 12) {
+                    let badge = RoundedRectangle(cornerRadius: 10, style: .circular)
+                    Glyph(paths: Icons.cloudCheck, size: 20, lineWidth: 2.1, color: Palette.onAccent)
+                        .frame(width: 36, height: 36)
+                        .background(badge.fill(Palette.accent).insetShadow(badge, .black.opacity(0.14), y: -2))
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(verbatim: account.email.isEmpty ? String(localized: "Apple ID with a hidden email") : account.email)
+                            .font(.app(.golos, 16, weight: 600))
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                        Text(account.status == .offline ? LocalizedStringKey("No connection, changes will be saved later") : LocalizedStringKey("Reminders are saved in the account"))
+                            .font(.app(.golos, 13))
+                            .foregroundStyle(Palette.secondary)
+                            .lineLimit(1)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    Glyph(paths: Icons.chevron, size: 16, lineWidth: 2, color: Palette.secondary)
+                }
+                .padding(16)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(RowPressStyle())
+            .panel()
+        } else {
+            invite
+        }
+    }
+
+    private var invite: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(alignment: .top, spacing: 12) {
                 let badge = RoundedRectangle(cornerRadius: 10, style: .circular)
@@ -165,9 +196,7 @@ struct SettingsScreen: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
-            Button {
-                signInSoon = true
-            } label: {
+            Button(action: onSignIn) {
                 let shape = RoundedRectangle(cornerRadius: 12, style: .circular)
                 Text("Sign in")
                     .font(.app(.golos, 15, weight: 600))
@@ -257,10 +286,32 @@ struct SettingsScreen: View {
         )
     }
 
-    private var languageName: String {
-        let code = Bundle.main.preferredLocalizations.first ?? "en"
-        let name = Locale(identifier: code).localizedString(forLanguageCode: code) ?? code
-        return name.capitalizedFirst(Locale(identifier: code))
+    private var about: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            SectionLabel(verbatim: "Rema")
+            PanelList {
+                LinkRow(icon: Icons.instagram, title: "Instagram", value: "@rema.apps", url: Remote.shared.link(.instagram))
+                Hairline()
+                LinkRow(icon: Icons.envelope, title: "Write to support", url: Remote.shared.link(.support))
+                Hairline()
+                LinkRow(icon: Icons.document, title: "Privacy policy", url: Remote.shared.link(.privacy))
+                Hairline()
+                LinkRow(icon: Icons.document, title: "Terms of use", url: Remote.shared.link(.terms))
+            }
+            Text(verbatim: version)
+                .font(.app(.golos, 12))
+                .foregroundStyle(Palette.secondary)
+                .frame(maxWidth: .infinity)
+                .padding(.top, 6)
+        }
+        .padding(.top, 16)
+    }
+
+    private var version: String {
+        let info = Bundle.main.infoDictionary
+        let short = info?["CFBundleShortVersionString"] as? String ?? ""
+        let build = info?["CFBundleVersion"] as? String ?? ""
+        return "Rema \(short) (\(build))"
     }
 
     private var notificationsGranted: Bool {
@@ -350,5 +401,38 @@ struct TimeSheet: View {
         .presentationDetents([.height(400)])
         .presentationCornerRadius(28)
         .presentationBackground(Palette.background)
+    }
+}
+
+struct LinkRow: View {
+    let icon: [String]
+    let title: LocalizedStringKey
+    var value: String?
+    let url: URL
+    @Environment(\.openURL) private var openURL
+
+    var body: some View {
+        Button {
+            openURL(url)
+        } label: {
+            HStack(spacing: 12) {
+                Glyph(paths: icon, size: 20, lineWidth: 2, color: Palette.text)
+                Text(title)
+                    .font(.app(.golos, 16, weight: 500))
+                    .lineLimit(1)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                if let value {
+                    Text(verbatim: value)
+                        .font(.app(.golos, 14))
+                        .foregroundStyle(Palette.secondary)
+                        .lineLimit(1)
+                        .fixedSize()
+                }
+                Glyph(paths: Icons.external, size: 16, lineWidth: 2, color: Palette.secondary)
+            }
+            .frame(minHeight: 51)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(RowPressStyle())
     }
 }

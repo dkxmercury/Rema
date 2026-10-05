@@ -5,7 +5,7 @@ struct DateTimeScreen: View {
     let now: Date
     let settings: Settings
     var calendar: Calendar = .current
-    var locale: Locale = .current
+    var locale: Locale = AppLanguage.current.locale
     let onDone: (Date) -> Void
     let onClose: () -> Void
 
@@ -14,7 +14,7 @@ struct DateTimeScreen: View {
     @State private var minute: Int
     @State private var weekStart: Date
 
-    init(initial: Date, now: Date, settings: Settings, calendar: Calendar = .current, locale: Locale = .current, onDone: @escaping (Date) -> Void, onClose: @escaping () -> Void) {
+    init(initial: Date, now: Date, settings: Settings, calendar: Calendar = .current, locale: Locale = AppLanguage.current.locale, onDone: @escaping (Date) -> Void, onClose: @escaping () -> Void) {
         self.now = now
         self.settings = settings
         self.calendar = calendar
