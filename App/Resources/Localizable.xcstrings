@@ -11487,6 +11487,12 @@
     },
     "every Tue and Thu at 8": {
       "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كل ثلاثاء وخميس الساعة 8"
+          }
+        },
         "de": {
           "stringUnit": {
             "state": "translated",
@@ -11665,6 +11671,12 @@
     },
     "every year on October 12": {
       "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كل سنة في 12 اكتوبر"
+          }
+        },
         "de": {
           "stringUnit": {
             "state": "translated",
@@ -12027,6 +12039,12 @@
     },
     "in 2 hours": {
       "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بعد ساعتين"
+          }
+        },
         "de": {
           "stringUnit": {
             "state": "translated",
@@ -12711,6 +12729,12 @@
     },
     "on Friday evening": {
       "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الجمعة مساء"
+          }
+        },
         "de": {
           "stringUnit": {
             "state": "translated",
@@ -13303,6 +13327,12 @@
     },
     "when I leave work": {
       "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عندما اغادر العمل"
+          }
+        },
         "de": {
           "stringUnit": {
             "state": "translated",
