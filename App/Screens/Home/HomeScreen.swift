@@ -2,7 +2,12 @@ import SwiftUI
 
 struct HomeScreen: View {
     let content: HomeContent
+    var onToggle: (HomeContent.Row) -> Void = { _ in }
+    var onOpen: (UUID) -> Void = { _ in }
+    var onCompose: (String) -> Void = { _ in }
+    var onCalendar: () -> Void = {}
     @State private var draft = ""
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         ZStack {
@@ -14,16 +19,26 @@ struct HomeScreen: View {
                     nowHour: content.nowHour,
                     nowMinute: content.nowMinute,
                     markers: content.markers,
-                    windowTime: content.nextTime,
-                    windowCaption: content.nextCountdown
+                    windowTime: content.next?.time ?? content.nowText,
+                    windowCaption: content.next?.countdown ?? String(localized: "now")
                 )
                 .padding(.top, 14)
-                nextSummary
-                    .padding(.top, 10)
-                list
-                    .padding(.top, 12)
-                tiles
-                    .padding(.top, 12)
+                if let next = content.next {
+                    nextSummary(next)
+                        .padding(.top, 10)
+                        .onTapGesture { onOpen(next.reminderID) }
+                }
+                if content.rows.isEmpty {
+                    emptyDay
+                        .padding(.top, 12)
+                } else {
+                    list
+                        .padding(.top, 12)
+                }
+                if !content.tiles.isEmpty {
+                    tiles
+                        .padding(.top, 12)
+                }
                 Spacer(minLength: 0)
             }
             .padding(.horizontal, 18)
@@ -36,6 +51,7 @@ struct HomeScreen: View {
                 .ignoresSafeArea(.container, edges: .bottom)
         }
         .foregroundStyle(Palette.text)
+        .animation(Motion.adaptive(Motion.standard, reduceMotion: reduceMotion), value: content.rows.map(\.id))
     }
 
     private var header: some View {
@@ -51,38 +67,45 @@ struct HomeScreen: View {
                     .frame(height: 36)
             }
             Spacer(minLength: 0)
-            Button {
-            } label: {
+            Button(action: onCalendar) {
                 ZStack {
                     RaisedCircle()
                     Glyph(paths: Icons.calendar, size: 20, lineWidth: 1.8, color: Palette.text)
                 }
             }
-            .buttonStyle(.plain)
+            .buttonStyle(PressableStyle())
             .accessibilityLabel(Text("Calendar"))
         }
     }
 
-    private var nextSummary: some View {
+    private func nextSummary(_ next: HomeContent.Next) -> some View {
         VStack(spacing: 4) {
-            Text(verbatim: content.nextTitle)
+            Text(verbatim: next.title)
                 .font(.app(.golos, 17, weight: 600))
-            HStack(spacing: 8) {
-                if content.nextUrgent {
-                    UrgentBadge()
+            if next.urgent || next.note != nil {
+                HStack(spacing: 8) {
+                    if next.urgent {
+                        UrgentBadge()
+                    }
+                    if let note = next.note {
+                        Text(verbatim: note)
+                            .font(.app(.golos, 13))
+                            .foregroundStyle(Palette.secondary)
+                    }
                 }
-                Text(verbatim: content.nextNote)
-                    .font(.app(.golos, 13))
-                    .foregroundStyle(Palette.secondary)
             }
         }
         .multilineTextAlignment(.center)
+        .contentShape(Rectangle())
     }
 
     private var list: some View {
         VStack(spacing: 0) {
             ForEach(content.rows) { row in
-                HomeRow(row: row)
+                HomeRow(row: row, onToggle: { onToggle(row) })
+                    .contentShape(Rectangle())
+                    .onTapGesture { onOpen(row.reminderID) }
+                    .transition(.opacity.combined(with: .move(edge: .top)))
                 if row.id != content.rows.last?.id {
                     Rectangle()
                         .fill(Palette.hairline)
@@ -95,10 +118,25 @@ struct HomeScreen: View {
         .panel()
     }
 
+    private var emptyDay: some View {
+        VStack(spacing: 6) {
+            Text("Nothing for today")
+                .font(.app(.golos, 16, weight: 600))
+            Text("Write below what and when to remind you")
+                .font(.app(.golos, 13))
+                .foregroundStyle(Palette.secondary)
+        }
+        .multilineTextAlignment(.center)
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 22)
+        .panel()
+    }
+
     private var tiles: some View {
         HStack(spacing: 10) {
             ForEach(content.tiles) { tile in
                 HomeTile(tile: tile)
+                    .onTapGesture { onOpen(tile.reminderID) }
             }
         }
     }
@@ -109,9 +147,11 @@ struct HomeScreen: View {
                 Text("New reminder")
             }
             .font(.app(.golos, 16))
+            .tint(Palette.accent)
             .frame(height: 44)
-            Button {
-            } label: {
+            .submitLabel(.done)
+            .onSubmit(compose)
+            Button(action: compose) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 12, style: .circular)
                         .fill(Palette.accent)
@@ -120,7 +160,7 @@ struct HomeScreen: View {
                 }
                 .frame(width: 44, height: 44)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(PressableStyle())
             .accessibilityLabel(Text("Add reminder"))
         }
         .padding(.leading, 18)
@@ -128,10 +168,24 @@ struct HomeScreen: View {
         .frame(height: 58)
         .inputBar()
     }
+
+    private func compose() {
+        onCompose(draft)
+        draft = ""
+    }
+}
+
+struct PressableStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.94 : 1)
+            .animation(Motion.press, value: configuration.isPressed)
+    }
 }
 
 private struct HomeRow: View {
     let row: HomeContent.Row
+    let onToggle: () -> Void
 
     var body: some View {
         HStack(spacing: 14) {
@@ -152,9 +206,13 @@ private struct HomeRow: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            CheckBox(isOn: row.done)
-                .frame(width: 44, height: 44)
-                .padding(.trailing, -9)
+            Button(action: onToggle) {
+                CheckBox(isOn: row.done)
+                    .frame(width: 44, height: 44)
+            }
+            .buttonStyle(.plain)
+            .padding(.trailing, -9)
+            .accessibilityLabel(Text(row.done ? LocalizedStringKey("Mark as not done") : LocalizedStringKey("Mark as done")))
         }
         .frame(minHeight: row.subtitle == nil ? 46 : 52)
     }
@@ -191,9 +249,10 @@ private struct HomeTile: View {
         .padding(.vertical, 12)
         .frame(maxWidth: .infinity, minHeight: 80, maxHeight: 80, alignment: .topLeading)
         .panel(radius: 18)
+        .contentShape(Rectangle())
     }
 }
 
 #Preview {
-    HomeScreen(content: .sample)
+    HomeScreen(content: SampleData.home)
 }

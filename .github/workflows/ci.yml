@@ -41,7 +41,7 @@ jobs:
 
       - name: Screens
         run: |
-          DEVICE=$(xcrun simctl list devices available -j | python3 -c "import json,sys;d=json.load(sys.stdin)['devices'];print(next(x['udid'] for k,v in sorted(d.items(),reverse=True) if 'iOS' in k for x in v if x['name'].startswith('iPhone')))")
+          DEVICE=$(xcrun simctl list devices available -j | python3 -c "import json,sys;d=json.load(sys.stdin)['devices'];c=[x for k,v in sorted(d.items(),reverse=True) if 'iOS' in k for x in v if x['name'].startswith('iPhone')];p=next((x for x in c if x['name']=='iPhone 16e'),c[0]);print(p['udid'],p['name'],file=sys.stderr);print(p['udid'])")
           mkdir -p screens
           TEST_RUNNER_SNAPSHOT_DIR="$PWD/screens" xcodebuild -project Rema.xcodeproj -scheme Rema \
             -destination "id=$DEVICE" CODE_SIGNING_ALLOWED=NO test > test.log 2>&1 || true

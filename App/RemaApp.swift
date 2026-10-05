@@ -8,7 +8,7 @@ struct RemaApp: App {
 
     var body: some Scene {
         WindowGroup {
-            HomeScreen(content: .sample)
+            RootView()
         }
     }
 }

@@ -42,6 +42,9 @@ targets:
       testTargets:
         - RemaSnapshots
       gatherCoverageData: false
+      commandLineArguments:
+        "-AppleLanguages (ru)": true
+        "-AppleLocale ru_RU": true
   RemaSnapshots:
     type: bundle.unit-test
     platform: iOS

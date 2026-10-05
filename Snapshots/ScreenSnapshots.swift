@@ -5,8 +5,8 @@ import XCTest
 
 final class ScreenSnapshots: XCTestCase {
     func testHome() throws {
-        try render(HomeScreen(content: .sample), name: "D-Home", style: .light)
-        try render(HomeScreen(content: .sample), name: "D-Home-Dark", style: .dark)
+        try render(HomeScreen(content: SampleData.home), name: "D-Home", style: .light)
+        try render(HomeScreen(content: SampleData.home), name: "D-Home-Dark", style: .dark)
     }
 
     func testSafeAreaProbe() throws {

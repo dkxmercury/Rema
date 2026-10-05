@@ -97,7 +97,7 @@ struct LeverToggle: View {
         .buttonStyle(.plain)
         .sensoryFeedback(.selection, trigger: isOn)
         .accessibilityAddTraits(.isToggle)
-        .accessibilityValue(Text(isOn ? "On" : "Off"))
+        .accessibilityValue(Text(isOn ? LocalizedStringKey("On") : LocalizedStringKey("Off")))
     }
 }
 
