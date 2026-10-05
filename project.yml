@@ -34,6 +34,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: uz.dkx.rema
         PRODUCT_NAME: Rema
+        PROVISIONING_PROFILE_SPECIFIER: $(REMA_PROFILE_APP)
         CODE_SIGN_ENTITLEMENTS: App/Rema.entitlements
         SWIFT_ACTIVE_COMPILATION_CONDITIONS: $(inherited) APP
         INFOPLIST_KEY_NSSupportsLiveActivities: YES
@@ -91,6 +92,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: uz.dkx.rema.widgets
         PRODUCT_NAME: RemaWidgets
+        PROVISIONING_PROFILE_SPECIFIER: $(REMA_PROFILE_WIDGETS)
         TARGETED_DEVICE_FAMILY: "1"
         CODE_SIGN_ENTITLEMENTS: Widgets/RemaWidgets.entitlements
         LOCALIZATION_PREFERS_STRING_CATALOGS: YES
@@ -112,6 +114,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: uz.dkx.rema.watchkitapp
         PRODUCT_NAME: RemaWatch
+        PROVISIONING_PROFILE_SPECIFIER: $(REMA_PROFILE_WATCH)
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: Rema
         INFOPLIST_KEY_WKApplication: YES
