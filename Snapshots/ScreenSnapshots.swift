@@ -62,6 +62,16 @@ final class ScreenSnapshots: XCTestCase {
         try render(NewPlaceScreen(store: sampleStore(), prefill: SampleData.gym, onSaved: { _ in }, onBack: {}), name: "D-NewPlace", style: .light)
     }
 
+    func testDark() throws {
+        let store = sampleStore()
+        try render(PhraseScreen(store: store, text: "завтра в 9 позвонить маме", now: SampleData.now, calendar: SampleData.calendar, locale: russian, autofocus: false, onClose: {}), name: "Dark-Phrase", style: .dark)
+        try render(CalendarScreen(store: store, now: SampleData.now, calendar: SampleData.calendar, locale: russian, onClose: {}), name: "Dark-Calendar", style: .dark)
+        try render(SettingsScreen(store: store, locale: russian, onBack: {}), name: "Dark-Settings", style: .dark, height: 1210)
+        try render(SoundScreen(store: store, choice: .constant(.custom(SampleData.gong.id)), locale: russian, onBack: {}), name: "Dark-Sound", style: .dark)
+        try render(DateTimeScreen(initial: SampleData.now.addingTimeInterval(72_000), now: SampleData.now, settings: .standard(at: SampleData.now), calendar: SampleData.calendar, locale: russian, onDone: { _ in }, onClose: {}), name: "Dark-DateTime", style: .dark)
+        try render(PlacesScreen(store: store, title: "Забрать посылку", placeIDs: .constant([SampleData.work.id]), trigger: .constant(.leave), onNewPlace: {}, onBack: {}), name: "Dark-Places", style: .dark)
+    }
+
     private var russian: Locale { Locale(identifier: "ru_RU") }
 
     private func sampleStore() -> Store {
