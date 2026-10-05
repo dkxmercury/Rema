@@ -11487,10 +11487,28 @@
     },
     "every Tue and Thu at 8": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "jeden Di und Do um 8"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "tous les mardis et jeudis à 8h"
+          }
+        },
         "ru": {
           "stringUnit": {
             "state": "translated",
             "value": "каждый вт и чт в 8"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "кожен вт і чт о 8"
           }
         }
       }
@@ -11635,10 +11653,28 @@
     },
     "every year on October 12": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "jedes Jahr am 12. Oktober"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "tous les ans le 12 octobre"
+          }
+        },
         "ru": {
           "stringUnit": {
             "state": "translated",
             "value": "каждый год 12 октября"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "щороку 12 жовтня"
           }
         }
       }
@@ -11967,10 +12003,28 @@
     },
     "in 2 hours": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "in 2 Stunden"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "dans 2 heures"
+          }
+        },
         "ru": {
           "stringUnit": {
             "state": "translated",
             "value": "через 2 часа"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "через 2 години"
           }
         }
       }
@@ -12621,10 +12675,28 @@
     },
     "on Friday evening": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "am Freitag abends"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "vendredi soir"
+          }
+        },
         "ru": {
           "stringUnit": {
             "state": "translated",
             "value": "в пятницу вечером"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "у п'ятницю ввечері"
           }
         }
       }
@@ -13183,10 +13255,28 @@
     },
     "when I leave work": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "wenn ich die Arbeit verlasse"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "quand je quitte le travail"
+          }
+        },
         "ru": {
           "stringUnit": {
             "state": "translated",
             "value": "когда уйду с работы"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "коли піду з роботи"
           }
         }
       }

@@ -289,7 +289,7 @@ struct PhraseScreen: View {
     }
 
     private func exampleIsPlace(_ sample: String) -> Bool {
-        sample.hasPrefix("когда") || sample.hasPrefix("when")
+        ["когда", "коли", "when", "quand", "wenn"].contains { sample.hasPrefix($0) }
     }
 
     private func exampleValue(_ sample: String) -> String {
