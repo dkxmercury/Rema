@@ -30,7 +30,6 @@ struct SoundScreen: View {
             Palette.background.ignoresSafeArea()
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
-                    ScreenHeader(title: "Sound", leading: .back, action: onBack)
                     SectionLabel(text: "Built-in")
                         .padding(.top, 16)
                     PanelList {
@@ -95,10 +94,12 @@ struct SoundScreen: View {
                         .padding(.top, 10)
                 }
                 .padding(.horizontal, 18)
-                .padding(.top, 15)
                 .padding(.bottom, 120)
             }
             .scrollIndicators(.hidden)
+            .pinnedHeader {
+                ScreenHeader(title: "Sound", leading: .back, action: onBack)
+            }
             PrimaryBar(action: onBack) {
                 Text("Done")
             }

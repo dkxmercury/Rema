@@ -20,7 +20,6 @@ struct EarlyScreen: View {
             Palette.background.ignoresSafeArea()
             ScrollView {
                 VStack(spacing: 0) {
-                    ScreenHeader(title: "In advance", leading: .back, action: onBack)
                     Text(verbatim: String(localized: "\(draft.title.isEmpty ? String(localized: "New reminder") : draft.title) · you can pick several"))
                         .font(.app(.golos, 15))
                         .foregroundStyle(Palette.secondary)
@@ -40,10 +39,12 @@ struct EarlyScreen: View {
                     }
                 }
                 .padding(.horizontal, 18)
-                .padding(.top, 15)
                 .padding(.bottom, 120)
             }
             .scrollIndicators(.hidden)
+            .pinnedHeader {
+                ScreenHeader(title: "In advance", leading: .back, action: onBack)
+            }
             PrimaryBar(action: onBack) {
                 Text("Done")
             }

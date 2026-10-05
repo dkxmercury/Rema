@@ -16,7 +16,6 @@ struct PlacesListScreen: View {
             Palette.background.ignoresSafeArea()
             ScrollView {
                 VStack(spacing: 0) {
-                    ScreenHeader(title: "My places", leading: .back, action: onBack)
                     PlacesMap(places: places, height: 180)
                         .padding(.top, 14)
                     if !places.isEmpty {
@@ -31,15 +30,16 @@ struct PlacesListScreen: View {
                         .padding(.top, 10)
                 }
                 .padding(.horizontal, 18)
-                .padding(.top, 15)
                 .padding(.bottom, 120)
             }
             .scrollIndicators(.hidden)
+            .pinnedHeader {
+                ScreenHeader(title: "My places", leading: .back, action: onBack)
+            }
             PrimaryBar(action: onAdd) {
                 Text("Add place")
             }
             .disabled(places.count >= Place.maximumCount)
-            .opacity(places.count >= Place.maximumCount ? 0.6 : 1)
         }
         .foregroundStyle(Palette.text)
         .animation(Motion.standard, value: places)

@@ -10,7 +10,7 @@ struct PlacesScreen: View {
     let onBack: () -> Void
 
     private var places: [Place] {
-        store.activePlaces
+        store.activePlaces + store.livePlaces.filter { !$0.remembered && placeIDs.contains($0.id) }
     }
 
     private var chosen: [Place] {
@@ -22,7 +22,6 @@ struct PlacesScreen: View {
             Palette.background.ignoresSafeArea()
             ScrollView {
                 VStack(spacing: 0) {
-                    ScreenHeader(title: "By place", leading: .back, action: onBack)
                     if !title.isEmpty {
                         Text(verbatim: title)
                             .font(.app(.golos, 15))
@@ -45,10 +44,12 @@ struct PlacesScreen: View {
                         .contentTransition(.opacity)
                 }
                 .padding(.horizontal, 18)
-                .padding(.top, 15)
                 .padding(.bottom, 120)
             }
             .scrollIndicators(.hidden)
+            .pinnedHeader {
+                ScreenHeader(title: "By place", leading: .back, action: onBack)
+            }
             PrimaryBar(action: onBack) {
                 Text("Done")
             }
@@ -61,15 +62,19 @@ struct PlacesScreen: View {
         }
     }
 
+    private var canAdd: Bool {
+        store.activePlaces.count < Place.maximumCount
+    }
+
     private var list: some View {
         VStack(spacing: 0) {
             ForEach(places) { place in
                 row(place)
-                if places.count < Place.maximumCount || place.id != places.last?.id {
+                if canAdd || place.id != places.last?.id {
                     Hairline()
                 }
             }
-            if places.count < Place.maximumCount {
+            if canAdd {
                 Button(action: onNewPlace) {
                     HStack(spacing: 12) {
                         Glyph(paths: Icons.plus, size: 20, lineWidth: 2.2, color: Palette.accentText)
@@ -105,7 +110,7 @@ struct PlacesScreen: View {
                 VStack(alignment: .leading, spacing: 1) {
                     Text(verbatim: place.name)
                         .font(.app(.golos, 16, weight: 600))
-                    Text(verbatim: String(localized: "radius \(Int(place.radius)) m"))
+                    Text(verbatim: place.remembered ? String(localized: "radius \(Int(place.radius)) m") : String(localized: "only for this reminder"))
                         .font(.app(.golos, 12))
                         .foregroundStyle(Palette.secondary)
                 }

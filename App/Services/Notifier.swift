@@ -81,7 +81,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         for reminder in store.activeReminders where !reminder.placeIDs.isEmpty {
             if reminder.isPlaceOnly, reminder.completedThrough != nil { continue }
             for placeID in reminder.placeIDs {
-                guard let place = store.activePlaces.first(where: { $0.id == placeID }) else { continue }
+                guard let place = store.livePlaces.first(where: { $0.id == placeID }) else { continue }
                 let region = CLCircularRegion(center: place.coordinate, radius: max(place.radius, 100), identifier: "\(reminder.id.uuidString).\(place.id.uuidString)")
                 region.notifyOnEntry = reminder.placeTrigger == .arrive
                 region.notifyOnExit = reminder.placeTrigger == .leave

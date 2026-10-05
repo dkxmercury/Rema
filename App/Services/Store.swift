@@ -31,6 +31,10 @@ final class Store {
     }
 
     var activePlaces: [Place] {
+        places.filter { $0.deletedAt == nil && $0.remembered }
+    }
+
+    var livePlaces: [Place] {
         places.filter { $0.deletedAt == nil }
     }
 
@@ -41,12 +45,30 @@ final class Store {
     func save(_ reminder: Reminder) {
         var updated = reminder
         updated.updatedAt = Date()
+        var previous: [UUID] = []
         if let index = reminders.firstIndex(where: { $0.id == reminder.id }) {
+            previous = reminders[index].placeIDs
             reminders[index] = updated
         } else {
             reminders.append(updated)
         }
+        let kept = updated.deletedAt == nil ? Set(updated.placeIDs) : []
+        dropUnusedPlaces(Set(previous + updated.placeIDs).subtracting(kept))
         persist()
+    }
+
+    // One-off places live only while a reminder uses them; a day-old orphan comes from an abandoned draft.
+    private func dropUnusedPlaces(_ released: Set<UUID>) {
+        let used = Set(activeReminders.flatMap(\.placeIDs))
+        let stale = Date().addingTimeInterval(-86_400)
+        for index in places.indices {
+            let place = places[index]
+            guard !place.remembered, place.deletedAt == nil, !used.contains(place.id) else { continue }
+            if released.contains(place.id) || place.createdAt < stale {
+                places[index].deletedAt = Date()
+                places[index].updatedAt = Date()
+            }
+        }
     }
 
     func complete(_ id: UUID, through occurrence: Date) {

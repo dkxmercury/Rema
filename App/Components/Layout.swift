@@ -54,6 +54,26 @@ extension ScreenHeader where Trailing == Color {
     }
 }
 
+extension View {
+    func pinnedHeader<Header: View>(@ViewBuilder _ header: () -> Header) -> some View {
+        safeAreaInset(edge: .top, spacing: 0) {
+            header()
+                .padding(.horizontal, 18)
+                .padding(.top, 15)
+                .background {
+                    Palette.background
+                        .overlay(alignment: .bottom) {
+                            LinearGradient(colors: [Palette.background, Palette.background.opacity(0)], startPoint: .top, endPoint: .bottom)
+                                .frame(height: 14)
+                                .offset(y: 14)
+                        }
+                        .ignoresSafeArea(edges: .top)
+                        .allowsHitTesting(false)
+                }
+        }
+    }
+}
+
 struct Hairline: View {
     var body: some View {
         Rectangle()
@@ -167,13 +187,36 @@ struct FlowLayout: Layout {
 struct PrimaryBar<Label: View>: View {
     let action: () -> Void
     @ViewBuilder var label: () -> Label
+    @Environment(\.isEnabled) private var isEnabled
+    @State private var typing = false
 
+    // Hidden while typing: above the keyboard it would cover the fields, and the return key confirms anyway.
     var body: some View {
         Button(action: action, label: label)
             .buttonStyle(PrimaryButtonStyle())
+            .opacity(isEnabled ? 1 : 0.6)
             .padding(.horizontal, 18)
+            .padding(.top, 16)
             .padding(.bottom, 28)
+            .background {
+                LinearGradient(
+                    stops: [.init(color: Palette.background.opacity(0), location: 0), .init(color: Palette.background, location: 0.3)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .allowsHitTesting(false)
+            }
+            .opacity(typing ? 0 : 1)
+            .offset(y: typing ? 24 : 0)
+            .allowsHitTesting(!typing)
             .frame(maxHeight: .infinity, alignment: .bottom)
             .ignoresSafeArea(.container, edges: .bottom)
+            .ignoresSafeArea(.keyboard, edges: .bottom)
+            .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
+                withAnimation(Motion.standard) { typing = true }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
+                withAnimation(Motion.standard) { typing = false }
+            }
     }
 }

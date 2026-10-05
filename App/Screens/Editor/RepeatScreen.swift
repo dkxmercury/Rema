@@ -37,7 +37,6 @@ struct RepeatScreen: View {
             Palette.background.ignoresSafeArea()
             ScrollView {
                 VStack(spacing: 0) {
-                    ScreenHeader(title: "Repeat", leading: .back, action: onBack)
                     summary
                         .padding(.top, 14)
                     options
@@ -48,10 +47,12 @@ struct RepeatScreen: View {
                     .padding(.top, 12)
                 }
                 .padding(.horizontal, 18)
-                .padding(.top, 15)
                 .padding(.bottom, 120)
             }
             .scrollIndicators(.hidden)
+            .pinnedHeader {
+                ScreenHeader(title: "Repeat", leading: .back, action: onBack)
+            }
             PrimaryBar(action: onBack) {
                 Text("Done")
             }

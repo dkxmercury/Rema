@@ -42,7 +42,6 @@ struct SettingsScreen: View {
             Palette.background.ignoresSafeArea()
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
-                    ScreenHeader(title: "Settings", leading: .back, action: onBack)
                     section("Account", top: 14) { account }
                     section("Sound") {
                         PanelList {
@@ -99,10 +98,12 @@ struct SettingsScreen: View {
                     }
                 }
                 .padding(.horizontal, 18)
-                .padding(.top, 15)
                 .padding(.bottom, 40)
             }
             .scrollIndicators(.hidden)
+            .pinnedHeader {
+                ScreenHeader(title: "Settings", leading: .back, action: onBack)
+            }
         }
         .foregroundStyle(Palette.text)
         .sheet(item: $editingTime) { target in
@@ -195,6 +196,7 @@ struct SettingsScreen: View {
                 Text("Repeat for persistent")
                     .font(.app(.golos, 16, weight: 500))
                     .lineLimit(2)
+                    .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 value(String(localized: "every \(store.settings.nagInterval) minutes"))
                 Glyph(paths: Icons.chevron, size: 16, lineWidth: 2, color: Palette.secondary)

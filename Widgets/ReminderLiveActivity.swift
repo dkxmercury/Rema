@@ -12,62 +12,73 @@ struct ReminderLiveActivity: Widget {
         } dynamicIsland: { context in
             DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
-                    HStack(spacing: 10) {
+                    HStack(spacing: 8) {
                         IslandDial(due: context.state.due)
-                            .frame(width: 40, height: 40)
-                        VStack(alignment: .leading, spacing: 1) {
+                            .frame(width: 32, height: 32)
+                        VStack(alignment: .leading, spacing: 0) {
                             Text(verbatim: time(context.state.due))
-                                .font(.app(.jost, 24, weight: 500))
+                                .font(.app(.jost, 20, weight: 500))
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.7)
                             if context.state.urgent {
                                 Text("urgent")
-                                    .font(.app(.golos, 12, weight: 600))
+                                    .font(.app(.golos, 11, weight: 600))
                                     .foregroundStyle(Color(hex: 0xFF8E7A))
+                                    .lineLimit(1)
                             }
                         }
                     }
                     .foregroundStyle(Color(hex: 0xF1EFEA))
+                    .padding(.leading, 4)
                 }
                 DynamicIslandExpandedRegion(.trailing) {
-                    VStack(alignment: .trailing, spacing: 1) {
+                    VStack(alignment: .trailing, spacing: 0) {
                         Text("in")
-                            .font(.app(.golos, 12))
+                            .font(.app(.golos, 11))
                             .foregroundStyle(Color(hex: 0xA8A29A))
                         Text(timerInterval: context.state.start...context.state.due, countsDown: true)
-                            .font(.app(.jost, 24, weight: 500))
+                            .font(.app(.jost, 20, weight: 500))
                             .monospacedDigit()
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
                             .multilineTextAlignment(.trailing)
                             .foregroundStyle(Palette.accentOnDark)
-                            .frame(maxWidth: 110, alignment: .trailing)
+                            .frame(maxWidth: 96, alignment: .trailing)
                     }
+                    .padding(.trailing, 4)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 8) {
                         Text(verbatim: context.state.title)
-                            .font(.app(.golos, 18, weight: 600))
+                            .font(.app(.golos, 16, weight: 600))
                             .foregroundStyle(Color(hex: 0xF1EFEA))
                             .lineLimit(1)
-                        HStack(spacing: 10) {
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        HStack(spacing: 8) {
                             Button(intent: CompleteActivityIntent(reminderID: id(context.attributes.reminderID), occurrence: context.state.due)) {
                                 Text("Done")
-                                    .font(.app(.golos, 15, weight: 600))
+                                    .font(.app(.golos, 14, weight: 600))
                                     .foregroundStyle(Palette.onAccent)
+                                    .lineLimit(1)
                                     .frame(maxWidth: .infinity)
-                                    .frame(height: 44)
+                                    .frame(height: 36)
                                     .background(Capsule().fill(Palette.accent))
                             }
                             .buttonStyle(.plain)
                             Button(intent: SnoozeActivityIntent(reminderID: id(context.attributes.reminderID), occurrence: context.state.due)) {
                                 Text("In 10 minutes")
-                                    .font(.app(.golos, 15, weight: 600))
+                                    .font(.app(.golos, 14, weight: 600))
                                     .foregroundStyle(Color(hex: 0xF1EFEA))
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.8)
                                     .frame(maxWidth: .infinity)
-                                    .frame(height: 44)
+                                    .frame(height: 36)
                                     .background(Capsule().fill(Color(hex: 0x2A2927)))
                             }
                             .buttonStyle(.plain)
                         }
                     }
-                    .padding(.top, 4)
+                    .padding(.horizontal, 4)
                 }
             } compactLeading: {
                 IslandDial(due: context.state.due)

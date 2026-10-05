@@ -52,7 +52,7 @@ struct EditorScreen: View {
             case .places:
                 PlacesScreen(store: store, title: draft.title, placeIDs: $draft.placeIDs, trigger: $draft.placeTrigger, onNewPlace: { path.append(.newPlace) }, onBack: pop)
             case .newPlace:
-                NewPlaceScreen(store: store, onSaved: { place in
+                NewPlaceScreen(store: store, askToRemember: true, onSaved: { place in
                     draft.placeIDs.append(place.id)
                     pop()
                 }, onBack: pop)
@@ -71,7 +71,6 @@ struct EditorScreen: View {
             Palette.background.ignoresSafeArea()
             ScrollView {
                 VStack(spacing: 0) {
-                    ScreenHeader(title: "Reminder", leading: .close, action: onClose)
                     titleField
                         .padding(.top, 16)
                     dateCard
@@ -93,11 +92,13 @@ struct EditorScreen: View {
                     }
                 }
                 .padding(.horizontal, 18)
-                .padding(.top, 15)
                 .padding(.bottom, 120)
             }
             .scrollIndicators(.hidden)
             .scrollDismissesKeyboard(.interactively)
+            .pinnedHeader {
+                ScreenHeader(title: "Reminder", leading: .close, action: onClose)
+            }
             PrimaryBar(action: save) {
                 Text("Save")
             }

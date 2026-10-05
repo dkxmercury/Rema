@@ -46,7 +46,6 @@ struct CalendarScreen: View {
             Palette.background.ignoresSafeArea()
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
-                    header
                     Segmented(options: [(Mode.week, "Week"), (Mode.month, "Month")], selection: modeBinding)
                         .padding(.top, 14)
                     grid
@@ -58,10 +57,10 @@ struct CalendarScreen: View {
                         .padding(.top, 8)
                 }
                 .padding(.horizontal, 18)
-                .padding(.top, 15)
                 .padding(.bottom, 40)
             }
             .scrollIndicators(.hidden)
+            .pinnedHeader { header }
         }
         .foregroundStyle(Palette.text)
         .animation(Motion.standard, value: selected)
@@ -73,14 +72,20 @@ struct CalendarScreen: View {
 
     private var header: some View {
         HStack(spacing: 8) {
+            RoundIconButton(icon: Icons.close, label: "Close", action: onClose)
+                .padding(.trailing, 4)
             Button(action: showToday) {
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
                     Text(verbatim: monthTitle)
                         .font(.app(.jost, 32, weight: 500))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
                         .contentTransition(.numericText(countsDown: !forward))
                     Text(verbatim: String(shownMonth.year))
                         .font(.app(.jost, 20))
                         .foregroundStyle(Palette.secondary)
+                        .lineLimit(1)
+                        .fixedSize()
                         .contentTransition(.numericText(countsDown: !forward))
                 }
                 .lineBox(36, .jost, 32, weight: 500)

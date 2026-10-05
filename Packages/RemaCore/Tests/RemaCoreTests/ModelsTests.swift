@@ -58,6 +58,22 @@ struct ModelsTests {
         #expect(large.radius == 1000)
     }
 
+    @Test func placesSavedBeforeOneOffPlacesStayRemembered() throws {
+        let place = Place(name: "Дом", icon: "home", latitude: 41.3, longitude: 69.2, radius: 150, createdAt: created)
+        var object = try #require(JSONSerialization.jsonObject(with: JSONEncoder().encode(place)) as? [String: Any])
+        object.removeValue(forKey: "remembered")
+        let old = try JSONDecoder().decode(Place.self, from: JSONSerialization.data(withJSONObject: object))
+        #expect(old.remembered)
+        #expect(old == place)
+    }
+
+    @Test func oneOffPlaceSurvivesCoding() throws {
+        let place = Place(name: "Место на карте", icon: "home", latitude: 41.3, longitude: 69.2, radius: 150, createdAt: created, remembered: false)
+        let decoded = try JSONDecoder().decode(Place.self, from: JSONEncoder().encode(place))
+        #expect(!decoded.remembered)
+        #expect(decoded == place)
+    }
+
     @Test func standardSettingsMatchTheMockup() {
         let settings = Settings.standard(at: created)
         #expect(settings.morning == LocalTime(hour: 9, minute: 0))

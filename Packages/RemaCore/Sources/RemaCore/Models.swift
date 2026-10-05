@@ -150,6 +150,7 @@ public struct Place: Codable, Identifiable, Hashable, Sendable {
     public var createdAt: Date
     public var updatedAt: Date
     public var deletedAt: Date?
+    public var remembered: Bool
 
     public init(
         id: UUID = UUID(),
@@ -160,7 +161,8 @@ public struct Place: Codable, Identifiable, Hashable, Sendable {
         radius: Double,
         createdAt: Date,
         updatedAt: Date? = nil,
-        deletedAt: Date? = nil
+        deletedAt: Date? = nil,
+        remembered: Bool = true
     ) {
         self.id = id
         self.name = name
@@ -171,6 +173,21 @@ public struct Place: Codable, Identifiable, Hashable, Sendable {
         self.createdAt = createdAt
         self.updatedAt = updatedAt ?? createdAt
         self.deletedAt = deletedAt
+        self.remembered = remembered
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        name = try container.decode(String.self, forKey: .name)
+        icon = try container.decode(String.self, forKey: .icon)
+        latitude = try container.decode(Double.self, forKey: .latitude)
+        longitude = try container.decode(Double.self, forKey: .longitude)
+        radius = try container.decode(Double.self, forKey: .radius)
+        createdAt = try container.decode(Date.self, forKey: .createdAt)
+        updatedAt = try container.decode(Date.self, forKey: .updatedAt)
+        deletedAt = try container.decodeIfPresent(Date.self, forKey: .deletedAt)
+        remembered = try container.decodeIfPresent(Bool.self, forKey: .remembered) ?? true
     }
 }
 

@@ -5,9 +5,11 @@ import SwiftUI
 struct NewPlaceScreen: View {
     let store: Store
     let existing: Place?
+    let askToRemember: Bool
     let onSaved: (Place) -> Void
     let onBack: () -> Void
 
+    @State private var remember = false
     @State private var name: String
     @State private var icon: PlaceIcon
     @State private var radius: Double
@@ -19,9 +21,10 @@ struct NewPlaceScreen: View {
     @FocusState private var nameFocused: Bool
     @FocusState private var searchFocused: Bool
 
-    init(store: Store, existing: Place? = nil, prefill: Place? = nil, onSaved: @escaping (Place) -> Void, onBack: @escaping () -> Void) {
+    init(store: Store, existing: Place? = nil, prefill: Place? = nil, askToRemember: Bool = false, onSaved: @escaping (Place) -> Void, onBack: @escaping () -> Void) {
         self.store = store
         self.existing = existing
+        self.askToRemember = askToRemember && existing == nil
         self.onSaved = onSaved
         self.onBack = onBack
         let source = existing ?? prefill
@@ -42,9 +45,14 @@ struct NewPlaceScreen: View {
             Palette.background.ignoresSafeArea()
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
-                    ScreenHeader(title: existing == nil ? "New place" : "Place", leading: .back, action: onBack)
                     map
                         .padding(.top, 14)
+                    if askToRemember {
+                        PanelList {
+                            ToggleRow(icon: Icons.star, iconColor: Palette.text, title: "Remember place", subtitle: String(localized: "it will appear in My places"), isOn: $remember, minHeight: 60)
+                        }
+                        .padding(.top, 12)
+                    }
                     SectionLabel(text: "Name, anything you like")
                         .padding(.top, 16)
                     nameField
@@ -89,13 +97,15 @@ struct NewPlaceScreen: View {
                     }
                 }
                 .padding(.horizontal, 18)
-                .padding(.top, 15)
                 .padding(.bottom, 120)
             }
             .scrollIndicators(.hidden)
             .scrollDismissesKeyboard(.interactively)
+            .pinnedHeader {
+                ScreenHeader(title: existing == nil ? "New place" : "Place", leading: .back, action: onBack)
+            }
             PrimaryBar(action: save) {
-                Text("Save place")
+                Text(keeps ? LocalizedStringKey("Save place") : LocalizedStringKey("Done"))
             }
         }
         .foregroundStyle(Palette.text)
@@ -116,6 +126,10 @@ struct NewPlaceScreen: View {
                 }
             }
         }
+    }
+
+    private var keeps: Bool {
+        !askToRemember || remember
     }
 
     private var suggestions: [(key: String, icon: PlaceIcon)] {
@@ -242,21 +256,37 @@ struct NewPlaceScreen: View {
             Feedback.play(.error)
             return
         }
-        guard !trimmed.isEmpty else {
+        guard !trimmed.isEmpty || !keeps else {
             nameShake += 1
             nameFocused = true
             Feedback.play(.error)
             return
         }
         var place = existing ?? Place(name: trimmed, icon: icon.rawValue, latitude: center.latitude, longitude: center.longitude, radius: radius, createdAt: Date())
-        place.name = trimmed
+        place.name = trimmed.isEmpty ? String(localized: "Place on the map") : trimmed
         place.icon = icon.rawValue
         place.latitude = center.latitude
         place.longitude = center.longitude
         place.radius = radius
+        place.remembered = keeps
         store.save(place)
         Feedback.play(.save)
         Task { _ = await LocationService.shared.requestPermission() }
+        if trimmed.isEmpty {
+            nameByAddress(place)
+        }
         onSaved(place)
+    }
+
+    private func nameByAddress(_ place: Place) {
+        let store = store
+        Task {
+            let location = CLLocation(latitude: place.latitude, longitude: place.longitude)
+            guard let mark = try? await CLGeocoder().reverseGeocodeLocation(location).first,
+                  let address = mark.name ?? mark.thoroughfare,
+                  var named = store.places.first(where: { $0.id == place.id }) else { return }
+            named.name = address
+            store.save(named)
+        }
     }
 }

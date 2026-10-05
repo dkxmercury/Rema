@@ -97,7 +97,7 @@ struct PhraseScreen: View {
                 case .places:
                     PlacesScreen(store: store, title: parsed.title, placeIDs: placesBinding, trigger: triggerBinding, onNewPlace: { path.append(.newPlace) }, onBack: { path.removeLast() })
                 case .newPlace:
-                    NewPlaceScreen(store: store, onSaved: { place in
+                    NewPlaceScreen(store: store, askToRemember: true, onSaved: { place in
                         overrides.placeIDs = reminder.placeIDs + [place.id]
                         path.removeLast()
                     }, onBack: { path.removeLast() })
@@ -167,12 +167,6 @@ struct PhraseScreen: View {
             Palette.background.ignoresSafeArea()
             ScrollView {
                 VStack(spacing: 0) {
-                    ScreenHeader(title: "New reminder", leading: .close, action: onClose) {
-                        RoundIconButton(icon: Icons.microphone, iconSize: 19, label: "Dictate") {
-                            focused = false
-                            listening = true
-                        }
-                    }
                     input
                         .padding(.top, 14)
                     ReminderPreview(when: when, place: placeLine, summary: summaryLine, summaryLines: 2, describer: describer, calendar: calendar)
@@ -185,17 +179,23 @@ struct PhraseScreen: View {
                         .padding(.top, 14)
                 }
                 .padding(.horizontal, 18)
-                .padding(.top, 15)
                 .padding(.bottom, 120)
             }
             .scrollIndicators(.hidden)
             .scrollDismissesKeyboard(.interactively)
+            .pinnedHeader {
+                ScreenHeader(title: "New reminder", leading: .close, action: onClose) {
+                    RoundIconButton(icon: Icons.microphone, iconSize: 19, label: "Dictate") {
+                        focused = false
+                        listening = true
+                    }
+                }
+            }
             PrimaryBar(action: confirm) {
                 Text(verbatim: confirmTitle)
                     .contentTransition(.numericText())
             }
             .disabled(parsed.title.isEmpty)
-            .opacity(parsed.title.isEmpty ? 0.6 : 1)
         }
         .foregroundStyle(Palette.text)
         .animation(Motion.standard, value: text)
