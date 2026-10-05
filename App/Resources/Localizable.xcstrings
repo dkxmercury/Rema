@@ -329,6 +329,16 @@
         }
       }
     },
+    "Adds a reminder from a phrase, for example tomorrow at 9 call mom.": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Добавляет напоминание из фразы, например «завтра в 9 позвонить маме»."
+          }
+        }
+      }
+    },
     "After 10 times": {
       "localizations": {
         "ru": {
@@ -509,6 +519,16 @@
         }
       }
     },
+    "Create reminder": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Создать напоминание"
+          }
+        }
+      }
+    },
     "Custom time": {
       "localizations": {
         "ru": {
@@ -625,6 +645,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Готово"
+          }
+        }
+      }
+    },
+    "Done, I'll remind you.": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Готово, напомню."
+          }
+        }
+      }
+    },
+    "Done: %@": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Готово: %@"
           }
         }
       }
@@ -1011,12 +1051,32 @@
         }
       }
     },
+    "Marks the current or the next reminder as done.": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отмечает текущее или ближайшее напоминание выполненным."
+          }
+        }
+      }
+    },
     "Mechanika": {
       "localizations": {
         "ru": {
           "stringUnit": {
             "state": "translated",
             "value": "Механика"
+          }
+        }
+      }
+    },
+    "Minutes": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Минуты"
           }
         }
       }
@@ -1037,6 +1097,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Утро"
+          }
+        }
+      }
+    },
+    "Moves the current or the next reminder a bit later.": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Переносит текущее или ближайшее напоминание чуть позже."
           }
         }
       }
@@ -1126,7 +1196,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ближайшее"
+            "value": "Ближайшее напоминание"
           }
         }
       }
@@ -1181,6 +1251,16 @@
         }
       }
     },
+    "Nothing ahead.": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дальше ничего."
+          }
+        }
+      }
+    },
     "Nothing for today": {
       "localizations": {
         "ru": {
@@ -1197,6 +1277,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ничего не запланировано"
+          }
+        }
+      }
+    },
+    "Nothing to mark.": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отмечать нечего."
+          }
+        }
+      }
+    },
+    "Nothing to snooze.": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Откладывать нечего."
           }
         }
       }
@@ -1751,6 +1851,26 @@
         }
       }
     },
+    "Snooze reminder": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отложить напоминание"
+          }
+        }
+      }
+    },
+    "Snoozed by %lld min: %@": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отложено на %1$lld мин: %2$@"
+          }
+        }
+      }
+    },
     "Snoozed reminder": {
       "localizations": {
         "ru": {
@@ -1837,6 +1957,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Нажмите, чтобы попробовать снова"
+          }
+        }
+      }
+    },
+    "Tells what is next and how soon.": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Говорит, что дальше и через сколько."
           }
         }
       }
@@ -2001,6 +2131,16 @@
         }
       }
     },
+    "What and when": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "О чём и когда"
+          }
+        }
+      }
+    },
     "What and when to remind": {
       "localizations": {
         "ru": {
@@ -2027,6 +2167,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Что дальше и через сколько."
+          }
+        }
+      }
+    },
+    "What should I remind about?": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "О чём напомнить?"
           }
         }
       }

@@ -23,6 +23,8 @@ targets:
     platform: iOS
     sources:
       - path: App
+        excludes:
+          - Info.plist
       - path: Shared
     dependencies:
       - package: RemaCore
@@ -38,7 +40,7 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: Rema
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_FILE: App/Info.plist
         INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
         INFOPLIST_KEY_NSMicrophoneUsageDescription: "The microphone is used only while you dictate a reminder."

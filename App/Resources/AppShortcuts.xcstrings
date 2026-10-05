@@ -1,0 +1,79 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Mark done in ${applicationName}" : {
+      "localizations" : {
+        "ru" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Отметь выполненным в ${applicationName}"
+            ]
+          }
+        }
+      }
+    },
+    "New reminder in ${applicationName}" : {
+      "localizations" : {
+        "ru" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Новое напоминание в ${applicationName}"
+            ]
+          }
+        }
+      }
+    },
+    "Next reminder in ${applicationName}" : {
+      "localizations" : {
+        "ru" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Ближайшее напоминание в ${applicationName}"
+            ]
+          }
+        }
+      }
+    },
+    "Remind me in ${applicationName}" : {
+      "localizations" : {
+        "ru" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Напомни в ${applicationName}",
+              "Создай напоминание в ${applicationName}"
+            ]
+          }
+        }
+      }
+    },
+    "Snooze in ${applicationName}" : {
+      "localizations" : {
+        "ru" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Отложи напоминание в ${applicationName}"
+            ]
+          }
+        }
+      }
+    },
+    "What is next in ${applicationName}" : {
+      "localizations" : {
+        "ru" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Что дальше в ${applicationName}"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}
