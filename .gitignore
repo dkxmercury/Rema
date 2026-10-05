@@ -1,0 +1,12 @@
+.DS_Store
+xcuserdata/
+*.xcuserstate
+DerivedData/
+build/
+.build/
+.swiftpm/
+*.xcodeproj/
+*.xcworkspace/
+GoogleService-Info.plist
+Secrets.xcconfig
+*.local.xcconfig
