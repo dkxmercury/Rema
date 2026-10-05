@@ -33,6 +33,17 @@ final class ScreenSnapshots: XCTestCase {
         try render(EarlyScreen(draft: .constant(SampleData.server), now: SampleData.now, calendar: SampleData.calendar, locale: russian, onBack: {}), name: "D-Before", style: .light)
     }
 
+    func testPhrase() throws {
+        try render(PhraseScreen(store: sampleStore(), text: "завтра в 9 позвонить маме", now: SampleData.now, calendar: SampleData.calendar, locale: russian, autofocus: false, onClose: {}), name: "D-Phrase", style: .light)
+    }
+
+    func testVoice() throws {
+        let recognizer = VoiceRecognizer()
+        recognizer.transcript = "напомни в пятницу вечером забрать костюм из химчистки"
+        recognizer.listening = true
+        try render(VoiceScreen(store: sampleStore(), now: SampleData.now, calendar: SampleData.calendar, locale: russian, recognizer: recognizer, live: false, onFinish: { _ in }), name: "D-Voice", style: .light)
+    }
+
     private var russian: Locale { Locale(identifier: "ru_RU") }
 
     private func sampleStore() -> Store {

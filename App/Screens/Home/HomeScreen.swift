@@ -4,9 +4,10 @@ struct HomeScreen: View {
     let content: HomeContent
     var onToggle: (HomeContent.Row) -> Void = { _ in }
     var onOpen: (UUID) -> Void = { _ in }
-    var onCompose: (String) -> Void = { _ in }
+    var onCompose: () -> Void = {}
+    var onVoice: () -> Void = {}
     var onCalendar: () -> Void = {}
-    @State private var draft = ""
+    @State private var addPressed = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
@@ -143,35 +144,38 @@ struct HomeScreen: View {
 
     private var composer: some View {
         HStack(spacing: 8) {
-            TextField(text: $draft, prompt: Text("What and when to remind?").foregroundColor(Palette.secondary)) {
-                Text("New reminder")
+            Button(action: onCompose) {
+                Text("What and when to remind?")
+                    .font(.app(.golos, 16))
+                    .foregroundStyle(Palette.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .frame(height: 44)
+                    .contentShape(Rectangle())
             }
-            .font(.app(.golos, 16))
-            .tint(Palette.accent)
-            .frame(height: 44)
-            .submitLabel(.done)
-            .onSubmit(compose)
-            Button(action: compose) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 12, style: .circular)
-                        .fill(Palette.accent)
-                        .insetShadow(RoundedRectangle(cornerRadius: 12, style: .circular), .black.opacity(0.14), y: -3)
-                    Glyph(paths: Icons.plus, size: 22, lineWidth: 2.4, color: Palette.onAccent)
-                }
-                .frame(width: 44, height: 44)
+            .buttonStyle(.plain)
+            .accessibilityLabel(Text("New reminder"))
+            ZStack {
+                RoundedRectangle(cornerRadius: 12, style: .circular)
+                    .fill(Palette.accent)
+                    .insetShadow(RoundedRectangle(cornerRadius: 12, style: .circular), .black.opacity(0.14), y: -3)
+                Glyph(paths: Icons.plus, size: 22, lineWidth: 2.4, color: Palette.onAccent)
             }
-            .buttonStyle(PressableStyle())
+            .frame(width: 44, height: 44)
+            .scaleEffect(addPressed ? 0.94 : 1)
+            .animation(Motion.press, value: addPressed)
+            .contentShape(Rectangle())
+            .onTapGesture(perform: onCompose)
+            .onLongPressGesture(minimumDuration: 0.35, perform: onVoice, onPressingChanged: { addPressed = $0 })
+            .accessibilityElement()
             .accessibilityLabel(Text("Add reminder"))
+            .accessibilityAddTraits(.isButton)
+            .accessibilityAction(.default, onCompose)
+            .accessibilityAction(named: Text("Dictate"), onVoice)
         }
         .padding(.leading, 18)
         .padding(.trailing, 7)
         .frame(height: 58)
         .inputBar()
-    }
-
-    private func compose() {
-        onCompose(draft)
-        draft = ""
     }
 }
 

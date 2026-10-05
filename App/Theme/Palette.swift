@@ -4,8 +4,8 @@ import UIKit
 enum Palette {
     static let background = Color(light: 0xECEAE5, dark: 0x1A1918)
     static let panel = Color(light: 0xF7F6F3, dark: 0x262522)
-    static let text = Color(light: 0x1C1B19, dark: 0xF1EFEA)
-    static let secondary = Color(light: 0x5F5B55, dark: 0xA8A29A)
+    static let text = Color(uiColor: UIPalette.text)
+    static let secondary = Color(uiColor: UIPalette.secondary)
     static let hairline = Color(light: 0x1C1B19, lightAlpha: 0.10, dark: 0xF1EFEA, darkAlpha: 0.10)
 
     static let accent = Color(hex: 0xF26A1B)
@@ -77,15 +77,25 @@ extension Color {
     }
 
     init(light: UInt32, lightAlpha: CGFloat = 1, dark: UInt32, darkAlpha: CGFloat = 1) {
-        self.init(uiColor: UIColor { traits in
-            traits.userInterfaceStyle == .dark
-                ? UIColor(hex: dark, alpha: darkAlpha)
-                : UIColor(hex: light, alpha: lightAlpha)
-        })
+        self.init(uiColor: UIColor(light: light, lightAlpha: lightAlpha, dark: dark, darkAlpha: darkAlpha))
     }
 }
 
+enum UIPalette {
+    static let text = UIColor(light: 0x1C1B19, dark: 0xF1EFEA)
+    static let secondary = UIColor(light: 0x5F5B55, dark: 0xA8A29A)
+    static let accent = UIColor(hex: 0xF26A1B)
+}
+
 extension UIColor {
+    convenience init(light: UInt32, lightAlpha: CGFloat = 1, dark: UInt32, darkAlpha: CGFloat = 1) {
+        self.init { traits in
+            traits.userInterfaceStyle == .dark
+                ? UIColor(hex: dark, alpha: darkAlpha)
+                : UIColor(hex: light, alpha: lightAlpha)
+        }
+    }
+
     convenience init(hex: UInt32, alpha: CGFloat = 1) {
         self.init(
             red: CGFloat((hex >> 16) & 0xFF) / 255,

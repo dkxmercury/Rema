@@ -79,7 +79,7 @@ struct Describer {
     }
 
     func dayAndTime(_ date: Date, now: Date) -> String {
-        let time = self.time(date)
+        let time = shortTime(date)
         if calendar.isDate(date, inSameDayAs: now) {
             return String(localized: "today at \(time)")
         }
@@ -95,12 +95,17 @@ struct Describer {
         return String(format: "%02d:%02d", parts.hour ?? 0, parts.minute ?? 0)
     }
 
+    func shortTime(_ date: Date) -> String {
+        let parts = calendar.dateComponents([.hour, .minute], from: date)
+        return String(format: "%d:%02d", parts.hour ?? 0, parts.minute ?? 0)
+    }
+
     func dayTitle(_ date: Date) -> String {
         date.formatted(Date.FormatStyle(locale: locale, calendar: calendar, timeZone: calendar.timeZone).weekday(.wide).day().month(.wide)).capitalizedFirst(locale)
     }
 
     func fullDate(_ date: Date) -> String {
-        "\(dayTitle(date)), \(time(date))"
+        "\(dayTitle(date)), \(shortTime(date))"
     }
 
     func repeatValue(_ schedule: Schedule?) -> String {

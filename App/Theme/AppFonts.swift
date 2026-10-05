@@ -1,5 +1,6 @@
 import CoreText
 import SwiftUI
+import UIKit
 
 enum AppFonts {
     static func register() {
@@ -7,6 +8,16 @@ enum AppFonts {
             guard let url = Bundle.main.url(forResource: name, withExtension: "ttf") else { continue }
             CTFontManagerRegisterFontsForURL(url as CFURL, .process, nil)
         }
+    }
+
+    static func ctFont(_ face: Typeface, _ size: CGFloat, weight: Int) -> CTFont {
+        let weightAxis = NSNumber(value: 0x7767_6874)
+        let attributes: [String: Any] = [
+            kCTFontFamilyNameAttribute as String: face.rawValue,
+            kCTFontVariationAttribute as String: [weightAxis: NSNumber(value: weight)],
+        ]
+        let descriptor = CTFontDescriptorCreateWithAttributes(attributes as CFDictionary)
+        return CTFontCreateWithFontDescriptor(descriptor, size, nil)
     }
 }
 
@@ -17,12 +28,18 @@ enum Typeface: String {
 
 extension Font {
     static func app(_ face: Typeface, _ size: CGFloat, weight: Int = 400) -> Font {
-        let weightAxis = NSNumber(value: 0x7767_6874)
-        let attributes: [String: Any] = [
-            kCTFontFamilyNameAttribute as String: face.rawValue,
-            kCTFontVariationAttribute as String: [weightAxis: NSNumber(value: weight)],
-        ]
-        let descriptor = CTFontDescriptorCreateWithAttributes(attributes as CFDictionary)
-        return Font(CTFontCreateWithFontDescriptor(descriptor, size, nil))
+        Font(AppFonts.ctFont(face, size, weight: weight))
+    }
+}
+
+extension View {
+    func lineBox(_ height: CGFloat, _ face: Typeface, _ size: CGFloat, weight: Int = 400) -> some View {
+        padding(.vertical, (height - UIFont.app(face, size, weight: weight).lineHeight) / 2)
+    }
+}
+
+extension UIFont {
+    static func app(_ face: Typeface, _ size: CGFloat, weight: Int = 400) -> UIFont {
+        AppFonts.ctFont(face, size, weight: weight) as UIFont
     }
 }

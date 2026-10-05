@@ -1,12 +1,21 @@
 import RemaCore
 import SwiftUI
 
-struct MiniDial: View {
-    var hour: Int
-    var minute: Int
-    var size: CGFloat = 88
+struct MiniDial: View, Animatable {
+    var minutes: Double
+    var size: CGFloat
 
     private let geometry = DialGeometry()
+
+    init(hour: Int, minute: Int, size: CGFloat = 88) {
+        minutes = Double(hour * 60 + minute)
+        self.size = size
+    }
+
+    var animatableData: Double {
+        get { minutes }
+        set { minutes = newValue }
+    }
 
     var body: some View {
         Canvas { context, canvas in
@@ -29,7 +38,7 @@ struct MiniDial: View {
                     .concatenating(CGAffineTransform(scaleX: scale, y: scale))
                 context.fill(bar.applying(transform), with: .color(Palette.dialTick.opacity(0.5)))
             }
-            let angle = geometry.angle(hour: hour, minute: minute)
+            let angle = minutes / 1440 * 360
             var hand = Path()
             hand.move(to: place(middle))
             hand.addLine(to: place(geometry.point(angle: angle, radius: 93)))

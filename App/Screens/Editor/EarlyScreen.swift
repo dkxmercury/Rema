@@ -62,7 +62,7 @@ struct EarlyScreen: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 CheckBox(isOn: selected)
             }
-            .frame(minHeight: 50)
+            .frame(minHeight: 49)
             .contentShape(Rectangle())
         }
         .buttonStyle(RowPressStyle())

@@ -7,9 +7,15 @@ struct EditingTarget: Identifiable {
     let isNew: Bool
 }
 
+struct ComposeTarget: Identifiable {
+    let id = UUID()
+    let voice: Bool
+}
+
 struct RootView: View {
     @State private var store = Store.shared
     @State private var editing: EditingTarget?
+    @State private var composing: ComposeTarget?
 
     var body: some View {
         TimelineView(.everyMinute) { timeline in
@@ -23,11 +29,18 @@ struct RootView: View {
                 ),
                 onToggle: toggle,
                 onOpen: open,
-                onCompose: compose
+                onCompose: { composing = ComposeTarget(voice: false) },
+                onVoice: {
+                    Feedback.play(.select)
+                    composing = ComposeTarget(voice: true)
+                }
             )
         }
         .fullScreenCover(item: $editing) { target in
             EditorScreen(draft: target.reminder, isNew: target.isNew, store: store, onClose: { editing = nil })
+        }
+        .fullScreenCover(item: $composing) { target in
+            PhraseScreen(store: store, startWithVoice: target.voice, onClose: { composing = nil })
         }
     }
 
@@ -45,20 +58,5 @@ struct RootView: View {
     private func open(_ id: UUID) {
         guard let reminder = store.reminder(id) else { return }
         editing = EditingTarget(reminder: reminder, isNew: false)
-    }
-
-    private func compose(_ text: String) {
-        let calendar = Calendar.current
-        let now = Date()
-        let soon = calendar.date(byAdding: .hour, value: 1, to: now) ?? now
-        let minute = calendar.component(.minute, from: soon)
-        let rounded = calendar.date(byAdding: .minute, value: (5 - minute % 5) % 5, to: soon) ?? soon
-        let parts = calendar.dateComponents([.hour, .minute], from: rounded)
-        let draft = Reminder(
-            title: text.trimmingCharacters(in: .whitespacesAndNewlines),
-            schedule: Schedule(start: LocalDate(rounded, in: calendar), time: LocalTime(hour: parts.hour ?? 9, minute: parts.minute ?? 0)),
-            createdAt: now
-        )
-        editing = EditingTarget(reminder: draft, isNew: true)
     }
 }

@@ -66,6 +66,7 @@ struct RepeatScreen: View {
                 .foregroundStyle(Palette.secondary)
             Text(verbatim: headline)
                 .font(.app(.jost, 26, weight: 500))
+                .lineBox(30, .jost, 26, weight: 500)
                 .contentTransition(.opacity)
             FlowLayout(spacing: 6) {
                 Text(verbatim: String(localized: "at \(describer.time(nextDates.first ?? now)), next"))
@@ -130,7 +131,7 @@ struct RepeatScreen: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 detail(option, selected: selected)
             }
-            .frame(minHeight: selected && option == .yearly ? 62 : 48)
+            .frame(minHeight: option == .yearly ? (selected ? 62 : 48) : 47)
             .contentShape(Rectangle())
         }
         .buttonStyle(RowPressStyle())
@@ -267,6 +268,7 @@ struct RepeatScreen: View {
         let dayMonth = date.formatted(Date.FormatStyle(locale: locale, calendar: calendar, timeZone: calendar.timeZone).day().month(.abbreviated))
             .replacingOccurrences(of: ".", with: "")
             .replacingOccurrences(of: "\u{00A0}", with: " ")
+            .replacingOccurrences(of: "\u{202F}", with: " ")
         return "\(dayMonth) \(calendar.component(.year, from: date))"
     }
 

@@ -112,8 +112,8 @@ struct EditorScreen: View {
         .font(.app(.golos, 28, weight: 600))
         .tint(Palette.accent)
         .focused($titleFocused)
-        .padding(.bottom, 6)
-        .frame(height: 52, alignment: .bottom)
+        .frame(height: 44)
+        .padding(.bottom, 8)
         .overlay(alignment: .bottom) {
             Rectangle().fill(Palette.text).frame(height: 2)
         }
@@ -293,7 +293,7 @@ struct NavigationRow<Value: View>: View {
                     .layoutPriority(1)
                 Glyph(paths: Icons.chevron, size: 16, lineWidth: 2, color: Palette.secondary)
             }
-            .frame(minHeight: 52)
+            .frame(minHeight: 51)
             .contentShape(Rectangle())
         }
         .buttonStyle(RowPressStyle())

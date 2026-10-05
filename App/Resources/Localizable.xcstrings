@@ -197,6 +197,16 @@
         }
       }
     },
+    "Add a time": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Добавьте время"
+          }
+        }
+      }
+    },
     "Add reminder": {
       "localizations": {
         "ru": {
@@ -237,6 +247,26 @@
         }
       }
     },
+    "Allow microphone access in Settings to dictate reminders.": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Чтобы диктовать напоминания, разрешите доступ к микрофону в Настройках."
+          }
+        }
+      }
+    },
+    "Allow speech recognition in Settings to dictate reminders.": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Чтобы диктовать напоминания, разрешите распознавание речи в Настройках."
+          }
+        }
+      }
+    },
     "Back": {
       "localizations": {
         "ru": {
@@ -267,12 +297,32 @@
         }
       }
     },
+    "Choose a time": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выбрать время"
+          }
+        }
+      }
+    },
     "Close": {
       "localizations": {
         "ru": {
           "stringUnit": {
             "state": "translated",
             "value": "Закрыть"
+          }
+        }
+      }
+    },
+    "Could not start the microphone.": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось включить микрофон."
           }
         }
       }
@@ -323,6 +373,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Удалить напоминание?"
+          }
+        }
+      }
+    },
+    "Dictate": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сказать голосом"
           }
         }
       }
@@ -417,12 +477,42 @@
         }
       }
     },
+    "Finish": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Закончить"
+          }
+        }
+      }
+    },
+    "For example, remind me tomorrow at 9 to call mom": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Например, напомни завтра в 9 позвонить маме"
+          }
+        }
+      }
+    },
     "I'll also remind %@": {
       "localizations": {
         "ru": {
           "stringUnit": {
             "state": "translated",
             "value": "напомню ещё %@"
+          }
+        }
+      }
+    },
+    "I'll remind": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напомню"
           }
         }
       }
@@ -515,6 +605,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Через час"
+          }
+        }
+      }
+    },
+    "Listening…": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Слушаю…"
           }
         }
       }
@@ -699,6 +799,16 @@
         }
       }
     },
+    "Place": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Место"
+          }
+        }
+      }
+    },
     "Play sound": {
       "localizations": {
         "ru": {
@@ -715,6 +825,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Предыдущая неделя"
+          }
+        }
+      }
+    },
+    "Remind %@": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напомнить %@"
           }
         }
       }
@@ -765,6 +885,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Напомню семь раз"
+          }
+        }
+      }
+    },
+    "Remind by place": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напомнить по месту"
           }
         }
       }
@@ -999,6 +1129,46 @@
         }
       }
     },
+    "Speak": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Говорите"
+          }
+        }
+      }
+    },
+    "Speech recognition is not available for this language yet.": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Для этого языка распознавание речи пока недоступно."
+          }
+        }
+      }
+    },
+    "Tap to finish": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нажмите, чтобы закончить"
+          }
+        }
+      }
+    },
+    "Tap to try again": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нажмите, чтобы попробовать снова"
+          }
+        }
+      }
+    },
     "This evening": {
       "localizations": {
         "ru": {
@@ -1069,6 +1239,16 @@
         }
       }
     },
+    "What and when to remind": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "О чём и когда напомнить"
+          }
+        }
+      }
+    },
     "What and when to remind?": {
       "localizations": {
         "ru": {
@@ -1089,12 +1269,32 @@
         }
       }
     },
+    "Work": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Работа"
+          }
+        }
+      }
+    },
     "Write below what and when to remind you": {
       "localizations": {
         "ru": {
           "stringUnit": {
             "state": "translated",
             "value": "Напишите внизу, о чём и когда напомнить"
+          }
+        }
+      }
+    },
+    "You can write like this": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Можно писать так"
           }
         }
       }
@@ -1197,6 +1397,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "в %@, ближайшие"
+          }
+        }
+      }
+    },
+    "by place · %@": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "по месту · %@"
           }
         }
       }
@@ -1345,6 +1555,16 @@
         }
       }
     },
+    "for example, tomorrow at 9": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "например, завтра в 9"
+          }
+        }
+      }
+    },
     "for payments and birthdays": {
       "localizations": {
         "ru": {
@@ -1485,6 +1705,16 @@
         }
       }
     },
+    "today, %@": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "сегодня, %@"
+          }
+        }
+      }
+    },
     "tomorrow at %@": {
       "localizations": {
         "ru": {
@@ -1511,6 +1741,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "срочно"
+          }
+        }
+      }
+    },
+    "yearly, %@": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ежегодно, %@"
           }
         }
       }
