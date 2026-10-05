@@ -6,7 +6,11 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         AppFonts.register()
         SoundLibrary.prepare()
         Notifier.shared.configure()
-        Store.shared.onChange = { Notifier.shared.scheduleSoon() }
+        WatchLink.shared.activate()
+        Store.shared.onChange = {
+            Notifier.shared.scheduleSoon()
+            Task { @MainActor in WatchLink.shared.send(store: Store.shared) }
+        }
         return true
     }
 }
