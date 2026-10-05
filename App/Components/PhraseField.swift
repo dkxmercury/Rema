@@ -1,3 +1,4 @@
+import RemaCore
 import SwiftUI
 import UIKit
 
@@ -6,6 +7,7 @@ struct PhraseField: UIViewRepresentable {
     var highlights: [Range<Int>]
     var pending: Range<Int>?
     var editable: Bool
+    var limit: Int
     @Binding var focused: Bool
     var onSubmit: () -> Void
 
@@ -14,6 +16,7 @@ struct PhraseField: UIViewRepresentable {
         highlights: [Range<Int>],
         pending: Range<Int>? = nil,
         editable: Bool = true,
+        limit: Int = Reminder.maximumTitleLength,
         focused: Binding<Bool> = .constant(false),
         onSubmit: @escaping () -> Void = {}
     ) {
@@ -21,6 +24,7 @@ struct PhraseField: UIViewRepresentable {
         self.highlights = highlights
         self.pending = pending
         self.editable = editable
+        self.limit = limit
         _focused = focused
         self.onSubmit = onSubmit
     }
@@ -73,8 +77,20 @@ struct PhraseField: UIViewRepresentable {
         }
 
         func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-            guard text == "\n" else { return true }
-            parent.onSubmit()
+            if text == "\n" {
+                parent.onSubmit()
+                return false
+            }
+            let current = textView.text ?? ""
+            guard let replaced = Range(range, in: current) else { return true }
+            let updated = current.replacingCharacters(in: replaced, with: text)
+            guard updated.count > parent.limit else { return true }
+            let room = parent.limit - (current.count - current[replaced].count)
+            if room > 0 {
+                let fitted = current.replacingCharacters(in: replaced, with: String(text.prefix(room)))
+                textView.text = fitted
+                parent.text = fitted
+            }
             return false
         }
 

@@ -82,6 +82,8 @@ public enum SoundChoice: Codable, Hashable, Sendable {
 }
 
 public struct Reminder: Codable, Identifiable, Hashable, Sendable {
+    public static let maximumTitleLength = 200
+
     public var id: UUID
     public var title: String
     public var schedule: Schedule?

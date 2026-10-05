@@ -26,6 +26,9 @@ struct PhraseScreen: View {
     @State private var pickingDate = false
     @State private var focused = false
     @State private var memo = Memo()
+    @State private var keyboardShown = false
+    @State private var recentPhrases = RecentPhrases.all
+    @State private var showingExamples = false
 
     // Body reads the parse result a dozen times per keystroke; parsing once per text keeps typing smooth.
     final class Memo {
@@ -150,7 +153,7 @@ struct PhraseScreen: View {
     }
 
     private func heard(_ spoken: String?) {
-        let phrase = spoken?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        let phrase = String((spoken?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "").prefix(Reminder.maximumTitleLength))
         if !phrase.isEmpty {
             text = phrase
             listening = false
@@ -197,7 +200,7 @@ struct PhraseScreen: View {
                         .padding(.top, 12)
                     addOns
                         .padding(.top, 12)
-                    examples
+                    suggestions
                         .padding(.top, 14)
                 }
                 .padding(.horizontal, 18)
@@ -218,8 +221,16 @@ struct PhraseScreen: View {
                     .contentTransition(.numericText())
             }
             .disabled(parsed.title.isEmpty)
+            if showsQuickTimes {
+                quickTimes
+                    .frame(maxHeight: .infinity, alignment: .bottom)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
         }
         .foregroundStyle(Palette.text)
+        .animation(Motion.standard, value: showsQuickTimes)
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in keyboardShown = true }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in keyboardShown = false }
         .animation(Motion.standard, value: when)
         .animation(Motion.standard, value: reminder.placeIDs)
         .animation(Motion.standard, value: overrides)
@@ -239,6 +250,17 @@ struct PhraseScreen: View {
             .padding(16)
             .frame(maxWidth: .infinity, alignment: .leading)
             .panel()
+            .overlay(alignment: .bottomTrailing) {
+                if text.count >= Reminder.maximumTitleLength - 40 {
+                    Text(verbatim: "\(text.count)/\(Reminder.maximumTitleLength)")
+                        .font(.app(.golos, 12, weight: 500))
+                        .monospacedDigit()
+                        .foregroundStyle(text.count >= Reminder.maximumTitleLength ? Palette.accentText : Palette.secondary)
+                        .padding(.trailing, 14)
+                        .padding(.bottom, 8)
+                        .transition(.opacity)
+                }
+            }
             .contentShape(Rectangle())
             .onTapGesture { focused = true }
             .accessibilityLabel(Text("What and when to remind"))
@@ -251,6 +273,9 @@ struct PhraseScreen: View {
     private var summaryLine: String {
         let title = parsed.title.lowercased(with: locale)
         guard let when else {
+            if placeLine == nil, keyboardShown, !parsed.title.isEmpty {
+                return String(localized: "or pick an option above the keyboard")
+            }
             return placeLine == nil ? String(localized: "for example, tomorrow at 9") : title
         }
         let countdown = describer.countdown(from: now, to: when)
@@ -271,17 +296,90 @@ struct PhraseScreen: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private var examples: some View {
-        let samples = [
+    private var exampleSamples: [String] {
+        Remote.shared.exampleOverride ?? [
             String(localized: "in 2 hours"),
             String(localized: "on Friday evening"),
             String(localized: "every Tue and Thu at 8"),
             String(localized: "every year on October 12"),
             String(localized: "when I leave work"),
         ]
+    }
+
+    private var showsRecent: Bool {
+        recentPhrases.count >= 2 && !showingExamples
+    }
+
+    private var suggestions: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                SectionLabel(text: showsRecent ? "You wrote recently" : "You can write like this")
+                Spacer(minLength: 8)
+                if recentPhrases.count >= 2 {
+                    Button {
+                        withAnimation(Motion.standard) { showingExamples.toggle() }
+                        Feedback.play(.select)
+                    } label: {
+                        Text(showsRecent ? LocalizedStringKey("Examples") : LocalizedStringKey("Your phrases"))
+                            .font(.app(.golos, 13, weight: 600))
+                            .foregroundStyle(Palette.accentText)
+                            .frame(height: 28)
+                    }
+                    .buttonStyle(RowPressStyle())
+                }
+            }
+            .padding(.bottom, 4)
+            if showsRecent {
+                recentRows
+            } else {
+                exampleRows
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.top, 14)
+        .padding(.bottom, showsRecent ? 0 : 6)
+        .panel()
+    }
+
+    private var recentRows: some View {
+        let phrases = Array(recentPhrases.prefix(3))
         return VStack(alignment: .leading, spacing: 0) {
-            SectionLabel(text: "You can write like this")
-                .padding(.bottom, 4)
+            ForEach(Array(phrases.enumerated()), id: \.offset) { index, phrase in
+                Button {
+                    text = phrase
+                    focused = true
+                    Feedback.play(.select)
+                } label: {
+                    HStack(spacing: 12) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(verbatim: "«\(phrase)»")
+                                .font(.app(.golos, 15))
+                                .lineLimit(1)
+                                .truncationMode(.tail)
+                            let value = cachedExampleValue(phrase)
+                            if !value.isEmpty {
+                                Text(verbatim: value)
+                                    .font(.app(.golos, 13, weight: 500))
+                                    .foregroundStyle(Palette.accentText)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        Glyph(paths: Icons.insert, size: 16, lineWidth: 2, color: Palette.secondary)
+                    }
+                    .frame(minHeight: 56)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(RowPressStyle())
+                if index < phrases.count - 1 {
+                    Hairline()
+                }
+            }
+        }
+    }
+
+    private var exampleRows: some View {
+        let samples = exampleSamples
+        return VStack(alignment: .leading, spacing: 0) {
             ForEach(Array(samples.enumerated()), id: \.offset) { index, sample in
                 Button {
                     text = sample
@@ -305,10 +403,65 @@ struct PhraseScreen: View {
                 }
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.top, 14)
-        .padding(.bottom, 6)
-        .panel()
+    }
+
+    private var showsQuickTimes: Bool {
+        keyboardShown && !parsed.title.isEmpty && reminder.schedule == nil && reminder.placeIDs.isEmpty
+    }
+
+    private var quickTimes: some View {
+        let inAnHour = now.addingTimeInterval(3600)
+        let tonight = date(on: now, at: store.settings.evening)
+        let tomorrow = calendar.date(byAdding: .day, value: 1, to: now).map { date(on: $0, at: store.settings.morning) }
+        return ScrollView(.horizontal) {
+            HStack(spacing: 8) {
+                quickTime("In an hour", inAnHour)
+                if tonight.timeIntervalSince(now) > 15 * 60 {
+                    quickTime("Tonight", tonight)
+                }
+                if let tomorrow {
+                    quickTime("Tomorrow morning", tomorrow)
+                }
+                Button {
+                    focused = false
+                    pickingDate = true
+                } label: {
+                    HStack(spacing: 8) {
+                        Glyph(paths: Icons.calendar, size: 16, lineWidth: 2, color: Palette.text)
+                        Text("Another time")
+                    }
+                }
+                .buttonStyle(RaisedChipStyle())
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 9)
+        }
+        .scrollIndicators(.hidden)
+        .frame(height: 58)
+        .background {
+            Palette.background
+                .overlay(alignment: .top) { Hairline() }
+        }
+    }
+
+    private func quickTime(_ title: LocalizedStringKey, _ date: Date) -> some View {
+        Button {
+            Feedback.play(.select)
+            let parts = calendar.dateComponents([.hour, .minute], from: date)
+            overrides.schedule = Schedule(start: LocalDate(date, in: calendar), time: LocalTime(hour: parts.hour ?? 9, minute: parts.minute ?? 0))
+        } label: {
+            HStack(spacing: 8) {
+                Text(title)
+                Text(verbatim: describer.shortTime(date))
+                    .font(.app(.jost, 15, weight: 500))
+                    .foregroundStyle(Palette.secondary)
+            }
+        }
+        .buttonStyle(RaisedChipStyle())
+    }
+
+    private func date(on day: Date, at time: LocalTime) -> Date {
+        calendar.date(bySettingHour: time.hour, minute: time.minute, second: 0, of: day) ?? day
     }
 
     private func exampleIsPlace(_ sample: String) -> Bool {
@@ -371,6 +524,7 @@ struct PhraseScreen: View {
         }
         Feedback.play(.save)
         store.save(reminder)
+        RecentPhrases.remember(text)
         Notifier.shared.requestPermissionIfNeeded()
         onClose()
     }

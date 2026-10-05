@@ -130,6 +130,20 @@ struct EditorScreen: View {
         .overlay(alignment: .bottom) {
             Rectangle().fill(Palette.text).frame(height: 2)
         }
+        .overlay(alignment: .bottomTrailing) {
+            if draft.title.count >= Reminder.maximumTitleLength - 40 {
+                Text(verbatim: "\(draft.title.count)/\(Reminder.maximumTitleLength)")
+                    .font(.app(.golos, 12, weight: 500))
+                    .monospacedDigit()
+                    .foregroundStyle(draft.title.count >= Reminder.maximumTitleLength ? Palette.accentText : Palette.secondary)
+                    .padding(.bottom, 12)
+            }
+        }
+        .onChange(of: draft.title) { _, title in
+            if title.count > Reminder.maximumTitleLength {
+                draft.title = String(title.prefix(Reminder.maximumTitleLength))
+            }
+        }
         .modifier(Shake(amount: CGFloat(titleShake)))
         .animation(Motion.small, value: titleShake)
     }

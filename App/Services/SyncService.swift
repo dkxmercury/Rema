@@ -109,6 +109,7 @@ final class SyncService {
     private static func clearLocal() {
         Store.shared.reset()
         SoundSync.removeCustomFiles()
+        RecentPhrases.clear()
     }
 
     private func perform() async {

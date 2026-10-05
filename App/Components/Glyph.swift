@@ -67,6 +67,7 @@ enum Icons {
     static let clock = [circle(12, 12, 8.5), "M12 7.5V12l3 2"]
     static let instagram = [rect(3.5, 3.5, 17, 17, 5), circle(12, 12, 4), "M17 7h.01"]
     static let document = ["M7 3.5h7l4 4v13H7z", "M14 3.5v4h4", "M9.5 12h6M9.5 15.5h6"]
+    static let insert = ["M17 17L7 7M7 15V7h8"]
     static let external = ["M10 5H5.5v13.5H19V14", "M13.5 4.5H19.5V10.5", "M19 5l-8 8"]
 
     static func circle(_ cx: Double, _ cy: Double, _ r: Double) -> String {

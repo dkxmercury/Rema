@@ -19,6 +19,8 @@ struct CalendarScreen: View {
     @State private var forward = true
     @State private var rowTransition: AnyTransition = .opacity
     @State private var editing: EditingTarget?
+    @State private var query = ""
+    @FocusState private var searchFocused: Bool
     @Namespace private var selection
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -46,21 +48,35 @@ struct CalendarScreen: View {
             Palette.background.ignoresSafeArea()
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
-                    Segmented(options: [(Mode.week, "Week"), (Mode.month, "Month")], selection: modeBinding)
-                        .padding(.top, 14)
-                    grid
-                        .padding(.top, 12)
-                    SectionLabel(verbatim: describer.dayTitle(date(selected)))
-                        .contentTransition(.opacity)
-                        .padding(.top, 16)
-                    dayList
-                        .padding(.top, 8)
+                    if searching {
+                        results
+                    } else {
+                        Segmented(options: [(Mode.week, "Week"), (Mode.month, "Month")], selection: modeBinding)
+                            .padding(.top, 12)
+                        grid
+                            .padding(.top, 12)
+                        SectionLabel(verbatim: describer.dayTitle(date(selected)))
+                            .contentTransition(.opacity)
+                            .padding(.top, 16)
+                        dayList
+                            .padding(.top, 8)
+                    }
                 }
                 .padding(.horizontal, 18)
                 .padding(.bottom, 40)
             }
             .scrollIndicators(.hidden)
-            .pinnedHeader { header }
+            .scrollDismissesKeyboard(.interactively)
+            .pinnedHeader {
+                VStack(spacing: 14) {
+                    if !searching {
+                        header
+                            .transition(.opacity.combined(with: .move(edge: .top)))
+                    }
+                    searchRow
+                }
+                .animation(Motion.standard, value: searching)
+            }
         }
         .foregroundStyle(Palette.text)
         .animation(Motion.standard, value: selected)
@@ -98,6 +114,223 @@ struct CalendarScreen: View {
         }
         .contentShape(Rectangle())
         .gesture(closeDrag)
+    }
+
+    private var searching: Bool {
+        searchFocused || !query.isEmpty
+    }
+
+    private var searchRow: some View {
+        HStack(spacing: 10) {
+            let shape = RoundedRectangle(cornerRadius: 12, style: .circular)
+            HStack(spacing: 8) {
+                Glyph(paths: Icons.search, size: 18, lineWidth: 2, color: Palette.secondary)
+                TextField(text: $query, prompt: Text("Find a reminder").foregroundColor(Palette.secondary)) {
+                    Text("Find a reminder")
+                }
+                .font(.app(.golos, 15))
+                .tint(Palette.accent)
+                .focused($searchFocused)
+                .submitLabel(.search)
+                .autocorrectionDisabled()
+                if !query.isEmpty {
+                    Button {
+                        query = ""
+                    } label: {
+                        Glyph(paths: Icons.close, size: 10, lineWidth: 3.4, color: .white)
+                            .frame(width: 18, height: 18)
+                            .background(Circle().fill(Palette.dialDone))
+                            .frame(width: 32, height: 32)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(Text("Clear"))
+                }
+            }
+            .padding(.leading, 12)
+            .padding(.trailing, query.isEmpty ? 12 : 6)
+            .frame(height: 44)
+            .background {
+                shape
+                    .fill(Palette.well)
+                    .insetShadow(shape, Palette.wellShadow, blur: 3, y: 1)
+            }
+            .overlay {
+                shape.strokeBorder(Palette.wellBorder, lineWidth: 1)
+            }
+            if searching {
+                Button {
+                    query = ""
+                    searchFocused = false
+                } label: {
+                    Text("Cancel")
+                        .font(.app(.golos, 16, weight: 600))
+                        .foregroundStyle(Palette.accentTextOnBackground)
+                        .frame(height: 44)
+                        .padding(.horizontal, 2)
+                }
+                .buttonStyle(RowPressStyle())
+                .transition(.opacity.combined(with: .move(edge: .trailing)))
+            }
+        }
+    }
+
+    private struct Match: Identifiable {
+        let reminder: Reminder
+        let date: Date?
+        let done: Bool
+        var id: UUID { reminder.id }
+    }
+
+    private var matches: (upcoming: [Match], earlier: [Match]) {
+        let needle = query.trimmingCharacters(in: .whitespaces)
+        guard !needle.isEmpty else { return ([], []) }
+        var upcoming: [Match] = []
+        var earlier: [Match] = []
+        for reminder in store.reminders where reminder.title.range(of: needle, options: [.caseInsensitive, .diacriticInsensitive], locale: locale) != nil {
+            guard let schedule = reminder.schedule else {
+                upcoming.append(Match(reminder: reminder, date: nil, done: false))
+                continue
+            }
+            if let next = Recurrence.next(schedule, after: now.addingTimeInterval(-60), limit: 1, calendar: calendar).first,
+               !(schedule.rule == nil && (reminder.completedThrough.map { $0 >= next } ?? false)) {
+                upcoming.append(Match(reminder: reminder, date: next, done: false))
+            } else if let last = Recurrence.next(schedule, after: .distantPast, limit: 1000, calendar: calendar).last {
+                earlier.append(Match(reminder: reminder, date: last, done: reminder.completedThrough.map { $0 >= last } ?? false))
+            }
+        }
+        upcoming.sort { ($0.date ?? .distantFuture) < ($1.date ?? .distantFuture) }
+        earlier.sort { ($0.date ?? .distantPast) > ($1.date ?? .distantPast) }
+        return (upcoming, earlier)
+    }
+
+    private var results: some View {
+        let found = matches
+        let total = found.upcoming.count + found.earlier.count
+        return VStack(alignment: .leading, spacing: 0) {
+            if !found.upcoming.isEmpty {
+                SectionLabel(text: "Upcoming")
+                    .padding(.top, 20)
+                resultList(found.upcoming)
+                    .padding(.top, 8)
+            }
+            if !found.earlier.isEmpty {
+                SectionLabel(text: found.earlier.allSatisfy(\.done) ? "Completed" : "Earlier")
+                    .padding(.top, 18)
+                resultList(found.earlier)
+                    .padding(.top, 8)
+            }
+            if !query.trimmingCharacters(in: .whitespaces).isEmpty {
+                Group {
+                    if total == 0 {
+                        Text("Nothing found")
+                    } else {
+                        Text("Found \(total) reminders")
+                    }
+                }
+                .font(.app(.golos, 13))
+                .foregroundStyle(Palette.secondary)
+                .frame(maxWidth: .infinity)
+                .padding(.top, total == 0 ? 28 : 14)
+            }
+        }
+        .animation(Motion.standard, value: query)
+    }
+
+    private func resultList(_ items: [Match]) -> some View {
+        VStack(spacing: 0) {
+            ForEach(Array(items.enumerated()), id: \.element.id) { index, match in
+                if index > 0 {
+                    Hairline()
+                }
+                Button {
+                    editing = EditingTarget(reminder: match.reminder, isNew: false)
+                } label: {
+                    HStack(spacing: 14) {
+                        Group {
+                            if let date = match.date {
+                                Text(verbatim: describer.shortTime(date))
+                                    .font(.app(.jost, 18, weight: 500))
+                                    .monospacedDigit()
+                            } else if !match.reminder.placeIDs.isEmpty {
+                                Glyph(paths: Icons.pin, size: 18, lineWidth: 2, color: Palette.text)
+                            }
+                        }
+                        .foregroundStyle(match.done ? Palette.secondary : Palette.text)
+                        .frame(width: 50, alignment: .leading)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(highlighted(match.reminder.title, done: match.done))
+                                .font(.app(.golos, 16))
+                                .strikethrough(match.done, color: Palette.secondary)
+                                .foregroundStyle(match.done ? Palette.secondary : Palette.text)
+                                .lineLimit(2)
+                                .multilineTextAlignment(.leading)
+                            let line = details(match)
+                            if !line.isEmpty {
+                                Text(verbatim: line)
+                                    .font(.app(.golos, 12))
+                                    .foregroundStyle(Palette.secondary)
+                                    .lineLimit(1)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        Glyph(paths: Icons.chevron, size: 16, lineWidth: 2, color: Palette.secondary)
+                    }
+                    .frame(minHeight: 60)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(RowPressStyle())
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 2)
+        .panel()
+    }
+
+    private func highlighted(_ title: String, done: Bool) -> AttributedString {
+        var text = AttributedString(title)
+        let needle = query.trimmingCharacters(in: .whitespaces)
+        guard !needle.isEmpty else { return text }
+        var searchStart = title.startIndex
+        while searchStart < title.endIndex,
+              let found = title.range(of: needle, options: [.caseInsensitive, .diacriticInsensitive], range: searchStart..<title.endIndex, locale: locale) {
+            if let lower = AttributedString.Index(found.lowerBound, within: text), let upper = AttributedString.Index(found.upperBound, within: text) {
+                text[lower..<upper].backgroundColor = Palette.accent.opacity(done ? 0.12 : 0.18)
+                if !done {
+                    text[lower..<upper].underlineStyle = Text.LineStyle(pattern: .solid, color: Palette.accent)
+                }
+            }
+            searchStart = found.upperBound
+        }
+        return text
+    }
+
+    private func details(_ match: Match) -> String {
+        var parts: [String] = []
+        if let date = match.date {
+            parts.append(relativeDay(date))
+        } else if !match.reminder.placeIDs.isEmpty {
+            parts.append(describer.placeText(match.reminder, places: store.places))
+        }
+        if let rule = match.reminder.schedule?.rule {
+            parts.append(describer.repeatText(rule))
+        }
+        return parts.joined(separator: " · ")
+    }
+
+    private func relativeDay(_ date: Date) -> String {
+        let style = Date.FormatStyle(locale: locale, calendar: calendar, timeZone: calendar.timeZone)
+        let day = date.formatted(style.day().month(.wide))
+        if calendar.isDate(date, inSameDayAs: now) {
+            return String(localized: "today, \(day)")
+        }
+        if let tomorrow = calendar.date(byAdding: .day, value: 1, to: now), calendar.isDate(date, inSameDayAs: tomorrow) {
+            return String(localized: "tomorrow, \(day)")
+        }
+        let days = calendar.dateComponents([.day], from: calendar.startOfDay(for: now), to: calendar.startOfDay(for: date)).day ?? 0
+        if days > 1, days < 7 {
+            return date.formatted(style.weekday(.abbreviated).day().month(.wide))
+        }
+        return day
     }
 
     private var closeDrag: some Gesture {

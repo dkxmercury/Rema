@@ -190,6 +190,11 @@ struct NewPlaceScreen: View {
         .overlay(alignment: .bottom) {
             Rectangle().fill(Palette.accent).frame(height: 2)
         }
+        .onChange(of: name) { _, value in
+            if value.count > Reminder.maximumTitleLength {
+                name = String(value.prefix(Reminder.maximumTitleLength))
+            }
+        }
         .modifier(Shake(amount: CGFloat(nameShake)))
         .animation(Motion.small, value: nameShake)
     }
