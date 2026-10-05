@@ -62,6 +62,13 @@ struct SettingsScreen: View {
                             Hairline()
                             nagRow
                         }
+                        Text("For the words “morning” and “evening” and reminders without a time")
+                            .font(.app(.golos, 13))
+                            .lineHeight(18, .golos, 13)
+                            .foregroundStyle(Palette.secondary)
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: .infinity)
+                            .padding(.top, 4)
                     }
                     section("Places") {
                         PanelList {

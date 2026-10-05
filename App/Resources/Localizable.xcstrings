@@ -3661,6 +3661,52 @@
         }
       }
     },
+    "For the words “morning” and “evening” and reminders without a time": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لكلمتي «صباحًا» و«مساءً» وللتذكيرات بلا ساعة"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Für „morgens“ und „abends“ und Erinnerungen ohne Uhrzeit"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pour « le matin », « le soir » et les rappels sans heure"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Для слов «утром» и «вечером» и напоминаний без часа"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Для слів «вранці» і «ввечері» та нагадувань без години"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«Эрталаб», «кечқурун» сўзлари ва соатсиз эслатмалар учун"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«Ertalab», «kechqurun» so‘zlari va soatsiz eslatmalar uchun"
+          }
+        }
+      }
+    },
     "Home": {
       "localizations": {
         "ar": {
