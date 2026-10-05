@@ -67,17 +67,7 @@ extension HomeContent {
         }
 
         let rows = today.compactMap { item -> Row? in
-            guard let reminder = byID[item.reminderID] else { return nil }
-            return Row(
-                id: "\(item.reminderID.uuidString)-\(Int(item.occurrence.timeIntervalSince1970))",
-                reminderID: item.reminderID,
-                occurrence: item.occurrence,
-                time: describer.time(item.occurrence),
-                title: reminder.title,
-                subtitle: describer.subtitle(for: reminder, places: places),
-                done: item.done,
-                highlighted: isNext(item)
-            )
+            byID[item.reminderID].map { row(item, reminder: $0, places: places, describer: describer, highlighted: isNext(item)) }
         }
 
         var next: Next?
@@ -134,11 +124,39 @@ extension HomeContent {
     }
 }
 
+extension HomeContent {
+    static func rows(on day: Date, reminders: [Reminder], places: [Place], now: Date, calendar: Calendar, locale: Locale) -> [Row] {
+        let describer = Describer(calendar: calendar, locale: locale)
+        let active = reminders.filter { $0.deletedAt == nil }
+        let byID = Dictionary(active.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+        let next = Agenda.upcoming(after: now, reminders: active, calendar: calendar).first
+        return Agenda.day(day, reminders: active, calendar: calendar).compactMap { item in
+            byID[item.reminderID].map {
+                row(item, reminder: $0, places: places, describer: describer, highlighted: item.reminderID == next?.reminderID && item.occurrence == next?.occurrence)
+            }
+        }
+    }
+
+    private static func row(_ item: AgendaItem, reminder: Reminder, places: [Place], describer: Describer, highlighted: Bool) -> Row {
+        Row(
+            id: "\(item.reminderID.uuidString)-\(Int(item.occurrence.timeIntervalSince1970))",
+            reminderID: item.reminderID,
+            occurrence: item.occurrence,
+            time: describer.time(item.occurrence),
+            title: reminder.title,
+            subtitle: describer.subtitle(for: reminder, places: places),
+            done: item.done,
+            highlighted: highlighted
+        )
+    }
+}
+
 enum SampleData {
     static let calendar: Calendar = {
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = TimeZone(identifier: "Asia/Tashkent")!
         calendar.locale = Locale(identifier: "ru_RU")
+        calendar.firstWeekday = 2
         return calendar
     }()
 

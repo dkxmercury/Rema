@@ -278,6 +278,7 @@ struct NavigationRow<Value: View>: View {
     let icon: [String]
     let iconColor: Color
     let title: LocalizedStringKey
+    var minHeight: CGFloat = 51
     let action: () -> Void
     @ViewBuilder var value: () -> Value
 
@@ -293,7 +294,7 @@ struct NavigationRow<Value: View>: View {
                     .layoutPriority(1)
                 Glyph(paths: Icons.chevron, size: 16, lineWidth: 2, color: Palette.secondary)
             }
-            .frame(minHeight: 51)
+            .frame(minHeight: minHeight)
             .contentShape(Rectangle())
         }
         .buttonStyle(RowPressStyle())
@@ -306,6 +307,7 @@ struct ToggleRow: View {
     let title: LocalizedStringKey
     let subtitle: String
     @Binding var isOn: Bool
+    var minHeight: CGFloat = 60
 
     var body: some View {
         HStack(spacing: 12) {
@@ -320,7 +322,7 @@ struct ToggleRow: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             LeverToggle(isOn: $isOn)
         }
-        .frame(minHeight: 60)
+        .frame(minHeight: minHeight)
         .onChange(of: isOn) { _, _ in
             Feedback.play(.toggle)
         }

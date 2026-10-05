@@ -44,6 +44,14 @@ final class ScreenSnapshots: XCTestCase {
         try render(VoiceScreen(store: sampleStore(), now: SampleData.now, calendar: SampleData.calendar, locale: russian, recognizer: recognizer, live: false, onFinish: { _ in }), name: "D-Voice", style: .light)
     }
 
+    func testCalendar() throws {
+        try render(CalendarScreen(store: sampleStore(), now: SampleData.now, calendar: SampleData.calendar, locale: russian, onClose: {}), name: "D-Calendar", style: .light)
+    }
+
+    func testSettings() throws {
+        try render(SettingsScreen(store: sampleStore(), locale: russian, onBack: {}), name: "D-Settings", style: .light, height: 1210)
+    }
+
     private var russian: Locale { Locale(identifier: "ru_RU") }
 
     private func sampleStore() -> Store {
@@ -65,7 +73,7 @@ private struct SafeAreaProbe: View {
 }
 
 private extension ScreenSnapshots {
-    func render<Screen: View>(_ screen: Screen, name: String, style: UIUserInterfaceStyle) throws {
+    func render<Screen: View>(_ screen: Screen, name: String, style: UIUserInterfaceStyle, height: CGFloat = 844) throws {
         guard let directory = ProcessInfo.processInfo.environment["SNAPSHOT_DIR"] else {
             throw XCTSkip("SNAPSHOT_DIR не задан")
         }
@@ -74,8 +82,10 @@ private extension ScreenSnapshots {
                 .environment(\.locale, Locale(identifier: "ru_RU"))
                 .environment(\.colorScheme, style == .dark ? .dark : .light)
         )
+        let device = ViewImageConfig.iPhone13
+        let config = ViewImageConfig(safeArea: device.safeArea, size: CGSize(width: 390, height: height), traits: device.traits)
         let strategy = Snapshotting<AnyView, UIImage>.image(
-            layout: .device(config: .iPhone13),
+            layout: .device(config: config),
             traits: UITraitCollection(userInterfaceStyle: style)
         )
         let finished = expectation(description: name)

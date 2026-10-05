@@ -93,10 +93,18 @@ struct RaisedCircle: View {
 }
 
 struct SectionLabel: View {
-    let text: LocalizedStringKey
+    let text: Text
+
+    init(text: LocalizedStringKey) {
+        self.text = Text(text)
+    }
+
+    init(verbatim: String) {
+        text = Text(verbatim: verbatim)
+    }
 
     var body: some View {
-        Text(text)
+        text
             .font(.app(.golos, 12, weight: 600))
             .tracking(1.2)
             .textCase(.uppercase)

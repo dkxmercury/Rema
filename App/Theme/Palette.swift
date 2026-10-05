@@ -39,6 +39,7 @@ enum Palette {
     static let tagBorder = Color(light: 0x1C1B19, lightAlpha: 0.25, dark: 0xF1EFEA, darkAlpha: 0.25)
     static let radioBorder = Color(light: 0x1C1B19, lightAlpha: 0.22, dark: 0xF1EFEA, darkAlpha: 0.22)
     static let faint = Color(light: 0xA39E95, dark: 0x5F5B55)
+    static let otherMonth = Color(light: 0x736E66, dark: 0x8C867E)
     static let timelineLine = Color(hex: 0xF26A1B, alpha: 0.40)
 
     static let well = Color(light: 0xFBFAF8, dark: 0x1E1D1B)

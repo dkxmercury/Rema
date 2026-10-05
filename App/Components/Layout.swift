@@ -83,8 +83,8 @@ struct Tag: View {
             .font(.app(.golos, 12, weight: 600))
             .lineLimit(1)
             .fixedSize()
-            .padding(.horizontal, 8)
-            .frame(height: 24)
+            .padding(.horizontal, 9)
+            .frame(height: 26)
             .overlay {
                 RoundedRectangle(cornerRadius: 6, style: .circular)
                     .strokeBorder(Palette.tagBorder, lineWidth: 1)

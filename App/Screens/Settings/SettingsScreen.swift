@@ -1,0 +1,343 @@
+import CoreLocation
+import RemaCore
+import SwiftUI
+import UserNotifications
+
+struct SettingsScreen: View {
+    let store: Store
+    var locale: Locale = .current
+    let onBack: () -> Void
+
+    @AppStorage(Feedback.hapticsKey) private var haptics = true
+    @AppStorage(Feedback.soundsKey) private var sounds = true
+    @State private var editingTime: TimeTarget?
+    @State private var permissions = Permissions()
+    @State private var signInSoon = false
+    @Environment(\.scenePhase) private var scenePhase
+
+    struct TimeTarget: Identifiable {
+        enum Kind {
+            case morning
+            case evening
+        }
+
+        let kind: Kind
+        var id: Kind { kind }
+    }
+
+    struct Permissions: Equatable {
+        var notifications: UNAuthorizationStatus = .notDetermined
+        var urgent: UNNotificationSetting = .notSupported
+        var location: CLAuthorizationStatus = .notDetermined
+    }
+
+    private var describer: Describer {
+        Describer(calendar: .current, locale: locale)
+    }
+
+    var body: some View {
+        ZStack {
+            Palette.background.ignoresSafeArea()
+            ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
+                    ScreenHeader(title: "Settings", leading: .back, action: onBack)
+                    section("Account", top: 14) { account }
+                    section("Sound") {
+                        PanelList {
+                            NavigationRow(icon: Icons.note, iconColor: Palette.text, title: "Default sound", minHeight: 52, action: {}) {
+                                value(describer.soundName(store.settings.defaultSound, settings: store.settings, sounds: store.sounds))
+                            }
+                        }
+                    }
+                    section("Time") {
+                        PanelList {
+                            NavigationRow(icon: Icons.sun, iconColor: Palette.text, title: "Morning", action: { editingTime = TimeTarget(kind: .morning) }) {
+                                clock(store.settings.morning)
+                            }
+                            Hairline()
+                            NavigationRow(icon: Icons.moon, iconColor: Palette.text, title: "Evening", action: { editingTime = TimeTarget(kind: .evening) }) {
+                                clock(store.settings.evening)
+                            }
+                            Hairline()
+                            nagRow
+                        }
+                    }
+                    section("Places") {
+                        PanelList {
+                            NavigationRow(icon: Icons.pin, iconColor: Palette.text, title: "My places", minHeight: 52, action: {}) {
+                                value(String(localized: "\(store.activePlaces.count) of \(20)"))
+                            }
+                        }
+                    }
+                    section("Theme") {
+                        Segmented(options: [(Appearance.system, "As in system"), (Appearance.light, "Light"), (Appearance.dark, "Dark")], selection: appearance, fontSize: 14)
+                    }
+                    section("Feedback") {
+                        PanelList {
+                            ToggleRow(icon: Icons.vibration, iconColor: Palette.text, title: "Vibration", subtitle: String(localized: "a light response to touches"), isOn: $haptics, minHeight: 56)
+                            Hairline()
+                            ToggleRow(icon: Icons.speaker, iconColor: Palette.text, title: "Interface sounds", subtitle: String(localized: "quiet clicks, silent in silent mode"), isOn: $sounds, minHeight: 56)
+                        }
+                    }
+                    section("Language") {
+                        PanelList {
+                            NavigationRow(icon: Icons.globe, iconColor: Palette.text, title: "App language", minHeight: 52, action: openSystemSettings) {
+                                value(languageName)
+                            }
+                        }
+                    }
+                    section("Permissions") {
+                        PanelList {
+                            permissionRow("Notifications", granted: notificationsGranted, text: notificationsText, height: 49, action: notificationsAction)
+                            Hairline()
+                            permissionRow("Urgent notifications", granted: permissions.urgent == .enabled, text: permissions.urgent == .enabled ? String(localized: "allowed") : String(localized: "not allowed"), height: 49, action: openSystemSettings)
+                            Hairline()
+                            permissionRow("Location", granted: locationGranted, text: locationText, height: 50, action: openSystemSettings)
+                        }
+                    }
+                }
+                .padding(.horizontal, 18)
+                .padding(.top, 15)
+                .padding(.bottom, 40)
+            }
+            .scrollIndicators(.hidden)
+        }
+        .foregroundStyle(Palette.text)
+        .sheet(item: $editingTime) { target in
+            TimeSheet(
+                title: target.kind == .morning ? "Morning" : "Evening",
+                time: target.kind == .morning ? store.settings.morning : store.settings.evening
+            ) { time in
+                store.update { settings in
+                    if target.kind == .morning {
+                        settings.morning = time
+                    } else {
+                        settings.evening = time
+                    }
+                }
+                editingTime = nil
+            }
+        }
+        .alert("Sign-in is coming soon", isPresented: $signInSoon) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Accounts and sync will arrive after testing. Everything is saved on this phone for now.")
+        }
+        .task(id: scenePhase) {
+            await refreshPermissions()
+        }
+        .onChange(of: haptics) { _, _ in Feedback.play(.toggle) }
+        .onChange(of: sounds) { _, _ in Feedback.play(.toggle) }
+    }
+
+    private func section<Content: View>(_ title: LocalizedStringKey, top: CGFloat = 16, @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            SectionLabel(text: title)
+            content()
+        }
+        .padding(.top, top)
+    }
+
+    private var account: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(alignment: .top, spacing: 12) {
+                let badge = RoundedRectangle(cornerRadius: 10, style: .circular)
+                Glyph(paths: Icons.cloudCheck, size: 20, lineWidth: 2.1, color: Palette.onAccent)
+                    .frame(width: 36, height: 36)
+                    .background(badge.fill(Palette.accent).insetShadow(badge, .black.opacity(0.14), y: -2))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Sign in to keep your reminders")
+                        .font(.app(.golos, 16, weight: 600))
+                    Text("They will live in your account and appear on any of your phones.")
+                        .font(.app(.golos, 13))
+                        .lineSpacing(2)
+                        .foregroundStyle(Palette.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            Button {
+                signInSoon = true
+            } label: {
+                let shape = RoundedRectangle(cornerRadius: 12, style: .circular)
+                Text("Sign in")
+                    .font(.app(.golos, 15, weight: 600))
+                    .foregroundStyle(Palette.onAccent)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 44)
+                    .background(shape.fill(Palette.accent).insetShadow(shape, .black.opacity(0.15), y: -3))
+            }
+            .buttonStyle(PressableStyle())
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .panel()
+    }
+
+    private var nagRow: some View {
+        Menu {
+            ForEach([1, 2, 3, 5, 10, 15, 30], id: \.self) { minutes in
+                Button {
+                    store.update { $0.nagInterval = minutes }
+                    Feedback.play(.select)
+                } label: {
+                    if minutes == store.settings.nagInterval {
+                        Label(String(localized: "every \(minutes) minutes"), systemImage: "checkmark")
+                    } else {
+                        Text(verbatim: String(localized: "every \(minutes) minutes"))
+                    }
+                }
+            }
+        } label: {
+            HStack(spacing: 12) {
+                Glyph(paths: Icons.bell, size: 20, lineWidth: 2, color: Palette.text)
+                Text("Repeat for persistent")
+                    .font(.app(.golos, 16, weight: 500))
+                    .lineLimit(1)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                value(String(localized: "every \(store.settings.nagInterval) minutes"))
+                Glyph(paths: Icons.chevron, size: 16, lineWidth: 2, color: Palette.secondary)
+            }
+            .frame(minHeight: 52)
+            .contentShape(Rectangle())
+            .foregroundStyle(Palette.text)
+        }
+    }
+
+    private func value(_ text: String) -> some View {
+        Text(verbatim: text)
+            .font(.app(.golos, 14))
+            .foregroundStyle(Palette.secondary)
+            .lineLimit(1)
+            .fixedSize()
+    }
+
+    private func clock(_ time: LocalTime) -> some View {
+        Text(verbatim: String(format: "%d:%02d", time.hour, time.minute))
+            .font(.app(.jost, 17, weight: 500))
+            .monospacedDigit()
+            .contentTransition(.numericText())
+    }
+
+    private func permissionRow(_ title: LocalizedStringKey, granted: Bool, text: String, height: CGFloat, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                Text(title)
+                    .font(.app(.golos, 16, weight: 500))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                HStack(spacing: 6) {
+                    Circle()
+                        .fill(granted ? Palette.yearly : Palette.urgent)
+                        .frame(width: 8, height: 8)
+                    Text(verbatim: text)
+                        .font(.app(.golos, 14))
+                        .foregroundStyle(granted ? Palette.granted : Palette.urgentText)
+                }
+            }
+            .frame(minHeight: height)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(RowPressStyle())
+    }
+
+    private var appearance: Binding<Appearance> {
+        Binding(
+            get: { store.settings.appearance },
+            set: { value in store.update { $0.appearance = value } }
+        )
+    }
+
+    private var languageName: String {
+        let code = Bundle.main.preferredLocalizations.first ?? "en"
+        let name = Locale(identifier: code).localizedString(forLanguageCode: code) ?? code
+        return name.capitalizedFirst(Locale(identifier: code))
+    }
+
+    private var notificationsGranted: Bool {
+        [.authorized, .provisional, .ephemeral].contains(permissions.notifications)
+    }
+
+    private var notificationsText: String {
+        switch permissions.notifications {
+        case .notDetermined: return String(localized: "not requested")
+        case .denied: return String(localized: "off")
+        default: return String(localized: "on")
+        }
+    }
+
+    private var locationGranted: Bool {
+        permissions.location == .authorizedAlways || permissions.location == .authorizedWhenInUse
+    }
+
+    private var locationText: String {
+        switch permissions.location {
+        case .authorizedAlways: return String(localized: "always")
+        case .authorizedWhenInUse: return String(localized: "while using")
+        case .notDetermined: return String(localized: "not asked")
+        default: return String(localized: "no access")
+        }
+    }
+
+    private func notificationsAction() {
+        if permissions.notifications == .notDetermined {
+            Task {
+                _ = try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge])
+                await refreshPermissions()
+                Notifier.shared.scheduleSoon()
+            }
+        } else {
+            openSystemSettings()
+        }
+    }
+
+    private func openSystemSettings() {
+        guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+        UIApplication.shared.open(url)
+    }
+
+    private func refreshPermissions() async {
+        let settings = await UNUserNotificationCenter.current().notificationSettings()
+        var updated = Permissions()
+        updated.notifications = settings.authorizationStatus
+        updated.urgent = settings.timeSensitiveSetting
+        updated.location = CLLocationManager().authorizationStatus
+        permissions = updated
+    }
+}
+
+struct TimeSheet: View {
+    let title: LocalizedStringKey
+    let onDone: (LocalTime) -> Void
+    @State private var hour: Int
+    @State private var minute: Int
+
+    init(title: LocalizedStringKey, time: LocalTime, onDone: @escaping (LocalTime) -> Void) {
+        self.title = title
+        self.onDone = onDone
+        _hour = State(initialValue: time.hour)
+        _minute = State(initialValue: time.minute)
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Text(title)
+                .font(.app(.jost, 18, weight: 500))
+                .padding(.top, 24)
+            TimeDrums(hour: $hour, minute: $minute)
+                .padding(.top, 18)
+            Button {
+                Feedback.play(.save)
+                onDone(LocalTime(hour: hour, minute: minute))
+            } label: {
+                Text("Done")
+            }
+            .buttonStyle(PrimaryButtonStyle())
+            .padding(.top, 18)
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 18)
+        .foregroundStyle(Palette.text)
+        .presentationDetents([.height(400)])
+        .presentationCornerRadius(28)
+        .presentationBackground(Palette.background)
+    }
+}

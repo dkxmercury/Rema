@@ -197,6 +197,88 @@
         }
       }
     },
+    "%lld of %lld": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld из %2$lld"
+          }
+        }
+      }
+    },
+    "%lld reminders": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld reminder"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld reminders"
+                }
+              }
+            }
+          }
+        },
+        "ru": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld напоминания"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld напоминаний"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld напоминание"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld напоминания"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Account": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Аккаунт"
+          }
+        }
+      }
+    },
+    "Accounts and sync will arrive after testing. Everything is saved on this phone for now.": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Аккаунт и синхронизация появятся после тестов. Пока всё хранится на этом телефоне."
+          }
+        }
+      }
+    },
     "Add a time": {
       "localizations": {
         "ru": {
@@ -263,6 +345,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Чтобы диктовать напоминания, разрешите распознавание речи в Настройках."
+          }
+        }
+      }
+    },
+    "App language": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Язык приложения"
+          }
+        }
+      }
+    },
+    "As in system": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Как в системе"
           }
         }
       }
@@ -337,12 +439,32 @@
         }
       }
     },
+    "Dark": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Тёмная"
+          }
+        }
+      }
+    },
     "Date and time": {
       "localizations": {
         "ru": {
           "stringUnit": {
             "state": "translated",
             "value": "Дата и время"
+          }
+        }
+      }
+    },
+    "Default sound": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Звук по умолчанию"
           }
         }
       }
@@ -417,6 +539,16 @@
         }
       }
     },
+    "Evening": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Вечер"
+          }
+        }
+      }
+    },
     "Every N days": {
       "localizations": {
         "ru": {
@@ -473,6 +605,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Каждый год, %@"
+          }
+        }
+      }
+    },
+    "Feedback": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отклик"
           }
         }
       }
@@ -609,6 +751,36 @@
         }
       }
     },
+    "Interface sounds": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Звуки интерфейса"
+          }
+        }
+      }
+    },
+    "Language": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Язык"
+          }
+        }
+      }
+    },
+    "Light": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Светлая"
+          }
+        }
+      }
+    },
     "Listening…": {
       "localizations": {
         "ru": {
@@ -625,6 +797,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Колокольчик"
+          }
+        }
+      }
+    },
+    "Location": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Геопозиция"
           }
         }
       }
@@ -659,6 +841,36 @@
         }
       }
     },
+    "Month": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Месяц"
+          }
+        }
+      }
+    },
+    "Morning": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Утро"
+          }
+        }
+      }
+    },
+    "My places": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Мои места"
+          }
+        }
+      }
+    },
     "Never": {
       "localizations": {
         "ru": {
@@ -675,6 +887,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Новое напоминание"
+          }
+        }
+      }
+    },
+    "Next month": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Следующий месяц"
           }
         }
       }
@@ -725,6 +947,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "На сегодня ничего"
+          }
+        }
+      }
+    },
+    "Nothing planned": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ничего не запланировано"
+          }
+        }
+      }
+    },
+    "Notifications": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Уведомления"
+          }
+        }
+      }
+    },
+    "OK": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
           }
         }
       }
@@ -789,6 +1041,16 @@
         }
       }
     },
+    "Permissions": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Разрешения"
+          }
+        }
+      }
+    },
     "Persistent": {
       "localizations": {
         "ru": {
@@ -809,12 +1071,32 @@
         }
       }
     },
+    "Places": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Места"
+          }
+        }
+      }
+    },
     "Play sound": {
       "localizations": {
         "ru": {
           "stringUnit": {
             "state": "translated",
             "value": "Прослушать звук"
+          }
+        }
+      }
+    },
+    "Previous month": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Предыдущий месяц"
           }
         }
       }
@@ -1079,12 +1361,72 @@
         }
       }
     },
+    "Repeat for persistent": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повтор настойчивых"
+          }
+        }
+      }
+    },
     "Save": {
       "localizations": {
         "ru": {
           "stringUnit": {
             "state": "translated",
             "value": "Сохранить"
+          }
+        }
+      }
+    },
+    "Settings": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Настройки"
+          }
+        }
+      }
+    },
+    "Show today": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Показать сегодня"
+          }
+        }
+      }
+    },
+    "Sign in": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Войти"
+          }
+        }
+      }
+    },
+    "Sign in to keep your reminders": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Войдите, чтобы не потерять напоминания"
+          }
+        }
+      }
+    },
+    "Sign-in is coming soon": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Вход скоро появится"
           }
         }
       }
@@ -1169,6 +1511,26 @@
         }
       }
     },
+    "Theme": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Тема"
+          }
+        }
+      }
+    },
+    "They will live in your account and appear on any of your phones.": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Они будут в аккаунте и появятся на любом вашем телефоне."
+          }
+        }
+      }
+    },
     "This evening": {
       "localizations": {
         "ru": {
@@ -1195,6 +1557,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Тик-так"
+          }
+        }
+      }
+    },
+    "Time": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Время"
           }
         }
       }
@@ -1235,6 +1607,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Срочно"
+          }
+        }
+      }
+    },
+    "Urgent notifications": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Срочные"
+          }
+        }
+      }
+    },
+    "Vibration": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Вибрация"
+          }
+        }
+      }
+    },
+    "Week": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Неделя"
           }
         }
       }
@@ -1309,6 +1711,16 @@
         }
       }
     },
+    "a light response to touches": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "лёгкий отклик на касания"
+          }
+        }
+      }
+    },
     "a week before": {
       "localizations": {
         "ru": {
@@ -1367,6 +1779,26 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "allowed": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "разрешены"
+          }
+        }
+      }
+    },
+    "always": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "всегда"
           }
         }
       }
@@ -1466,6 +1898,58 @@
                 "stringUnit": {
                   "state": "translated",
                   "value": "каждые %lld дня"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "every %lld minutes": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "every %lld minute"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "every %lld minutes"
+                }
+              }
+            }
+          }
+        },
+        "ru": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "каждые %lld минуты"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "каждые %lld минут"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "каждую %lld минуту"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "каждые %lld минуты"
                 }
               }
             }
@@ -1635,6 +2119,16 @@
         }
       }
     },
+    "no access": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "нет доступа"
+          }
+        }
+      }
+    },
     "none": {
       "localizations": {
         "ru": {
@@ -1645,12 +2139,62 @@
         }
       }
     },
+    "not allowed": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "не разрешены"
+          }
+        }
+      }
+    },
+    "not asked": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "не запрошена"
+          }
+        }
+      }
+    },
+    "not requested": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "не запрошены"
+          }
+        }
+      }
+    },
     "now": {
       "localizations": {
         "ru": {
           "stringUnit": {
             "state": "translated",
             "value": "сейчас"
+          }
+        }
+      }
+    },
+    "off": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "выключены"
+          }
+        }
+      }
+    },
+    "on": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "включены"
           }
         }
       }
@@ -1691,6 +2235,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "настойчиво"
+          }
+        }
+      }
+    },
+    "quiet clicks, silent in silent mode": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "тихие щелчки, молчат в беззвучном режиме"
+          }
+        }
+      }
+    },
+    "today": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "сегодня"
           }
         }
       }
@@ -1741,6 +2305,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "срочно"
+          }
+        }
+      }
+    },
+    "while using": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "при использовании"
           }
         }
       }

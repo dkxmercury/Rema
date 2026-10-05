@@ -147,7 +147,7 @@ struct PhraseScreen: View {
                     }
                     input
                         .padding(.top, 14)
-                    ReminderPreview(when: when, place: placeLine, summary: summaryLine, describer: describer, calendar: calendar)
+                    ReminderPreview(when: when, place: placeLine, summary: summaryLine, summaryLines: 2, describer: describer, calendar: calendar)
                         .contentShape(Rectangle())
                         .onTapGesture { pickingDate = true }
                         .padding(.top, 12)
@@ -276,7 +276,7 @@ struct PhraseScreen: View {
             if calendar.isDate(date, inSameDayAs: now) {
                 return String(localized: "today, \(describer.shortTime(date))")
             }
-            let day = date.formatted(Date.FormatStyle(locale: locale, calendar: calendar, timeZone: calendar.timeZone).weekday(.abbreviated).day().month(.abbreviated)).replacingOccurrences(of: ".", with: "").replacingOccurrences(of: ",", with: "")
+            let day = date.formatted(Date.FormatStyle(locale: locale, calendar: calendar, timeZone: calendar.timeZone, capitalizationContext: .middleOfSentence).weekday(.abbreviated).day().month(.abbreviated)).replacingOccurrences(of: ".", with: "").replacingOccurrences(of: ",", with: "")
             return "\(day), \(describer.shortTime(date))"
         }
     }

@@ -4,6 +4,7 @@ struct ReminderPreview: View {
     let when: Date?
     var place: String?
     let summary: String
+    var summaryLines = 1
     let describer: Describer
     let calendar: Calendar
 
@@ -33,7 +34,8 @@ struct ReminderPreview: View {
                     Text(verbatim: summary)
                         .font(.app(.golos, 13))
                         .foregroundStyle(Palette.secondary)
-                        .lineLimit(1)
+                        .lineLimit(summaryLines)
+                        .fixedSize(horizontal: false, vertical: true)
                         .contentTransition(.opacity)
                 }
             }

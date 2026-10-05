@@ -7,6 +7,8 @@ struct HomeScreen: View {
     var onCompose: () -> Void = {}
     var onVoice: () -> Void = {}
     var onCalendar: () -> Void = {}
+    var onSettings: () -> Void = {}
+    var zoom: Namespace.ID?
     @State private var addPressed = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -68,6 +70,15 @@ struct HomeScreen: View {
                     .frame(height: 36)
             }
             Spacer(minLength: 0)
+            Button(action: onSettings) {
+                ZStack {
+                    RaisedCircle()
+                    Glyph(paths: Icons.sliders, size: 20, lineWidth: 1.8, color: Palette.text)
+                }
+            }
+            .buttonStyle(PressableStyle())
+            .accessibilityLabel(Text("Settings"))
+            .padding(.trailing, -4)
             Button(action: onCalendar) {
                 ZStack {
                     RaisedCircle()
@@ -75,6 +86,7 @@ struct HomeScreen: View {
                 }
             }
             .buttonStyle(PressableStyle())
+            .zoomSource("calendar", in: zoom)
             .accessibilityLabel(Text("Calendar"))
         }
     }
@@ -103,7 +115,7 @@ struct HomeScreen: View {
     private var list: some View {
         VStack(spacing: 0) {
             ForEach(content.rows) { row in
-                HomeRow(row: row, onToggle: { onToggle(row) })
+                AgendaRow(row: row, onToggle: { onToggle(row) })
                     .contentShape(Rectangle())
                     .onTapGesture { onOpen(row.reminderID) }
                     .transition(.opacity.combined(with: .move(edge: .top)))
@@ -184,47 +196,6 @@ struct PressableStyle: ButtonStyle {
         configuration.label
             .scaleEffect(configuration.isPressed ? 0.94 : 1)
             .animation(Motion.press, value: configuration.isPressed)
-    }
-}
-
-private struct HomeRow: View {
-    let row: HomeContent.Row
-    let onToggle: () -> Void
-
-    var body: some View {
-        HStack(spacing: 14) {
-            Text(verbatim: row.time)
-                .font(.app(.jost, 18, weight: row.highlighted ? 600 : 500))
-                .monospacedDigit()
-                .foregroundStyle(timeColor)
-                .frame(width: 50, alignment: .leading)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(verbatim: row.title)
-                    .font(.app(.golos, 16, weight: row.highlighted ? 600 : 400))
-                    .strikethrough(row.done)
-                    .foregroundStyle(row.done ? Palette.secondary : Palette.text)
-                if let subtitle = row.subtitle {
-                    Text(verbatim: subtitle)
-                        .font(.app(.golos, 12))
-                        .foregroundStyle(Palette.secondary)
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            Button(action: onToggle) {
-                CheckBox(isOn: row.done)
-                    .frame(width: 44, height: 44)
-            }
-            .buttonStyle(.plain)
-            .padding(.trailing, -9)
-            .accessibilityLabel(Text(row.done ? LocalizedStringKey("Mark as not done") : LocalizedStringKey("Mark as done")))
-        }
-        .frame(minHeight: row.subtitle == nil ? 46 : 52)
-    }
-
-    private var timeColor: Color {
-        if row.done { return Palette.secondary }
-        if row.highlighted { return Palette.accentText }
-        return Palette.text
     }
 }
 

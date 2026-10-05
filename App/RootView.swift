@@ -12,12 +12,49 @@ struct ComposeTarget: Identifiable {
     let voice: Bool
 }
 
+enum RootRoute: Hashable {
+    case settings
+}
+
 struct RootView: View {
     @State private var store = Store.shared
+    @State private var path: [RootRoute] = []
     @State private var editing: EditingTarget?
     @State private var composing: ComposeTarget?
+    @State private var showingCalendar = false
+    @Namespace private var zoom
 
     var body: some View {
+        PushStack(path: $path) {
+            home
+        } destination: { route in
+            switch route {
+            case .settings:
+                SettingsScreen(store: store, onBack: { path.removeLast() })
+            }
+        }
+        .fullScreenCover(item: $editing) { target in
+            EditorScreen(draft: target.reminder, isNew: target.isNew, store: store, onClose: { editing = nil })
+        }
+        .fullScreenCover(item: $composing) { target in
+            PhraseScreen(store: store, startWithVoice: target.voice, onClose: { composing = nil })
+        }
+        .fullScreenCover(isPresented: $showingCalendar) {
+            CalendarScreen(store: store, onClose: { showingCalendar = false })
+                .zoomDestination("calendar", in: zoom)
+        }
+        .preferredColorScheme(colorScheme)
+    }
+
+    private var colorScheme: ColorScheme? {
+        switch store.settings.appearance {
+        case .system: return nil
+        case .light: return .light
+        case .dark: return .dark
+        }
+    }
+
+    private var home: some View {
         TimelineView(.everyMinute) { timeline in
             HomeScreen(
                 content: HomeContent.make(
@@ -33,14 +70,11 @@ struct RootView: View {
                 onVoice: {
                     Feedback.play(.select)
                     composing = ComposeTarget(voice: true)
-                }
+                },
+                onCalendar: { showingCalendar = true },
+                onSettings: { path.append(.settings) },
+                zoom: zoom
             )
-        }
-        .fullScreenCover(item: $editing) { target in
-            EditorScreen(draft: target.reminder, isNew: target.isNew, store: store, onClose: { editing = nil })
-        }
-        .fullScreenCover(item: $composing) { target in
-            PhraseScreen(store: store, startWithVoice: target.voice, onClose: { composing = nil })
         }
     }
 
