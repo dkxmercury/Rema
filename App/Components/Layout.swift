@@ -81,6 +81,8 @@ struct Tag: View {
     var body: some View {
         Text(verbatim: text)
             .font(.app(.golos, 12, weight: 600))
+            .lineLimit(1)
+            .fixedSize()
             .padding(.horizontal, 8)
             .frame(height: 24)
             .overlay {

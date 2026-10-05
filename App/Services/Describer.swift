@@ -143,6 +143,10 @@ struct Describer {
         date.formatted(Date.FormatStyle(locale: locale, calendar: calendar, timeZone: calendar.timeZone).weekday(.wide).day().month(.wide))
     }
 
+    func weekdayList(_ days: [Weekday]) -> String {
+        Set(days).sorted().map(shortName).joined(separator: ", ")
+    }
+
     private func shortName(_ day: Weekday) -> String {
         var formatter = calendar
         formatter.locale = locale

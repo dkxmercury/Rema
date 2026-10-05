@@ -155,7 +155,7 @@ struct RepeatScreen: View {
         case .once, .daily:
             EmptyView()
         case .weekdays:
-            detailText(describer.repeatText(.weekly([.monday, .tuesday, .wednesday, .thursday, .friday])), selected: false)
+            detailText(describer.weekdayList([.monday, .tuesday, .wednesday, .thursday, .friday]), selected: false)
         case .weekly:
             if case .weekly(let days) = schedule.rule {
                 detailText(describer.repeatText(.weekly(days)), selected: selected)
@@ -264,9 +264,10 @@ struct RepeatScreen: View {
     }
 
     private func shortDate(_ date: Date) -> String {
-        date.formatted(Date.FormatStyle(locale: locale, calendar: calendar, timeZone: calendar.timeZone).day().month(.abbreviated).year())
+        let dayMonth = date.formatted(Date.FormatStyle(locale: locale, calendar: calendar, timeZone: calendar.timeZone).day().month(.abbreviated))
             .replacingOccurrences(of: ".", with: "")
-            .replacingOccurrences(of: " г", with: "")
+            .replacingOccurrences(of: "\u{00A0}", with: " ")
+        return "\(dayMonth) \(calendar.component(.year, from: date))"
     }
 
     private func longDate(month: Int, day: Int) -> String {

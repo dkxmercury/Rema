@@ -36,19 +36,15 @@ struct EditorScreen: View {
     }
 
     var body: some View {
-        NavigationStack(path: $path) {
+        PushStack(path: $path) {
             content
-                .toolbar(.hidden, for: .navigationBar)
-                .navigationDestination(for: EditorRoute.self) { route in
-                    switch route {
-                    case .repeating:
-                        RepeatScreen(draft: $draft, now: now, calendar: calendar, locale: locale) { path.removeLast() }
-                            .toolbar(.hidden, for: .navigationBar)
-                    case .early:
-                        EarlyScreen(draft: $draft, now: now, calendar: calendar, locale: locale) { path.removeLast() }
-                            .toolbar(.hidden, for: .navigationBar)
-                    }
-                }
+        } destination: { route in
+            switch route {
+            case .repeating:
+                RepeatScreen(draft: $draft, now: now, calendar: calendar, locale: locale) { pop() }
+            case .early:
+                EarlyScreen(draft: $draft, now: now, calendar: calendar, locale: locale) { pop() }
+            }
         }
         .fullScreenCover(isPresented: $pickingDate) {
             DateTimeScreen(initial: when, now: now, settings: store.settings, calendar: calendar, locale: locale, onDone: { date in
@@ -163,6 +159,8 @@ struct EditorScreen: View {
                 Text(verbatim: describer.repeatValue(draft.schedule))
                     .font(.app(.golos, 14))
                     .foregroundStyle(Palette.secondary)
+                    .lineLimit(1)
+                    .fixedSize()
             }
             Hairline()
             NavigationRow(icon: Icons.early, iconColor: Palette.text, title: "In advance", action: { path.append(.early) }) {
@@ -176,6 +174,7 @@ struct EditorScreen: View {
                             Tag(text: describer.leadText(minutes))
                         }
                     }
+                    .fixedSize()
                 }
             }
             Hairline()
@@ -235,6 +234,11 @@ struct EditorScreen: View {
         .frame(minHeight: 52)
     }
 
+    private func pop() {
+        guard !path.isEmpty else { return }
+        path.removeLast()
+    }
+
     private func setDate(_ date: Date) {
         let parts = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: date)
         let start = LocalDate(year: parts.year ?? 2026, month: parts.month ?? 1, day: parts.day ?? 1)
@@ -283,8 +287,10 @@ struct NavigationRow<Value: View>: View {
                 Glyph(paths: icon, size: 20, lineWidth: 2, color: iconColor)
                 Text(title)
                     .font(.app(.golos, 16, weight: 500))
+                    .lineLimit(1)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 value()
+                    .layoutPriority(1)
                 Glyph(paths: Icons.chevron, size: 16, lineWidth: 2, color: Palette.secondary)
             }
             .frame(minHeight: 52)
