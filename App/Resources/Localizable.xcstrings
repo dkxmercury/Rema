@@ -11510,6 +11510,18 @@
             "state": "translated",
             "value": "кожен вт і чт о 8"
           }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ҳар сешанба ва пайшанба соат 8 да"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "har seshanba va payshanba soat 8 da"
+          }
         }
       }
     },
@@ -11675,6 +11687,18 @@
           "stringUnit": {
             "state": "translated",
             "value": "щороку 12 жовтня"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ҳар йили 12-октябр"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "har yili 12-oktyabr"
           }
         }
       }
@@ -12025,6 +12049,18 @@
           "stringUnit": {
             "state": "translated",
             "value": "через 2 години"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2 соатдан кейин"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2 soatdan keyin"
           }
         }
       }
@@ -12698,6 +12734,18 @@
             "state": "translated",
             "value": "у п'ятницю ввечері"
           }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "жума куни кечқурун"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "juma kuni kechqurun"
+          }
         }
       }
     },
@@ -13277,6 +13325,18 @@
           "stringUnit": {
             "state": "translated",
             "value": "коли піду з роботи"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ишдан кетганимда"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ishdan ketganimda"
           }
         }
       }
