@@ -33,7 +33,7 @@ public struct PhraseParser {
     private static let fillers: Set<String> = ["напомни", "напомните", "напомнить", "мне", "пожалуйста", "надо", "нужно"]
     private static let dangling: Set<String> = ["и", "а", "в", "во", "на", "с", "со", "к", "по"]
 
-    private struct State {
+    struct State {
         var used: [Range<Int>] = []
         var date: LocalDate?
         var dayOffset: Int?
@@ -50,6 +50,9 @@ public struct PhraseParser {
     }
 
     public func parse(_ input: String) -> ParsedPhrase {
+        if !input.unicodeScalars.contains(where: { (0x0400...0x04FF).contains($0.value) }), input.contains(where: \.isLetter) {
+            return parseEnglish(input)
+        }
         let text = input.lowercased().replacingOccurrences(of: "ё", with: "е")
         var state = State()
 
@@ -63,7 +66,7 @@ public struct PhraseParser {
 
         let schedule = resolve(&state)
         return ParsedPhrase(
-            title: title(input, used: state.used),
+            title: title(input, used: state.used, fillers: PhraseParser.fillers, dangling: PhraseParser.dangling),
             schedule: schedule,
             preAlerts: Array(Set(state.preAlerts)).sorted(by: >),
             urgent: state.urgent,
@@ -75,28 +78,28 @@ public struct PhraseParser {
         )
     }
 
-    private func matches(_ pattern: String, in text: String) -> [NSTextCheckingResult] {
+    func matches(_ pattern: String, in text: String) -> [NSTextCheckingResult] {
         guard let regex = try? NSRegularExpression(pattern: "(?<![\\p{L}\\d])" + pattern + "(?![\\p{L}\\d])", options: [.caseInsensitive]) else { return [] }
         return regex.matches(in: text, range: NSRange(text.startIndex..., in: text))
     }
 
-    private func group(_ match: NSTextCheckingResult, _ index: Int, _ text: String) -> String? {
+    func group(_ match: NSTextCheckingResult, _ index: Int, _ text: String) -> String? {
         let range = match.range(at: index)
         guard range.location != NSNotFound, let swiftRange = Range(range, in: text) else { return nil }
         return String(text[swiftRange])
     }
 
-    private func span(_ match: NSTextCheckingResult, _ text: String) -> Range<Int>? {
+    func span(_ match: NSTextCheckingResult, _ text: String) -> Range<Int>? {
         guard let range = Range(match.range, in: text) else { return nil }
         let lower = text.distance(from: text.startIndex, to: range.lowerBound)
         return lower..<(lower + text.distance(from: range.lowerBound, to: range.upperBound))
     }
 
-    private func isFree(_ range: Range<Int>, _ state: State) -> Bool {
+    func isFree(_ range: Range<Int>, _ state: State) -> Bool {
         !state.used.contains { $0.overlaps(range) }
     }
 
-    private func take(_ pattern: String, _ text: String, _ state: inout State, _ apply: (NSTextCheckingResult, inout State) -> Bool) {
+    func take(_ pattern: String, _ text: String, _ state: inout State, _ apply: (NSTextCheckingResult, inout State) -> Bool) {
         for match in matches(pattern, in: text) {
             guard let range = span(match, text), isFree(range, state) else { continue }
             if apply(match, &state) {
@@ -305,7 +308,7 @@ public struct PhraseParser {
         return lower
     }
 
-    private func nextDate(month: Int, day: Int, year: Int?) -> LocalDate {
+    func nextDate(month: Int, day: Int, year: Int?) -> LocalDate {
         let today = LocalDate(now, in: calendar)
         if let year {
             return LocalDate(year: year, month: month, day: min(day, LocalDate.days(in: month, year: year)))
@@ -317,7 +320,7 @@ public struct PhraseParser {
         return candidate
     }
 
-    private func resolve(_ state: inout State) -> Schedule? {
+    func resolve(_ state: inout State) -> Schedule? {
         let today = LocalDate(now, in: calendar)
         if let exact = state.exact {
             let parts = calendar.dateComponents([.hour, .minute], from: exact)
@@ -381,7 +384,7 @@ public struct PhraseParser {
         return Schedule(start: start, time: clock, rule: rule)
     }
 
-    private func title(_ input: String, used: [Range<Int>]) -> String {
+    func title(_ input: String, used: [Range<Int>], fillers: Set<String>, dangling: Set<String>, lead: Set<String> = []) -> String {
         var characters = Array(input)
         for range in used {
             for index in range where index < characters.count {
@@ -391,12 +394,12 @@ public struct PhraseParser {
         let words = String(characters)
             .split(whereSeparator: { $0.isWhitespace })
             .map(String.init)
-            .filter { !PhraseParser.fillers.contains($0.lowercased().trimmingCharacters(in: .punctuationCharacters)) }
+            .filter { !fillers.contains($0.lowercased().trimmingCharacters(in: .punctuationCharacters)) }
         var trimmed = words
-        while let first = trimmed.first, PhraseParser.dangling.contains(first.lowercased()) {
+        while let first = trimmed.first, lead.contains(first.lowercased().trimmingCharacters(in: .punctuationCharacters)) || dangling.contains(first.lowercased()) {
             trimmed.removeFirst()
         }
-        while let last = trimmed.last, PhraseParser.dangling.contains(last.lowercased()) {
+        while let last = trimmed.last, dangling.contains(last.lowercased()) {
             trimmed.removeLast()
         }
         var result = trimmed.joined(separator: " ").trimmingCharacters(in: CharacterSet(charactersIn: " ,.;:-–—"))
@@ -407,7 +410,7 @@ public struct PhraseParser {
         return String(first).uppercased() + result.dropFirst()
     }
 
-    private func merge(_ ranges: [Range<Int>]) -> [Range<Int>] {
+    func merge(_ ranges: [Range<Int>]) -> [Range<Int>] {
         ranges.sorted { $0.lowerBound < $1.lowerBound }
     }
 }

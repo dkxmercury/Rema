@@ -249,7 +249,13 @@ struct PhraseScreen: View {
     }
 
     private var examples: some View {
-        let samples = ["через 2 часа", "в пятницу вечером", "каждый вт и чт в 8", "каждый год 12 октября", "когда уйду с работы"]
+        let samples = [
+            String(localized: "in 2 hours"),
+            String(localized: "on Friday evening"),
+            String(localized: "every Tue and Thu at 8"),
+            String(localized: "every year on October 12"),
+            String(localized: "when I leave work"),
+        ]
         return VStack(alignment: .leading, spacing: 0) {
             SectionLabel(text: "You can write like this")
                 .padding(.bottom, 4)
@@ -283,12 +289,12 @@ struct PhraseScreen: View {
     }
 
     private func exampleIsPlace(_ sample: String) -> Bool {
-        sample.hasPrefix("когда")
+        sample.hasPrefix("когда") || sample.hasPrefix("when")
     }
 
     private func exampleValue(_ sample: String) -> String {
         let result = parser.parse(sample)
-        if result.placeTrigger != nil || sample.hasPrefix("когда") {
+        if result.placeTrigger != nil || exampleIsPlace(sample) {
             let name = result.placeNames.first ?? String(localized: "Work")
             return String(localized: "by place · \(name)")
         }

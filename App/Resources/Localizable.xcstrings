@@ -11485,6 +11485,16 @@
         }
       }
     },
+    "every Tue and Thu at 8": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "каждый вт и чт в 8"
+          }
+        }
+      }
+    },
     "every day": {
       "localizations": {
         "ar": {
@@ -11619,6 +11629,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "har yil"
+          }
+        }
+      }
+    },
+    "every year on October 12": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "каждый год 12 октября"
           }
         }
       }
@@ -11941,6 +11961,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld daqiqadan keyin"
+          }
+        }
+      }
+    },
+    "in 2 hours": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "через 2 часа"
           }
         }
       }
@@ -12589,6 +12619,16 @@
         }
       }
     },
+    "on Friday evening": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "в пятницу вечером"
+          }
+        }
+      }
+    },
     "on day %lld": {
       "localizations": {
         "ar": {
@@ -13137,6 +13177,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "shoshilinch"
+          }
+        }
+      }
+    },
+    "when I leave work": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "когда уйду с работы"
           }
         }
       }
