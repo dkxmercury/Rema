@@ -30,14 +30,15 @@ struct Dial: View {
             Circle()
                 .fill(
                     cssGradient(160, [Palette.dialBezelTop, Palette.dialBezelBottom])
-                        .shadow(.inner(color: Palette.dialBezelHighlight, radius: 0, x: 0, y: 1))
                         .shadow(.drop(color: Palette.dialShadowNear, radius: 2, x: 0, y: 2))
                         .shadow(.drop(color: Palette.dialShadowFar, radius: 16, x: 0, y: 16))
                 )
+                .insetShadow(Circle(), Palette.dialBezelHighlight, y: 1)
                 .frame(width: size, height: size)
 
             Circle()
-                .fill(Palette.dialFace.shadow(.inner(color: Palette.dialFaceShadow, radius: 3, x: 0, y: 2)))
+                .fill(Palette.dialFace)
+                .insetShadow(Circle(), Palette.dialFaceShadow, blur: 6, y: 2)
                 .frame(width: 212 * unit, height: 212 * unit)
                 .offset(x: 12 * unit, y: 12 * unit)
 
@@ -56,7 +57,8 @@ struct Dial: View {
 
     private var window: some View {
         RoundedRectangle(cornerRadius: 9, style: .circular)
-            .fill(Palette.dialWindow.shadow(.inner(color: .black.opacity(0.45), radius: 2, x: 0, y: 2)))
+            .fill(Palette.dialWindow)
+            .insetShadow(RoundedRectangle(cornerRadius: 9, style: .circular), .black.opacity(0.45), blur: 4, y: 2)
             .overlay {
                 RoundedRectangle(cornerRadius: 9, style: .circular)
                     .strokeBorder(Palette.dialWindowBorder, lineWidth: 1)

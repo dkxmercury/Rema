@@ -9,7 +9,24 @@ final class ScreenSnapshots: XCTestCase {
         try render(HomeScreen(content: .sample), name: "D-Home-Dark", style: .dark)
     }
 
-    private func render<Screen: View>(_ screen: Screen, name: String, style: UIUserInterfaceStyle) throws {
+    func testSafeAreaProbe() throws {
+        try render(SafeAreaProbe(), name: "Probe", style: .light)
+    }
+}
+
+private struct SafeAreaProbe: View {
+    var body: some View {
+        VStack(spacing: 0) {
+            Rectangle().fill(Color.red).frame(height: 4)
+            Spacer(minLength: 0)
+            Rectangle().fill(Color.blue).frame(height: 4)
+        }
+        .background(Color.white.ignoresSafeArea())
+    }
+}
+
+private extension ScreenSnapshots {
+    func render<Screen: View>(_ screen: Screen, name: String, style: UIUserInterfaceStyle) throws {
         guard let directory = ProcessInfo.processInfo.environment["SNAPSHOT_DIR"] else {
             throw XCTSkip("SNAPSHOT_DIR не задан")
         }

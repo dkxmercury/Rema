@@ -114,7 +114,8 @@ struct HomeScreen: View {
             } label: {
                 ZStack {
                     RoundedRectangle(cornerRadius: 12, style: .circular)
-                        .fill(Palette.accent.shadow(.inner(color: .black.opacity(0.14), radius: 0, x: 0, y: -3)))
+                        .fill(Palette.accent)
+                        .insetShadow(RoundedRectangle(cornerRadius: 12, style: .circular), .black.opacity(0.14), y: -3)
                     Glyph(paths: Icons.plus, size: 22, lineWidth: 2.4, color: Palette.onAccent)
                 }
                 .frame(width: 44, height: 44)

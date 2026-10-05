@@ -31,6 +31,12 @@ enum Palette {
     static let raisedShadowNear = Color(light: 0x1C1B19, lightAlpha: 0.14, dark: 0x000000, darkAlpha: 0.5)
     static let raisedShadowFar = Color(light: 0x1C1B19, lightAlpha: 0.08, dark: 0x000000, darkAlpha: 0.3)
 
+    static let segment = Color(light: 0x1C1B19, dark: 0xF1EFEA)
+    static let onSegment = Color(light: 0xF7F6F3, dark: 0x1C1B19)
+    static let segmentShadow = Color(light: 0x1C1B19, lightAlpha: 0.25, dark: 0x000000, darkAlpha: 0.5)
+    static let segmentWell = Color(light: 0x1C1B19, lightAlpha: 0.12, dark: 0x000000, darkAlpha: 0.5)
+    static let track = Color(light: 0xE3E0DA, dark: 0x1E1D1B)
+
     static let well = Color(light: 0xFBFAF8, dark: 0x1E1D1B)
     static let wellBorder = Color(light: 0x1C1B19, lightAlpha: 0.18, dark: 0xF1EFEA, darkAlpha: 0.20)
     static let wellShadow = Color(light: 0x1C1B19, lightAlpha: 0.16, dark: 0x000000, darkAlpha: 0.5)

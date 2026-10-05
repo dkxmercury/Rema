@@ -12,6 +12,40 @@ func cssGradient(_ degrees: Double, _ colors: [Color]) -> LinearGradient {
     )
 }
 
+struct OutsideOf<Inner: Shape>: Shape {
+    let inner: Inner
+    let margin: CGFloat
+
+    func path(in rect: CGRect) -> Path {
+        var path = Path(rect.insetBy(dx: -margin, dy: -margin))
+        path.addPath(inner.path(in: rect))
+        return path
+    }
+}
+
+struct InsetShadow<Outline: Shape>: View {
+    let shape: Outline
+    let color: Color
+    var blur: CGFloat = 0
+    var x: CGFloat = 0
+    var y: CGFloat = 0
+
+    var body: some View {
+        OutsideOf(inner: shape, margin: blur * 3 + abs(x) + abs(y) + 4)
+            .fill(color, style: FillStyle(eoFill: true))
+            .offset(x: x, y: y)
+            .blur(radius: blur / 2)
+            .mask(shape)
+            .allowsHitTesting(false)
+    }
+}
+
+extension View {
+    func insetShadow<Outline: Shape>(_ shape: Outline, _ color: Color, blur: CGFloat = 0, x: CGFloat = 0, y: CGFloat) -> some View {
+        overlay(InsetShadow(shape: shape, color: color, blur: blur, x: x, y: y))
+    }
+}
+
 struct PanelBackground: ViewModifier {
     var radius: CGFloat
     var near = Palette.panelShadowNear
@@ -21,13 +55,14 @@ struct PanelBackground: ViewModifier {
 
     func body(content: Content) -> some View {
         content.background {
-            RoundedRectangle(cornerRadius: radius, style: .circular)
+            let shape = RoundedRectangle(cornerRadius: radius, style: .circular)
+            shape
                 .fill(
                     Palette.panel
-                        .shadow(.inner(color: Palette.panelHighlight, radius: 0, x: 0, y: 1))
                         .shadow(.drop(color: near, radius: 1, x: 0, y: 1))
                         .shadow(.drop(color: far, radius: farRadius, x: 0, y: farOffset))
                 )
+                .insetShadow(shape, Palette.panelHighlight, y: 1)
         }
     }
 }
@@ -49,10 +84,10 @@ struct RaisedCircle: View {
         Circle()
             .fill(
                 LinearGradient(colors: [Palette.raisedTop, Palette.raisedBottom], startPoint: .top, endPoint: .bottom)
-                    .shadow(.inner(color: Palette.raisedHighlight, radius: 0, x: 0, y: 1))
                     .shadow(.drop(color: Palette.raisedShadowNear, radius: 1, x: 0, y: 1))
                     .shadow(.drop(color: Palette.raisedShadowFar, radius: 5, x: 0, y: 4))
             )
+            .insetShadow(Circle(), Palette.raisedHighlight, y: 1)
             .frame(width: size, height: size)
     }
 }
