@@ -64,11 +64,33 @@ struct DayProvider: TimelineProvider {
         }
     }
 
+    // A frame every five minutes keeps the hand moving; the exact minutes of reminders keep the list honest.
     func getTimeline(in context: Context, completion: @escaping (Timeline<DayEntry>) -> Void) {
         let snapshot = SharedStore.load()
         let now = Date()
         let start = Date(timeIntervalSinceReferenceDate: floor(now.timeIntervalSinceReferenceDate / 60) * 60)
-        let entries = (0..<90).map { DayEntry.make(at: start.addingTimeInterval(Double($0) * 60), snapshot: snapshot) }
+        let end = start.addingTimeInterval(6 * 3600)
+        var moments: Set<Date> = [start]
+        var step = Date(timeIntervalSinceReferenceDate: ceil(start.timeIntervalSinceReferenceDate / 300) * 300)
+        while step < end {
+            moments.insert(step)
+            step = step.addingTimeInterval(300)
+        }
+        for reminder in snapshot?.reminders ?? [] where reminder.deletedAt == nil {
+            if let snoozed = reminder.snoozedUntil, snoozed > now, snoozed < end {
+                moments.insert(Self.minute(snoozed))
+            }
+            guard let schedule = reminder.schedule else { continue }
+            for occurrence in Recurrence.next(schedule, after: now, limit: 4, calendar: .current) where occurrence < end {
+                moments.insert(Self.minute(occurrence))
+                moments.insert(Self.minute(occurrence.addingTimeInterval(60)))
+            }
+        }
+        let entries = moments.sorted().map { DayEntry.make(at: $0, snapshot: snapshot) }
         completion(Timeline(entries: entries, policy: .atEnd))
+    }
+
+    private static func minute(_ date: Date) -> Date {
+        Date(timeIntervalSinceReferenceDate: floor(date.timeIntervalSinceReferenceDate / 60) * 60)
     }
 }

@@ -21,6 +21,8 @@ struct HomeScreen: View {
     var habit: HabitSuggestion?
     var onHabit: (HabitSuggestion, Bool) -> Void = { _, _ in }
     var onPostpone: (HomeContent.Row, Postpone) -> Void = { _, _ in }
+    var tip: Tip?
+    var onTip: (Tip, Bool) -> Void = { _, _ in }
     @State private var addPressed = false
     @State private var intro = false
     @State private var lift: DialLift?
@@ -78,6 +80,27 @@ struct HomeScreen: View {
             .padding(.horizontal, 18)
             .padding(.top, 15)
 
+            if let tip, moved == nil, lift == nil {
+                if tip == .voice {
+                    PlusHighlight()
+                        .padding(.trailing, 16)
+                        .padding(.bottom, 28)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+                        .ignoresSafeArea(.container, edges: .bottom)
+                        .transition(.opacity)
+                }
+                TipBubble(tip: tip) { accepted in
+                    withAnimation(Motion.standard) { onTip(tip, accepted) }
+                }
+                .frame(maxWidth: tip == .voice ? 268 : .infinity)
+                .padding(.horizontal, 16)
+                .padding(.bottom, 100)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: tip == .voice ? .bottomTrailing : .bottom)
+                .ignoresSafeArea(.container, edges: .bottom)
+                .transition(.opacity.combined(with: .move(edge: .bottom)))
+                .zIndex(1)
+            }
+
             if let moved {
                 MovedToast(text: String(localized: "Moved to \(moved.time)")) {
                     moved.undo()
@@ -105,6 +128,7 @@ struct HomeScreen: View {
         .animation(Motion.adaptive(Motion.standard, reduceMotion: reduceMotion), value: content.rows.map(\.id))
         .animation(Motion.adaptive(Motion.standard, reduceMotion: reduceMotion), value: lift == nil)
         .animation(Motion.adaptive(Motion.standard, reduceMotion: reduceMotion), value: habit)
+        .animation(Motion.adaptive(Motion.standard, reduceMotion: reduceMotion), value: tip)
         .onChange(of: holding) { _, active in
             guard !active else { return }
             // A cancelled gesture never reaches onEnded, so a lift left over after it is dropped here.

@@ -7,6 +7,9 @@ concurrency:
   group: release
   cancel-in-progress: false
 
+permissions:
+  contents: read
+
 jobs:
   release:
     runs-on: macos-26
@@ -14,7 +17,7 @@ jobs:
     env:
       TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Check secrets
         env:
@@ -71,12 +74,18 @@ jobs:
             echo "PROFILE_NAME_$key=$name" >> "$GITHUB_ENV"
           done
 
+      - name: XcodeGen
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/xcodegen.zip" https://github.com/yonaskolb/XcodeGen/releases/download/2.46.0/xcodegen.zip
+          echo "4d9e34b62172d645eed6457cac13fc222569974098ef4ee9c3368bedf0196806  $RUNNER_TEMP/xcodegen.zip" | shasum -a 256 -c -
+          unzip -q "$RUNNER_TEMP/xcodegen.zip" -d "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/xcodegen/bin" >> "$GITHUB_PATH"
+
       - name: Project
         env:
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
         run: |
           printf 'GOOGLE_CLIENT_ID = %s\n' "$GOOGLE_CLIENT_ID" > Config/Secrets.xcconfig
-          brew install xcodegen
           xcodegen generate
 
       - name: Archive
@@ -124,7 +133,7 @@ jobs:
           grep -q "EXPORT SUCCEEDED" export.log
 
       - name: IPA
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: Rema-${{ github.run_number }}
           path: ${{ runner.temp }}/export/*.ipa

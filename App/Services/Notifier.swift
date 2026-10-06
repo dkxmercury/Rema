@@ -94,11 +94,21 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         let followUp = Self.missedEnabled ? Int(Remote.shared.number(.missedFollowUp)) : nil
         let plan = Scheduler.plan(reminders: store.reminders, settings: store.settings, now: now, calendar: .current, followUp: followUp)
         let places = placeRequests()
+        let weather = WeatherAdvisor.shared.notes(after: now)
         center.removeAllPendingNotificationRequests()
         for request in places {
             try? await center.add(request)
         }
-        for item in plan.prefix(max(0, 60 - places.count)) {
+        for note in weather {
+            let content = UNMutableNotificationContent()
+            content.title = note.title
+            content.body = note.body
+            content.interruptionLevel = .passive
+            content.threadIdentifier = "weather"
+            let parts = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: note.fireDate)
+            try? await center.add(UNNotificationRequest(identifier: note.identifier, content: content, trigger: UNCalendarNotificationTrigger(dateMatching: parts, repeats: false)))
+        }
+        for item in plan.prefix(max(0, 60 - places.count - weather.count)) {
             let content = UNMutableNotificationContent()
             content.title = item.title
             content.body = body(for: item, now: now)

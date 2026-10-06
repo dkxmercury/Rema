@@ -93,6 +93,98 @@
         }
       }
     },
+    "%@ colder than the day before.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أبرد بـ%@ من اليوم السابق."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ kälter als am Vortag."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ de moins que la veille."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "На %@ холоднее, чем накануне."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "На %@ холодніше, ніж напередодні."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Олдинги кундан %@ совуқроқ."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oldingi kundan %@ sovuqroq."
+          }
+        }
+      }
+    },
+    "%@ sign-in": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الدخول عبر %@"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anmelden mit %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouverture avec %@"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Вход по %@"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Вхід через %@"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ орқали кириш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ orqali kirish"
+          }
+        }
+      }
+    },
     "%@ · you can pick several": {
       "localizations": {
         "ar": {
@@ -1333,6 +1425,144 @@
         }
       }
     },
+    "A quick look at what you can turn on and where to find it.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نظرة سريعة على ما يمكنك تفعيله وأين تجده."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kurz, was du einschalten kannst und wo du es findest."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En bref, ce que vous pouvez activer et où le trouver."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Коротко о том, что можно включить и где это найти."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Коротко про те, що можна ввімкнути і де це знайти."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нимани ёқиш мумкин ва уни қаердан топиш ҳақида қисқача."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nimani yoqish mumkin va uni qayerdan topish haqida qisqacha."
+          }
+        }
+      }
+    },
+    "A reminder by place comes even when Rema is closed. Just keep location access on.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يصل التذكير حسب المكان حتى عندما يكون Rema مغلقًا. فقط لا تُوقف إذن الموقع."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eine Erinnerung nach Ort kommt auch, wenn Rema geschlossen ist. Lass nur den Standortzugriff an."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un rappel selon le lieu arrive même quand Rema est fermé. Gardez juste l’accès à la localisation."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напоминание по месту придёт, даже когда Rema закрыта. Только не отключайте доступ к геопозиции."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нагадування за місцем прийде, навіть коли Rema закрита. Тільки не вимикайте доступ до геопозиції."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Жойга кўра эслатма Rema ёпиқ бўлса ҳам келади. Фақат жойлашувга рухсатни ўчирманг."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Joyga ko‘ra eslatma Rema yopiq bo‘lsa ham keladi. Faqat joylashuvga ruxsatni o‘chirmang."
+          }
+        }
+      }
+    },
+    "A warm weekend": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عطلة نهاية أسبوع دافئة"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ein warmes Wochenende"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un week-end doux"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Тёплые выходные"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Теплі вихідні"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Илиқ дам олиш кунлари"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Iliq dam olish kunlari"
+          }
+        }
+      }
+    },
     "Account": {
       "localizations": {
         "ar": {
@@ -1467,6 +1697,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Vaqt qo‘shing"
+          }
+        }
+      }
+    },
+    "Add a widget and the dial with the next reminder will always be in sight.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أضف أداة، وسيبقى القرص مع التذكير القادم أمام عينيك دائمًا."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Füge ein Widget hinzu, dann hast du das Zifferblatt mit der nächsten Erinnerung immer im Blick."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajoutez un widget, le cadran avec le prochain rappel sera toujours sous vos yeux."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Добавьте виджет, и циферблат с ближайшим напоминанием всегда будет перед глазами."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Додайте віджет, і циферблат із найближчим нагадуванням завжди буде перед очима."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Виджет қўшинг, яқин эслатмали циферблат доим кўз олдингизда бўлади."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vidjet qo‘shing, yaqin eslatmali siferblat doim ko‘z oldingizda bo‘ladi."
           }
         }
       }
@@ -2115,6 +2391,52 @@
         }
       }
     },
+    "Apple Watch": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Watch"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Watch"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Watch"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Watch"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Watch"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Watch"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Watch"
+          }
+        }
+      }
+    },
     "Arabic": {
       "localizations": {
         "ar": {
@@ -2483,6 +2805,52 @@
         }
       }
     },
+    "By voice": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بالصوت"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Per Sprache"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "À la voix"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Голосом"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Голосом"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Овоз билан"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ovoz bilan"
+          }
+        }
+      }
+    },
     "Calendar": {
       "localizations": {
         "ar": {
@@ -2759,6 +3127,52 @@
         }
       }
     },
+    "City": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المدينة"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stadt"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ville"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Город"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Місто"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Шаҳар"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shahar"
+          }
+        }
+      }
+    },
     "Clear": {
       "localizations": {
         "ar": {
@@ -2847,6 +3261,98 @@
           "stringUnit": {
             "state": "translated",
             "value": "Yopish"
+          }
+        }
+      }
+    },
+    "Colder today": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أبرد اليوم"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heute kälter"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plus froid aujourd’hui"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сегодня похолодало"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сьогодні похолоднішало"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бугун совуқроқ"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bugun sovuqroq"
+          }
+        }
+      }
+    },
+    "Colder tomorrow": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أبرد غدًا"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Morgen kälter"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plus froid demain"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завтра похолодает"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завтра похолоднішає"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Эртага совуқроқ бўлади"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ertaga sovuqroq bo‘ladi"
           }
         }
       }
@@ -3031,6 +3537,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Kirmasdan davom etish"
+          }
+        }
+      }
+    },
+    "Control Center and the Action button": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مركز التحكم وزر الإجراء"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kontrollzentrum und Aktionstaste"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Centre de contrôle et bouton Action"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пункт управления и кнопка действия"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пункт керування і кнопка дії"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бошқарув маркази ва ҳаракат тугмаси"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Boshqaruv markazi va harakat tugmasi"
           }
         }
       }
@@ -3491,6 +4043,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "To‘q"
+          }
+        }
+      }
+    },
+    "Data sources": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مصادر البيانات"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Datenquellen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sources des données"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Источники данных"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Джерела даних"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Маълумот манбалари"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ma’lumot manbalari"
           }
         }
       }
@@ -4093,6 +4691,52 @@
         }
       }
     },
+    "Don't forget an umbrella.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا تنسَ المظلة."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vergiss den Schirm nicht."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "N’oubliez pas votre parapluie."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не забудьте зонт."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не забудьте парасольку."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Соябонни унутманг."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Soyabonni unutmang."
+          }
+        }
+      }
+    },
     "Done": {
       "localizations": {
         "ar": {
@@ -4231,6 +4875,144 @@
         }
       }
     },
+    "Down to %@, dress warmer.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حتى %@، البس ملابس أدفأ."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bis %@, zieh dich warm an."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jusqu’à %@, couvrez-vous bien."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "До %@, одевайтесь теплее."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "До %@, одягайтеся тепліше."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ гача, иссиқроқ кийининг."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ gacha, issiqroq kiyining."
+          }
+        }
+      }
+    },
+    "Dress warmer and enjoy it.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "البس ملابس أدفأ واستمتع."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zieh dich warm an und genieß es."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couvrez-vous et profitez-en."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Одевайтесь теплее и радуйтесь."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Одягайтеся тепліше й радійте."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Иссиқроқ кийининг ва завқланинг."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Issiqroq kiyining va zavqlaning."
+          }
+        }
+      }
+    },
+    "Dress warmer and leave a little earlier.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "البس ملابس أدفأ واخرج أبكر قليلًا."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zieh dich warm an und geh etwas früher los."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couvrez-vous et partez un peu plus tôt."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Одевайтесь теплее и выходите чуть раньше."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Одягайтеся тепліше й виходьте трохи раніше."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Иссиқроқ кийининг ва сал эртароқ чиқинг."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Issiqroq kiyining va sal ertaroq chiqing."
+          }
+        }
+      }
+    },
     "Drops": {
       "localizations": {
         "ar": {
@@ -4273,6 +5055,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tomchilar"
+          }
+        }
+      }
+    },
+    "Dynamic Island": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dynamic Island"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dynamic Island"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dynamic Island"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dynamic Island"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dynamic Island"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dynamic Island"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dynamic Island"
           }
         }
       }
@@ -5151,6 +5979,98 @@
         }
       }
     },
+    "Finally, after the rainy days.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أخيرًا، بعد الأيام الممطرة."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Endlich, nach den Regentagen."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enfin, après les jours de pluie."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Наконец-то, после дождливых дней."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нарешті, після дощових днів."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ниҳоят, ёмғирли кунлардан кейин."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nihoyat, yomg‘irli kunlardan keyin."
+          }
+        }
+      }
+    },
+    "Find a city": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ابحث عن مدينة"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stadt suchen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rechercher une ville"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Найти город"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Знайти місто"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Шаҳарни топиш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shaharni topish"
+          }
+        }
+      }
+    },
     "Find a reminder": {
       "localizations": {
         "ar": {
@@ -5331,6 +6251,98 @@
           "stringUnit": {
             "state": "translated",
             "value": "Belgilangan istalgan joydan ketganingizda ishlaydi"
+          }
+        }
+      }
+    },
+    "First snow today": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أول ثلج اليوم"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heute der erste Schnee"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Première neige aujourd’hui"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сегодня первый снег"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сьогодні перший сніг"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бугун биринчи қор"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bugun birinchi qor"
+          }
+        }
+      }
+    },
+    "First snow tomorrow": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أول ثلج غدًا"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Morgen der erste Schnee"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Première neige demain"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завтра первый снег"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завтра перший сніг"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Эртага биринчи қор"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ertaga birinchi qor"
           }
         }
       }
@@ -5767,6 +6779,98 @@
         }
       }
     },
+    "Frost today": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صقيع اليوم"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heute Frost"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gel aujourd’hui"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сегодня мороз"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сьогодні мороз"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бугун аёз"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bugun ayoz"
+          }
+        }
+      }
+    },
+    "Frost tomorrow": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صقيع غدًا"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Morgen Frost"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gel demain"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завтра мороз"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завтра мороз"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Эртага аёз"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ertaga ayoz"
+          }
+        }
+      }
+    },
     "German": {
       "localizations": {
         "ar": {
@@ -5813,6 +6917,98 @@
         }
       }
     },
+    "Got it": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حسنًا"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verstanden"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compris"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Понятно"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Зрозуміло"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Тушунарли"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tushunarli"
+          }
+        }
+      }
+    },
+    "Gusts up to %@.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هبّات تصل إلى %@."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Böen bis %@."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rafales jusqu’à %@."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Порывы до %@."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пориви до %@."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Шамол %@ гача кучаяди."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shamol %@ gacha kuchayadi."
+          }
+        }
+      }
+    },
     "Handy before a doctor's visit": {
       "localizations": {
         "ar": {
@@ -5855,6 +7051,98 @@
           "stringUnit": {
             "state": "translated",
             "value": "Shifokorga borishdan oldin shunday qulay"
+          }
+        }
+      }
+    },
+    "Heat today": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حرّ شديد اليوم"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heute Hitze"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Canicule aujourd’hui"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сегодня жара"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сьогодні спека"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бугун жазирама"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bugun jazirama"
+          }
+        }
+      }
+    },
+    "Heat tomorrow": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حرّ شديد غدًا"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Morgen Hitze"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Canicule demain"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завтра жара"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завтра спека"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Эртага жазирама"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ertaga jazirama"
           }
         }
       }
@@ -5947,6 +7235,98 @@
           "stringUnit": {
             "state": "translated",
             "value": "Plyusni bosib turing"
+          }
+        }
+      }
+    },
+    "Hold the plus and talk. Let go when you are done.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اضغط مطولًا على + وتكلم. ارفع إصبعك عند الانتهاء."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Halte das Plus gedrückt und sprich. Lass los, wenn du fertig bist."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maintenez le plus et parlez. Relâchez quand vous avez fini."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Удерживайте плюс и говорите. Отпустите, когда закончите."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Утримуйте плюс і говоріть. Відпустіть, коли закінчите."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Плюсни босиб туринг ва гапиринг. Тугатгач қўйиб юборинг."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plyusni bosib turing va gapiring. Tugatgach qo‘yib yuboring."
+          }
+        }
+      }
+    },
+    "Hold the plus on the home screen and talk. Let go when you are done, and Rema will make sense of the phrase.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اضغط مطولًا على زر الإضافة في الشاشة الرئيسية وتكلم. ارفع إصبعك عند الانتهاء وسيفهم Rema العبارة."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Halte das Plus auf dem Startbildschirm gedrückt und sprich. Lass los, wenn du fertig bist, Rema versteht den Satz."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maintenez le plus sur l’écran d’accueil et parlez. Relâchez quand vous avez fini, Rema comprendra la phrase."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Удерживайте плюс на главном экране и говорите. Отпустите, когда закончите, и Rema разберёт фразу."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Утримуйте плюс на головному екрані й говоріть. Відпустіть, коли закінчите, і Rema розбере фразу."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бош экрандаги плюсни босиб туринг ва гапиринг. Тугатгач қўйиб юборинг, Rema иборани ўзи тушунади."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bosh ekrandagi plyusni bosib turing va gapiring. Tugatgach qo‘yib yuboring, Rema iborani o‘zi tushunadi."
           }
         }
       }
@@ -7023,6 +8403,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Joylashuv"
+          }
+        }
+      }
+    },
+    "Lock": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "القفل"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sperren"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verrouiller"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Закрывать"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Закривати"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ёпиш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yopish"
           }
         }
       }
@@ -8413,6 +9839,52 @@
         }
       }
     },
+    "Not chosen": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "غير محددة"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicht gewählt"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non choisie"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не выбран"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не вибрано"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Танланмаган"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tanlanmagan"
+          }
+        }
+      }
+    },
     "Not done: %@": {
       "localizations": {
         "ar": {
@@ -8455,6 +9927,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Belgilanmagan: %@"
+          }
+        }
+      }
+    },
+    "Not now": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ليس الآن"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicht jetzt"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pas maintenant"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не сейчас"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не зараз"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ҳозир эмас"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hozir emas"
           }
         }
       }
@@ -8869,6 +10387,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Bildirishnomalar"
+          }
+        }
+      }
+    },
+    "Now: %@": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الآن: %@"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jetzt: %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actuellement : %@"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сейчас: %@"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Зараз: %@"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ҳозир: %@"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hozir: %@"
           }
         }
       }
@@ -9329,6 +10893,190 @@
           "stringUnit": {
             "state": "translated",
             "value": "App Store’ni ochish"
+          }
+        }
+      }
+    },
+    "Open Control Center, tap + and add the Rema button. If your iPhone has an Action button, assign Rema to it in Settings.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "افتح مركز التحكم واضغط + وأضف زر Rema. وإن كان في iPhone زر الإجراء، فخصّصه لـRema من الإعدادات."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öffne das Kontrollzentrum, tippe auf + und füge die Rema-Taste hinzu. Hat dein iPhone eine Aktionstaste, weise ihr Rema in den Einstellungen zu."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrez le Centre de contrôle, touchez + et ajoutez le bouton Rema. Si votre iPhone a un bouton Action, attribuez-lui Rema dans Réglages."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Откройте Пункт управления, нажмите «+» и добавьте кнопку Rema. Если у iPhone есть кнопка действия, назначьте на неё Rema в Настройках."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Відкрийте Пункт керування, натисніть «+» і додайте кнопку Rema. Якщо в iPhone є кнопка дії, призначте на неї Rema в Параметрах."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бошқарув марказини очинг, «+» ни босинг ва Rema тугмасини қўшинг. iPhone’да ҳаракат тугмаси бўлса, Созламаларда унга Rema’ни бириктиринг."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Boshqaruv markazini oching, «+» ni bosing va Rema tugmasini qo‘shing. iPhone’da harakat tugmasi bo‘lsa, Sozlamalarda unga Rema’ni biriktiring."
+          }
+        }
+      }
+    },
+    "Open Shortcuts": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فتح الاختصارات"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kurzbefehle öffnen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir Raccourcis"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Открыть Команды"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Відкрити Команди"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Тезкор буйруқларни очиш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tezkor buyruqlarni ochish"
+          }
+        }
+      }
+    },
+    "Open Watch": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فتح Watch"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Watch öffnen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir Watch"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Открыть Watch"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Відкрити Watch"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Watch’ни очиш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Watch’ni ochish"
+          }
+        }
+      }
+    },
+    "Open it with %@. Reminders come as usual.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "افتحه باستخدام %@. تصل التذكيرات كالمعتاد."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öffne es mit %@. Erinnerungen kommen wie gewohnt."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrez-le avec %@. Les rappels arrivent comme d’habitude."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Откройте её с помощью %@. Напоминания приходят как обычно."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Відкрийте її за допомогою %@. Нагадування приходять як завжди."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Уни %@ билан очинг. Эслатмалар одатдагидек келади."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uni %@ bilan oching. Eslatmalar odatdagidek keladi."
           }
         }
       }
@@ -9839,6 +11587,52 @@
         }
       }
     },
+    "Places work on their own": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الأماكن تعمل وحدها"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Orte funktionieren von selbst"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les lieux fonctionnent seuls"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Места работают сами"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Місця працюють самі"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Жойлар ўзи ишлайди"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Joylar o‘zi ishlaydi"
+          }
+        }
+      }
+    },
     "Play sound": {
       "localizations": {
         "ar": {
@@ -10069,6 +11863,52 @@
         }
       }
     },
+    "Protection": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الحماية"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schutz"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Protection"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Защита"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Захист"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ҳимоя"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Himoya"
+          }
+        }
+      }
+    },
     "Radius": {
       "localizations": {
         "ar": {
@@ -10111,6 +11951,98 @@
           "stringUnit": {
             "state": "translated",
             "value": "Radius"
+          }
+        }
+      }
+    },
+    "Rain today": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مطر اليوم"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heute Regen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pluie aujourd’hui"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сегодня дождь"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сьогодні дощ"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бугун ёмғир"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bugun yomg‘ir"
+          }
+        }
+      }
+    },
+    "Rain tomorrow": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مطر غدًا"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Morgen Regen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pluie demain"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завтра дождь"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завтра дощ"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Эртага ёмғир"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ertaga yomg‘ir"
           }
         }
       }
@@ -10203,6 +12135,190 @@
           "stringUnit": {
             "state": "translated",
             "value": "Rema iboradan sana, vaqt, takror va joyni o‘zi topadi. Sakkiz tilda yozish mumkin."
+          }
+        }
+      }
+    },
+    "Rema is locked": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema مقفل"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema ist gesperrt"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema est verrouillé"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema закрыта"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema закрита"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema ёпиқ"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema yopiq"
+          }
+        }
+      }
+    },
+    "Rema on the Home Screen": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema على الشاشة الرئيسية"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema auf dem Home-Bildschirm"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema sur l’écran d’accueil"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema на экране «Домой»"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema на екрані «Початок»"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бош экранда Rema"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bosh ekranda Rema"
+          }
+        }
+      }
+    },
+    "Rema opens only after %@": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا يُفتح Rema إلا بعد %@"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema öffnet sich erst nach %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema ne s’ouvre qu’après %@"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema откроется только после %@"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema відкриється тільки після %@"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema фақат %@ дан кейин очилади"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema faqat %@ dan keyin ochiladi"
+          }
+        }
+      }
+    },
+    "Rema will tell you about rain, snow or frost the evening before and in the morning.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سيخبرك Rema بالمطر أو الثلج أو الصقيع في المساء السابق وفي الصباح."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema sagt dir am Vorabend und am Morgen Bescheid, wenn Regen, Schnee oder Frost kommt."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema vous préviendra de la pluie, de la neige ou du gel la veille au soir et le matin."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema подскажет про дождь, снег или мороз накануне вечером и утром."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema підкаже про дощ, сніг чи мороз напередодні ввечері й уранці."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema ёмғир, қор ёки аёз ҳақида олдинги кечқурун ва эрталаб айтиб туради."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema yomg‘ir, qor yoki ayoz haqida oldingi kechqurun va ertalab aytib turadi."
           }
         }
       }
@@ -12277,6 +14393,52 @@
         }
       }
     },
+    "Say “Remind me in Rema” or “What is next in Rema”. The same actions are in the Shortcuts app.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "قل «ذكّرني في Rema» أو «ما التالي في Rema». والأوامر نفسها موجودة في تطبيق الاختصارات."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sag „Erinnere mich in Rema“ oder „Was steht an in Rema“. Dieselben Aktionen gibt es in der App Kurzbefehle."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dites « Rappelle-moi dans Rema » ou « Qu’est-ce qui vient dans Rema ». Les mêmes actions sont dans l’app Raccourcis."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Скажите «Напомни в Rema» или «Что дальше в Rema». Те же действия есть в приложении «Команды»."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Скажіть «Remind me in Rema» або «What is next in Rema». Ті самі дії є в застосунку «Команди»."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«Remind me in Rema» ёки «What is next in Rema» деб айтинг. Шу амаллар «Тезкор буйруқлар» иловасида ҳам бор."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«Remind me in Rema» yoki «What is next in Rema» deb ayting. Shu amallar «Tezkor buyruqlar» ilovasida ham bor."
+          }
+        }
+      }
+    },
     "Search address": {
       "localizations": {
         "ar": {
@@ -13163,6 +15325,52 @@
         }
       }
     },
+    "Siri and Shortcuts": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siri والاختصارات"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siri und Kurzbefehle"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siri et Raccourcis"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siri и Команды"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siri і Команди"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siri ва Тезкор буйруқлар"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siri va Tezkor buyruqlar"
+          }
+        }
+      }
+    },
     "Skip": {
       "localizations": {
         "ar": {
@@ -13389,6 +15597,98 @@
           "stringUnit": {
             "state": "translated",
             "value": "Surilgan eslatma"
+          }
+        }
+      }
+    },
+    "Snow today": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ثلج اليوم"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heute Schnee"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neige aujourd’hui"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сегодня снег"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сьогодні сніг"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бугун қор"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bugun qor"
+          }
+        }
+      }
+    },
+    "Snow tomorrow": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ثلج غدًا"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Morgen Schnee"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neige demain"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завтра снег"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завтра сніг"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Эртага қор"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ertaga qor"
           }
         }
       }
@@ -13945,6 +16245,98 @@
         }
       }
     },
+    "Strong wind today": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "رياح قوية اليوم"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heute starker Wind"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vent fort aujourd’hui"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сегодня сильный ветер"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сьогодні сильний вітер"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бугун кучли шамол"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bugun kuchli shamol"
+          }
+        }
+      }
+    },
+    "Strong wind tomorrow": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "رياح قوية غدًا"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Morgen starker Wind"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vent fort demain"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завтра сильный ветер"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завтра сильний вітер"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Эртага кучли шамол"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ertaga kuchli shamol"
+          }
+        }
+      }
+    },
     "Study": {
       "localizations": {
         "ar": {
@@ -13991,6 +16383,98 @@
         }
       }
     },
+    "Sun today": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شمس اليوم"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heute Sonne"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Soleil aujourd’hui"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сегодня солнце"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сьогодні сонце"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бугун қуёшли"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bugun quyoshli"
+          }
+        }
+      }
+    },
+    "Sun tomorrow": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شمس غدًا"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Morgen Sonne"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Soleil demain"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завтра солнце"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завтра сонце"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Эртага қуёшли"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ertaga quyoshli"
+          }
+        }
+      }
+    },
     "Sync": {
       "localizations": {
         "ar": {
@@ -14033,6 +16517,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sinxronlash"
+          }
+        }
+      }
+    },
+    "Take an umbrella and take care outside.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "خذ مظلة واحذر في الخارج."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nimm einen Schirm mit und pass draußen auf dich auf."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prenez un parapluie et soyez prudent dehors."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Возьмите зонт и берегите себя на улице."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Візьміть парасольку й бережіть себе надворі."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Соябон олинг ва кўчада эҳтиёт бўлинг."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Soyabon oling va ko‘chada ehtiyot bo‘ling."
           }
         }
       }
@@ -14451,6 +16981,52 @@
         }
       }
     },
+    "The watch app installs together with Rema. If it is not on your watch, install it in the Watch app on your iPhone.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يُثبَّت تطبيق الساعة مع Rema. وإن لم يكن على ساعتك فثبّته من تطبيق Watch على iPhone."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Uhr-App wird mit Rema installiert. Fehlt sie auf deiner Uhr, installiere sie in der Watch-App auf dem iPhone."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’app pour la montre s’installe avec Rema. Si elle n’est pas sur votre montre, installez-la depuis l’app Watch sur l’iPhone."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Приложение для часов ставится вместе с Rema. Если его нет на часах, установите его в приложении Watch на iPhone."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Застосунок для годинника встановлюється разом із Rema. Якщо його немає на годиннику, встановіть його в застосунку Watch на iPhone."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Соат учун илова Rema билан бирга ўрнатилади. Агар соатда бўлмаса, уни iPhone’даги Watch иловасида ўрнатинг."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Soat uchun ilova Rema bilan birga o‘rnatiladi. Agar soatda bo‘lmasa, uni iPhone’dagi Watch ilovasida o‘rnating."
+          }
+        }
+      }
+    },
     "Theme": {
       "localizations": {
         "ar": {
@@ -14865,6 +17441,98 @@
         }
       }
     },
+    "Thunderstorm today": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عاصفة رعدية اليوم"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heute Gewitter"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Orage aujourd’hui"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сегодня гроза"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сьогодні гроза"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бугун момақалдироқ"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bugun momaqaldiroq"
+          }
+        }
+      }
+    },
+    "Thunderstorm tomorrow": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عاصفة رعدية غدًا"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Morgen Gewitter"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Orage demain"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завтра гроза"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завтра гроза"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Эртага момақалдироқ"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ertaga momaqaldiroq"
+          }
+        }
+      }
+    },
     "Tick-tock": {
       "localizations": {
         "ar": {
@@ -15187,6 +17855,98 @@
         }
       }
     },
+    "Touch and hold an empty spot on the Home Screen, tap Edit and then Add Widget. You can tick reminders right on the widget.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اضغط مطولًا على مكان فارغ في الشاشة الرئيسية، ثم «تعديل» و«إضافة أداة». يمكنك تعليم التذكيرات من الأداة مباشرة."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Halte eine freie Stelle auf dem Home-Bildschirm gedrückt, tippe auf Bearbeiten und dann auf Widget hinzufügen. Erinnerungen kannst du direkt im Widget abhaken."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maintenez un espace vide de l’écran d’accueil, touchez Modifier puis Ajouter un widget. Vous pouvez cocher les rappels directement sur le widget."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Удерживайте пустое место на экране «Домой», нажмите «Изменить» и «Добавить виджет». Отмечать напоминания можно прямо на виджете."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Утримуйте порожнє місце на екрані «Початок», натисніть «Змінити» і «Додати віджет». Позначати нагадування можна просто на віджеті."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бош экрандаги бўш жойни босиб туринг, «Таҳрирлаш» ва «Виджет қўшиш»ни босинг. Эслатмаларни тўғридан-тўғри виджетда белгилаш мумкин."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bosh ekrandagi bo‘sh joyni bosib turing, «Tahrirlash» va «Vidjet qo‘shish»ni bosing. Eslatmalarni to‘g‘ridan-to‘g‘ri vidjetda belgilash mumkin."
+          }
+        }
+      }
+    },
+    "Turn on": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تفعيل"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einschalten"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Activer"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Включить"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Увімкнути"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ёқиш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yoqish"
+          }
+        }
+      }
+    },
     "Ukrainian": {
       "localizations": {
         "ar": {
@@ -15279,6 +18039,52 @@
         }
       }
     },
+    "Unlock Rema": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فتح Rema"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema entsperren"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Déverrouiller Rema"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Открыть Rema"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Відкрити Rema"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema’ни очиш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema’ni ochish"
+          }
+        }
+      }
+    },
     "Until the end of the year": {
       "localizations": {
         "ar": {
@@ -15321,6 +18127,98 @@
           "stringUnit": {
             "state": "translated",
             "value": "Yil oxirigacha"
+          }
+        }
+      }
+    },
+    "Up to %@, a good time to get outside.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حتى %@، وقت مناسب للخروج."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bis %@, gute Zeit, rauszugehen."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jusqu’à %@, un bon moment pour sortir."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "До %@, хорошее время выбраться на улицу."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "До %@, гарний час вибратися надвір."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ гача, ташқарига чиқиш учун яхши вақт."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ gacha, tashqariga chiqish uchun yaxshi vaqt."
+          }
+        }
+      }
+    },
+    "Up to %@, drink more water.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حتى %@، اشرب ماء أكثر."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bis %@, trink mehr Wasser."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jusqu’à %@, buvez beaucoup d’eau."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "До %@, пейте больше воды."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "До %@, пийте більше води."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ гача, кўпроқ сув ичинг."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ gacha, ko‘proq suv iching."
           }
         }
       }
@@ -15739,6 +18637,144 @@
         }
       }
     },
+    "Weather": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الطقس"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wetter"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Météo"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Погода"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Погода"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Об-ҳаво"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ob-havo"
+          }
+        }
+      }
+    },
+    "Weather in the morning and evening?": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الطقس صباحًا ومساءً؟"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wetter morgens und abends?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La météo le matin et le soir ?"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Погода утром и вечером?"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Погода зранку й увечері?"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Эрталаб ва кечқурун об-ҳаво?"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ertalab va kechqurun ob-havo?"
+          }
+        }
+      }
+    },
+    "Weather notifications": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الطقس في الإشعارات"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wetter in Mitteilungen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Météo en notification"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Погода в уведомлениях"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Погода в сповіщеннях"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Билдиришномада об-ҳаво"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bildirishnomada ob-havo"
+          }
+        }
+      }
+    },
     "Week": {
       "localizations": {
         "ar": {
@@ -15781,6 +18817,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Hafta"
+          }
+        }
+      }
+    },
+    "What Rema can do": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما الذي يستطيعه Rema"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Was Rema kann"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce que sait faire Rema"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Что умеет Rema"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Що вміє Rema"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema нималар қила олади"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema nimalar qila oladi"
           }
         }
       }
@@ -16153,6 +19235,52 @@
         }
       }
     },
+    "When a reminder is less than an hour away, close Rema. The countdown shows up at the top of the screen and on the Lock Screen.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عندما يبقى أقل من ساعة على التذكير، صغّر Rema. سيظهر العد التنازلي أعلى الشاشة وعلى شاشة القفل."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ist eine Erinnerung weniger als eine Stunde entfernt, schließ Rema. Der Countdown erscheint oben auf dem Bildschirm und auf dem Sperrbildschirm."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quand un rappel arrive dans moins d’une heure, fermez Rema. Le compte à rebours s’affiche en haut de l’écran et sur l’écran verrouillé."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Когда до напоминания меньше часа, сверните Rema. Отсчёт появится наверху экрана и на экране блокировки."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Коли до нагадування менше години, згорніть Rema. Відлік з’явиться вгорі екрана й на екрані блокування."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Эслатмагача бир соатдан кам қолганда Rema’ни ёпинг. Ҳисоб экран тепасида ва қулф экранида кўринади."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eslatmagacha bir soatdan kam qolganda Rema’ni yoping. Hisob ekran tepasida va qulf ekranida ko‘rinadi."
+          }
+        }
+      }
+    },
     "When to remind?": {
       "localizations": {
         "ar": {
@@ -16195,6 +19323,98 @@
           "stringUnit": {
             "state": "translated",
             "value": "Qachon eslatay?"
+          }
+        }
+      }
+    },
+    "Widgets": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الأدوات"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Widgets"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Widgets"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Виджеты"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Віджети"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Виджетлар"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vidjetlar"
+          }
+        }
+      }
+    },
+    "Widgets and notifications stay open. If %@ does not work, you can enter the phone passcode.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا يغلق هذا الأدوات والإشعارات. وإن لم يعمل %@ يمكنك إدخال رمز الهاتف."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Widgets und Mitteilungen bleiben offen. Klappt %@ nicht, kannst du den iPhone-Code eingeben."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les widgets et les notifications restent visibles. Si %@ ne fonctionne pas, vous pouvez saisir le code du téléphone."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Виджеты и уведомления это не закрывает. Если %@ не сработал, можно ввести код телефона."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Віджети й сповіщення це не закриває. Якщо %@ не спрацював, можна ввести код телефона."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Виджет ва билдиришномалар ёпилмайди. Агар %@ ишламаса, телефон кодини киритиш мумкин."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vidjet va bildirishnomalar yopilmaydi. Agar %@ ishlamasa, telefon kodini kiritish mumkin."
           }
         }
       }
@@ -16383,6 +19603,52 @@
         }
       }
     },
+    "Write “when I leave work” or “when I get home”. This needs location access and at least one place.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اكتب «عندما أغادر العمل» أو «عندما أصل إلى البيت». يحتاج ذلك إلى إذن الموقع ومكان واحد على الأقل."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schreib „wenn ich die Arbeit verlasse“ oder „wenn ich nach Hause komme“. Dafür brauchst du Standortzugriff und mindestens einen Ort."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Écrivez « quand je quitte le travail » ou « quand j’arrive à la maison ». Il faut l’accès à la localisation et au moins un lieu."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напишите «когда уйду с работы» или «когда приду домой». Для этого нужен доступ к геопозиции и хотя бы одно место."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напишіть «коли піду з роботи» або «коли прийду додому». Для цього потрібен доступ до геопозиції й хоча б одне місце."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«ишдан кетганимда» ёки «уйга келганимда» деб ёзинг. Бунинг учун жойлашувга рухсат ва камида битта жой керак."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«ishdan ketganimda» yoki «uyga kelganimda» deb yozing. Buning uchun joylashuvga ruxsat va kamida bitta joy kerak."
+          }
+        }
+      }
+    },
     "Wrong email or password.": {
       "localizations": {
         "ar": {
@@ -16471,6 +19737,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ha"
+          }
+        }
+      }
+    },
+    "You can use your voice": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يمكنك استخدام صوتك"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Es geht auch per Sprache"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vous pouvez parler"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Можно голосом"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Можна голосом"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Овоз билан ҳам бўлади"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ovoz bilan ham bo‘ladi"
           }
         }
       }
@@ -16999,6 +20311,208 @@
         }
       }
     },
+    "after %lld minutes": {
+      "localizations": {
+        "ar": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "بعد %lld دقائق"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "بعد %lld دقيقة"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "بعد دقيقة"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "بعد %lld دقيقة"
+                }
+              },
+              "two": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "بعد دقيقتين"
+                }
+              },
+              "zero": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "بعد %lld دقيقة"
+                }
+              }
+            }
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "nach %lld Minute"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "nach %lld Minuten"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "after %lld minute"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "after %lld minutes"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "après %lld minutes"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "après %lld minute"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "après %lld minutes"
+                }
+              }
+            }
+          }
+        },
+        "ru": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "через %lld минуты"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "через %lld минут"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "через %lld минуту"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "через %lld минуты"
+                }
+              }
+            }
+          }
+        },
+        "uk": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "через %lld хвилини"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "через %lld хвилин"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "через %lld хвилину"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "через %lld хвилини"
+                }
+              }
+            }
+          }
+        },
+        "uz-Cyrl": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld дақиқадан кейин"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld дақиқадан кейин"
+                }
+              }
+            }
+          }
+        },
+        "uz-Latn": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld daqiqadan keyin"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld daqiqadan keyin"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "after %lld times": {
       "localizations": {
         "ar": {
@@ -17197,6 +20711,52 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "after a minute": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بعد دقيقة"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "nach einer Minute"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "après une minute"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "через минуту"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "через хвилину"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "бир дақиқадан кейин"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "bir daqiqadan keyin"
           }
         }
       }
@@ -18773,6 +22333,52 @@
         }
       }
     },
+    "iPhone Settings": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إعدادات iPhone"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone-Einstellungen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réglages de l’iPhone"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Настройки iPhone"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Параметри iPhone"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone созламалари"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone sozlamalari"
+          }
+        }
+      }
+    },
     "in": {
       "localizations": {
         "ar": {
@@ -19201,6 +22807,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "2 soatdan keyin"
+          }
+        }
+      }
+    },
+    "in the evening about tomorrow and in the morning about today, only when there is a reason": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مساءً عن الغد وصباحًا عن اليوم، فقط عند وجود سبب"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "abends für morgen und morgens für heute, nur wenn es einen Grund gibt"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "le soir pour le lendemain et le matin pour la journée, seulement s’il y a une raison"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "вечером про завтра и утром про сегодня, только когда есть повод"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "увечері про завтра й уранці про сьогодні, лише коли є привід"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "кечқурун эртанги кун ҳақида, эрталаб бугун ҳақида, фақат сабаб бўлса"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "kechqurun ertangi kun haqida, ertalab bugun haqida, faqat sabab bo‘lsa"
           }
         }
       }
@@ -20447,6 +24099,52 @@
         }
       }
     },
+    "right away": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فورًا"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "sofort"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "immédiatement"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "сразу"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "одразу"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "дарҳол"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "darhol"
+          }
+        }
+      }
+    },
     "today": {
       "localizations": {
         "ar": {
@@ -21041,6 +24739,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "har yili, %@"
+          }
+        }
+      }
+    },
+    "“Urgent” gets through Do Not Disturb and Focus. Add the word “urgent” to the phrase or turn it on in the reminder itself.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "علامة «عاجل» تتجاوز «عدم الإزعاج» والتركيز. أضف كلمة «عاجل» إلى العبارة أو فعّلها في التذكير نفسه."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "„Dringend“ kommt auch bei „Nicht stören“ und Fokus durch. Füge das Wort „dringend“ in den Satz ein oder schalte es in der Erinnerung ein."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La mention « Urgent » passe outre Ne pas déranger et Concentration. Ajoutez le mot « urgent » à la phrase ou activez-la dans le rappel."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пометка «Срочно» пробивает «Не беспокоить» и Фокус. Добавьте во фразу слово «срочно» или включите пометку в самом напоминании."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Позначка «Терміново» пробиває «Не турбувати» і Фокус. Додайте у фразу слово «терміново» або ввімкніть позначку в самому нагадуванні."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«Шошилинч» белгиси «Безовта қилинмасин» ва Фокусдан ҳам ўтади. Иборага «шошилинч» сўзини қўшинг ёки эслатманинг ўзида ёқинг."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«Shoshilinch» belgisi «Bezovta qilinmasin» va Fokusdan ham o‘tadi. Iboraga «shoshilinch» so‘zini qo‘shing yoki eslatmaning o‘zida yoqing."
           }
         }
       }

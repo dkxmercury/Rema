@@ -12,6 +12,8 @@ struct SettingsScreen: View {
     var onSignIn: () -> Void = {}
     var onAccount: () -> Void = {}
     var onLanguage: () -> Void = {}
+    var onCity: () -> Void = {}
+    var onFeatures: () -> Void = {}
     let onBack: () -> Void
 
     @AppStorage(Feedback.hapticsKey) private var haptics = true
@@ -19,7 +21,10 @@ struct SettingsScreen: View {
     @AppStorage(Notifier.missedKey) private var missed = true
     @State private var editingTime: TimeTarget?
     @State private var permissions = Permissions()
+    @State private var weather = WeatherAdvisor.shared
+    @State private var lock = AppLock.shared
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.colorScheme) private var colorScheme
 
     struct TimeTarget: Identifiable {
         enum Kind {
@@ -47,6 +52,24 @@ struct SettingsScreen: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     section("Account", top: 14) { accountPanel }
+                    if lock.available {
+                        section("Protection") {
+                            PanelList {
+                                ToggleRow(icon: Icons.faceID, iconColor: Palette.text, title: "\(lock.biometryName) sign-in", subtitle: String(localized: "Rema opens only after \(lock.biometryName)"), isOn: lockBinding, minHeight: 60)
+                                if lock.enabled {
+                                    Hairline()
+                                    lockDelayRow
+                                }
+                            }
+                            Text("Widgets and notifications stay open. If \(lock.biometryName) does not work, you can enter the phone passcode.")
+                                .font(.app(.golos, 13))
+                                .lineHeight(18, .golos, 13)
+                                .foregroundStyle(Palette.secondary)
+                                .multilineTextAlignment(.center)
+                                .frame(maxWidth: .infinity)
+                                .padding(.top, 4)
+                        }
+                    }
                     section("Sound") {
                         PanelList {
                             NavigationRow(icon: Icons.note, iconColor: Palette.text, title: "Default sound", minHeight: 52, action: onSound) {
@@ -84,6 +107,20 @@ struct SettingsScreen: View {
                             NavigationRow(icon: Icons.pin, iconColor: Palette.text, title: "My places", minHeight: 52, action: onPlaces) {
                                 value(String(localized: "\(store.activePlaces.count) of \(20)"))
                             }
+                        }
+                    }
+                    if weather.available {
+                        section("Weather") {
+                            PanelList {
+                                ToggleRow(icon: Icons.sun, iconColor: Palette.text, title: "Weather notifications", subtitle: String(localized: "in the evening about tomorrow and in the morning about today, only when there is a reason"), isOn: weatherBinding, minHeight: 64)
+                                if weather.enabled {
+                                    Hairline()
+                                    NavigationRow(icon: Icons.pin, iconColor: Palette.text, title: "City", minHeight: 52, action: onCity) {
+                                        value(weather.city ?? String(localized: "Not chosen"))
+                                    }
+                                }
+                            }
+                            weatherAttribution
                         }
                     }
                     section("Theme") {
@@ -143,6 +180,85 @@ struct SettingsScreen: View {
         }
         .onChange(of: haptics) { _, _ in Feedback.play(.toggle) }
         .onChange(of: sounds) { _, _ in Feedback.play(.toggle) }
+    }
+
+    private var lockBinding: Binding<Bool> {
+        Binding(get: { lock.enabled }, set: { on in
+            Task {
+                await lock.setEnabled(on)
+                Feedback.play(lock.enabled == on ? .toggle : .error)
+            }
+        })
+    }
+
+    private func lockDelayText(_ seconds: Int) -> String {
+        switch seconds {
+        case 0: return String(localized: "right away")
+        case 60: return String(localized: "after a minute")
+        default: return String(localized: "after \(seconds / 60) minutes")
+        }
+    }
+
+    private var lockDelayRow: some View {
+        Menu {
+            ForEach([0, 60, 300], id: \.self) { seconds in
+                Button {
+                    lock.setDelay(seconds)
+                    Feedback.play(.select)
+                } label: {
+                    if seconds == lock.delay {
+                        Label(lockDelayText(seconds), systemImage: "checkmark")
+                    } else {
+                        Text(verbatim: lockDelayText(seconds))
+                    }
+                }
+            }
+        } label: {
+            HStack(spacing: 12) {
+                Glyph(paths: Icons.clock, size: 20, lineWidth: 2, color: Palette.text)
+                Text("Lock")
+                    .font(.app(.golos, 16, weight: 500))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                value(lockDelayText(lock.delay))
+                Glyph(paths: Icons.chevron, size: 16, lineWidth: 2, color: Palette.secondary)
+            }
+            .frame(minHeight: 52)
+            .contentShape(Rectangle())
+            .foregroundStyle(Palette.text)
+        }
+    }
+
+    private var weatherBinding: Binding<Bool> {
+        Binding(get: { weather.enabled }, set: { on in
+            Feedback.play(.toggle)
+            Task { await weather.setEnabled(on) }
+        })
+    }
+
+    private var weatherAttribution: some View {
+        HStack(spacing: 8) {
+            if let mark = colorScheme == .dark ? weather.markDark : weather.markLight {
+                AsyncImage(url: mark) { image in
+                    image.resizable().scaledToFit()
+                } placeholder: {
+                    Color.clear
+                }
+                .frame(height: 12)
+                .accessibilityLabel(Text(verbatim: "Apple Weather"))
+            }
+            Spacer(minLength: 8)
+            if let legal = weather.legal {
+                Link(destination: legal) {
+                    Text("Data sources")
+                        .font(.app(.golos, 13, weight: 600))
+                        .foregroundStyle(Palette.accentText)
+                        .frame(minHeight: 32)
+                }
+            }
+        }
+        .padding(.horizontal, 4)
+        .padding(.top, 4)
+        .task { await weather.loadAttribution() }
     }
 
     private func section<Content: View>(_ title: LocalizedStringKey, top: CGFloat = 16, @ViewBuilder content: () -> Content) -> some View {
@@ -296,6 +412,10 @@ struct SettingsScreen: View {
         VStack(alignment: .leading, spacing: 6) {
             SectionLabel(verbatim: "Rema")
             PanelList {
+                NavigationRow(icon: Icons.star, iconColor: Palette.text, title: "What Rema can do", minHeight: 52, action: onFeatures) {
+                    EmptyView()
+                }
+                Hairline()
                 LinkRow(icon: Icons.instagram, title: "Instagram", value: "@rema.apps", url: Remote.shared.link(.instagram))
                 Hairline()
                 LinkRow(icon: Icons.envelope, title: "Write to support", url: Remote.shared.link(.support))

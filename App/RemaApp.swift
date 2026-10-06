@@ -37,6 +37,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
             if Remote.shared.isOn(.sync) {
                 await SyncService.shared.run()
             }
+            await WeatherAdvisor.shared.refresh()
             await Notifier.shared.reschedule()
             task.setTaskCompleted(success: true)
         }
@@ -63,17 +64,20 @@ struct RemaApp: App {
         .onChange(of: scenePhase) { _, phase in
             switch phase {
             case .active:
+                AppLock.shared.becameActive()
                 Store.shared.reloadIfChanged()
                 Notifier.shared.scheduleSoon()
                 LiveActivities.refresh(store: Store.shared)
                 Task {
                     await Remote.shared.refresh()
+                    await WeatherAdvisor.shared.refresh()
                     await Account.shared.refreshIfNeeded()
                     if Remote.shared.isOn(.sync) {
                         SyncService.shared.becameActive()
                     }
                 }
             case .background:
+                AppLock.shared.movedToBackground()
                 LiveActivities.refresh(store: Store.shared)
                 SyncService.shared.movedToBackground()
                 AppDelegate.scheduleRefresh()

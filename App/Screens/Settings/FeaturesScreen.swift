@@ -1,0 +1,97 @@
+import SwiftUI
+
+struct FeaturesScreen: View {
+    var onPlaces: () -> Void = {}
+    let onBack: () -> Void
+
+    @Environment(\.openURL) private var openURL
+
+    private struct Feature: Identifiable {
+        let id: Int
+        let icon: [String]
+        let title: LocalizedStringKey
+        let text: LocalizedStringKey
+        var button: LocalizedStringKey?
+        var action: (() -> Void)?
+    }
+
+    var body: some View {
+        ZStack {
+            Palette.background.ignoresSafeArea()
+            ScrollView {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("A quick look at what you can turn on and where to find it.")
+                        .font(.app(.golos, 15))
+                        .lineSpacing(3)
+                        .foregroundStyle(Palette.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.horizontal, 2)
+                        .padding(.top, 14)
+                        .padding(.bottom, 4)
+                    ForEach(features) { feature in
+                        card(feature)
+                    }
+                }
+                .padding(.horizontal, 18)
+                .padding(.bottom, 40)
+            }
+            .scrollIndicators(.hidden)
+            .pinnedHeader {
+                ScreenHeader(title: "What Rema can do", leading: .back, action: onBack)
+            }
+        }
+        .foregroundStyle(Palette.text)
+    }
+
+    private var features: [Feature] {
+        [
+            Feature(id: 0, icon: Icons.microphone, title: "By voice", text: "Hold the plus on the home screen and talk. Let go when you are done, and Rema will make sense of the phrase."),
+            Feature(id: 1, icon: Icons.sliders, title: "Control Center and the Action button", text: "Open Control Center, tap + and add the Rema button. If your iPhone has an Action button, assign Rema to it in Settings.", button: "iPhone Settings", action: { open(UIApplication.openSettingsURLString) }),
+            Feature(id: 2, icon: Icons.waveform, title: "Siri and Shortcuts", text: "Say “Remind me in Rema” or “What is next in Rema”. The same actions are in the Shortcuts app.", button: "Open Shortcuts", action: { open("shortcuts://") }),
+            Feature(id: 3, icon: Icons.widgets, title: "Widgets", text: "Touch and hold an empty spot on the Home Screen, tap Edit and then Add Widget. You can tick reminders right on the widget."),
+            Feature(id: 4, icon: Icons.island, title: "Dynamic Island", text: "When a reminder is less than an hour away, close Rema. The countdown shows up at the top of the screen and on the Lock Screen."),
+            Feature(id: 5, icon: Icons.watch, title: "Apple Watch", text: "The watch app installs together with Rema. If it is not on your watch, install it in the Watch app on your iPhone.", button: "Open Watch", action: { open("itms-watchs://") }),
+            Feature(id: 6, icon: Icons.pin, title: "By place", text: "Write “when I leave work” or “when I get home”. This needs location access and at least one place.", button: "My places", action: onPlaces),
+            Feature(id: 7, icon: Icons.bolt, title: "Urgent", text: "“Urgent” gets through Do Not Disturb and Focus. Add the word “urgent” to the phrase or turn it on in the reminder itself."),
+        ]
+    }
+
+    private func card(_ feature: Feature) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            ZStack {
+                let shape = RoundedRectangle(cornerRadius: 12, style: .circular)
+                shape
+                    .fill(LinearGradient(colors: [Palette.raisedTop, Palette.raisedBottom], startPoint: .top, endPoint: .bottom).shadow(.drop(color: Palette.raisedShadowNear, radius: 1, y: 1)))
+                    .insetShadow(shape, Palette.raisedHighlight, y: 1)
+                Glyph(paths: feature.icon, size: 20, lineWidth: 2, color: Palette.text)
+            }
+            .frame(width: 40, height: 40)
+            VStack(alignment: .leading, spacing: 3) {
+                Text(feature.title)
+                    .font(.app(.golos, 16, weight: 600))
+                Text(feature.text)
+                    .font(.app(.golos, 14))
+                    .lineSpacing(2)
+                    .foregroundStyle(Palette.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                if let button = feature.button, let action = feature.action {
+                    Button(action: action) {
+                        Text(button)
+                    }
+                    .buttonStyle(SmallButtonStyle(prominent: false))
+                    .padding(.top, 8)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(.vertical, 14)
+        .padding(.horizontal, 16)
+        .panel()
+        .accessibilityElement(children: .contain)
+    }
+
+    private func open(_ link: String) {
+        guard let url = URL(string: link) else { return }
+        openURL(url)
+    }
+}

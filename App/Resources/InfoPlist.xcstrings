@@ -54,55 +54,108 @@
         }
       }
     },
+    "NSFaceIDUsageDescription" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يفتح Face ID تطبيق Rema إذا فعّلت هذه الحماية في الإعدادات."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Face ID öffnet Rema, wenn du diesen Schutz in den Einstellungen eingeschaltet hast."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Face ID opens Rema when you turn on this protection in Settings."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Face ID ouvre Rema si vous avez activé cette protection dans les réglages."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Face ID открывает Rema, если вы включили эту защиту в настройках."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Face ID відкриває Rema, якщо ви ввімкнули цей захист у налаштуваннях."
+          }
+        },
+        "uz-Cyrl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Агар созламаларда шу ҳимояни ёққан бўлсангиз, Face ID Rema’ни очади."
+          }
+        },
+        "uz-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agar sozlamalarda shu himoyani yoqqan bo‘lsangiz, Face ID Rema’ni ochadi."
+          }
+        }
+      }
+    },
     "NSLocationWhenInUseUsageDescription" : {
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "يُستخدم الموقع لتذكيرك عند وصولك إلى أماكنك أو مغادرتها."
+            "value" : "يُستخدم الموقع لتذكيرك عند وصولك إلى أماكنك أو مغادرتها، ومرة واحدة لمعرفة مدينتك من أجل الطقس."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Der Standort wird verwendet, um dich beim Ankommen an deinen Orten oder beim Verlassen zu erinnern."
+            "value" : "Der Standort wird verwendet, um dich beim Ankommen an deinen Orten oder beim Verlassen zu erinnern, und einmal, um deine Stadt für das Wetter zu finden."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Location is used to remind you when you arrive at or leave your places."
+            "value" : "Location is used to remind you when you arrive at or leave your places, and once to find your city for the weather."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La localisation sert à vous rappeler quand vous arrivez dans vos lieux ou les quittez."
+            "value" : "La localisation sert à vous rappeler quand vous arrivez dans vos lieux ou les quittez, et une fois pour trouver votre ville pour la météo."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Геопозиция нужна, чтобы напомнить, когда вы придёте на своё место или уйдёте с него."
+            "value" : "Геопозиция нужна, чтобы напомнить, когда вы придёте на своё место или уйдёте с него, и один раз, чтобы найти ваш город для погоды."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Геопозиція потрібна, щоб нагадати, коли ви прийдете на своє місце або підете з нього."
+            "value" : "Геопозиція потрібна, щоб нагадати, коли ви прийдете на своє місце або підете з нього, і один раз, щоб знайти ваше місто для погоди."
           }
         },
         "uz-Cyrl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Жойлашув ўз жойингизга келганингизда ёки ундан кетганингизда эслатиш учун керак."
+            "value" : "Жойлашув ўз жойингизга келганингизда ёки ундан кетганингизда эслатиш учун ва об-ҳаво учун шаҳрингизни бир марта топиш учун керак."
           }
         },
         "uz-Latn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Joylashuv o‘z joyingizga kelganingizda yoki undan ketganingizda eslatish uchun kerak."
+            "value" : "Joylashuv o‘z joyingizga kelganingizda yoki undan ketganingizda eslatish uchun va ob-havo uchun shahringizni bir marta topish uchun kerak."
           }
         }
       }

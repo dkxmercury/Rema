@@ -49,9 +49,10 @@ targets:
         INFOPLIST_FILE: App/Info.plist
         INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
+        INFOPLIST_KEY_NSFaceIDUsageDescription: "Face ID opens Rema when you turn on this protection in Settings."
         INFOPLIST_KEY_NSMicrophoneUsageDescription: "The microphone is used only while you dictate a reminder."
         INFOPLIST_KEY_NSSpeechRecognitionUsageDescription: "Speech is turned into text to create a reminder."
-        INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: "Location is used to remind you when you arrive at or leave your places."
+        INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: "Location is used to remind you when you arrive at or leave your places, and once to find your city for the weather."
         LOCALIZATION_PREFERS_STRING_CATALOGS: YES
         SWIFT_EMIT_LOC_STRINGS: YES
         ENABLE_PREVIEWS: YES

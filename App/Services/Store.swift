@@ -13,6 +13,7 @@ final class Store {
     @ObservationIgnored private let directory: URL
     @ObservationIgnored private let shared: Bool
     @ObservationIgnored private var loadedAt: Date?
+    @ObservationIgnored private var widgetSignature: Int?
     @ObservationIgnored var onChange: (() -> Void)?
     @ObservationIgnored var onEdit: (() -> Void)?
 
@@ -192,7 +193,18 @@ final class Store {
             onEdit?()
         }
         if shared {
-            WidgetCenter.shared.reloadAllTimelines()
+            reloadWidgetsIfNeeded()
         }
+    }
+
+    // Widgets show reminders and places only, so a change of settings or sounds does not redraw them.
+    private func reloadWidgetsIfNeeded() {
+        var hasher = Hasher()
+        hasher.combine(reminders)
+        hasher.combine(places)
+        let signature = hasher.finalize()
+        guard signature != widgetSignature else { return }
+        widgetSignature = signature
+        WidgetCenter.shared.reloadAllTimelines()
     }
 }

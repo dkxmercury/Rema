@@ -18,6 +18,8 @@ enum RootRoute: Hashable {
     case places
     case place(UUID?)
     case account
+    case city
+    case features
 }
 
 // Lives outside the views, so the screen stack survives when a language change rebuilds them.
@@ -62,6 +64,7 @@ struct RootView: View {
     @State private var showingCalendar = false
     @State private var showingLanguage = false
     @State private var showingIntro = false
+    @State private var tips = TipCenter.shared
     @State private var dismissedHabits = Set(UserDefaults.standard.stringArray(forKey: "dismissedHabits") ?? [])
     @State private var announcement: RemoteConfig.Announcement?
     @Environment(\.openURL) private var openURL
@@ -93,7 +96,10 @@ struct RootView: View {
             LanguageScreen(onClose: closeLanguage)
         }
         .fullScreenCover(isPresented: $showingIntro) {
-            IntroScreen(store: store, onFinish: finishIntro)
+            IntroScreen(store: store, onFinish: finishIntro, onFeatures: {
+                finishIntro()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { navigation.path.append(.features) }
+            })
         }
         .alert("Update Rema", isPresented: .constant(remote.needsUpdate && !navigation.showingSignIn)) {
             Button("Open App Store") { openURL(remote.link(.appStore)) }
@@ -136,6 +142,8 @@ struct RootView: View {
                 onSignIn: { navigation.showingSignIn = true },
                 onAccount: { navigation.path.append(.account) },
                 onLanguage: { showingLanguage = true },
+                onCity: { navigation.path.append(.city) },
+                onFeatures: { navigation.path.append(.features) },
                 onBack: { navigation.path.removeLast() }
             )
         case .defaultSound:
@@ -144,6 +152,10 @@ struct RootView: View {
             PlacesListScreen(store: store, onOpen: { navigation.path.append(.place($0.id)) }, onAdd: { navigation.path.append(.place(nil)) }, onBack: { navigation.path.removeLast() })
         case .place(let id):
             NewPlaceScreen(store: store, existing: store.places.first { $0.id == id }, onSaved: { _ in navigation.path.removeLast() }, onBack: { navigation.path.removeLast() })
+        case .city:
+            CityScreen { navigation.path.removeLast() }
+        case .features:
+            FeaturesScreen(onPlaces: { navigation.path.append(.places) }, onBack: { navigation.path.removeLast() })
         case .account:
             if let summary = accountSummary {
                 AccountScreen(
@@ -279,7 +291,9 @@ struct RootView: View {
                 onMove: move,
                 habit: remote.isOn(.suggestions) ? Suggestions.habit(in: store.reminders, now: timeline.date, calendar: .current, dismissed: dismissedHabits) : nil,
                 onHabit: answerHabit,
-                onPostpone: postpone
+                onPostpone: postpone,
+                tip: tips.next(store: store, now: timeline.date),
+                onTip: answerTip
             )
         }
     }
@@ -307,6 +321,13 @@ struct RootView: View {
             withAnimation(Motion.standard) { store.snooze(row.reminderID, until: date) }
         }
         Feedback.play(.save)
+    }
+
+    private func answerTip(_ tip: Tip, accepted: Bool) {
+        tips.dismiss(tip)
+        if tip == .weather, accepted {
+            Task { await WeatherAdvisor.shared.setEnabled(true) }
+        }
     }
 
     private func answerHabit(_ suggestion: HabitSuggestion, accepted: Bool) {

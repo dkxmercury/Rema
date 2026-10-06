@@ -8,6 +8,7 @@ import UserNotifications
 struct IntroScreen: View {
     let store: Store
     let onFinish: () -> Void
+    var onFeatures: () -> Void = {}
 
     enum Access: Equatable {
         case unknown
@@ -292,6 +293,16 @@ struct IntroScreen: View {
                 accessRow(Icons.microphone, prominent: false, title: "Microphone", text: "for voice input, speech is recognized on the phone", state: microphone, action: askMicrophone)
             }
             .padding(.top, 20)
+            Button(action: onFeatures) {
+                Text("What Rema can do")
+                    .font(.app(.golos, 15, weight: 600))
+                    .foregroundStyle(Palette.accentTextOnBackground)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 44)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(RowPressStyle())
+            .padding(.top, 8)
             Spacer(minLength: 0)
         }
         .padding(.horizontal, 24)
