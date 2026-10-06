@@ -39,6 +39,11 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         Locale(identifier: rawValue)
     }
 
+    // Xcode builds Uzbek Latin into uz.lproj, the Cyrillic one keeps its script in the name.
+    var folder: String {
+        self == .uzbekLatin ? "uz" : rawValue
+    }
+
     var layoutDirection: LayoutDirection {
         self == .arabic ? .rightToLeft : .leftToRight
     }
@@ -58,14 +63,14 @@ enum AppLanguage: String, CaseIterable, Identifiable {
 
     var localizedName: String {
         switch self {
-        case .russian: String(localized: "Russian")
-        case .english: String(localized: "English")
-        case .ukrainian: String(localized: "Ukrainian")
-        case .uzbekLatin: String(localized: "Uzbek, Latin")
-        case .uzbekCyrillic: String(localized: "Uzbek, Cyrillic")
-        case .arabic: String(localized: "Arabic")
-        case .french: String(localized: "French")
-        case .german: String(localized: "German")
+        case .russian: String(localized: "Russian", locale: .app)
+        case .english: String(localized: "English", locale: .app)
+        case .ukrainian: String(localized: "Ukrainian", locale: .app)
+        case .uzbekLatin: String(localized: "Uzbek, Latin", locale: .app)
+        case .uzbekCyrillic: String(localized: "Uzbek, Cyrillic", locale: .app)
+        case .arabic: String(localized: "Arabic", locale: .app)
+        case .french: String(localized: "French", locale: .app)
+        case .german: String(localized: "German", locale: .app)
         }
     }
 
@@ -81,7 +86,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
     }
 
     private static func apply(_ language: AppLanguage) {
-        Localization.selected = Bundle.main.path(forResource: language.rawValue, ofType: "lproj").flatMap(Bundle.init(path:))
+        Localization.selected = Bundle.main.path(forResource: language.folder, ofType: "lproj").flatMap(Bundle.init(path:))
         Localization.language = language.rawValue
         AppFonts.languageCode = language.rawValue
     }

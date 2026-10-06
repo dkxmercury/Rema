@@ -35,8 +35,9 @@ jobs:
           PROFILE_WIDGETS_BASE64: ${{ inputs.channel == 'store' && secrets.STORE_PROFILE_WIDGETS_BASE64 || secrets.PROFILE_WIDGETS_BASE64 }}
           PROFILE_WATCH_BASE64: ${{ inputs.channel == 'store' && secrets.STORE_PROFILE_WATCH_BASE64 || secrets.PROFILE_WATCH_BASE64 }}
           PROFILE_SHARE_BASE64: ${{ inputs.channel == 'store' && secrets.STORE_PROFILE_SHARE_BASE64 || secrets.PROFILE_SHARE_BASE64 }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
         run: |
-          for name in APPLE_TEAM_ID DIST_P12_BASE64 DIST_P12_PASSWORD PROFILE_APP_BASE64 PROFILE_WIDGETS_BASE64 PROFILE_WATCH_BASE64 PROFILE_SHARE_BASE64; do
+          for name in APPLE_TEAM_ID DIST_P12_BASE64 DIST_P12_PASSWORD PROFILE_APP_BASE64 PROFILE_WIDGETS_BASE64 PROFILE_WATCH_BASE64 PROFILE_SHARE_BASE64 GOOGLE_CLIENT_ID; do
             if [ -z "$(printenv "$name")" ]; then echo "missing secret $name"; exit 1; fi
           done
 
@@ -105,7 +106,8 @@ jobs:
             CODE_SIGN_IDENTITY="Apple Distribution" \
             REMA_PROFILE_APP="$PROFILE_NAME_APP" \
             REMA_PROFILE_WIDGETS="$PROFILE_NAME_WIDGETS" \
-            REMA_PROFILE_WATCH="$PROFILE_NAME_WATCH"             REMA_PROFILE_SHARE="$PROFILE_NAME_SHARE" \
+            REMA_PROFILE_WATCH="$PROFILE_NAME_WATCH" \
+            REMA_PROFILE_SHARE="$PROFILE_NAME_SHARE" \
             CURRENT_PROJECT_VERSION="${{ github.run_number }}" > archive.log 2>&1 || true
           grep -E "error:|ARCHIVE (SUCCEEDED|FAILED)" archive.log || true
           grep -q "ARCHIVE SUCCEEDED" archive.log

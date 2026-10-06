@@ -64,7 +64,7 @@ struct PhraseScreen: View {
         self.onClose = onClose
         _text = State(initialValue: text)
         _draft = State(initialValue: Reminder(title: "", schedule: nil, createdAt: now))
-        _listening = State(initialValue: startWithVoice && Remote.shared.isOn(.voice))
+        _listening = State(initialValue: startWithVoice && VoiceRecognizer.available)
     }
 
     private var parser: PhraseParser {
@@ -221,7 +221,7 @@ struct PhraseScreen: View {
             .scrollDismissesKeyboard(.interactively)
             .pinnedHeader {
                 ScreenHeader(title: "New reminder", leading: .close, action: onClose) {
-                    if Remote.shared.isOn(.voice) {
+                    if VoiceRecognizer.available {
                         RoundIconButton(icon: Icons.microphone, iconSize: 19, label: "Dictate") {
                             focused = false
                             listening = true
@@ -293,9 +293,9 @@ struct PhraseScreen: View {
         let title = parsed.title.lowercased(with: locale)
         guard let when else {
             if placeLine == nil, keyboardShown, !parsed.title.isEmpty {
-                return String(localized: "or pick an option above the keyboard")
+                return String(localized: "or pick an option above the keyboard", locale: .app)
             }
-            return placeLine == nil ? String(localized: "for example, tomorrow at 9") : title
+            return placeLine == nil ? String(localized: "for example, tomorrow at 9", locale: .app) : title
         }
         let countdown = describer.countdown(from: now, to: when)
         return title.isEmpty ? countdown : "\(countdown) · \(title)"
@@ -319,11 +319,11 @@ struct PhraseScreen: View {
 
     private var exampleSamples: [String] {
         Remote.shared.exampleOverride ?? [
-            String(localized: "in 2 hours"),
-            String(localized: "on Friday evening"),
-            String(localized: "every Tue and Thu at 8"),
-            String(localized: "every year on October 12"),
-            String(localized: "when I leave work"),
+            String(localized: "in 2 hours", locale: .app),
+            String(localized: "on Friday evening", locale: .app),
+            String(localized: "every Tue and Thu at 8", locale: .app),
+            String(localized: "every year on October 12", locale: .app),
+            String(localized: "when I leave work", locale: .app),
         ]
     }
 
@@ -501,8 +501,8 @@ struct PhraseScreen: View {
     private func exampleValue(_ sample: String) -> String {
         let result = parser.parse(sample)
         if result.placeTrigger != nil || exampleIsPlace(sample) {
-            let name = result.placeNames.first ?? String(localized: "Work")
-            return String(localized: "by place · \(name)")
+            let name = result.placeNames.first ?? String(localized: "Work", locale: .app)
+            return String(localized: "by place · \(name)", locale: .app)
         }
         guard let schedule = result.schedule,
               let date = Recurrence.next(schedule, after: now.addingTimeInterval(-60), limit: 1, calendar: calendar).first else { return "" }
@@ -511,10 +511,10 @@ struct PhraseScreen: View {
             return "\(describer.weekdayList(days)) · \(describer.shortTime(date))"
         case .yearly:
             let day = date.formatted(Date.FormatStyle(locale: locale, calendar: calendar, timeZone: calendar.timeZone).day().month(.abbreviated)).replacingOccurrences(of: ".", with: "")
-            return String(localized: "yearly, \(day)")
+            return String(localized: "yearly, \(day)", locale: .app)
         default:
             if calendar.isDate(date, inSameDayAs: now) {
-                return String(localized: "today, \(describer.shortTime(date))")
+                return String(localized: "today, \(describer.shortTime(date))", locale: .app)
             }
             var symbols = calendar
             symbols.locale = locale
@@ -529,12 +529,12 @@ struct PhraseScreen: View {
 
     private var confirmTitle: String {
         if let when {
-            return String(localized: "Remind \(describer.dayAndTime(when, now: now))")
+            return String(localized: "Remind \(describer.dayAndTime(when, now: now))", locale: .app)
         }
         if !reminder.placeIDs.isEmpty {
-            return String(localized: "Remind by place")
+            return String(localized: "Remind by place", locale: .app)
         }
-        return String(localized: "Choose a time")
+        return String(localized: "Choose a time", locale: .app)
     }
 
     private func confirm() {

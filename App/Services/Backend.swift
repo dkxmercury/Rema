@@ -92,23 +92,23 @@ extension Backend.Failure {
     var message: String {
         switch self {
         case .offline:
-            String(localized: "No internet connection. Try again when you are online.")
+            String(localized: "No internet connection. Try again when you are online.", locale: .app)
         case .unauthorized, .invalid(nil):
-            String(localized: "Wrong email or password.")
+            String(localized: "Wrong email or password.", locale: .app)
         case .rateLimited:
-            String(localized: "Too many attempts. Try again in a minute.")
+            String(localized: "Too many attempts. Try again in a minute.", locale: .app)
         case .conflict(let code) where code == "email_taken":
-            String(localized: "This email already belongs to another way of signing in.")
+            String(localized: "This email already belongs to another way of signing in.", locale: .app)
         case .invalid(let code) where code == "validation_not_unique":
-            String(localized: "This email is already registered. Sign in with your password.")
+            String(localized: "This email is already registered. Sign in with your password.", locale: .app)
         case .invalid(let code) where code?.contains("email") == true:
-            String(localized: "Enter the whole email, like name@example.com.")
+            String(localized: "Enter the whole email, like name@example.com.", locale: .app)
         case .invalid(let code) where code?.contains("length") == true || code?.contains("min") == true:
-            String(localized: "The password needs at least 8 characters.")
+            String(localized: "The password needs at least 8 characters.", locale: .app)
         case .invalid:
-            String(localized: "Check the email and password and try again.")
+            String(localized: "Check the email and password and try again.", locale: .app)
         default:
-            String(localized: "Something went wrong. Try again.")
+            String(localized: "Something went wrong. Try again.", locale: .app)
         }
     }
 }

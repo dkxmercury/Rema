@@ -31,7 +31,7 @@ final class TipCenter {
             return nil
         }
         let reminders = store.activeReminders
-        if !seen.contains(Tip.voice.rawValue), Remote.shared.isOn(.voice), !reminders.isEmpty {
+        if !seen.contains(Tip.voice.rawValue), VoiceRecognizer.available, !reminders.isEmpty {
             return .voice
         }
         if !seen.contains(Tip.widget.rawValue), reminders.count >= 3 {

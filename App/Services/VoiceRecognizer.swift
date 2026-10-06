@@ -21,21 +21,21 @@ final class VoiceRecognizer {
                 SFSpeechRecognizer.requestAuthorization { continuation.resume(returning: $0) }
             }
             guard speech == .authorized else {
-                failure = String(localized: "Allow speech recognition in Settings to dictate reminders.")
+                failure = String(localized: "Allow speech recognition in Settings to dictate reminders.", locale: .app)
                 return
             }
             guard await AVAudioApplication.requestRecordPermission() else {
-                failure = String(localized: "Allow microphone access in Settings to dictate reminders.")
+                failure = String(localized: "Allow microphone access in Settings to dictate reminders.", locale: .app)
                 return
             }
             guard let recognizer = VoiceRecognizer.recognizer(for: locale), recognizer.isAvailable else {
-                failure = String(localized: "Speech recognition is not available for this language yet.")
+                failure = String(localized: "Speech recognition is not available for this language yet.", locale: .app)
                 return
             }
             do {
                 try begin(with: recognizer, hints: hints)
             } catch {
-                failure = String(localized: "Could not start the microphone.")
+                failure = String(localized: "Could not start the microphone.", locale: .app)
                 stop()
             }
         }
@@ -62,6 +62,23 @@ final class VoiceRecognizer {
         listening = false
         level = 0
         try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+    }
+
+    @MainActor
+    static var available: Bool {
+        Remote.shared.isOn(.voice) && supports(AppLanguage.current.locale)
+    }
+
+    @MainActor private static var support: [String: Bool] = [:]
+
+    @MainActor
+    private static func supports(_ locale: Locale) -> Bool {
+        if let known = support[locale.identifier] {
+            return known
+        }
+        let found = recognizer(for: locale) != nil
+        support[locale.identifier] = found
+        return found
     }
 
     private static func recognizer(for locale: Locale) -> SFSpeechRecognizer? {

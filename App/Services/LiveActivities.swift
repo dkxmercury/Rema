@@ -5,7 +5,7 @@ import RemaCore
 @MainActor
 enum LiveActivities {
     private static var window: TimeInterval {
-        max(5, min(Remote.shared.number(.liveActivityLead), 240)) * 60
+        Remote.shared.number(.liveActivityLead) * 60
     }
 
     static func refresh(store: Store, now: Date = Date()) {

@@ -173,8 +173,8 @@ private struct LockCard: View {
     private var subtitle: String {
         let parts = Calendar.current.dateComponents([.hour, .minute], from: state.due)
         let time = String(format: "%d:%02d", parts.hour ?? 0, parts.minute ?? 0)
-        let at = String(localized: "at \(time)")
-        return state.urgent ? "\(at) · \(String(localized: "urgent"))" : at
+        let at = String(localized: "at \(time)", locale: .app)
+        return state.urgent ? "\(at) · \(String(localized: "urgent", locale: .app))" : at
     }
 }
 

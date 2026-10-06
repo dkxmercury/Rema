@@ -175,6 +175,8 @@ targets:
     platform: iOS
     sources:
       - path: Snapshots
+      - path: Watch/WatchHome.swift
+      - path: App/Theme/AppFonts.swift
     dependencies:
       - target: Rema
       - package: SnapshotTesting

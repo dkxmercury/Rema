@@ -47,7 +47,7 @@ struct DayEntry: TimelineEntry {
 
     static var sample: DayEntry {
         let next = SampleData.calendar.date(from: DateComponents(year: 2026, month: 10, day: 5, hour: 14, minute: 30))
-        return DayEntry(date: SampleData.now, content: SampleData.home, nextOccurrence: next)
+        return DayEntry(date: SampleData.now, content: SampleData.gallery, nextOccurrence: next)
     }
 }
 

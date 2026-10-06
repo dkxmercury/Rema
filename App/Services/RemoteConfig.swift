@@ -58,6 +58,19 @@ enum Tunable: String {
         case .weatherDrop: 8
         }
     }
+
+    var range: ClosedRange<Double> {
+        switch self {
+        case .liveActivityLead: 5...240
+        case .syncInterval: 15...3600
+        case .missedFollowUp: 5...240
+        case .weatherRainChance: 0.2...0.95
+        case .weatherWind: 5...40
+        case .weatherCold: -50...10
+        case .weatherHeat: 20...55
+        case .weatherDrop: 3...30
+        }
+    }
 }
 
 enum LinkKey: String {
@@ -71,7 +84,7 @@ enum LinkKey: String {
     var standard: String {
         switch self {
         case .instagram: "https://www.instagram.com/rema.apps/"
-        case .support: "mailto:support@remaapp.cc"
+        case .support: "https://remaapp.cc/support/"
         case .site: "https://remaapp.cc/"
         case .privacy: "https://remaapp.cc/privacy/"
         case .terms: "https://remaapp.cc/terms/"
@@ -94,7 +107,7 @@ final class Remote {
 
     private init() {
         config = (try? JSONDecoder.remote.decode(RemoteConfig.self, from: Data(contentsOf: Self.cacheURL))) ?? .empty
-        Localization.overrides = config.strings ?? [:]
+        Localization.overrides = Self.checked(config.strings)
     }
 
     func refresh(force: Bool = false) async {
@@ -106,7 +119,7 @@ final class Remote {
         try? data.write(to: Self.cacheURL, options: .atomic)
         guard fresh != config else { return }
         config = fresh
-        Localization.overrides = fresh.strings ?? [:]
+        Localization.overrides = Self.checked(fresh.strings)
     }
 
     func isOn(_ feature: Feature) -> Bool {
@@ -114,14 +127,18 @@ final class Remote {
     }
 
     func number(_ tunable: Tunable) -> Double {
-        config.numbers?[tunable.rawValue] ?? tunable.standard
+        guard let value = config.numbers?[tunable.rawValue], value.isFinite else { return tunable.standard }
+        return min(max(value, tunable.range.lowerBound), tunable.range.upperBound)
     }
 
     func link(_ key: LinkKey) -> URL {
-        if key == .privacy || key == .terms || key == .site, AppLanguage.current == .russian, config.links?[key.rawValue] == nil {
+        if let text = config.links?[key.rawValue], let url = URL(string: text), url.scheme == "https", url.host() != nil {
+            return url
+        }
+        if key != .instagram, key != .appStore, AppLanguage.current == .russian {
             return URL(string: key.standard.replacingOccurrences(of: "remaapp.cc/", with: "remaapp.cc/ru/"))!
         }
-        return URL(string: config.links?[key.rawValue] ?? key.standard) ?? URL(string: key.standard)!
+        return URL(string: key.standard)!
     }
 
     func text(_ table: [String: String]?) -> String? {
@@ -143,6 +160,29 @@ final class Remote {
         guard let announcement = config.announcement, text(announcement.text) != nil else { return nil }
         if let until = announcement.until, until < Date() { return nil }
         return announcement
+    }
+}
+
+extension Remote {
+    // A fix whose placeholders differ from the key would break String(format:), so it is dropped.
+    private static func checked(_ strings: [String: [String: String]]?) -> [String: [String: String]] {
+        (strings ?? [:]).mapValues { table in
+            table.filter { key, value in placeholders(key) == placeholders(value) }
+        }
+    }
+
+    private static let placeholder = try? NSRegularExpression(pattern: "%(?:[0-9]+[$])?[-+ #0']*[0-9]*(?:[.][0-9]+)?(hh|h|ll|l|q|L|z|t|j)?([@dDuUxXoOfFeEgGcCsSpaA%])")
+
+    private static func placeholders(_ text: String) -> [String] {
+        guard let placeholder else { return [] }
+        let range = NSRange(text.startIndex..., in: text)
+        return placeholder.matches(in: text, range: range).compactMap { match in
+            let conversion = Range(match.range(at: 2), in: text).map { String(text[$0]) } ?? ""
+            guard conversion != "%" else { return nil }
+            let length = Range(match.range(at: 1), in: text).map { String(text[$0]) } ?? ""
+            return length + conversion
+        }
+        .sorted()
     }
 }
 

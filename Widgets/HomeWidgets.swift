@@ -130,7 +130,7 @@ struct NextWidgetView: View {
                 }
                 Spacer(minLength: 0)
                 if entry.laterToday > 0 {
-                    Text(verbatim: String(localized: "\(entry.laterToday) more today"))
+                    Text(verbatim: String(localized: "\(entry.laterToday) more today", locale: .app))
                         .font(.app(.golos, 12))
                         .foregroundStyle(Palette.secondary)
                 }
@@ -175,7 +175,7 @@ struct NextWidgetView: View {
                     .font(.app(.golos, 13, weight: 600))
                     .lineLimit(1)
                 if entry.laterToday > 0 {
-                    Text(verbatim: String(localized: "\(entry.laterToday) more today"))
+                    Text(verbatim: String(localized: "\(entry.laterToday) more today", locale: .app))
                         .font(.app(.golos, 12))
                         .opacity(0.8)
                 }
@@ -210,7 +210,7 @@ struct TodayWidgetView: View {
                         .tracking(0.88)
                         .textCase(.uppercase)
                     Spacer(minLength: 4)
-                    Text(verbatim: String(localized: "\(entry.doneCount) of \(entry.rows.count)"))
+                    Text(verbatim: String(localized: "\(entry.doneCount) of \(entry.rows.count)", locale: .app))
                         .font(.app(.golos, 11))
                 }
                 .foregroundStyle(Palette.secondary)
@@ -252,7 +252,7 @@ struct TodayWidgetView: View {
                 Text(verbatim: entry.content.dateLine.capitalizedFirst(.current))
                     .font(.app(.jost, 20, weight: 500))
                 Spacer(minLength: 4)
-                Text(verbatim: String(localized: "\(entry.doneCount) of \(entry.rows.count)"))
+                Text(verbatim: String(localized: "\(entry.doneCount) of \(entry.rows.count)", locale: .app))
                     .font(.app(.golos, 13))
                     .foregroundStyle(Palette.secondary)
             }

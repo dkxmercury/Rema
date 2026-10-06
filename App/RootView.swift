@@ -104,7 +104,7 @@ struct RootView: View {
         .alert("Update Rema", isPresented: .constant(remote.needsUpdate && !navigation.showingSignIn)) {
             Button("Open App Store") { openURL(remote.link(.appStore)) }
         } message: {
-            Text(verbatim: remote.text(remote.config.update) ?? String(localized: "This version is out of date. Install the new one from the App Store, it takes a minute."))
+            Text(verbatim: remote.text(remote.config.update) ?? String(localized: "This version is out of date. Install the new one from the App Store, it takes a minute.", locale: .app))
         }
         .alert(
             Text(verbatim: announcement.flatMap { remote.text($0.title) } ?? "Rema"),
@@ -280,7 +280,7 @@ struct RootView: View {
                 onCompose: { composing = ComposeTarget(voice: false) },
                 onVoice: {
                     Feedback.play(.select)
-                    composing = ComposeTarget(voice: remote.isOn(.voice))
+                    composing = ComposeTarget(voice: VoiceRecognizer.available)
                 },
                 onCalendar: { showingCalendar = true },
                 onSettings: { navigation.path.append(.settings) },

@@ -51,7 +51,7 @@ struct NextReminderIntent: AppIntent {
         let now = Date()
         guard let next = Agenda.upcoming(after: now, reminders: store.activeReminders, calendar: .current, limit: 1).first,
               let reminder = store.reminder(next.reminderID) else {
-            return .result(dialog: IntentDialog("Nothing ahead."), view: ReminderSnippet(title: String(localized: "Nothing ahead"), when: ""))
+            return .result(dialog: IntentDialog("Nothing ahead."), view: ReminderSnippet(title: String(localized: "Nothing ahead", locale: .app), when: ""))
         }
         let describer = Describer(locale: AppLanguage.current.locale)
         let when = "\(describer.dayAndTime(next.occurrence, now: now).capitalizedFirst(.current)), \(describer.countdown(from: now, to: next.occurrence))"
@@ -75,7 +75,7 @@ struct CompleteReminderIntent: AppIntent {
         await ReminderNotifications.clear(target.reminderID, occurrence: target.occurrence)
         await ReminderNotifications.endActivities(for: target.reminderID)
         Notifier.shared.scheduleSoon()
-        return .result(dialog: IntentDialog(stringLiteral: String(localized: "Done: \(reminder.title)")))
+        return .result(dialog: IntentDialog(stringLiteral: String(localized: "Done: \(reminder.title)", locale: .app)))
     }
 }
 
@@ -99,7 +99,7 @@ struct SnoozeReminderIntent: AppIntent {
         await ReminderNotifications.clear(target.reminderID, occurrence: target.occurrence)
         await ReminderNotifications.endActivities(for: target.reminderID)
         Notifier.shared.scheduleSoon()
-        return .result(dialog: IntentDialog(stringLiteral: String(localized: "Snoozed by \(minutes) min: \(reminder.title)")))
+        return .result(dialog: IntentDialog(stringLiteral: String(localized: "Snoozed by \(minutes) min: \(reminder.title)", locale: .app)))
     }
 }
 

@@ -29,6 +29,48 @@ final class StoreSnapshots: XCTestCase {
         }
     }
 
+    func testWatchScreen() throws {
+        guard let directory = ProcessInfo.processInfo.environment["SNAPSHOT_DIR"] else {
+            throw XCTSkip("SNAPSHOT_DIR не задан")
+        }
+        let previous = AppLanguage.current
+        let previousCode = AppFonts.languageCode
+        defer {
+            AppLanguage.choose(previous)
+            AppFonts.languageCode = previousCode
+        }
+        AppLanguage.choose(.english)
+        AppFonts.languageCode = "en"
+        let now = Date()
+        let calendar = Calendar.current
+        func at(_ minutes: Double) -> Date { now.addingTimeInterval(minutes * 60) }
+        let items = [
+            WatchItem(reminderID: UUID(), title: "Take vitamins", occurrence: at(-240), done: true, urgent: false),
+            WatchItem(reminderID: UUID(), title: "Call the supplier", occurrence: at(40), done: false, urgent: true),
+            WatchItem(reminderID: UUID(), title: "Buy bread and milk", occurrence: at(290), done: false, urgent: false),
+            WatchItem(reminderID: UUID(), title: "Water the plants", occurrence: at(440), done: false, urgent: false),
+        ].filter { calendar.isDate($0.occurrence, inSameDayAs: now) }
+        let screen = WatchHome(model: WatchModel(payload: WatchPayload(items: items, generated: now)))
+            .environment(\.locale, Locale(identifier: "en"))
+            .environment(\.colorScheme, .dark)
+        let traits = UITraitCollection { traits in
+            traits.displayScale = 2
+            traits.userInterfaceStyle = .dark
+        }
+        let config = ViewImageConfig(safeArea: .zero, size: CGSize(width: 198, height: 242), traits: traits)
+        let strategy = Snapshotting<AnyView, UIImage>.image(layout: .device(config: config), traits: traits)
+        let finished = expectation(description: "watch")
+        var output: UIImage?
+        strategy.snapshot(AnyView(screen)).run { image in
+            output = image
+            finished.fulfill()
+        }
+        wait(for: [finished], timeout: 60)
+        let folder = URL(fileURLWithPath: directory).appendingPathComponent("store", isDirectory: true)
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        try XCTUnwrap(output?.pngData()).write(to: folder.appendingPathComponent("watch-01-home.png"))
+    }
+
     private func shoot<Screen: View>(_ screen: Screen, _ name: String, _ sample: StoreSample, style: UIUserInterfaceStyle = .light) throws {
         guard let directory = ProcessInfo.processInfo.environment["SNAPSHOT_DIR"] else {
             throw XCTSkip("SNAPSHOT_DIR не задан")

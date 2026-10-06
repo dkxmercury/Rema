@@ -121,15 +121,14 @@ struct AccountScreen: View {
                 Glyph(paths: Icons.person, size: 24, lineWidth: 1.9, color: Palette.text)
             }
             VStack(alignment: .leading, spacing: 3) {
-                Text(verbatim: summary.email.isEmpty ? String(localized: "Apple ID with a hidden email") : summary.email)
+                Text(verbatim: summary.email.isEmpty ? String(localized: "Apple ID with a hidden email", locale: .app) : summary.email)
                     .font(.app(.golos, 17, weight: 600))
                     .lineLimit(1)
                     .truncationMode(.middle)
                 HStack(spacing: 6) {
                     switch summary.method {
                     case .apple:
-                        AppleMark(color: Palette.secondary)
-                            .frame(width: 11, height: 13)
+                        AppleMark(color: Palette.secondary, size: 12)
                         Text("Signed in with Apple")
                     case .google:
                         GoogleMark()
@@ -174,17 +173,17 @@ struct AccountScreen: View {
 
     private var statusText: String {
         switch summary.status {
-        case .saved, .idle: String(localized: "Everything is saved in the account")
-        case .syncing: String(localized: "Saving…")
-        case .offline: String(localized: "No connection, changes will be saved later")
-        case .failed: String(localized: "Not saved yet, trying again")
+        case .saved, .idle: String(localized: "Everything is saved in the account", locale: .app)
+        case .syncing: String(localized: "Saving…", locale: .app)
+        case .offline: String(localized: "No connection, changes will be saved later", locale: .app)
+        case .failed: String(localized: "Not saved yet, trying again", locale: .app)
         }
     }
 
     private var statusTime: String? {
         guard summary.status == .saved || summary.status == .idle, let savedAt = summary.savedAt else { return nil }
         if Date().timeIntervalSince(savedAt) < 60 {
-            return String(localized: "just now")
+            return String(localized: "just now", locale: .app)
         }
         let formatter = RelativeDateTimeFormatter()
         formatter.locale = locale
@@ -211,9 +210,9 @@ struct AccountScreen: View {
             do {
                 try await onDelete()
             } catch let failure as Backend.Failure {
-                problem = failure == .offline ? failure.message : String(localized: "Could not delete the account. Try again.")
+                problem = failure == .offline ? failure.message : String(localized: "Could not delete the account. Try again.", locale: .app)
             } catch {
-                problem = String(localized: "Could not delete the account. Try again.")
+                problem = String(localized: "Could not delete the account. Try again.", locale: .app)
             }
             busy = false
         }

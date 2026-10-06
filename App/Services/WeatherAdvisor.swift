@@ -18,6 +18,8 @@ struct WeatherNote: Codable, Equatable {
 @Observable
 final class WeatherAdvisor {
     static let shared = WeatherAdvisor()
+    static let mark = "\u{F8FF} Weather"
+    static let legalPage = URL(string: "https://weatherkit.apple.com/legal-attribution.html")!
 
     private static let enabledKey = "weather.enabled"
     private static let latitudeKey = "weather.latitude"
@@ -174,36 +176,36 @@ final class WeatherAdvisor {
         let body: String
         switch event {
         case .storm:
-            title = tomorrow ? String(localized: "Thunderstorm tomorrow") : String(localized: "Thunderstorm today")
-            body = String(localized: "Take an umbrella and take care outside.")
+            title = tomorrow ? String(localized: "Thunderstorm tomorrow", locale: .app) : String(localized: "Thunderstorm today", locale: .app)
+            body = String(localized: "Take an umbrella and take care outside.", locale: .app)
         case .firstSnow:
-            title = tomorrow ? String(localized: "First snow tomorrow") : String(localized: "First snow today")
-            body = String(localized: "Dress warmer and enjoy it.")
+            title = tomorrow ? String(localized: "First snow tomorrow", locale: .app) : String(localized: "First snow today", locale: .app)
+            body = String(localized: "Dress warmer and enjoy it.", locale: .app)
         case .snow:
-            title = tomorrow ? String(localized: "Snow tomorrow") : String(localized: "Snow today")
-            body = String(localized: "Dress warmer and leave a little earlier.")
+            title = tomorrow ? String(localized: "Snow tomorrow", locale: .app) : String(localized: "Snow today", locale: .app)
+            body = String(localized: "Dress warmer and leave a little earlier.", locale: .app)
         case .rain:
-            title = tomorrow ? String(localized: "Rain tomorrow") : String(localized: "Rain today")
-            body = String(localized: "Don't forget an umbrella.")
+            title = tomorrow ? String(localized: "Rain tomorrow", locale: .app) : String(localized: "Rain today", locale: .app)
+            body = String(localized: "Don't forget an umbrella.", locale: .app)
         case .wind(let speed):
             let gusts = Measurement(value: speed, unit: UnitSpeed.metersPerSecond).formatted(.measurement(width: .abbreviated, usage: .wind, numberFormatStyle: .number.precision(.fractionLength(0))).locale(locale))
-            title = tomorrow ? String(localized: "Strong wind tomorrow") : String(localized: "Strong wind today")
-            body = String(localized: "Gusts up to \(gusts).")
+            title = tomorrow ? String(localized: "Strong wind tomorrow", locale: .app) : String(localized: "Strong wind today", locale: .app)
+            body = String(localized: "Gusts up to \(gusts).", locale: .app)
         case .frost(let low):
-            title = tomorrow ? String(localized: "Frost tomorrow") : String(localized: "Frost today")
-            body = String(localized: "Down to \(degrees(low)), dress warmer.")
+            title = tomorrow ? String(localized: "Frost tomorrow", locale: .app) : String(localized: "Frost today", locale: .app)
+            body = String(localized: "Down to \(degrees(low)), dress warmer.", locale: .app)
         case .heat(let high):
-            title = tomorrow ? String(localized: "Heat tomorrow") : String(localized: "Heat today")
-            body = String(localized: "Up to \(degrees(high)), drink more water.")
+            title = tomorrow ? String(localized: "Heat tomorrow", locale: .app) : String(localized: "Heat today", locale: .app)
+            body = String(localized: "Up to \(degrees(high)), drink more water.", locale: .app)
         case .colder(let drop):
-            title = tomorrow ? String(localized: "Colder tomorrow") : String(localized: "Colder today")
-            body = String(localized: "\(difference(drop)) colder than the day before.")
+            title = tomorrow ? String(localized: "Colder tomorrow", locale: .app) : String(localized: "Colder today", locale: .app)
+            body = String(localized: "\(difference(drop)) colder than the day before.", locale: .app)
         case .sunAfterRain:
-            title = tomorrow ? String(localized: "Sun tomorrow") : String(localized: "Sun today")
-            body = String(localized: "Finally, after the rainy days.")
+            title = tomorrow ? String(localized: "Sun tomorrow", locale: .app) : String(localized: "Sun today", locale: .app)
+            body = String(localized: "Finally, after the rainy days.", locale: .app)
         case .warmWeekend(let high):
-            title = String(localized: "A warm weekend")
-            body = String(localized: "Up to \(degrees(high)), a good time to get outside.")
+            title = String(localized: "A warm weekend", locale: .app)
+            body = String(localized: "Up to \(degrees(high)), a good time to get outside.", locale: .app)
         }
         return WeatherNote(fireDate: fire, title: title, body: body)
     }

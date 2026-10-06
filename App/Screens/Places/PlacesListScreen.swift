@@ -80,8 +80,8 @@ struct PlacesListScreen: View {
 
     private func details(_ place: Place) -> String {
         let count = store.activeReminders.filter { $0.placeIDs.contains(place.id) && !($0.isPlaceOnly && $0.completedThrough != nil) }.count
-        let radius = String(localized: "radius \(Int(place.radius)) m")
-        let reminders = count == 0 ? String(localized: "no reminders") : String(localized: "\(count) reminders")
+        let radius = String(localized: "radius \(Int(place.radius)) m", locale: .app)
+        let reminders = count == 0 ? String(localized: "no reminders", locale: .app) : String(localized: "\(count) reminders", locale: .app)
         return "\(radius) · \(reminders)"
     }
 }

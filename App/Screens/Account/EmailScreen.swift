@@ -124,7 +124,7 @@ struct EmailScreen: View {
             } catch let failure as Backend.Failure {
                 problem = failure.message
             } catch {
-                problem = String(localized: "Something went wrong. Try again.")
+                problem = String(localized: "Something went wrong. Try again.", locale: .app)
             }
         }
     }

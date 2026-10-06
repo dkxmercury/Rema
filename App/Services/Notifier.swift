@@ -22,14 +22,14 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
     }
 
     private var categories: Set<UNNotificationCategory> {
-        let done = UNNotificationAction(identifier: "done", title: String(localized: "Done"))
-        let tenMinutes = UNNotificationAction(identifier: "snooze10", title: String(localized: "In 10 minutes"))
-        let fifteenMinutes = UNNotificationAction(identifier: "snooze15", title: String(localized: "In 15 minutes"))
-        let hour = UNNotificationAction(identifier: "snooze60", title: String(localized: "In an hour"))
-        let morning = UNNotificationAction(identifier: "morning", title: String(localized: "Tomorrow morning"))
-        let skip = UNNotificationAction(identifier: "skip", title: String(localized: "Skip today"))
-        let call = UNNotificationAction(identifier: "call", title: String(localized: "Call"), options: [.foreground], icon: UNNotificationActionIcon(systemImageName: "phone.fill"))
-        let open = UNNotificationAction(identifier: "open", title: String(localized: "Open"), options: [.foreground], icon: UNNotificationActionIcon(systemImageName: "safari"))
+        let done = UNNotificationAction(identifier: "done", title: String(localized: "Done", locale: .app))
+        let tenMinutes = UNNotificationAction(identifier: "snooze10", title: String(localized: "In 10 minutes", locale: .app))
+        let fifteenMinutes = UNNotificationAction(identifier: "snooze15", title: String(localized: "In 15 minutes", locale: .app))
+        let hour = UNNotificationAction(identifier: "snooze60", title: String(localized: "In an hour", locale: .app))
+        let morning = UNNotificationAction(identifier: "morning", title: String(localized: "Tomorrow morning", locale: .app))
+        let skip = UNNotificationAction(identifier: "skip", title: String(localized: "Skip today", locale: .app))
+        let call = UNNotificationAction(identifier: "call", title: String(localized: "Call", locale: .app), options: [.foreground], icon: UNNotificationActionIcon(systemImageName: "phone.fill"))
+        let open = UNNotificationAction(identifier: "open", title: String(localized: "Open", locale: .app), options: [.foreground], icon: UNNotificationActionIcon(systemImageName: "safari"))
         return [
             UNNotificationCategory(identifier: "reminder", actions: [done, tenMinutes, hour, morning], intentIdentifiers: []),
             UNNotificationCategory(identifier: "nag", actions: [done, fifteenMinutes, skip], intentIdentifiers: []),
@@ -102,6 +102,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         for note in weather {
             let content = UNMutableNotificationContent()
             content.title = note.title
+            content.subtitle = WeatherAdvisor.mark
             content.body = note.body
             content.interruptionLevel = .passive
             content.threadIdentifier = "weather"
@@ -119,7 +120,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
             content.userInfo = ["reminder": item.reminderID.uuidString, "occurrence": item.occurrence.timeIntervalSince1970]
             addContact(of: item.title, to: content)
             if item.kind == .missed {
-                content.title = String(localized: "Not done: \(item.title)")
+                content.title = String(localized: "Not done: \(item.title)", locale: .app)
                 content.badge = NSNumber(value: Agenda.missed(item.fireDate, reminders: store.activeReminders, calendar: .current).count)
             }
             let parts = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: item.fireDate)
@@ -143,7 +144,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
                 region.notifyOnExit = reminder.placeTrigger == .leave
                 let content = UNMutableNotificationContent()
                 content.title = reminder.title
-                content.body = reminder.placeTrigger == .leave ? String(localized: "Leaving: \(place.name)") : String(localized: "Arrived: \(place.name)")
+                content.body = reminder.placeTrigger == .leave ? String(localized: "Leaving: \(place.name)", locale: .app) : String(localized: "Arrived: \(place.name)", locale: .app)
                 content.sound = SoundPlayer.notificationSound(reminder.sound, settings: store.settings, sounds: store.sounds)
                 content.categoryIdentifier = "place"
                 content.interruptionLevel = reminder.urgent ? .timeSensitive : .active
@@ -171,31 +172,32 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         case .main:
             return when
         case .early:
-            return String(localized: "\(when), reminding in advance")
+            return String(localized: "\(when), reminding in advance", locale: .app)
         case .snoozed:
-            return String(localized: "Snoozed reminder")
+            return String(localized: "Snoozed reminder", locale: .app)
         case .missed:
-            return String(localized: "It was at \(describer.time(item.occurrence)). Open to mark it or move it.")
+            return String(localized: "It was at \(describer.time(item.occurrence)). Open to mark it or move it.", locale: .app)
         case .nag(let index):
             let interval = store.reminder(item.reminderID)?.nagInterval ?? store.settings.nagInterval
-            return "\(ordinal(index + 1)). \(String(localized: "I'll repeat in \(interval) minutes until you tap Done."))"
+            let next = index == Scheduler.nagRepeats ? String(localized: "This is the last reminder.", locale: .app) : String(localized: "I'll repeat in \(interval) minutes until you tap Done.", locale: .app)
+            return "\(ordinal(index + 1)). \(next)"
         }
     }
 
     private func ordinal(_ number: Int) -> String {
         switch number {
-        case 2: return String(localized: "Reminding for the 2nd time")
-        case 3: return String(localized: "Reminding for the 3rd time")
-        case 4: return String(localized: "Reminding for the 4th time")
-        case 5: return String(localized: "Reminding for the 5th time")
-        case 6: return String(localized: "Reminding for the 6th time")
-        case 7: return String(localized: "Reminding for the 7th time")
-        case 8: return String(localized: "Reminding for the 8th time")
-        case 9: return String(localized: "Reminding for the 9th time")
-        case 10: return String(localized: "Reminding for the 10th time")
-        case 11: return String(localized: "Reminding for the 11th time")
-        case 12: return String(localized: "Reminding for the 12th time")
-        default: return String(localized: "Reminding for the 13th time")
+        case 2: return String(localized: "Reminding for the 2nd time", locale: .app)
+        case 3: return String(localized: "Reminding for the 3rd time", locale: .app)
+        case 4: return String(localized: "Reminding for the 4th time", locale: .app)
+        case 5: return String(localized: "Reminding for the 5th time", locale: .app)
+        case 6: return String(localized: "Reminding for the 6th time", locale: .app)
+        case 7: return String(localized: "Reminding for the 7th time", locale: .app)
+        case 8: return String(localized: "Reminding for the 8th time", locale: .app)
+        case 9: return String(localized: "Reminding for the 9th time", locale: .app)
+        case 10: return String(localized: "Reminding for the 10th time", locale: .app)
+        case 11: return String(localized: "Reminding for the 11th time", locale: .app)
+        case 12: return String(localized: "Reminding for the 12th time", locale: .app)
+        default: return String(localized: "Reminding for the 13th time", locale: .app)
         }
     }
 

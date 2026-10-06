@@ -28,7 +28,7 @@ enum PlaceIcon: String, CaseIterable {
         case .sport: return "Sport"
         case .nature: return "Nature"
         case .shop: return "Shop"
-        case .star: return "Favourite"
+        case .star: return "Favorite"
         }
     }
 

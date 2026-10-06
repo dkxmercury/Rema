@@ -1609,52 +1609,6 @@
         }
       }
     },
-    "Accounts and sync will arrive after testing. Everything is saved on this phone for now.": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "سيتوفر الحساب والمزامنة بعد الاختبار. حتى ذلك الحين يُحفظ كل شيء على هذا الهاتف."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Konto und Synchronisierung kommen nach den Tests. Bis dahin bleibt alles auf diesem Telefon."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Le compte et la synchronisation arriveront après les tests. Pour l’instant, tout est enregistré sur ce téléphone."
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Аккаунт и синхронизация появятся после тестов. Пока всё хранится на этом телефоне."
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Акаунт і синхронізація з’являться після тестів. Поки все зберігається на цьому телефоні."
-          }
-        },
-        "uz-Cyrl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Аккаунт ва синхронлаш синовдан кейин қўшилади. Ҳозирча ҳаммаси шу телефонда сақланади."
-          }
-        },
-        "uz-Latn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Akkaunt va sinxronlash sinovdan keyin qo‘shiladi. Hozircha hammasi shu telefonda saqlanadi."
-          }
-        }
-      }
-    },
     "Add a time": {
       "localizations": {
         "ar": {
@@ -2069,52 +2023,6 @@
         }
       }
     },
-    "Allow": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "السماح"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Erlauben"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Autoriser"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Разрешить"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Дозволити"
-          }
-        },
-        "uz-Cyrl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Рухсат бериш"
-          }
-        },
-        "uz-Latn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ruxsat berish"
-          }
-        }
-      }
-    },
     "Allow microphone access in Settings to dictate reminders.": {
       "localizations": {
         "ar": {
@@ -2506,13 +2414,13 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Пришли: %@"
+            "value": "Вы пришли: %@"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Прийшли: %@"
+            "value": "Ви прийшли: %@"
           }
         },
         "uz-Cyrl": {
@@ -2709,6 +2617,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tayyor"
+          }
+        }
+      }
+    },
+    "Buy bread and milk": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شراء الخبز والحليب"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Brot und Milch kaufen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Acheter du pain et du lait"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Купить хлеб и молоко"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Купити хліб і молоко"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нон ва сут олиш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non va sut olish"
           }
         }
       }
@@ -2939,6 +2893,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Qo‘ng‘iroq qilish"
+          }
+        }
+      }
+    },
+    "Call the supplier": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الاتصال بالمورّد"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lieferanten anrufen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Appeler le fournisseur"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Позвонить поставщику"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Подзвонити постачальнику"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Етказиб берувчига қўнғироқ қилиш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yetkazib beruvchiga qo‘ng‘iroq qilish"
           }
         }
       }
@@ -3399,6 +3399,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Bajarilganlar"
+          }
+        }
+      }
+    },
+    "Continue": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "متابعة"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weiter"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continuer"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Продолжить"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Продовжити"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Давом этиш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Davom etish"
           }
         }
       }
@@ -5887,7 +5933,7 @@
         }
       }
     },
-    "Favourite": {
+    "Favorite": {
       "localizations": {
         "ar": {
           "stringUnit": {
@@ -7009,6 +7055,52 @@
         }
       }
     },
+    "Gym": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "النادي الرياضي"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fitnessstudio"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salle de sport"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Спортзал"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Спортзал"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Спорт зали"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sport zali"
+          }
+        }
+      }
+    },
     "Handy before a doctor's visit": {
       "localizations": {
         "ar": {
@@ -7285,6 +7377,52 @@
         }
       }
     },
+    "Hold the plus on the home screen and talk.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اضغط مطولًا على زر الإضافة في الشاشة الرئيسية وتكلم."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Halte das Plus auf dem Startbildschirm gedrückt und sprich."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maintenez le plus sur l’écran d’accueil et parlez."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Удерживайте плюс на главном экране и говорите."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Утримуйте плюс на головному екрані й говоріть."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бош экрандаги плюсни босиб туринг ва гапиринг."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bosh ekrandagi plyusni bosib turing va gapiring."
+          }
+        }
+      }
+    },
     "Hold the plus on the home screen and talk. Let go when you are done, and Rema will make sense of the phrase.": {
       "localizations": {
         "ar": {
@@ -7327,52 +7465,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Bosh ekrandagi plyusni bosib turing va gapiring. Tugatgach qo‘yib yuboring, Rema iborani o‘zi tushunadi."
-          }
-        }
-      }
-    },
-    "Hold the plus on the home screen and talk. Speech is recognized right on the phone.": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "اضغط مطولًا على زر الإضافة في الشاشة الرئيسية وتكلم. يتعرف الهاتف على كلامك بنفسه."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Halte das Plus auf dem Startbildschirm gedrückt und sprich. Die Sprache wird direkt auf dem iPhone erkannt."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Maintenez le plus sur l’écran d’accueil et parlez. La voix est reconnue directement sur le téléphone."
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Удерживайте плюс на главном экране и говорите. Речь распознаётся прямо на телефоне."
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Утримуйте плюс на головному екрані й говоріть. Мова розпізнається просто на телефоні."
-          }
-        },
-        "uz-Cyrl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Бош экрандаги плюсни босиб туринг ва гапиринг. Нутқ шу телефоннинг ўзида танилади."
-          }
-        },
-        "uz-Latn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bosh ekrandagi plyusni bosib turing va gapiring. Nutq shu telefonning o‘zida taniladi."
           }
         }
       }
@@ -8200,13 +8292,13 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ушли: %@"
+            "value": "Вы ушли: %@"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Пішли: %@"
+            "value": "Ви пішли: %@"
           }
         },
         "uz-Cyrl": {
@@ -10989,52 +11081,6 @@
         }
       }
     },
-    "Open Watch": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "فتح Watch"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Watch öffnen"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ouvrir Watch"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Открыть Watch"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Відкрити Watch"
-          }
-        },
-        "uz-Cyrl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Watch’ни очиш"
-          }
-        },
-        "uz-Latn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Watch’ni ochish"
-          }
-        }
-      }
-    },
     "Open it with %@. Reminders come as usual.": {
       "localizations": {
         "ar": {
@@ -11399,6 +11445,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Takror-takror"
+          }
+        }
+      }
+    },
+    "Pick up the parcel": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "استلام الطرد"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paket abholen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Récupérer le colis"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Забрать посылку"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Забрати посилку"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Посилкани олиш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Posilkani olish"
           }
         }
       }
@@ -12380,7 +12472,7 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Erinnern %@"
+            "value": "Erinnere mich %@"
           }
         },
         "fr": {
@@ -13703,6 +13795,52 @@
         }
       }
     },
+    "Renew the domain": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تجديد النطاق"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Domain verlängern"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renouveler le domaine"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Продлить домен"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Продовжити домен"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Доменни узайтириш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Domenni uzaytirish"
+          }
+        }
+      }
+    },
     "Repeat": {
       "localizations": {
         "ar": {
@@ -13745,52 +13883,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Takrorlash"
-          }
-        }
-      }
-    },
-    "Repeat for persistent": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تكرار التذكيرات الملحّة"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Intervall beharrlicher Erinnerungen"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Intervalle des rappels insistants"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Повтор настойчивых"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Повтор наполегливих"
-          }
-        },
-        "uz-Cyrl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Такрорий эслатмалар оралиғи"
-          }
-        },
-        "uz-Latn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Takroriy eslatmalar oralig‘i"
           }
         }
       }
@@ -14159,6 +14251,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Har chorshanba takrorlansinmi?"
+          }
+        }
+      }
+    },
+    "Repeat persistent reminders": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تكرار التذكيرات الملحّة"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Intervall beharrlicher Erinnerungen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Intervalle des rappels insistants"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повтор настойчивых"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повтор наполегливих"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Такрорий эслатмалар оралиғи"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Takroriy eslatmalar oralig‘i"
           }
         }
       }
@@ -15091,52 +15229,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ro‘yxatdan o‘tish"
-          }
-        }
-      }
-    },
-    "Sign-in is coming soon": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تسجيل الدخول قريبًا"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Anmeldung folgt bald"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "La connexion arrive bientôt"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Вход скоро появится"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Вхід скоро з’явиться"
-          }
-        },
-        "uz-Cyrl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Кириш тез орада пайдо бўлади"
-          }
-        },
-        "uz-Latn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kirish tez orada paydo bo‘ladi"
           }
         }
       }
@@ -16153,52 +16245,6 @@
         }
       }
     },
-    "Start": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ابدأ"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Los geht’s"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Commencer"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Начать"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Почати"
-          }
-        },
-        "uz-Cyrl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Бошлаш"
-          }
-        },
-        "uz-Latn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Boshlash"
-          }
-        }
-      }
-    },
     "Step %lld of %lld": {
       "localizations": {
         "ar": {
@@ -16563,6 +16609,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Soyabon oling va ko‘chada ehtiyot bo‘ling."
+          }
+        }
+      }
+    },
+    "Take vitamins": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تناول الفيتامينات"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vitamine nehmen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prendre les vitamines"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выпить витамины"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Випити вітаміни"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Витамин ичиш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vitamin ichish"
           }
         }
       }
@@ -17299,6 +17391,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Kechqurun"
+          }
+        }
+      }
+    },
+    "This is the last reminder.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هذا آخر تذكير."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das ist die letzte Erinnerung."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "C’est le dernier rappel."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Это последнее напоминание."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Це останнє нагадування."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бу охирги эслатма."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu oxirgi eslatma."
           }
         }
       }
@@ -18587,6 +18725,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tebranish"
+          }
+        }
+      }
+    },
+    "Water the plants": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سقي النباتات"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blumen gießen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arroser les plantes"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Полить цветы"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Полити квіти"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Гулларни суғориш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gullarni sug‘orish"
           }
         }
       }
@@ -21965,6 +22149,98 @@
         }
       }
     },
+    "every minute": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كل دقيقة"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "jede Minute"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "chaque minute"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "каждую минуту"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "кожну хвилину"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ҳар дақиқада"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "har daqiqada"
+          }
+        }
+      }
+    },
+    "every minute, until I mark it": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كل دقيقة حتى أضع علامة"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "jede Minute, bis ich abhake"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "chaque minute, jusqu’à ce que je coche"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "каждую минуту, пока не отмечу"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "кожну хвилину, доки не позначу"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "белгилагунимча ҳар дақиқада"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "belgilagunimcha har daqiqada"
+          }
+        }
+      }
+    },
     "every month": {
       "localizations": {
         "ar": {
@@ -22195,94 +22471,94 @@
         }
       }
     },
-    "for voice input, speech is recognized on the phone": {
+    "for voice input": {
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "للإدخال الصوتي، ويتعرف الهاتف على الكلام بنفسه"
+            "value": "للإدخال الصوتي"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "für die Spracheingabe, erkannt wird direkt auf dem iPhone"
+            "value": "für die Spracheingabe"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "pour la saisie vocale, la voix est reconnue sur le téléphone"
+            "value": "pour la saisie vocale"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "для голосового ввода, речь распознаётся на телефоне"
+            "value": "для голосового ввода"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "для голосового введення, мова розпізнається на телефоні"
+            "value": "для голосового введення"
           }
         },
         "uz-Cyrl": {
           "stringUnit": {
             "state": "translated",
-            "value": "овозли киритиш учун, нутқ телефоннинг ўзида танилади"
+            "value": "овозли киритиш учун"
           }
         },
         "uz-Latn": {
           "stringUnit": {
             "state": "translated",
-            "value": "ovozli kiritish uchun, nutq telefonning o‘zida taniladi"
+            "value": "ovozli kiritish uchun"
           }
         }
       }
     },
-    "for “when I arrive” and “when I leave”, only while you use the app": {
+    "for “when I arrive” and “when I leave” reminders": {
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "لـ«عند الوصول» و«عند المغادرة»، وفقط أثناء الاستخدام"
+            "value": "لتذكيرات «عند الوصول» و«عند المغادرة»"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "für „wenn ich ankomme“ und „wenn ich gehe“, nur während der Nutzung"
+            "value": "für Erinnerungen „wenn ich ankomme“ und „wenn ich gehe“"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "pour « quand j’arrive » et « quand je pars », seulement pendant l’utilisation"
+            "value": "pour les rappels « quand j’arrive » et « quand je pars »"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "для «когда приду» и «когда уйду», только пока пользуетесь"
+            "value": "для напоминаний «когда приду» и «когда уйду»"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "для «коли прийду» і «коли піду», лише поки користуєтеся"
+            "value": "для нагадувань «коли прийду» і «коли піду»"
           }
         },
         "uz-Cyrl": {
           "stringUnit": {
             "state": "translated",
-            "value": "«келганимда» ва «кетганимда» учун, фақат фойдаланаётганингизда"
+            "value": "«келганимда» ва «кетганимда» эслатмалари учун"
           }
         },
         "uz-Latn": {
           "stringUnit": {
             "state": "translated",
-            "value": "«kelganimda» va «ketganimda» uchun, faqat foydalanayotganingizda"
+            "value": "«kelganimda» va «ketganimda» eslatmalari uchun"
           }
         }
       }
@@ -22329,52 +22605,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "soat"
-          }
-        }
-      }
-    },
-    "iPhone Settings": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "إعدادات iPhone"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "iPhone-Einstellungen"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Réglages de l’iPhone"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Настройки iPhone"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Параметри iPhone"
-          }
-        },
-        "uz-Cyrl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "iPhone созламалари"
-          }
-        },
-        "uz-Latn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "iPhone sozlamalari"
           }
         }
       }

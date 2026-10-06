@@ -44,16 +44,24 @@ struct FeaturesScreen: View {
     }
 
     private var features: [Feature] {
-        [
-            Feature(id: 0, icon: Icons.microphone, title: "By voice", text: "Hold the plus on the home screen and talk. Let go when you are done, and Rema will make sense of the phrase."),
-            Feature(id: 1, icon: Icons.sliders, title: "Control Center and the Action button", text: "Open Control Center, tap + and add the Rema button. If your iPhone has an Action button, assign Rema to it in Settings.", button: "iPhone Settings", action: { open(UIApplication.openSettingsURLString) }),
-            Feature(id: 2, icon: Icons.waveform, title: "Siri and Shortcuts", text: "Say “Remind me in Rema” or “What is next in Rema”. The same actions are in the Shortcuts app.", button: "Open Shortcuts", action: { open("shortcuts://") }),
-            Feature(id: 3, icon: Icons.widgets, title: "Widgets", text: "Touch and hold an empty spot on the Home Screen, tap Edit and then Add Widget. You can tick reminders right on the widget."),
-            Feature(id: 4, icon: Icons.island, title: "Dynamic Island", text: "When a reminder is less than an hour away, close Rema. The countdown shows up at the top of the screen and on the Lock Screen."),
-            Feature(id: 5, icon: Icons.watch, title: "Apple Watch", text: "The watch app installs together with Rema. If it is not on your watch, install it in the Watch app on your iPhone.", button: "Open Watch", action: { open("itms-watchs://") }),
-            Feature(id: 6, icon: Icons.pin, title: "By place", text: "Write “when I leave work” or “when I get home”. This needs location access and at least one place.", button: "My places", action: onPlaces),
-            Feature(id: 7, icon: Icons.bolt, title: "Urgent", text: "“Urgent” gets through Do Not Disturb and Focus. Add the word “urgent” to the phrase or turn it on in the reminder itself."),
-        ]
+        var list: [Feature] = []
+        if VoiceRecognizer.available {
+            list.append(Feature(id: 0, icon: Icons.microphone, title: "By voice", text: "Hold the plus on the home screen and talk. Let go when you are done, and Rema will make sense of the phrase."))
+        }
+        if #available(iOS 18, *) {
+            list.append(Feature(id: 1, icon: Icons.sliders, title: "Control Center and the Action button", text: "Open Control Center, tap + and add the Rema button. If your iPhone has an Action button, assign Rema to it in Settings."))
+        }
+        list.append(Feature(id: 2, icon: Icons.waveform, title: "Siri and Shortcuts", text: "Say “Remind me in Rema” or “What is next in Rema”. The same actions are in the Shortcuts app.", button: "Open Shortcuts", action: { open("shortcuts://") }))
+        list.append(Feature(id: 3, icon: Icons.widgets, title: "Widgets", text: "Touch and hold an empty spot on the Home Screen, tap Edit and then Add Widget. You can tick reminders right on the widget."))
+        if Remote.shared.isOn(.liveActivity) {
+            list.append(Feature(id: 4, icon: Icons.island, title: "Dynamic Island", text: "When a reminder is less than an hour away, close Rema. The countdown shows up at the top of the screen and on the Lock Screen."))
+        }
+        list.append(Feature(id: 5, icon: Icons.watch, title: "Apple Watch", text: "The watch app installs together with Rema. If it is not on your watch, install it in the Watch app on your iPhone."))
+        if Remote.shared.isOn(.places) {
+            list.append(Feature(id: 6, icon: Icons.pin, title: "By place", text: "Write “when I leave work” or “when I get home”. This needs location access and at least one place.", button: "My places", action: onPlaces))
+        }
+        list.append(Feature(id: 7, icon: Icons.bolt, title: "Urgent", text: "“Urgent” gets through Do Not Disturb and Focus. Add the word “urgent” to the phrase or turn it on in the reminder itself."))
+        return list
     }
 
     private func card(_ feature: Feature) -> some View {

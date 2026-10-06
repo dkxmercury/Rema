@@ -261,6 +261,10 @@ final class GoogleAuthorization: NSObject, ASWebAuthenticationPresentationContex
         (Bundle.main.object(forInfoDictionaryKey: "RemaGoogleClientID") as? String ?? "").trimmingCharacters(in: .whitespaces)
     }
 
+    static var configured: Bool {
+        clientID.hasSuffix(".apps.googleusercontent.com")
+    }
+
     func perform(nonce: String) async throws -> String {
         let clientID = Self.clientID
         let suffix = ".apps.googleusercontent.com"

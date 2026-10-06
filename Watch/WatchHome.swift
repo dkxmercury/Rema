@@ -116,11 +116,11 @@ struct WatchHome: View {
     private func countdown(from now: Date, to date: Date) -> String {
         let minutes = max(0, Int(ceil(date.timeIntervalSince(now) / 60)))
         if minutes < 60 {
-            return String(localized: "in \(minutes) min")
+            return String(localized: "in \(minutes) min", locale: .app)
         }
         let hours = minutes / 60
         let rest = minutes % 60
-        return rest == 0 ? String(localized: "in \(hours) h") : String(localized: "in \(hours) h \(rest) min")
+        return rest == 0 ? String(localized: "in \(hours) h", locale: .app) : String(localized: "in \(hours) h \(rest) min", locale: .app)
     }
 }
 

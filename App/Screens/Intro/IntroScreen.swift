@@ -26,7 +26,18 @@ struct IntroScreen: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private let now = Date()
-    private let pages = 3
+
+    private var order: [Int] {
+        VoiceRecognizer.available ? [0, 1, 2] : [0, 2]
+    }
+
+    private var position: Int {
+        order.firstIndex(of: page) ?? 0
+    }
+
+    private var last: Bool {
+        page == order.last
+    }
 
     var body: some View {
         GeometryReader { proxy in
@@ -35,7 +46,9 @@ struct IntroScreen: View {
                 Palette.background.ignoresSafeArea()
                 TabView(selection: $page) {
                     writePage(art).tag(0)
-                    voicePage(art).tag(1)
+                    if order.contains(1) {
+                        voicePage(art).tag(1)
+                    }
                     accessPage.tag(2)
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
@@ -56,7 +69,7 @@ struct IntroScreen: View {
         VStack(spacing: 0) {
             HStack {
                 Spacer()
-                if page < pages - 1 {
+                if !last {
                     Button(action: onFinish) {
                         Text("Skip")
                             .font(.app(.golos, 15, weight: 600))
@@ -75,7 +88,7 @@ struct IntroScreen: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.bottom, 24)
             Button(action: advance) {
-                Text(page < pages - 1 ? LocalizedStringKey("Next") : LocalizedStringKey("Start"))
+                Text(last ? LocalizedStringKey("Continue") : LocalizedStringKey("Next"))
                     .contentTransition(.opacity)
             }
             .buttonStyle(PrimaryButtonStyle())
@@ -87,15 +100,15 @@ struct IntroScreen: View {
 
     private var dots: some View {
         HStack(spacing: 6) {
-            ForEach(0..<pages, id: \.self) { index in
+            ForEach(order.indices, id: \.self) { index in
                 Capsule()
-                    .fill(index == page ? Palette.accent : Palette.text.opacity(0.2))
-                    .frame(width: index == page ? 20 : 6, height: 6)
+                    .fill(index == position ? Palette.accent : Palette.text.opacity(0.2))
+                    .frame(width: index == position ? 20 : 6, height: 6)
             }
         }
         .animation(Motion.small, value: page)
         .accessibilityElement()
-        .accessibilityLabel(Text("Step \(page + 1) of \(pages)"))
+        .accessibilityLabel(Text("Step \(position + 1) of \(order.count)"))
     }
 
     private func introPage<Art: View>(_ art: CGFloat, title: LocalizedStringKey, text: LocalizedStringKey, @ViewBuilder illustration: () -> Art) -> some View {
@@ -128,7 +141,7 @@ struct IntroScreen: View {
     }
 
     private func voicePage(_ art: CGFloat) -> some View {
-        introPage(art, title: "Or say it out loud", text: "Hold the plus on the home screen and talk. Speech is recognized right on the phone.") {
+        introPage(art, title: "Or say it out loud", text: "Hold the plus on the home screen and talk.") {
             voiceIllustration
         }
     }
@@ -139,7 +152,7 @@ struct IntroScreen: View {
     }
 
     private var writeIllustration: some View {
-        let example = String(localized: "tomorrow at 9 call mom")
+        let example = String(localized: "tomorrow at 9 call mom", locale: .app)
         let parsed = PhraseParser(now: now, calendar: .current, morning: store.settings.morning, evening: store.settings.evening, preferred: AppLanguage.current.rawValue).parse(example)
         let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: now) ?? now
         let fallback = Calendar.current.date(bySettingHour: 9, minute: 0, second: 0, of: tomorrow) ?? tomorrow
@@ -192,7 +205,7 @@ struct IntroScreen: View {
     }
 
     private var voiceIllustration: some View {
-        let phrase = String(localized: "buy bread when I leave work")
+        let phrase = String(localized: "buy bread when I leave work", locale: .app)
         let words = phrase.split(separator: " ").map(String.init)
         let shown = played.contains(1)
         return ZStack {
@@ -286,11 +299,11 @@ struct IntroScreen: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.top, 10)
             PanelList {
-                accessRow(Icons.bell, prominent: true, title: "Notifications", text: "arrive on time, urgent ones get through Do Not Disturb", state: notifications, action: askNotifications)
+                accessRow(Icons.bell, prominent: true, title: "Notifications", text: "arrive on time, urgent ones get through Do Not Disturb", state: notifications)
                 Hairline()
-                accessRow(Icons.pin, prominent: false, title: "Location", text: "for “when I arrive” and “when I leave”, only while you use the app", state: location, action: askLocation)
+                accessRow(Icons.pin, prominent: false, title: "Location", text: "for “when I arrive” and “when I leave” reminders", state: location)
                 Hairline()
-                accessRow(Icons.microphone, prominent: false, title: "Microphone", text: "for voice input, speech is recognized on the phone", state: microphone, action: askMicrophone)
+                accessRow(Icons.microphone, prominent: false, title: "Microphone", text: "for voice input", state: microphone)
             }
             .padding(.top, 20)
             Button(action: onFeatures) {
@@ -309,7 +322,7 @@ struct IntroScreen: View {
         .padding(.top, 67)
     }
 
-    private func accessRow(_ icon: [String], prominent: Bool, title: LocalizedStringKey, text: LocalizedStringKey, state: Access, action: @escaping () -> Void) -> some View {
+    private func accessRow(_ icon: [String], prominent: Bool, title: LocalizedStringKey, text: LocalizedStringKey, state: Access) -> some View {
         HStack(spacing: 12) {
             ZStack {
                 let shape = RoundedRectangle(cornerRadius: 12, style: .circular)
@@ -351,10 +364,7 @@ struct IntroScreen: View {
                 }
                 .buttonStyle(SmallButtonStyle(prominent: false))
             case .unknown:
-                Button(action: action) {
-                    Text("Allow")
-                }
-                .buttonStyle(SmallButtonStyle(prominent: prominent))
+                EmptyView()
             }
         }
         .padding(.vertical, 14)
@@ -384,38 +394,18 @@ struct IntroScreen: View {
         }
     }
 
+    // Location and the microphone are asked for when a place or voice is first used, so here only notifications are.
     private func advance() {
-        if page < pages - 1 {
-            withAnimation(Motion.standard) { page += 1 }
-        } else {
+        if !last {
+            withAnimation(Motion.standard) { page = order[position + 1] }
+            return
+        }
+        Task { @MainActor in
+            if notifications == .unknown {
+                _ = try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge])
+                await Notifier.shared.reschedule()
+            }
             onFinish()
-        }
-    }
-
-    private func askNotifications() {
-        Task { @MainActor in
-            _ = try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge])
-            await refreshAccess()
-            await Notifier.shared.reschedule()
-        }
-    }
-
-    private func askLocation() {
-        Task { @MainActor in
-            _ = await LocationService.shared.requestPermission()
-            await refreshAccess()
-        }
-    }
-
-    private func askMicrophone() {
-        Task { @MainActor in
-            let speech = await withCheckedContinuation { continuation in
-                SFSpeechRecognizer.requestAuthorization { continuation.resume(returning: $0) }
-            }
-            if speech == .authorized {
-                _ = await AVAudioApplication.requestRecordPermission()
-            }
-            await refreshAccess()
         }
     }
 

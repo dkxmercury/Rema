@@ -82,8 +82,8 @@ final class AppLock {
 
     private func authenticate() async -> Bool {
         let context = LAContext()
-        context.localizedCancelTitle = String(localized: "Cancel")
-        return (try? await context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: String(localized: "Unlock Rema"))) ?? false
+        context.localizedCancelTitle = String(localized: "Cancel", locale: .app)
+        return (try? await context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: String(localized: "Unlock Rema", locale: .app))) ?? false
     }
 
     // A window of its own covers sheets and full screen covers too, which an overlay in the root view would not.

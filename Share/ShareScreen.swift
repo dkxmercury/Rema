@@ -297,10 +297,10 @@ struct ShareScreen: View {
         guard let when else { return [] }
         let day = LocalDate(when, in: calendar)
         return [
-            (String(localized: "Every day"), .daily),
-            (String(localized: "Every week"), .weekly([day.weekday])),
-            (String(localized: "Every month"), .monthlyOnDay(day.day)),
-            (String(localized: "Every year"), .yearly(month: day.month, day: day.day)),
+            (String(localized: "Every day", locale: .app), .daily),
+            (String(localized: "Every week", locale: .app), .weekly([day.weekday])),
+            (String(localized: "Every month", locale: .app), .monthlyOnDay(day.day)),
+            (String(localized: "Every year", locale: .app), .yearly(month: day.month, day: day.day)),
         ]
     }
 
@@ -359,20 +359,20 @@ struct ShareScreen: View {
         case ..<1:
             return describer.countdown(from: now, to: date)
         case 1:
-            return String(localized: "tomorrow")
+            return String(localized: "tomorrow", locale: .app)
         default:
-            return String(localized: "in \(days) days")
+            return String(localized: "in \(days) days", locale: .app)
         }
     }
 
     private var confirmTitle: String {
         if let when {
-            return String(localized: "Remind \(describer.dayAndTime(when, now: now))")
+            return String(localized: "Remind \(describer.dayAndTime(when, now: now))", locale: .app)
         }
         if !reminder.placeIDs.isEmpty {
-            return String(localized: "Remind by place")
+            return String(localized: "Remind by place", locale: .app)
         }
-        return String(localized: "Choose a time")
+        return String(localized: "Choose a time", locale: .app)
     }
 
     private func save() {
@@ -409,7 +409,7 @@ enum ShareNotifications {
             content.title = item.title
             let when = describer.dayAndTime(item.occurrence, now: item.fireDate).capitalizedFirst(describer.locale)
             if case .early = item.kind {
-                content.body = String(localized: "\(when), reminding in advance")
+                content.body = String(localized: "\(when), reminding in advance", locale: .app)
             } else {
                 content.body = when
             }

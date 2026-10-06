@@ -29,6 +29,13 @@ enum AppFonts {
     }
 }
 
+// String(localized:) picks the language from the locale it gets, so every lookup passes the app's own choice.
+extension Locale {
+    static var app: Locale {
+        Locale(identifier: AppFonts.languageCode)
+    }
+}
+
 enum Typeface: String {
     case jost = "Jost"
     case golos = "Golos Text"
