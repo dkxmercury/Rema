@@ -358,14 +358,6 @@ struct ToggleRow: View {
     }
 }
 
-struct RowPressStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .opacity(configuration.isPressed ? 0.6 : 1)
-            .animation(Motion.press, value: configuration.isPressed)
-    }
-}
-
 struct Shake: GeometryEffect {
     var amount: CGFloat
     var animatableData: CGFloat {

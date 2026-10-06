@@ -425,16 +425,6 @@ private extension DialLift {
     }
 }
 
-struct PressableStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 0.95 : 1)
-            .offset(y: configuration.isPressed ? 1 : 0)
-            .brightness(configuration.isPressed ? -0.04 : 0)
-            .animation(Motion.press, value: configuration.isPressed)
-    }
-}
-
 private struct HomeTile: View {
     let tile: HomeContent.Tile
 

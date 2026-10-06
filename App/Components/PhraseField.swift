@@ -7,6 +7,7 @@ struct PhraseField: UIViewRepresentable {
     var highlights: [Range<Int>]
     var pending: Range<Int>?
     var editable: Bool
+    var size: CGFloat
     var limit: Int
     @Binding var focused: Bool
     var onSubmit: () -> Void
@@ -16,6 +17,7 @@ struct PhraseField: UIViewRepresentable {
         highlights: [Range<Int>],
         pending: Range<Int>? = nil,
         editable: Bool = true,
+        size: CGFloat = 24,
         limit: Int = Reminder.maximumTitleLength,
         focused: Binding<Bool> = .constant(false),
         onSubmit: @escaping () -> Void = {}
@@ -24,6 +26,7 @@ struct PhraseField: UIViewRepresentable {
         self.highlights = highlights
         self.pending = pending
         self.editable = editable
+        self.size = size
         self.limit = limit
         _focused = focused
         self.onSubmit = onSubmit
@@ -42,6 +45,7 @@ struct PhraseField: UIViewRepresentable {
         container.lineFragmentPadding = 0
         manager.addTextContainer(container)
         let view = PhraseTextView(frame: .zero, textContainer: container)
+        view.size = size
         view.delegate = context.coordinator
         return view
     }
@@ -109,8 +113,8 @@ struct PhraseField: UIViewRepresentable {
 }
 
 final class PhraseTextView: UITextView {
-    private let face = UIFont.app(.golos, 24, weight: 600)
-    private let lineHeight: CGFloat = 32
+    private var face = UIFont.app(.golos, 24, weight: 600)
+    private var lineHeight: CGFloat = 32
     private var marks: [NSRange] = []
     private var markStarts: [NSRange: CFTimeInterval] = [:]
     private var applied: (text: String, highlights: [Range<Int>], pending: Range<Int>?)?
@@ -132,6 +136,16 @@ final class PhraseTextView: UITextView {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) is not supported")
+    }
+
+    var size: CGFloat = 24 {
+        didSet {
+            guard size != oldValue else { return }
+            face = UIFont.app(.golos, size, weight: 600)
+            lineHeight = size + 8
+            typingAttributes = baseAttributes
+            applied = nil
+        }
     }
 
     private var baseAttributes: [NSAttributedString.Key: Any] {

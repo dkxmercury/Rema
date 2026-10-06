@@ -24,8 +24,9 @@ jobs:
           PROFILE_APP_BASE64: ${{ secrets.PROFILE_APP_BASE64 }}
           PROFILE_WIDGETS_BASE64: ${{ secrets.PROFILE_WIDGETS_BASE64 }}
           PROFILE_WATCH_BASE64: ${{ secrets.PROFILE_WATCH_BASE64 }}
+          PROFILE_SHARE_BASE64: ${{ secrets.PROFILE_SHARE_BASE64 }}
         run: |
-          for name in APPLE_TEAM_ID DIST_P12_BASE64 DIST_P12_PASSWORD PROFILE_APP_BASE64 PROFILE_WIDGETS_BASE64 PROFILE_WATCH_BASE64; do
+          for name in APPLE_TEAM_ID DIST_P12_BASE64 DIST_P12_PASSWORD PROFILE_APP_BASE64 PROFILE_WIDGETS_BASE64 PROFILE_WATCH_BASE64 PROFILE_SHARE_BASE64; do
             if [ -z "$(printenv "$name")" ]; then echo "missing secret $name"; exit 1; fi
           done
 
@@ -53,11 +54,12 @@ jobs:
           PROFILE_APP_BASE64: ${{ secrets.PROFILE_APP_BASE64 }}
           PROFILE_WIDGETS_BASE64: ${{ secrets.PROFILE_WIDGETS_BASE64 }}
           PROFILE_WATCH_BASE64: ${{ secrets.PROFILE_WATCH_BASE64 }}
+          PROFILE_SHARE_BASE64: ${{ secrets.PROFILE_SHARE_BASE64 }}
         run: |
           for folder in "$HOME/Library/MobileDevice/Provisioning Profiles" "$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles"; do
             mkdir -p "$folder"
           done
-          for pair in "APP:$PROFILE_APP_BASE64" "WIDGETS:$PROFILE_WIDGETS_BASE64" "WATCH:$PROFILE_WATCH_BASE64"; do
+          for pair in "APP:$PROFILE_APP_BASE64" "WIDGETS:$PROFILE_WIDGETS_BASE64" "WATCH:$PROFILE_WATCH_BASE64" "SHARE:$PROFILE_SHARE_BASE64"; do
             key="${pair%%:*}"
             file="$RUNNER_TEMP/$key.mobileprovision"
             printf '%s' "${pair#*:}" | base64 --decode > "$file"
@@ -87,7 +89,7 @@ jobs:
             CODE_SIGN_IDENTITY="Apple Distribution" \
             REMA_PROFILE_APP="$PROFILE_NAME_APP" \
             REMA_PROFILE_WIDGETS="$PROFILE_NAME_WIDGETS" \
-            REMA_PROFILE_WATCH="$PROFILE_NAME_WATCH" \
+            REMA_PROFILE_WATCH="$PROFILE_NAME_WATCH"             REMA_PROFILE_SHARE="$PROFILE_NAME_SHARE" \
             CURRENT_PROJECT_VERSION="${{ github.run_number }}" > archive.log 2>&1 || true
           grep -E "error:|ARCHIVE (SUCCEEDED|FAILED)" archive.log || true
           grep -q "ARCHIVE SUCCEEDED" archive.log
@@ -108,6 +110,7 @@ jobs:
               <key>uz.dkx.rema</key><string>$PROFILE_NAME_APP</string>
               <key>uz.dkx.rema.widgets</key><string>$PROFILE_NAME_WIDGETS</string>
               <key>uz.dkx.rema.watchkitapp</key><string>$PROFILE_NAME_WATCH</string>
+              <key>uz.dkx.rema.share</key><string>$PROFILE_NAME_SHARE</string>
             </dict>
             <key>thinning</key><string>&lt;none&gt;</string>
           </dict>

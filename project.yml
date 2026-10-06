@@ -32,6 +32,7 @@ targets:
     dependencies:
       - package: RemaCore
       - target: RemaWidgets
+      - target: RemaShare
       - target: RemaWatch
     settings:
       base:
@@ -98,6 +99,48 @@ targets:
         PROVISIONING_PROFILE_SPECIFIER: $(REMA_PROFILE_WIDGETS)
         TARGETED_DEVICE_FAMILY: "1"
         CODE_SIGN_ENTITLEMENTS: Widgets/RemaWidgets.entitlements
+        LOCALIZATION_PREFERS_STRING_CATALOGS: YES
+        SWIFT_EMIT_LOC_STRINGS: YES
+        SKIP_INSTALL: YES
+  RemaShare:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: Share
+        excludes:
+          - "*.entitlements"
+          - Info.plist
+      - path: App/Theme
+      - path: App/Services/Describer.swift
+      - path: App/Components/ButtonStyles.swift
+      - path: App/Components/Glyph.swift
+      - path: App/Components/Layout.swift
+      - path: App/Components/MiniDial.swift
+      - path: App/Components/PhraseField.swift
+      - path: App/Resources/Fonts
+        buildPhase: resources
+      - path: App/Resources/Localizable.xcstrings
+    dependencies:
+      - package: RemaCore
+    info:
+      path: Share/Info.plist
+      properties:
+        CFBundleDisplayName: Rema
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.share-services
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).ShareViewController
+          NSExtensionAttributes:
+            NSExtensionActivationRule:
+              NSExtensionActivationSupportsText: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: uz.dkx.rema.share
+        PRODUCT_NAME: RemaShare
+        PROVISIONING_PROFILE_SPECIFIER: $(REMA_PROFILE_SHARE)
+        TARGETED_DEVICE_FAMILY: "1"
+        CODE_SIGN_ENTITLEMENTS: Share/RemaShare.entitlements
         LOCALIZATION_PREFERS_STRING_CATALOGS: YES
         SWIFT_EMIT_LOC_STRINGS: YES
         SKIP_INSTALL: YES

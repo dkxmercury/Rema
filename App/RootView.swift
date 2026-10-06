@@ -26,6 +26,7 @@ enum RootRoute: Hashable {
 final class RootNavigation {
     static let shared = RootNavigation()
     static let welcomeKey = "welcomeDone"
+    static let introKey = "introDone"
 
     var path: [RootRoute] = []
     var languageCode = AppLanguage.current.rawValue
@@ -60,6 +61,7 @@ struct RootView: View {
     @State private var composing: ComposeTarget?
     @State private var showingCalendar = false
     @State private var showingLanguage = false
+    @State private var showingIntro = false
     @State private var announcement: RemoteConfig.Announcement?
     @Environment(\.openURL) private var openURL
     @Namespace private var zoom
@@ -89,6 +91,9 @@ struct RootView: View {
         .fullScreenCover(isPresented: Binding(get: { showingLanguage && !navigation.showingSignIn }, set: { showingLanguage = $0 })) {
             LanguageScreen(onClose: closeLanguage)
         }
+        .fullScreenCover(isPresented: $showingIntro) {
+            IntroScreen(store: store, onFinish: finishIntro)
+        }
         .alert("Update Rema", isPresented: .constant(remote.needsUpdate && !navigation.showingSignIn)) {
             Button("Open App Store") { openURL(remote.link(.appStore)) }
         } message: {
@@ -112,6 +117,7 @@ struct RootView: View {
         .onChange(of: navigation.composeRequest?.id) { _, _ in openRequestedCompose() }
         .onAppear {
             showAnnouncementIfNew()
+            showIntroIfNeeded()
             openRequestedCompose()
         }
         .preferredColorScheme(colorScheme)
@@ -178,6 +184,17 @@ struct RootView: View {
         if signedIn {
             SyncService.shared.becameActive()
         }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { showIntroIfNeeded() }
+    }
+
+    private func showIntroIfNeeded() {
+        guard !navigation.showingSignIn, !UserDefaults.standard.bool(forKey: RootNavigation.introKey) else { return }
+        showingIntro = true
+    }
+
+    private func finishIntro() {
+        UserDefaults.standard.set(true, forKey: RootNavigation.introKey)
+        showingIntro = false
     }
 
     private func closeLanguage() {
@@ -195,7 +212,7 @@ struct RootView: View {
     private func openRequestedCompose() {
         guard let request = navigation.composeRequest else { return }
         navigation.composeRequest = nil
-        guard !navigation.showingSignIn else { return }
+        guard !navigation.showingSignIn, !showingIntro else { return }
         if editing != nil || showingCalendar || composing != nil {
             editing = nil
             showingCalendar = false
