@@ -26,6 +26,12 @@ final class StoreSnapshots: XCTestCase {
             try shoot(HomeScreen(content: sample.home(at: sample.now)), "\(code)-08-dark", sample, style: .dark)
             try shoot(PhraseScreen(store: store, text: sample.weekly, now: sample.now, calendar: sample.calendar, locale: sample.locale, autofocus: false, onClose: {}), "\(code)-09-repeat", sample, style: .dark)
             try shoot(FeaturesScreen(onBack: {}), "\(code)-10-features", sample)
+            // The site shows these when the visitor's phone is in dark mode.
+            try shoot(VoiceScreen(store: store, now: sample.now, calendar: sample.calendar, locale: sample.locale, recognizer: recognizer, live: false, onFinish: { _ in }), "\(code)-site-dark-voice", sample, style: .dark)
+            try shoot(CalendarScreen(store: store, now: sample.now, calendar: sample.calendar, locale: sample.locale, onClose: {}), "\(code)-site-dark-calendar", sample, style: .dark)
+            try shoot(EditorScreen(draft: sample.server, isNew: false, store: store, now: sample.now, calendar: sample.calendar, locale: sample.locale, onClose: {}), "\(code)-site-dark-editor", sample, style: .dark)
+            try shoot(HomeScreen(content: sample.home(at: sample.later, missed: true)), "\(code)-site-dark-missed", sample, style: .dark)
+            try shoot(FeaturesScreen(onBack: {}), "\(code)-site-dark-features", sample, style: .dark)
         }
     }
 
@@ -38,39 +44,46 @@ final class StoreSnapshots: XCTestCase {
             AppLanguage.choose(previous)
             WatchLanguage.use(nil)
         }
-        AppLanguage.choose(.english)
-        WatchLanguage.use("en")
-        let calendar = Calendar.current
-        let today = calendar.startOfDay(for: Date())
-        func at(_ hour: Int, _ minute: Int) -> Date {
-            calendar.date(bySettingHour: hour, minute: minute, second: 0, of: today) ?? today
-        }
-        let now = at(13, 50)
-        let items = [
-            WatchItem(reminderID: UUID(), title: "Take vitamins", occurrence: at(9, 0), done: true, urgent: false),
-            WatchItem(reminderID: UUID(), title: "Call the supplier", occurrence: at(14, 30), done: false, urgent: true),
-            WatchItem(reminderID: UUID(), title: "Buy bread and milk", occurrence: at(19, 0), done: false, urgent: false),
-            WatchItem(reminderID: UUID(), title: "Water the plants", occurrence: at(21, 30), done: false, urgent: false),
+        let titles = [
+            "en": ["Take vitamins", "Call the supplier", "Buy bread and milk", "Water the plants"],
+            "ru": ["Выпить витамины", "Позвонить поставщику", "Купить хлеб и молоко", "Полить цветы"],
         ]
-        let screen = WatchHome(model: WatchModel(payload: WatchPayload(items: items, generated: now)), moment: now)
-            .environment(\.locale, Locale(identifier: "en"))
-            .environment(\.colorScheme, .dark)
-        let traits = UITraitCollection { traits in
-            traits.displayScale = 2
-            traits.userInterfaceStyle = .dark
+        for (code, language) in [("en", AppLanguage.english), ("ru", .russian)] {
+            AppLanguage.choose(language)
+            WatchLanguage.use(code)
+            let names = titles[code] ?? []
+            let calendar = Calendar.current
+            let today = calendar.startOfDay(for: Date())
+            func at(_ hour: Int, _ minute: Int) -> Date {
+                calendar.date(bySettingHour: hour, minute: minute, second: 0, of: today) ?? today
+            }
+            let now = at(13, 50)
+            let items = [
+                WatchItem(reminderID: UUID(), title: names[0], occurrence: at(9, 0), done: true, urgent: false),
+                WatchItem(reminderID: UUID(), title: names[1], occurrence: at(14, 30), done: false, urgent: true),
+                WatchItem(reminderID: UUID(), title: names[2], occurrence: at(19, 0), done: false, urgent: false),
+                WatchItem(reminderID: UUID(), title: names[3], occurrence: at(21, 30), done: false, urgent: false),
+            ]
+            let screen = WatchHome(model: WatchModel(payload: WatchPayload(items: items, generated: now)), moment: now)
+                .environment(\.locale, Locale(identifier: code))
+                .environment(\.colorScheme, .dark)
+            let traits = UITraitCollection { traits in
+                traits.displayScale = 2
+                traits.userInterfaceStyle = .dark
+            }
+            let config = ViewImageConfig(safeArea: .zero, size: CGSize(width: 198, height: 242), traits: traits)
+            let strategy = Snapshotting<AnyView, UIImage>.image(layout: .device(config: config), traits: traits)
+            let finished = expectation(description: "watch \(code)")
+            var output: UIImage?
+            strategy.snapshot(AnyView(screen)).run { image in
+                output = image
+                finished.fulfill()
+            }
+            wait(for: [finished], timeout: 60)
+            let folder = URL(fileURLWithPath: directory).appendingPathComponent("store", isDirectory: true)
+            try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+            try XCTUnwrap(output?.pngData()).write(to: folder.appendingPathComponent("watch-\(code).png"))
         }
-        let config = ViewImageConfig(safeArea: .zero, size: CGSize(width: 198, height: 242), traits: traits)
-        let strategy = Snapshotting<AnyView, UIImage>.image(layout: .device(config: config), traits: traits)
-        let finished = expectation(description: "watch")
-        var output: UIImage?
-        strategy.snapshot(AnyView(screen)).run { image in
-            output = image
-            finished.fulfill()
-        }
-        wait(for: [finished], timeout: 60)
-        let folder = URL(fileURLWithPath: directory).appendingPathComponent("store", isDirectory: true)
-        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
-        try XCTUnwrap(output?.pngData()).write(to: folder.appendingPathComponent("watch-01-home.png"))
     }
 
     private func shoot<Screen: View>(_ screen: Screen, _ name: String, _ sample: StoreSample, style: UIUserInterfaceStyle = .light) throws {
