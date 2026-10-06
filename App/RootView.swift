@@ -62,6 +62,7 @@ struct RootView: View {
     @State private var showingCalendar = false
     @State private var showingLanguage = false
     @State private var showingIntro = false
+    @State private var dismissedHabits = Set(UserDefaults.standard.stringArray(forKey: "dismissedHabits") ?? [])
     @State private var announcement: RemoteConfig.Announcement?
     @Environment(\.openURL) private var openURL
     @Namespace private var zoom
@@ -259,7 +260,8 @@ struct RootView: View {
                     places: store.places,
                     now: timeline.date,
                     calendar: .current,
-                    locale: AppLanguage.current.locale
+                    locale: AppLanguage.current.locale,
+                    missed: Notifier.missedEnabled
                 ),
                 onToggle: toggle,
                 onOpen: open,
@@ -274,9 +276,48 @@ struct RootView: View {
                 onDelete: { id in
                     withAnimation(Motion.standard) { store.delete(id) }
                 },
-                onMove: move
+                onMove: move,
+                habit: remote.isOn(.suggestions) ? Suggestions.habit(in: store.reminders, now: timeline.date, calendar: .current, dismissed: dismissedHabits) : nil,
+                onHabit: answerHabit,
+                onPostpone: postpone
             )
         }
+    }
+
+    private func postpone(_ row: HomeContent.Row, _ choice: HomeScreen.Postpone) {
+        let calendar = Calendar.current
+        let now = Date()
+        let date: Date
+        switch choice {
+        case .hour:
+            let later = now.addingTimeInterval(3600)
+            date = calendar.dateInterval(of: .minute, for: later)?.start ?? later
+        case .morning:
+            let tomorrow = calendar.date(byAdding: .day, value: 1, to: now) ?? now
+            let morning = store.settings.morning
+            date = calendar.date(bySettingHour: morning.hour, minute: morning.minute, second: 0, of: tomorrow) ?? tomorrow
+        case .custom:
+            open(row.reminderID)
+            return
+        }
+        guard let reminder = store.reminder(row.reminderID) else { return }
+        if reminder.schedule?.rule == nil {
+            _ = move(row.reminderID, to: date)
+        } else {
+            withAnimation(Motion.standard) { store.snooze(row.reminderID, until: date) }
+        }
+        Feedback.play(.save)
+    }
+
+    private func answerHabit(_ suggestion: HabitSuggestion, accepted: Bool) {
+        if accepted, var reminder = store.reminder(suggestion.reminderID), var schedule = reminder.schedule {
+            schedule.rule = .weekly([suggestion.weekday])
+            reminder.schedule = schedule
+            store.save(reminder)
+            Feedback.play(.save)
+        }
+        dismissedHabits.insert(suggestion.key)
+        UserDefaults.standard.set(Array(dismissedHabits), forKey: "dismissedHabits")
     }
 
     private func move(_ id: UUID, to date: Date) -> (() -> Void)? {

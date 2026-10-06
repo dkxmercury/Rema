@@ -29,6 +29,7 @@ struct PhraseScreen: View {
     @State private var keyboardShown = false
     @State private var recentPhrases = RecentPhrases.all
     @State private var showingExamples = false
+    @State private var earlyDismissed = false
 
     // Body reads the parse result a dozen times per keystroke; parsing once per text keeps typing smooth.
     final class Memo {
@@ -198,6 +199,16 @@ struct PhraseScreen: View {
                         .contentShape(Rectangle())
                         .onTapGesture { pickingDate = true }
                         .padding(.top, 12)
+                    if let suggestion = earlySuggestion {
+                        EarlySuggestionCard(suggestion: suggestion) {
+                            overrides.preAlerts = (reminder.preAlerts + [suggestion.minutes]).sorted()
+                            Feedback.play(.select)
+                        } onDismiss: {
+                            earlyDismissed = true
+                        }
+                        .padding(.top, 12)
+                        .transition(.opacity.combined(with: .move(edge: .top)))
+                    }
                     addOns
                         .padding(.top, 12)
                     suggestions
@@ -234,6 +245,12 @@ struct PhraseScreen: View {
         .animation(Motion.standard, value: when)
         .animation(Motion.standard, value: reminder.placeIDs)
         .animation(Motion.standard, value: overrides)
+        .animation(Motion.standard, value: earlySuggestion)
+    }
+
+    private var earlySuggestion: EarlySuggestion? {
+        guard !earlyDismissed, Remote.shared.isOn(.suggestions), let when else { return nil }
+        return Suggestions.early(title: parsed.title, when: when, preAlerts: reminder.preAlerts, now: now)
     }
 
     private var input: some View {

@@ -48,4 +48,14 @@ struct AgendaTests {
         let titles = tomorrow.compactMap { item in reminders.first { $0.id == item.reminderID }?.title }
         #expect(titles == ["Выпить витамины", "Оплатить сервер"])
     }
+
+    @Test func missedAreThePastOnesWithoutATick() {
+        var reminders = sample
+        let missed = Agenda.missed(moment(5, 15, 0), reminders: reminders, calendar: calendar)
+        let titles = missed.compactMap { item in reminders.first { $0.id == item.reminderID }?.title }
+        #expect(titles == ["Позвонить поставщику"])
+        reminders[1].snoozedUntil = moment(5, 16, 0)
+        #expect(Agenda.missed(moment(5, 15, 0), reminders: reminders, calendar: calendar).isEmpty)
+        #expect(Agenda.missed(moment(5, 14, 30), reminders: sample, calendar: calendar).isEmpty)
+    }
 }

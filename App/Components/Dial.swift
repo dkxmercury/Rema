@@ -6,6 +6,7 @@ struct DialMarker: Identifiable {
         case done
         case upcoming
         case next
+        case missed
     }
 
     let id: Int
@@ -38,6 +39,7 @@ struct Dial: View {
     var windowFontSize: CGFloat = 17
     var windowTitleOnly = false
     var lift: DialLift?
+    var badge: String?
 
     private let geometry = DialGeometry()
 
@@ -86,6 +88,19 @@ struct Dial: View {
             window
                 .frame(width: 100 * unit, height: 38 * unit)
                 .offset(x: 68 * unit, y: 72 * unit)
+
+            if let badge {
+                Text(verbatim: badge)
+                    .font(.app(.golos, 11, weight: 600))
+                    .foregroundStyle(.white)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                    .padding(.horizontal, 4)
+                    .frame(width: 100 * unit, height: 20 * unit)
+                    .background(RoundedRectangle(cornerRadius: 6, style: .circular).fill(Palette.urgent))
+                    .offset(x: 68 * unit, y: 116 * unit)
+                    .transition(.opacity.combined(with: .scale(scale: 0.8)))
+            }
         }
         .frame(width: size, height: size)
         .accessibilityHidden(true)
@@ -188,6 +203,13 @@ private struct DialMarkersLayer: View, Animatable {
                 case .next:
                     dot(7.5, Palette.dialNextRing)
                     dot(5.5, Palette.accent)
+                case .missed:
+                    dot(10, Palette.dialFace)
+                    dot(8, Palette.urgent)
+                    let mark = Text(verbatim: "!")
+                        .font(.app(.golos, 12 * scale, weight: 700))
+                        .foregroundColor(.white.opacity(share))
+                    context.draw(mark, at: CGPoint(x: point.x, y: point.y + 0.5 * scale), anchor: .center)
                 }
             }
         }

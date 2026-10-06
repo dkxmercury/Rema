@@ -11,6 +11,7 @@ struct HomeContent {
         let subtitle: String?
         let done: Bool
         let highlighted: Bool
+        var missed = false
     }
 
     struct Tile: Identifiable {
@@ -44,14 +45,20 @@ struct HomeContent {
     let next: Next?
     let rows: [Row]
     let tiles: [Tile]
+    var missedCount = 0
 }
 
 extension HomeContent {
-    static func make(reminders: [Reminder], places: [Place], now: Date, calendar: Calendar, locale: Locale) -> HomeContent {
+    static func make(reminders: [Reminder], places: [Place], now: Date, calendar: Calendar, locale: Locale, missed showsMissed: Bool = false) -> HomeContent {
         let describer = Describer(calendar: calendar, locale: locale)
         let active = reminders.filter { $0.deletedAt == nil }
         let byID = Dictionary(active.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
         let today = Agenda.day(now, reminders: active, calendar: calendar)
+        let missed = showsMissed ? Agenda.missed(now, reminders: active, calendar: calendar) : []
+
+        func isMissed(_ item: AgendaItem) -> Bool {
+            missed.contains { $0.reminderID == item.reminderID && $0.occurrence == item.occurrence }
+        }
         let upcoming = Agenda.upcoming(after: now, reminders: active, calendar: calendar)
         let nextItem = upcoming.first
         let clock = calendar.dateComponents([.hour, .minute], from: now)
@@ -62,13 +69,13 @@ extension HomeContent {
 
         let markers = today.enumerated().map { index, item -> DialMarker in
             let parts = calendar.dateComponents([.hour, .minute], from: item.occurrence)
-            let kind: DialMarker.Kind = item.done ? .done : (isNext(item) ? .next : .upcoming)
+            let kind: DialMarker.Kind = item.done ? .done : (isMissed(item) ? .missed : (isNext(item) ? .next : .upcoming))
             let movable = !item.done && byID[item.reminderID].map { $0.schedule?.rule == nil } == true
             return DialMarker(id: index, hour: parts.hour ?? 0, minute: parts.minute ?? 0, kind: kind, reminderID: item.reminderID, occurrence: item.occurrence, movable: movable)
         }
 
         let rows = today.compactMap { item -> Row? in
-            byID[item.reminderID].map { row(item, reminder: $0, places: places, describer: describer, highlighted: isNext(item)) }
+            byID[item.reminderID].map { row(item, reminder: $0, places: places, describer: describer, highlighted: isNext(item), missed: isMissed(item)) }
         }
 
         var next: Next?
@@ -120,25 +127,34 @@ extension HomeContent {
             markers: markers,
             next: next,
             rows: rows,
-            tiles: tiles
+            tiles: tiles,
+            missedCount: missed.count
         )
     }
 }
 
 extension HomeContent {
-    static func rows(on day: Date, reminders: [Reminder], places: [Place], now: Date, calendar: Calendar, locale: Locale) -> [Row] {
+    static func rows(on day: Date, reminders: [Reminder], places: [Place], now: Date, calendar: Calendar, locale: Locale, missed showsMissed: Bool = false) -> [Row] {
         let describer = Describer(calendar: calendar, locale: locale)
         let active = reminders.filter { $0.deletedAt == nil }
         let byID = Dictionary(active.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
         let next = Agenda.upcoming(after: now, reminders: active, calendar: calendar).first
+        let missed = showsMissed && calendar.isDate(day, inSameDayAs: now) ? Agenda.missed(now, reminders: active, calendar: calendar) : []
         return Agenda.day(day, reminders: active, calendar: calendar).compactMap { item in
             byID[item.reminderID].map {
-                row(item, reminder: $0, places: places, describer: describer, highlighted: item.reminderID == next?.reminderID && item.occurrence == next?.occurrence)
+                row(
+                    item,
+                    reminder: $0,
+                    places: places,
+                    describer: describer,
+                    highlighted: item.reminderID == next?.reminderID && item.occurrence == next?.occurrence,
+                    missed: missed.contains { $0.reminderID == item.reminderID && $0.occurrence == item.occurrence }
+                )
             }
         }
     }
 
-    private static func row(_ item: AgendaItem, reminder: Reminder, places: [Place], describer: Describer, highlighted: Bool) -> Row {
+    private static func row(_ item: AgendaItem, reminder: Reminder, places: [Place], describer: Describer, highlighted: Bool, missed: Bool = false) -> Row {
         Row(
             id: "\(item.reminderID.uuidString)-\(Int(item.occurrence.timeIntervalSince1970))",
             reminderID: item.reminderID,
@@ -147,7 +163,8 @@ extension HomeContent {
             title: reminder.title,
             subtitle: describer.subtitle(for: reminder, places: places),
             done: item.done,
-            highlighted: highlighted
+            highlighted: highlighted,
+            missed: missed
         )
     }
 }

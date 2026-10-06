@@ -32,6 +32,15 @@ public enum Agenda {
         return Array(items.sorted { $0.occurrence < $1.occurrence }.prefix(limit))
     }
 
+    // Came and went without a tick; a snooze into the future means the person already answered it.
+    public static func missed(_ now: Date, reminders: [Reminder], calendar: Calendar, grace: TimeInterval = 60) -> [AgendaItem] {
+        let byID = Dictionary(reminders.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+        return day(now, reminders: reminders, calendar: calendar).filter { item in
+            guard !item.done, item.occurrence.addingTimeInterval(grace) < now, let reminder = byID[item.reminderID] else { return false }
+            return !(reminder.snoozedUntil.map { $0 > now } ?? false)
+        }
+    }
+
     public static func isDone(_ reminder: Reminder, _ occurrence: Date) -> Bool {
         guard let done = reminder.completedThrough else { return false }
         return occurrence <= done

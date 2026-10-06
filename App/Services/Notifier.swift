@@ -5,6 +5,12 @@ import UserNotifications
 
 final class Notifier: NSObject, UNUserNotificationCenterDelegate {
     static let shared = Notifier()
+    static let missedKey = "missedReminders"
+
+    @MainActor
+    static var missedEnabled: Bool {
+        Remote.shared.isOn(.missed) && (UserDefaults.standard.object(forKey: missedKey) as? Bool ?? true)
+    }
 
     private var pending: Task<Void, Never>?
     private var store: Store { Store.shared }
@@ -22,11 +28,42 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         let hour = UNNotificationAction(identifier: "snooze60", title: String(localized: "In an hour"))
         let morning = UNNotificationAction(identifier: "morning", title: String(localized: "Tomorrow morning"))
         let skip = UNNotificationAction(identifier: "skip", title: String(localized: "Skip today"))
+        let call = UNNotificationAction(identifier: "call", title: String(localized: "Call"), options: [.foreground], icon: UNNotificationActionIcon(systemImageName: "phone.fill"))
+        let open = UNNotificationAction(identifier: "open", title: String(localized: "Open"), options: [.foreground], icon: UNNotificationActionIcon(systemImageName: "safari"))
         return [
             UNNotificationCategory(identifier: "reminder", actions: [done, tenMinutes, hour, morning], intentIdentifiers: []),
             UNNotificationCategory(identifier: "nag", actions: [done, fifteenMinutes, skip], intentIdentifiers: []),
             UNNotificationCategory(identifier: "place", actions: [done], intentIdentifiers: []),
+            UNNotificationCategory(identifier: "reminder.call", actions: [call, done, tenMinutes, hour], intentIdentifiers: []),
+            UNNotificationCategory(identifier: "reminder.open", actions: [open, done, tenMinutes, hour], intentIdentifiers: []),
+            UNNotificationCategory(identifier: "nag.call", actions: [call, done, fifteenMinutes, skip], intentIdentifiers: []),
+            UNNotificationCategory(identifier: "nag.open", actions: [open, done, fifteenMinutes, skip], intentIdentifiers: []),
+            UNNotificationCategory(identifier: "place.call", actions: [call, done], intentIdentifiers: []),
+            UNNotificationCategory(identifier: "place.open", actions: [open, done], intentIdentifiers: []),
         ]
+    }
+
+    private static let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.phoneNumber.rawValue | NSTextCheckingResult.CheckingType.link.rawValue)
+
+    static func contact(in text: String) -> (action: String, value: String)? {
+        guard let detector else { return nil }
+        for match in detector.matches(in: text, range: NSRange(text.startIndex..., in: text)) {
+            if match.resultType == .phoneNumber, let number = match.phoneNumber {
+                let digits = number.filter { $0.isNumber || $0 == "+" }
+                if digits.filter(\.isNumber).count >= 5 {
+                    return ("call", digits)
+                }
+            } else if match.resultType == .link, let url = match.url, ["http", "https"].contains(url.scheme?.lowercased() ?? "") {
+                return ("open", url.absoluteString)
+            }
+        }
+        return nil
+    }
+
+    private func addContact(of title: String, to content: UNMutableNotificationContent) {
+        guard let contact = Self.contact(in: title) else { return }
+        content.categoryIdentifier += ".\(contact.action)"
+        content.userInfo[contact.action] = contact.value
     }
 
     func requestPermissionIfNeeded() {
@@ -54,7 +91,8 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         let status = await center.notificationSettings().authorizationStatus
         guard status == .authorized || status == .provisional || status == .ephemeral else { return }
         let now = Date()
-        let plan = Scheduler.plan(reminders: store.reminders, settings: store.settings, now: now, calendar: .current)
+        let followUp = Self.missedEnabled ? Int(Remote.shared.number(.missedFollowUp)) : nil
+        let plan = Scheduler.plan(reminders: store.reminders, settings: store.settings, now: now, calendar: .current, followUp: followUp)
         let places = placeRequests()
         center.removeAllPendingNotificationRequests()
         for request in places {
@@ -69,10 +107,17 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
             content.interruptionLevel = item.urgent ? .timeSensitive : .active
             content.threadIdentifier = item.reminderID.uuidString
             content.userInfo = ["reminder": item.reminderID.uuidString, "occurrence": item.occurrence.timeIntervalSince1970]
+            addContact(of: item.title, to: content)
+            if item.kind == .missed {
+                content.title = String(localized: "Not done: \(item.title)")
+                content.badge = NSNumber(value: Agenda.missed(item.fireDate, reminders: store.activeReminders, calendar: .current).count)
+            }
             let parts = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: item.fireDate)
             let trigger = UNCalendarNotificationTrigger(dateMatching: parts, repeats: false)
             try? await center.add(UNNotificationRequest(identifier: item.identifier, content: content, trigger: trigger))
         }
+        let missed = Self.missedEnabled ? Agenda.missed(now, reminders: store.activeReminders, calendar: .current).count : 0
+        try? await center.setBadgeCount(missed)
     }
 
     private func placeRequests() -> [UNNotificationRequest] {
@@ -93,6 +138,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
                 content.interruptionLevel = reminder.urgent ? .timeSensitive : .active
                 content.threadIdentifier = reminder.id.uuidString
                 content.userInfo = ["reminder": reminder.id.uuidString]
+                addContact(of: reminder.title, to: content)
                 let trigger = UNLocationNotificationTrigger(region: region, repeats: true)
                 requests.append(UNNotificationRequest(identifier: "place.\(region.identifier)", content: content, trigger: trigger))
                 if requests.count >= Place.maximumCount {
@@ -117,6 +163,8 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
             return String(localized: "\(when), reminding in advance")
         case .snoozed:
             return String(localized: "Snoozed reminder")
+        case .missed:
+            return String(localized: "It was at \(describer.time(item.occurrence)). Open to mark it or move it.")
         case .nag(let index):
             let interval = store.reminder(item.reminderID)?.nagInterval ?? store.settings.nagInterval
             return "\(ordinal(index + 1)). \(String(localized: "I'll repeat in \(interval) minutes until you tap Done."))"
@@ -148,6 +196,13 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         let info = response.notification.request.content.userInfo
         let action = response.actionIdentifier
         Task { @MainActor in
+            if action == "call" || action == "open" {
+                if let value = info[action] as? String, let url = URL(string: action == "call" ? "tel:\(value)" : value) {
+                    await UIApplication.shared.open(url)
+                }
+                completionHandler()
+                return
+            }
             if let raw = info["reminder"] as? String, let id = UUID(uuidString: raw) {
                 let occurrence = Date(timeIntervalSince1970: info["occurrence"] as? Double ?? Date().timeIntervalSince1970)
                 apply(action, to: id, occurrence: occurrence)

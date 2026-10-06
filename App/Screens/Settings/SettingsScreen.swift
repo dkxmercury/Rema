@@ -16,6 +16,7 @@ struct SettingsScreen: View {
 
     @AppStorage(Feedback.hapticsKey) private var haptics = true
     @AppStorage(Feedback.soundsKey) private var sounds = true
+    @AppStorage(Notifier.missedKey) private var missed = true
     @State private var editingTime: TimeTarget?
     @State private var permissions = Permissions()
     @Environment(\.scenePhase) private var scenePhase
@@ -64,6 +65,11 @@ struct SettingsScreen: View {
                             }
                             Hairline()
                             nagRow
+                            if Remote.shared.isOn(.missed) {
+                                Hairline()
+                                ToggleRow(icon: Icons.bell, iconColor: Palette.text, title: "Missed reminders", subtitle: String(localized: "a badge on the icon and one more reminder in \(Int(Remote.shared.number(.missedFollowUp))) minutes"), isOn: $missed, minHeight: 60)
+                                    .onChange(of: missed) { _, _ in Notifier.shared.scheduleSoon() }
+                            }
                         }
                         Text("For the words “morning” and “evening” and reminders without a time")
                             .font(.app(.golos, 13))

@@ -6,6 +6,7 @@ public struct PlannedNotification: Equatable, Sendable {
         case early(minutes: Int)
         case nag(index: Int)
         case snoozed
+        case missed
     }
 
     public let reminderID: UUID
@@ -29,18 +30,19 @@ public enum Scheduler {
         settings: Settings,
         now: Date,
         calendar: Calendar,
-        capacity: Int = Scheduler.capacity
+        capacity: Int = Scheduler.capacity,
+        followUp: Int? = nil
     ) -> [PlannedNotification] {
         var planned: [PlannedNotification] = []
         for reminder in reminders where reminder.deletedAt == nil {
-            planned.append(contentsOf: plan(reminder, settings: settings, now: now, calendar: calendar))
+            planned.append(contentsOf: plan(reminder, settings: settings, now: now, calendar: calendar, followUp: followUp))
         }
         return Array(planned.sorted { lhs, rhs in
             lhs.fireDate == rhs.fireDate ? lhs.identifier < rhs.identifier : lhs.fireDate < rhs.fireDate
         }.prefix(capacity))
     }
 
-    static func plan(_ reminder: Reminder, settings: Settings, now: Date, calendar: Calendar) -> [PlannedNotification] {
+    static func plan(_ reminder: Reminder, settings: Settings, now: Date, calendar: Calendar, followUp: Int? = nil) -> [PlannedNotification] {
         var result: [PlannedNotification] = []
         let interval = max(1, reminder.nagInterval ?? settings.nagInterval)
 
@@ -69,7 +71,9 @@ public enum Scheduler {
         }
 
         guard let schedule = reminder.schedule else { return result }
-        let tail = reminder.nag ? Double(nagRepeats * interval) * 60 : 0
+        // A follow-up belongs to an occurrence that may already be past, so the search starts that much earlier.
+        let missedTail = reminder.nag ? 0 : Double(followUp ?? 0) * 60
+        let tail = reminder.nag ? Double(nagRepeats * interval) * 60 : missedTail
         var from = now.addingTimeInterval(-tail)
         if let done = reminder.completedThrough, done > from {
             from = done
@@ -87,6 +91,8 @@ public enum Scheduler {
                 for index in 1...nagRepeats {
                     add(.nag(index: index), at: occurrence.addingTimeInterval(Double(index * interval) * 60), occurrence: occurrence)
                 }
+            } else if let followUp, followUp > 0 {
+                add(.missed, at: occurrence.addingTimeInterval(Double(followUp) * 60), occurrence: occurrence)
             }
         }
         return result
@@ -99,6 +105,7 @@ public enum Scheduler {
         case .early(let minutes): tag = "early\(minutes)"
         case .nag(let index): tag = "nag\(index)"
         case .snoozed: tag = "snoozed"
+        case .missed: tag = "missed"
         }
         return "\(id.uuidString).\(Int(occurrence.timeIntervalSince1970)).\(tag)"
     }

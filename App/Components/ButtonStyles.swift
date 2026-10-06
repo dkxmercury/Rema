@@ -85,3 +85,35 @@ struct RowPressStyle: ButtonStyle {
             .animation(Motion.press, value: configuration.isPressed)
     }
 }
+
+struct SmallButtonStyle: ButtonStyle {
+    let prominent: Bool
+    var height: CGFloat = 36
+
+    func makeBody(configuration: Configuration) -> some View {
+        let shape = RoundedRectangle(cornerRadius: 10, style: .circular)
+        configuration.label
+            .font(.app(.golos, 14, weight: 600))
+            .foregroundStyle(prominent ? Palette.onAccent : Palette.text)
+            .lineLimit(1)
+            .padding(.horizontal, 14)
+            .frame(height: height)
+            .background {
+                if prominent {
+                    shape
+                        .fill(Palette.accent)
+                        .insetShadow(shape, .black.opacity(0.14), y: -2)
+                } else {
+                    shape
+                        .fill(
+                            LinearGradient(colors: [Palette.raisedTop, Palette.raisedBottom], startPoint: .top, endPoint: .bottom)
+                                .shadow(.drop(color: Palette.raisedShadowNear, radius: 1, y: 1))
+                                .shadow(.drop(color: Palette.raisedShadowFar, radius: 5, y: 4))
+                        )
+                        .insetShadow(shape, Palette.raisedHighlight, y: 1)
+                }
+            }
+            .scaleEffect(configuration.isPressed ? 0.96 : 1)
+            .animation(Motion.press, value: configuration.isPressed)
+    }
+}

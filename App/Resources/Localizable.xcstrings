@@ -837,6 +837,208 @@
         }
       }
     },
+    "%lld missed": {
+      "localizations": {
+        "ar": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld فائتة"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld فائتًا"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "تذكير فائت"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld فائت"
+                }
+              },
+              "two": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "تذكيران فائتان"
+                }
+              },
+              "zero": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld فائت"
+                }
+              }
+            }
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld verpasst"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld verpasst"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld missed"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld missed"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld manqués"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld manqué"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld manqués"
+                }
+              }
+            }
+          }
+        },
+        "ru": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld пропущено"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld пропущено"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld пропущено"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld пропущено"
+                }
+              }
+            }
+          }
+        },
+        "uk": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld пропущено"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld пропущено"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld пропущено"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld пропущено"
+                }
+              }
+            }
+          }
+        },
+        "uz-Cyrl": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld та ўтказилди"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld та ўтказилди"
+                }
+              }
+            }
+          }
+        },
+        "uz-Latn": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld ta o‘tkazildi"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld ta o‘tkazildi"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld more today": {
       "localizations": {
         "ar": {
@@ -2327,6 +2529,52 @@
         }
       }
     },
+    "Call": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اتصال"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anrufen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Appeler"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Позвонить"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Подзвонити"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Қўнғироқ қилиш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qo‘ng‘iroq qilish"
+          }
+        }
+      }
+    },
     "Cancel": {
       "localizations": {
         "ar": {
@@ -3749,6 +3997,98 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ovoz bilan aytish"
+          }
+        }
+      }
+    },
+    "Did it": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تمّ"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erledigt"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fait"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сделано"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Зроблено"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бажарилди"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bajarildi"
+          }
+        }
+      }
+    },
+    "Dismiss": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إخفاء"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ausblenden"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masquer"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Скрыть"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сховати"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Яшириш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yashirish"
           }
         }
       }
@@ -5473,6 +5813,52 @@
         }
       }
     },
+    "Handy before a doctor's visit": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هكذا أنسب قبل زيارة الطبيب"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vor einem Arzttermin ist das praktischer"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "C’est plus pratique avant un rendez-vous médical"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Для визита к врачу так удобнее"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перед візитом до лікаря так зручніше"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Шифокорга боришдан олдин шундай қулай"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shifokorga borishdan oldin shunday qulay"
+          }
+        }
+      }
+    },
     "Hide password": {
       "localizations": {
         "ar": {
@@ -6273,6 +6659,52 @@
         }
       }
     },
+    "It was at %@. Open to mark it or move it.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كان في %@. افتح لتعليمه أو تأجيله."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "War um %@. Öffne die App, um es abzuhaken oder zu verschieben."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "C’était à %@. Ouvrez pour le cocher ou le reporter."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Было в %@. Откройте, чтобы отметить или перенести."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Було о %@. Відкрийте, щоб позначити або перенести."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Соат %@ да эди. Белгилаш ёки кўчириш учун очинг."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Soat %@ da edi. Belgilash yoki ko‘chirish uchun oching."
+          }
+        }
+      }
+    },
     "I’ll remind you on time": {
       "localizations": {
         "ar": {
@@ -6923,6 +7355,52 @@
         }
       }
     },
+    "Missed reminders": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التذكيرات الفائتة"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verpasste Erinnerungen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rappels manqués"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пропущенные"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пропущені"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ўтказиб юборилганлар"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O‘tkazib yuborilganlar"
+          }
+        }
+      }
+    },
     "Month": {
       "localizations": {
         "ar": {
@@ -7011,6 +7489,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ertalab"
+          }
+        }
+      }
+    },
+    "Move": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تأجيل"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verschieben"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reporter"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перенести"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перенести"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Кўчириш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ko‘chirish"
           }
         }
       }
@@ -7839,6 +8363,98 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tovushsiz"
+          }
+        }
+      }
+    },
+    "No thanks": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا، شكرًا"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nein danke"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non merci"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не надо"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не треба"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Керак эмас"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kerak emas"
+          }
+        }
+      }
+    },
+    "Not done: %@": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لم يُنجز: %@"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicht erledigt: %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pas encore fait : %@"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не отмечено: %@"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не позначено: %@"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Белгиланмаган: %@"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Belgilanmagan: %@"
           }
         }
       }
@@ -9683,6 +10299,52 @@
         }
       }
     },
+    "Remind 2 hours before too?": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هل أذكّرك قبلها بساعتين أيضًا؟"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auch 2 Stunden vorher erinnern?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le rappeler aussi 2 heures avant ?"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напомнить ещё и за 2 часа?"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нагадати ще й за 2 години?"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2 соат олдин ҳам эслатайми?"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2 soat oldin ham eslataymi?"
+          }
+        }
+      }
+    },
     "Remind 3 times": {
       "localizations": {
         "ar": {
@@ -9909,6 +10571,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Yetti marta eslataman"
+          }
+        }
+      }
+    },
+    "Remind a day before too?": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هل أذكّرك قبلها بيوم أيضًا؟"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auch einen Tag vorher erinnern?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le rappeler aussi la veille ?"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напомнить ещё и за день?"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нагадати ще й за день?"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бир кун олдин ҳам эслатайми?"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bir kun oldin ham eslataymi?"
           }
         }
       }
@@ -10967,6 +11675,374 @@
           "stringUnit": {
             "state": "translated",
             "value": "Takroriy eslatmalar oralig‘i"
+          }
+        }
+      }
+    },
+    "Repeat it": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كرّر"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wiederholen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Répéter"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повторять"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повторювати"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Такрорлаш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Takrorlash"
+          }
+        }
+      }
+    },
+    "Repeat on Fridays?": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هل أكرر كل يوم جمعة؟"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeden Freitag wiederholen?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Répéter tous les vendredis ?"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повторять по пятницам?"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повторювати щоп’ятниці?"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ҳар жума такрорлансинми?"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Har juma takrorlansinmi?"
+          }
+        }
+      }
+    },
+    "Repeat on Mondays?": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هل أكرر كل يوم اثنين؟"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeden Montag wiederholen?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Répéter tous les lundis ?"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повторять по понедельникам?"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повторювати щопонеділка?"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ҳар душанба такрорлансинми?"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Har dushanba takrorlansinmi?"
+          }
+        }
+      }
+    },
+    "Repeat on Saturdays?": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هل أكرر كل يوم سبت؟"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeden Samstag wiederholen?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Répéter tous les samedis ?"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повторять по субботам?"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повторювати щосуботи?"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ҳар шанба такрорлансинми?"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Har shanba takrorlansinmi?"
+          }
+        }
+      }
+    },
+    "Repeat on Sundays?": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هل أكرر كل يوم أحد؟"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeden Sonntag wiederholen?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Répéter tous les dimanches ?"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повторять по воскресеньям?"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повторювати щонеділі?"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ҳар якшанба такрорлансинми?"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Har yakshanba takrorlansinmi?"
+          }
+        }
+      }
+    },
+    "Repeat on Thursdays?": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هل أكرر كل يوم خميس؟"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeden Donnerstag wiederholen?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Répéter tous les jeudis ?"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повторять по четвергам?"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повторювати щочетверга?"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ҳар пайшанба такрорлансинми?"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Har payshanba takrorlansinmi?"
+          }
+        }
+      }
+    },
+    "Repeat on Tuesdays?": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هل أكرر كل يوم ثلاثاء؟"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeden Dienstag wiederholen?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Répéter tous les mardis ?"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повторять по вторникам?"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повторювати щовівторка?"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ҳар сешанба такрорлансинми?"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Har seshanba takrorlansinmi?"
+          }
+        }
+      }
+    },
+    "Repeat on Wednesdays?": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هل أكرر كل يوم أربعاء؟"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeden Mittwoch wiederholen?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Répéter tous les mercredis ?"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повторять по средам?"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повторювати щосереди?"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ҳар чоршанба такрорлансинми?"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Har chorshanba takrorlansinmi?"
           }
         }
       }
@@ -12363,6 +13439,98 @@
         }
       }
     },
+    "So you can pack without a rush": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لتستعد للسفر دون عجلة"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Damit du in Ruhe packen kannst"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pour préparer le voyage sans vous presser"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Чтобы спокойно собраться в дорогу"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Щоб спокійно зібратися в дорогу"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Йўлга шошилмасдан тайёрланиш учун"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yo‘lga shoshilmasdan tayyorlanish uchun"
+          }
+        }
+      }
+    },
+    "So you have time for a gift": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لتلحق بتجهيز الهدية"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Damit du rechtzeitig ein Geschenk hast"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pour avoir le temps de trouver un cadeau"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Чтобы успеть с подарком"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Щоб встигнути з подарунком"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Совға тайёрлашга улгуриш учун"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sovg‘a tayyorlashga ulgurish uchun"
+          }
+        }
+      }
+    },
     "Soft": {
       "localizations": {
         "ar": {
@@ -13555,6 +14723,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Kechqurun"
+          }
+        }
+      }
+    },
+    "This is the third week in a row you set “%@”.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هذا ثالث أسبوع على التوالي تضيف فيه «%@»."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schon die dritte Woche in Folge legst du „%@“ an."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "C’est la troisième semaine de suite que vous créez « %@ »."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Уже третью неделю подряд вы ставите «%@»."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Уже третій тиждень поспіль ви ставите «%@»."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сиз «%@»ни учинчи ҳафта кетма-кет қўйяпсиз."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siz «%@»ni uchinchi hafta ketma-ket qo‘yyapsiz."
           }
         }
       }
@@ -15215,6 +16429,52 @@
         }
       }
     },
+    "Yes": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نعم"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ja"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oui"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Да"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Так"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ҳа"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ha"
+          }
+        }
+      }
+    },
     "You can write like this": {
       "localizations": {
         "ar": {
@@ -15395,6 +16655,208 @@
           "stringUnit": {
             "state": "translated",
             "value": "Iboralaringiz"
+          }
+        }
+      }
+    },
+    "a badge on the icon and one more reminder in %lld minutes": {
+      "localizations": {
+        "ar": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "رقم على الأيقونة وتذكير آخر بعد %lld دقائق"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "رقم على الأيقونة وتذكير آخر بعد %lld دقيقة"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "رقم على الأيقونة وتذكير آخر بعد دقيقة"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "رقم على الأيقونة وتذكير آخر بعد %lld دقيقة"
+                }
+              },
+              "two": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "رقم على الأيقونة وتذكير آخر بعد دقيقتين"
+                }
+              },
+              "zero": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "رقم على الأيقونة وتذكير آخر بعد %lld دقيقة"
+                }
+              }
+            }
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Zahl am App-Symbol und noch eine Erinnerung nach %lld Minute"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Zahl am App-Symbol und noch eine Erinnerung nach %lld Minuten"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "a badge on the icon and one more reminder in %lld minute"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "a badge on the icon and one more reminder in %lld minutes"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "un badge sur l’icône et un rappel de plus %lld minutes après"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "un badge sur l’icône et un rappel de plus %lld minute après"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "un badge sur l’icône et un rappel de plus %lld minutes après"
+                }
+              }
+            }
+          }
+        },
+        "ru": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "число на значке и ещё одно напоминание через %lld минуты"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "число на значке и ещё одно напоминание через %lld минут"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "число на значке и ещё одно напоминание через %lld минуту"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "число на значке и ещё одно напоминание через %lld минуты"
+                }
+              }
+            }
+          }
+        },
+        "uk": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "число на значку й ще одне нагадування за %lld хвилини"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "число на значку й ще одне нагадування за %lld хвилин"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "число на значку й ще одне нагадування за %lld хвилину"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "число на значку й ще одне нагадування за %lld хвилини"
+                }
+              }
+            }
+          }
+        },
+        "uz-Cyrl": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "белгида рақам ва %lld дақиқадан кейин яна бир эслатма"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "белгида рақам ва %lld дақиқадан кейин яна бир эслатма"
+                }
+              }
+            }
+          }
+        },
+        "uz-Latn": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "belgida raqam va %lld daqiqadan keyin yana bir eslatma"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "belgida raqam va %lld daqiqadan keyin yana bir eslatma"
+                }
+              }
+            }
           }
         }
       }
@@ -17969,6 +19431,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "daq"
+          }
+        }
+      }
+    },
+    "missed": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فائت"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "verpasst"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "manqué"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "пропущено"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "пропущено"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ўтказиб юборилди"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "o‘tkazib yuborildi"
           }
         }
       }

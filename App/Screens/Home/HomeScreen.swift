@@ -2,6 +2,12 @@ import RemaCore
 import SwiftUI
 
 struct HomeScreen: View {
+    enum Postpone {
+        case hour
+        case morning
+        case custom
+    }
+
     let content: HomeContent
     var onToggle: (HomeContent.Row) -> Void = { _ in }
     var onOpen: (UUID) -> Void = { _ in }
@@ -12,10 +18,14 @@ struct HomeScreen: View {
     var zoom: Namespace.ID?
     var onDelete: (UUID) -> Void = { _ in }
     var onMove: (UUID, Date) -> (() -> Void)? = { _, _ in nil }
+    var habit: HabitSuggestion?
+    var onHabit: (HabitSuggestion, Bool) -> Void = { _, _ in }
+    var onPostpone: (HomeContent.Row, Postpone) -> Void = { _, _ in }
     @State private var addPressed = false
     @State private var intro = false
     @State private var lift: DialLift?
     @State private var moved: Moved?
+    @State private var postponing: HomeContent.Row?
     @GestureState private var holding = false
     @Environment(\.introAnimations) private var introAnimations
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -32,7 +42,8 @@ struct HomeScreen: View {
                     markers: content.markers,
                     windowTime: lift.map { clockText($0.minutes) } ?? content.next?.time ?? content.nowText,
                     windowCaption: lift.map { String(localized: "was \(clockText($0.original))") } ?? content.next?.countdown ?? String(localized: "now"),
-                    lift: lift
+                    lift: lift,
+                    badge: content.missedCount > 0 && lift == nil ? String(localized: "\(content.missedCount) missed") : nil
                 )
                 .overlay { handles }
                 .padding(.top, 14)
@@ -43,6 +54,13 @@ struct HomeScreen: View {
                     nextSummary(next)
                         .padding(.top, 10)
                         .onTapGesture { onOpen(next.reminderID) }
+                }
+                if let habit, lift == nil {
+                    HabitSuggestionCard(suggestion: habit) { accepted in
+                        withAnimation(Motion.standard) { onHabit(habit, accepted) }
+                    }
+                    .padding(.top, 12)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
                 }
                 if content.rows.isEmpty {
                     emptyDay
@@ -86,6 +104,7 @@ struct HomeScreen: View {
         .foregroundStyle(Palette.text)
         .animation(Motion.adaptive(Motion.standard, reduceMotion: reduceMotion), value: content.rows.map(\.id))
         .animation(Motion.adaptive(Motion.standard, reduceMotion: reduceMotion), value: lift == nil)
+        .animation(Motion.adaptive(Motion.standard, reduceMotion: reduceMotion), value: habit)
         .onChange(of: holding) { _, active in
             guard !active else { return }
             // A cancelled gesture never reaches onEnded, so a lift left over after it is dropped here.
@@ -98,6 +117,16 @@ struct HomeScreen: View {
         .onAppear {
             guard !intro else { return }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) { intro = true }
+        }
+        .confirmationDialog(
+            Text(verbatim: postponing?.title ?? ""),
+            isPresented: Binding(get: { postponing != nil }, set: { if !$0 { postponing = nil } }),
+            titleVisibility: .visible,
+            presenting: postponing
+        ) { row in
+            Button("In an hour") { onPostpone(row, .hour) }
+            Button("Tomorrow morning") { onPostpone(row, .morning) }
+            Button("Choose a time") { onPostpone(row, .custom) }
         }
     }
 
@@ -295,7 +324,12 @@ struct HomeScreen: View {
         VStack(spacing: 0) {
             ForEach(content.rows) { row in
                 let moving = lift.map { $0.holds(row) } ?? false
-                AgendaRow(row: lift.map { moving ? movingRow(row, $0) : row } ?? row, onToggle: { onToggle(row) }, onDelete: { onDelete(row.reminderID) })
+                AgendaRow(
+                    row: lift.map { moving ? movingRow(row, $0) : row } ?? row,
+                    onToggle: { onToggle(row) },
+                    onDelete: { onDelete(row.reminderID) },
+                    onPostpone: row.missed ? { postponing = row } : nil
+                )
                     .background {
                         if moving {
                             Palette.accent.opacity(0.09)

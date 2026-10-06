@@ -97,4 +97,21 @@ struct SchedulerTests {
         #expect(Scheduler.reminderID(fromIdentifier: value) == id)
         #expect(value.hasSuffix(".nag3"))
     }
+
+    @Test func followUpComesAfterAMissedOccurrence() {
+        let call = Reminder(title: "Позвонить маме", schedule: once(13, 40), createdAt: now)
+        let plan = Scheduler.plan(reminders: [call], settings: settings, now: now, calendar: calendar, followUp: 30)
+        #expect(plan.map(\.kind) == [.missed])
+        #expect(plan.first?.fireDate == moment(2026, 10, 5, 14, 10))
+        #expect(plan.first?.occurrence == moment(2026, 10, 5, 13, 40))
+    }
+
+    @Test func followUpSkipsDoneAndNaggingReminders() {
+        var done = Reminder(title: "Позвонить маме", schedule: once(13, 40), createdAt: now)
+        done.completedThrough = moment(2026, 10, 5, 13, 40)
+        let nag = Reminder(title: "Таблетка", schedule: once(14, 0), nag: true, createdAt: now)
+        let plan = Scheduler.plan(reminders: [done, nag], settings: settings, now: now, calendar: calendar, followUp: 30)
+        #expect(plan.contains { $0.kind == .missed } == false)
+        #expect(Scheduler.plan(reminders: [done], settings: settings, now: now, calendar: calendar).isEmpty)
+    }
 }
