@@ -2,7 +2,7 @@ import Foundation
 
 extension PhraseParser {
     private static let englishMonths = "(january|jan|february|feb|march|mar|april|apr|may|june|jun|july|jul|august|aug|september|sept|sep|october|oct|november|nov|december|dec)\\.?"
-    private static let englishWeekdays = "(mondays?|mon|tuesdays?|tues|tue|wednesdays?|wed|thursdays?|thurs|thur|thu|fridays?|fri|saturdays?|sat|sundays?|sun)"
+    static let englishWeekdays = "(mondays?|mon|tuesdays?|tues|tue|wednesdays?|wed|thursdays?|thurs|thur|thu|fridays?|fri|saturdays?|sat|sundays?|sun)"
     private static let englishCount = "(\\d+|an|a|one|two|three|four|five|ten|fifteen|twenty|thirty|a couple of|couple of)"
     private static let englishFillers: Set<String> = ["please"]
     private static let englishLead: Set<String> = ["remind", "me", "to", "about", "i", "need", "have", "must", "should", "don't", "dont", "forget", "please"]
@@ -12,6 +12,7 @@ extension PhraseParser {
         let text = input.lowercased().replacingOccurrences(of: "’", with: "'")
         var state = State()
 
+        extras(text, &state, PhraseParser.englishExtras, weekday: englishWeekday)
         englishRepeats(text, &state)
         englishOffsets(text, &state)
         englishDates(text, &state)

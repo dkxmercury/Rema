@@ -2,7 +2,7 @@ import Foundation
 
 extension PhraseParser {
     private static let arMonths = "(يناير|فبراير|مارس|ابريل|مايو|يونيو|يوليو|اغسطس|سبتمبر|اكتوبر|نوفمبر|ديسمبر|شباط|اذار|نيسان|ايار|حزيران|تموز|اب|ايلول)"
-    private static let arWeekday = "(?:يوم )?(?:ال)?(اثنين|ثلاثاء|اربعاء|خميس|جمعة|جمعه|سبت|احد)"
+    static let arWeekday = "(?:يوم )?(?:ال)?(اثنين|ثلاثاء|اربعاء|خميس|جمعة|جمعه|سبت|احد)"
     private static let arFillers: Set<String> = ["ذكرني", "ذكّرني", "فضلك", "رجاء", "رجاءً"]
     private static let arLead: Set<String> = ["ان", "أن", "من", "يجب", "علي", "عليّ"]
     private static let arDangling: Set<String> = ["في", "عند", "و", "على", "من", "الى", "إلى", "ب", "ان", "أن"]
@@ -41,6 +41,7 @@ extension PhraseParser {
         let (text, origin) = PhraseParser.arabicNormalized(input)
         var state = State()
 
+        extras(text, &state, PhraseParser.arabicExtras, weekday: arWeekdayValue)
         arRepeats(text, &state)
         arOffsets(text, &state)
         arDates(text, &state)

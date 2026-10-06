@@ -3,7 +3,7 @@ import Foundation
 extension PhraseParser {
     private static let deMonths = "(januar|jänner|februar|märz|april|mai|juni|juli|august|september|oktober|november|dezember|jan|feb|mär|apr|jun|jul|aug|sep|sept|okt|nov|dez)\\.?"
     private static let deWeekdays = "(montags?|mo|dienstags?|di|mittwochs?|mi|donnerstags?|do|freitags?|fr|samstags?|sa|sonnabends?|sonntags?|so)"
-    private static let deWeekdaysFull = "(montags?|dienstags?|mittwochs?|donnerstags?|freitags?|samstags?|sonnabends?|sonntags?)"
+    static let deWeekdaysFull = "(montags?|dienstags?|mittwochs?|donnerstags?|freitags?|samstags?|sonnabends?|sonntags?)"
     private static let deCount = "(\\d+|einer|einem|einen|eine|ein|zwei|drei|vier|fünf|zehn|fünfzehn|zwanzig|dreißig)"
     private static let deFillers: Set<String> = ["bitte"]
     private static let deLead: Set<String> = ["erinnere", "erinner", "mich", "daran", "zu", "ich", "muss", "soll", "bitte"]
@@ -13,6 +13,7 @@ extension PhraseParser {
         let text = input.lowercased().replacingOccurrences(of: "’", with: "'")
         var state = State()
 
+        extras(text, &state, PhraseParser.germanExtras, weekday: deWeekday)
         deRepeats(text, &state)
         deOffsets(text, &state)
         deDates(text, &state)

@@ -2,7 +2,7 @@ import Foundation
 
 extension PhraseParser {
     private static let uzMonths = "(yanvar|fevral|mart|aprel|may|iyun|iyul|avgust|sentabr|sentyabr|oktabr|oktyabr|noyabr|dekabr)(?:ning|da|ga|dan)?"
-    private static let uzWeekdays = "(dushanba|seshanba|chorshanba|payshanba|juma|shanba|yakshanba)(?:da|lari|ga)?"
+    static let uzWeekdays = "(dushanba|seshanba|chorshanba|payshanba|juma|shanba|yakshanba)(?:da|lari|ga)?"
     private static let uzCount = "(\\d+|bir|ikki|uch|to'rt|besh|o'n|o'n besh|yigirma|o'ttiz)"
     private static let uzFillers: Set<String> = ["iltimos", "menga", "kerak"]
     private static let uzDangling: Set<String> = ["eslat", "eslating", "eslatib", "qo'y", "qo'ying", "va", "da", "ga", "ham", "esla"]
@@ -11,6 +11,7 @@ extension PhraseParser {
         "ertaga", "bugun", "soat", "har", "kuni", "keyin", "eslat", "eslating", "eslatib", "dushanba", "seshanba",
         "chorshanba", "payshanba", "juma", "shanba", "yakshanba", "ertalab", "kechqurun", "oldin", "indinga", "hafta", "yili",
         "ketganimda", "kelganimda", "chiqqanimda", "borganimda", "qaytganimda", "yetganimda",
+        "kunora", "tushlikda", "tushlik", "ishdan", "oxirida", "oyning", "ikkinchi", "dam", "olish",
     ]
 
     static func looksUzbekCyrillic(_ text: String, preferred: String?) -> Bool {
@@ -26,6 +27,7 @@ extension PhraseParser {
         let text = latin.lowercased()
         var state = State()
 
+        extras(text, &state, PhraseParser.uzbekExtras, weekday: uzWeekday)
         uzRepeats(text, &state)
         uzOffsets(text, &state)
         uzDates(text, &state)

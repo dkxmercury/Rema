@@ -49,7 +49,7 @@ public struct PhraseParser {
 
     private static let months = ["январ", "феврал", "март", "апрел", "ма", "июн", "июл", "август", "сентябр", "октябр", "ноябр", "декабр"]
     private static let monthPattern = "(января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря)"
-    private static let weekdayPattern = "(понедельник\\w*|пн|вторник\\w*|вт|сред\\w*|ср|четверг\\w*|чт|пятниц\\w*|пт|суббот\\w*|сб|воскресень\\w*|вс)"
+    static let weekdayPattern = "(понедельник\\w*|пн|вторник\\w*|вт|сред\\w*|ср|четверг\\w*|чт|пятниц\\w*|пт|суббот\\w*|сб|воскресень\\w*|вс)"
     private static let fillers: Set<String> = ["напомни", "напомните", "напомнить", "мне", "пожалуйста", "надо", "нужно"]
     private static let dangling: Set<String> = ["и", "а", "в", "во", "на", "с", "со", "к", "по"]
 
@@ -90,6 +90,7 @@ public struct PhraseParser {
         let text = input.lowercased().replacingOccurrences(of: "ё", with: "е")
         var state = State()
 
+        extras(text, &state, PhraseParser.russianExtras, weekday: weekday)
         repeats(text, &state)
         offsets(text, &state)
         dates(text, &state)

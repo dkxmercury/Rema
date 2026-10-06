@@ -5,16 +5,19 @@ extension PhraseParser {
         "morgen", "heute", "übermorgen", "um", "uhr", "jeden", "jede", "jedes", "täglich", "stunden", "stunde", "minuten",
         "montag", "dienstag", "mittwoch", "donnerstag", "freitag", "samstag", "sonntag", "erinnere", "mich", "abends",
         "morgens", "nächsten", "wenn", "ich", "vorher", "dringend", "alle", "tage", "werktags", "jährlich", "monatlich", "einer",
+        "wochenende", "arbeit", "zweiten", "monatsende", "mittagessen", "mittagspause", "monats",
     ]
     private static let frenchWords: Set<String> = [
         "demain", "aujourd'hui", "après-demain", "à", "chaque", "tous", "toutes", "dans", "heures", "heure", "lundi", "mardi",
         "mercredi", "jeudi", "vendredi", "samedi", "dimanche", "rappelle-moi", "rappelle", "soir", "matin", "prochain", "quand",
         "je", "avant", "veille", "jours", "semaine", "mois", "ans", "une", "les", "le", "la", "de", "d'appeler",
+        "week-end", "déjeuner", "travail", "boulot", "fin", "sur", "deux", "dernier",
     ]
     private static let englishWords: Set<String> = [
         "tomorrow", "today", "tonight", "at", "every", "in", "hours", "hour", "minutes", "monday", "tuesday", "wednesday",
         "thursday", "friday", "saturday", "sunday", "remind", "me", "evening", "morning", "next", "when", "before", "the",
         "to", "on", "days", "week", "month", "year", "an", "a",
+        "weekend", "weekends", "lunch", "work", "other", "last", "end",
     ]
 
     static func latinLanguage(_ text: String, preferred: String?) -> String {
