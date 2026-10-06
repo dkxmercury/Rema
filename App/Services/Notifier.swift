@@ -130,8 +130,9 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         try? await center.setBadgeCount(missed)
     }
 
+    @MainActor
     private func placeRequests() -> [UNNotificationRequest] {
-        guard LocationService.shared.allowed else { return [] }
+        guard LocationService.shared.allowed, Remote.shared.isOn(.places) else { return [] }
         var requests: [UNNotificationRequest] = []
         for reminder in store.activeReminders where !reminder.placeIDs.isEmpty {
             if reminder.isPlaceOnly, reminder.completedThrough != nil { continue }

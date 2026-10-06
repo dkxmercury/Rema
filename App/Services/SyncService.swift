@@ -74,7 +74,9 @@ final class SyncService {
 
     func becameActive() {
         guard Account.shared.isSignedIn else { return }
-        realtime.start()
+        if Remote.shared.isOn(.realtime) {
+            realtime.start()
+        }
         schedule(after: .zero)
     }
 

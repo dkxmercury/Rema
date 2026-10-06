@@ -102,10 +102,12 @@ struct SettingsScreen: View {
                             .frame(maxWidth: .infinity)
                             .padding(.top, 4)
                     }
-                    section("Places") {
-                        PanelList {
-                            NavigationRow(icon: Icons.pin, iconColor: Palette.text, title: "My places", minHeight: 52, action: onPlaces) {
-                                value(String(localized: "\(store.activePlaces.count) of \(20)"))
+                    if Remote.shared.isOn(.places) {
+                        section("Places") {
+                            PanelList {
+                                NavigationRow(icon: Icons.pin, iconColor: Palette.text, title: "My places", minHeight: 52, action: onPlaces) {
+                                    value(String(localized: "\(store.activePlaces.count) of \(20)"))
+                                }
                             }
                         }
                     }

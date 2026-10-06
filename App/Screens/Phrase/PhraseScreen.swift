@@ -64,7 +64,7 @@ struct PhraseScreen: View {
         self.onClose = onClose
         _text = State(initialValue: text)
         _draft = State(initialValue: Reminder(title: "", schedule: nil, createdAt: now))
-        _listening = State(initialValue: startWithVoice)
+        _listening = State(initialValue: startWithVoice && Remote.shared.isOn(.voice))
     }
 
     private var parser: PhraseParser {
@@ -221,9 +221,11 @@ struct PhraseScreen: View {
             .scrollDismissesKeyboard(.interactively)
             .pinnedHeader {
                 ScreenHeader(title: "New reminder", leading: .close, action: onClose) {
-                    RoundIconButton(icon: Icons.microphone, iconSize: 19, label: "Dictate") {
-                        focused = false
-                        listening = true
+                    if Remote.shared.isOn(.voice) {
+                        RoundIconButton(icon: Icons.microphone, iconSize: 19, label: "Dictate") {
+                            focused = false
+                            listening = true
+                        }
                     }
                 }
             }
@@ -303,7 +305,9 @@ struct PhraseScreen: View {
         FlowLayout(spacing: 8) {
             Chip(title: "Repeat", selected: reminder.schedule?.rule != nil, icon: Icons.plus) { path.append(.repeating) }
             Chip(title: "In advance", selected: !reminder.preAlerts.isEmpty, icon: Icons.plus) { path.append(.early) }
-            Chip(title: "Place", selected: !reminder.placeIDs.isEmpty, icon: Icons.plus) { path.append(.places) }
+            if Remote.shared.isOn(.places) {
+                Chip(title: "Place", selected: !reminder.placeIDs.isEmpty, icon: Icons.plus) { path.append(.places) }
+            }
             Chip(title: "Urgent", selected: reminder.urgent, icon: Icons.plus) {
                 overrides.urgent = !reminder.urgent
                 Feedback.play(.toggle)

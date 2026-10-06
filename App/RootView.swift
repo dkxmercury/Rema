@@ -280,7 +280,7 @@ struct RootView: View {
                 onCompose: { composing = ComposeTarget(voice: false) },
                 onVoice: {
                     Feedback.play(.select)
-                    composing = ComposeTarget(voice: true)
+                    composing = ComposeTarget(voice: remote.isOn(.voice))
                 },
                 onCalendar: { showingCalendar = true },
                 onSettings: { navigation.path.append(.settings) },
