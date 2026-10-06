@@ -201,7 +201,7 @@ struct ShareScreen: View {
     private var sourceLine: some View {
         HStack(spacing: 6) {
             Glyph(paths: Icons.message, size: 14, lineWidth: 2, color: Palette.secondary)
-            Text(verbatim: "«\(excerpt)»")
+            Text(verbatim: excerpt.quoted())
                 .font(.app(.golos, 13))
                 .foregroundStyle(Palette.secondary)
                 .lineLimit(1)

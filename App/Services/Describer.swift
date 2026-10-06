@@ -174,3 +174,9 @@ extension String {
         return String(first).uppercased(with: locale) + dropFirst()
     }
 }
+
+extension String {
+    func quoted(in locale: Locale = .app) -> String {
+        "\(locale.quotationBeginDelimiter ?? "“")\(self)\(locale.quotationEndDelimiter ?? "”")"
+    }
+}

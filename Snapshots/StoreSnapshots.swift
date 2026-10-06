@@ -21,7 +21,7 @@ final class StoreSnapshots: XCTestCase {
             try shoot(VoiceScreen(store: store, now: sample.now, calendar: sample.calendar, locale: sample.locale, recognizer: recognizer, live: false, onFinish: { _ in }), "\(code)-03-voice", sample)
             try shoot(CalendarScreen(store: store, now: sample.now, calendar: sample.calendar, locale: sample.locale, onClose: {}), "\(code)-04-calendar", sample)
             try shoot(EditorScreen(draft: sample.server, isNew: false, store: store, now: sample.now, calendar: sample.calendar, locale: sample.locale, onClose: {}), "\(code)-05-editor", sample)
-            try shoot(PlacesScreen(store: store, title: sample.parcel.title, placeIDs: .constant(sample.parcel.placeIDs), trigger: .constant(.leave), onNewPlace: {}, onBack: {}), "\(code)-06-places", sample)
+            try shoot(WelcomeScreen(onEmail: {}, onLanguage: {}, onSkip: {}, onSignedIn: {}), "\(code)-06-account", sample)
             try shoot(HomeScreen(content: sample.home(at: sample.later, missed: true)), "\(code)-07-missed", sample)
             try shoot(HomeScreen(content: sample.home(at: sample.now)), "\(code)-08-dark", sample, style: .dark)
             try shoot(PhraseScreen(store: store, text: sample.weekly, now: sample.now, calendar: sample.calendar, locale: sample.locale, autofocus: false, onClose: {}), "\(code)-09-repeat", sample, style: .dark)

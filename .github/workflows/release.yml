@@ -36,8 +36,9 @@ jobs:
           PROFILE_WATCH_BASE64: ${{ inputs.channel == 'store' && secrets.STORE_PROFILE_WATCH_BASE64 || secrets.PROFILE_WATCH_BASE64 }}
           PROFILE_SHARE_BASE64: ${{ inputs.channel == 'store' && secrets.STORE_PROFILE_SHARE_BASE64 || secrets.PROFILE_SHARE_BASE64 }}
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          ARTIFACT_KEY: ${{ secrets.ARTIFACT_KEY }}
         run: |
-          for name in APPLE_TEAM_ID DIST_P12_BASE64 DIST_P12_PASSWORD PROFILE_APP_BASE64 PROFILE_WIDGETS_BASE64 PROFILE_WATCH_BASE64 PROFILE_SHARE_BASE64 GOOGLE_CLIENT_ID; do
+          for name in APPLE_TEAM_ID DIST_P12_BASE64 DIST_P12_PASSWORD PROFILE_APP_BASE64 PROFILE_WIDGETS_BASE64 PROFILE_WATCH_BASE64 PROFILE_SHARE_BASE64 GOOGLE_CLIENT_ID ARTIFACT_KEY; do
             if [ -z "$(printenv "$name")" ]; then echo "missing secret $name"; exit 1; fi
           done
 
@@ -143,11 +144,22 @@ jobs:
           grep -E "error:|EXPORT (SUCCEEDED|FAILED)" export.log || true
           grep -q "EXPORT SUCCEEDED" export.log
 
+      - name: Encrypt
+        env:
+          ARTIFACT_KEY: ${{ secrets.ARTIFACT_KEY }}
+        run: |
+          ipa=$(ls "$RUNNER_TEMP"/export/*.ipa)
+          tool=/opt/homebrew/opt/openssl@3/bin/openssl
+          [ -x "$tool" ] || tool=openssl
+          "$tool" version
+          "$tool" enc -aes-256-cbc -pbkdf2 -iter 200000 -salt -in "$ipa" -out "$RUNNER_TEMP/Rema.ipa.enc" -pass env:ARTIFACT_KEY
+          rm -f "$ipa"
+
       - name: IPA
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: Rema-${{ inputs.channel }}-${{ github.run_number }}
-          path: ${{ runner.temp }}/export/*.ipa
+          path: ${{ runner.temp }}/Rema.ipa.enc
           retention-days: 3
 
       - name: Clean up

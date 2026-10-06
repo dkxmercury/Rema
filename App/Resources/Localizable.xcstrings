@@ -18418,7 +18418,7 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Demnächst"
+            "value": "Anstehend"
           }
         },
         "fr": {
@@ -18430,25 +18430,25 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Скоро"
+            "value": "Впереди"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Незабаром"
+            "value": "Попереду"
           }
         },
         "uz-Cyrl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Яқинда"
+            "value": "Келгуси"
           }
         },
         "uz-Latn": {
           "stringUnit": {
             "state": "translated",
-            "value": "Yaqinda"
+            "value": "Kelgusi"
           }
         }
       }

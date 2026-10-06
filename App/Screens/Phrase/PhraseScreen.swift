@@ -373,7 +373,7 @@ struct PhraseScreen: View {
                 } label: {
                     HStack(spacing: 12) {
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(verbatim: "«\(phrase)»")
+                            Text(verbatim: phrase.quoted())
                                 .font(.app(.golos, 15))
                                 .lineLimit(1)
                                 .truncationMode(.tail)
@@ -408,7 +408,7 @@ struct PhraseScreen: View {
                     Feedback.play(.select)
                 } label: {
                     HStack(spacing: 12) {
-                        Text(verbatim: "«\(sample)»")
+                        Text(verbatim: sample.quoted())
                             .font(.app(.golos, 15))
                             .frame(maxWidth: .infinity, alignment: .leading)
                         Text(verbatim: cachedExampleValue(sample))

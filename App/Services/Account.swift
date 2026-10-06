@@ -94,7 +94,7 @@ final class Account {
 
     func signInWithGoogle() async throws {
         let nonce = Nonce()
-        let idToken = try await GoogleAuthorization().perform(nonce: nonce.raw)
+        let idToken = try await GoogleAuthorization().perform(nonce: nonce.hashed)
         struct Body: Encodable {
             let idToken: String
             let nonce: String
