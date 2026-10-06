@@ -114,4 +114,25 @@ struct SchedulerTests {
         #expect(plan.contains { $0.kind == .missed } == false)
         #expect(Scheduler.plan(reminders: [done], settings: settings, now: now, calendar: calendar).isEmpty)
     }
+
+    @Test func remindersAheadComeBeforeFarRepeats() {
+        let daily = Schedule(start: LocalDate(year: 2026, month: 10, day: 6), time: LocalTime(hour: 9, minute: 0), rule: .daily)
+        let pills = Reminder(title: "Таблетки", schedule: daily, nag: true, createdAt: now)
+        let water = Reminder(title: "Вода", schedule: daily, nag: true, createdAt: now)
+        let dentist = Reminder(title: "Стоматолог", schedule: once(10, 0, day: 9), createdAt: now)
+        let plan = Scheduler.plan(reminders: [pills, water, dentist], settings: settings, now: now, calendar: calendar)
+        #expect(plan.count == Scheduler.capacity)
+        #expect(plan.contains { $0.reminderID == dentist.id && $0.kind == .main })
+        #expect(plan.filter { $0.fireDate <= moment(2026, 10, 6, 13, 50) }.count == 2 * (1 + Scheduler.nagRepeats))
+        #expect(plan == plan.sorted { $0.fireDate == $1.fireDate ? $0.identifier < $1.identifier : $0.fireDate < $1.fireDate })
+    }
+
+    @Test func snoozeToTheNextOccurrenceRingsOnce() {
+        let daily = Schedule(start: LocalDate(year: 2026, month: 10, day: 1), time: LocalTime(hour: 9, minute: 0), rule: .daily)
+        var pills = Reminder(title: "Таблетки", schedule: daily, nag: true, createdAt: now)
+        pills.snoozedUntil = moment(2026, 10, 6, 9, 0)
+        let plan = Scheduler.plan(reminders: [pills], settings: settings, now: now, calendar: calendar)
+        #expect(plan.filter { $0.fireDate == moment(2026, 10, 6, 9, 0) }.count == 1)
+        #expect(Set(plan.map(\.identifier)).count == plan.count)
+    }
 }

@@ -152,7 +152,7 @@ struct IntroScreen: View {
     }
 
     private var writeIllustration: some View {
-        let example = String(localized: "tomorrow at 9 call mom", locale: .app)
+        let example = String(localized: "tomorrow at 9 call mom", bundle: .app, locale: .app)
         let parsed = PhraseParser(now: now, calendar: .current, morning: store.settings.morning, evening: store.settings.evening, preferred: AppLanguage.current.rawValue).parse(example)
         let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: now) ?? now
         let fallback = Calendar.current.date(bySettingHour: 9, minute: 0, second: 0, of: tomorrow) ?? tomorrow
@@ -205,7 +205,7 @@ struct IntroScreen: View {
     }
 
     private var voiceIllustration: some View {
-        let phrase = String(localized: "buy bread when I leave work", locale: .app)
+        let phrase = String(localized: "buy bread when I leave work", bundle: .app, locale: .app)
         let words = phrase.split(separator: " ").map(String.init)
         let shown = played.contains(1)
         return ZStack {

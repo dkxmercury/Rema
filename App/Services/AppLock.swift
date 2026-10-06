@@ -17,6 +17,7 @@ final class AppLock {
     private var leftAt: Date?
     private var window: UIWindow?
     private var asking = false
+    private var returning = true
 
     private init() {
         enabled = UserDefaults.standard.bool(forKey: Self.enabledKey)
@@ -52,8 +53,13 @@ final class AppLock {
         UserDefaults.standard.set(seconds, forKey: Self.delayKey)
     }
 
+    // The cover goes up before the system takes the picture for the app switcher.
     func movedToBackground() {
         leftAt = Date()
+        returning = true
+        if enabled {
+            show()
+        }
     }
 
     func becameActive() {
@@ -61,12 +67,17 @@ final class AppLock {
             locked = true
         }
         leftAt = nil
+        let fromOutside = returning
+        returning = false
         guard locked else {
             hide()
             return
         }
         show()
-        Task { await unlock() }
+        // The Face ID sheet itself makes the app inactive and active again, so only a real return asks on its own.
+        if fromOutside {
+            Task { await unlock() }
+        }
     }
 
     func unlock() async {
@@ -82,8 +93,8 @@ final class AppLock {
 
     private func authenticate() async -> Bool {
         let context = LAContext()
-        context.localizedCancelTitle = String(localized: "Cancel", locale: .app)
-        return (try? await context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: String(localized: "Unlock Rema", locale: .app))) ?? false
+        context.localizedCancelTitle = String(localized: "Cancel", bundle: .app, locale: .app)
+        return (try? await context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: String(localized: "Unlock Rema", bundle: .app, locale: .app))) ?? false
     }
 
     // A window of its own covers sheets and full screen covers too, which an overlay in the root view would not.
@@ -101,8 +112,10 @@ final class AppLock {
     }
 
     private func hide() {
-        window?.isHidden = true
-        window = nil
+        guard let window else { return }
+        window.isHidden = true
+        self.window = nil
+        UIApplication.shared.mainWindow?.makeKey()
     }
 }
 

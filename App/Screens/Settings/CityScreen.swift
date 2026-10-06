@@ -75,7 +75,9 @@ struct CityScreen: View {
         .task(id: query) {
             try? await Task.sleep(for: .milliseconds(400))
             guard !Task.isCancelled else { return }
-            results = await advisor.search(query)
+            let found = await advisor.search(query)
+            guard !Task.isCancelled else { return }
+            results = found
         }
     }
 

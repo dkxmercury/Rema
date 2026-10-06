@@ -29,11 +29,15 @@ enum AppFonts {
     }
 }
 
-// String(localized:) picks the language from the locale it gets, so every lookup passes the app's own choice.
 extension Locale {
     static var app: Locale {
         Locale(identifier: AppFonts.languageCode)
     }
+}
+
+// String(localized:) reads the table of the process language, not the one chosen in the app, so lookups go to the chosen folder.
+extension Bundle {
+    nonisolated(unsafe) static var app = Bundle.main
 }
 
 enum Typeface: String {

@@ -21,21 +21,21 @@ final class VoiceRecognizer {
                 SFSpeechRecognizer.requestAuthorization { continuation.resume(returning: $0) }
             }
             guard speech == .authorized else {
-                failure = String(localized: "Allow speech recognition in Settings to dictate reminders.", locale: .app)
+                failure = String(localized: "Allow speech recognition in Settings to dictate reminders.", bundle: .app, locale: .app)
                 return
             }
             guard await AVAudioApplication.requestRecordPermission() else {
-                failure = String(localized: "Allow microphone access in Settings to dictate reminders.", locale: .app)
+                failure = String(localized: "Allow microphone access in Settings to dictate reminders.", bundle: .app, locale: .app)
                 return
             }
             guard let recognizer = VoiceRecognizer.recognizer(for: locale), recognizer.isAvailable else {
-                failure = String(localized: "Speech recognition is not available for this language yet.", locale: .app)
+                failure = String(localized: "Speech recognition is not available for this language yet.", bundle: .app, locale: .app)
                 return
             }
             do {
                 try begin(with: recognizer, hints: hints)
             } catch {
-                failure = String(localized: "Could not start the microphone.", locale: .app)
+                failure = String(localized: "Could not start the microphone.", bundle: .app, locale: .app)
                 stop()
             }
         }

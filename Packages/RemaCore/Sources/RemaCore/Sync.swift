@@ -138,12 +138,21 @@ public struct SyncState: Codable, Equatable, Sendable {
     public var cursor: Int64
     public var lastSync: Date?
     public var known: [String: Int64]
+    // Versions the server refused; they wait for the next edit and stay out of the full resync.
+    public var held: [String: Int64]?
+    public var appVersion: String?
 
-    public init(account: String? = nil, cursor: Int64 = 0, lastSync: Date? = nil, known: [String: Int64] = [:]) {
+    public init(account: String? = nil, cursor: Int64 = 0, lastSync: Date? = nil, known: [String: Int64] = [:], held: [String: Int64]? = nil, appVersion: String? = nil) {
         self.account = account
         self.cursor = cursor
         self.lastSync = lastSync
         self.known = known
+        self.held = held
+        self.appVersion = appVersion
+    }
+
+    func sent(_ key: String) -> Int64 {
+        max(known[key] ?? 0, held?[key] ?? 0)
     }
 
     public static func key(_ kind: SyncKind, _ clientId: String) -> String {
@@ -182,7 +191,7 @@ public enum SyncPlan {
         var changes: [SyncChange] = []
 
         func add<Item: Encodable>(_ kind: SyncKind, _ id: String, _ item: Item, stamp: Int64, deleted: Bool) {
-            guard changes.count < limit, stamp > 0, stamp > state.known[SyncState.key(kind, id)] ?? 0 else { return }
+            guard changes.count < limit, stamp > 0, stamp > state.sent(SyncState.key(kind, id)) else { return }
             let data = deleted ? nil : try? JSONValue(encoding: item)
             guard deleted || data != nil else { return }
             changes.append(SyncChange(kind: kind, clientId: id, data: data, clientUpdatedAt: stamp, deleted: deleted))
@@ -242,8 +251,15 @@ private struct Merger {
     var soundFiles: [UUID: String] = [:]
 
     mutating func acknowledge(_ change: SyncChange, rejected: Bool) {
+        if rejected {
+            var held = state.held ?? [:]
+            held[change.key] = change.clientUpdatedAt
+            state.held = held
+            return
+        }
         state.known[change.key] = change.clientUpdatedAt
-        guard change.deleted, !rejected, let id = UUID(uuidString: change.clientId) else { return }
+        state.held?[change.key] = nil
+        guard change.deleted, let id = UUID(uuidString: change.clientId) else { return }
         switch change.kind {
         case .reminders:
             var reminders = snapshot.reminders

@@ -62,7 +62,7 @@ struct RepeatScreen: View {
 
     private var summary: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(verbatim: draft.title.isEmpty ? String(localized: "New reminder", locale: .app) : draft.title)
+            Text(verbatim: draft.title.isEmpty ? String(localized: "New reminder", bundle: .app, locale: .app) : draft.title)
                 .font(.app(.golos, 13))
                 .foregroundStyle(Palette.secondary)
             Text(verbatim: headline)
@@ -70,7 +70,7 @@ struct RepeatScreen: View {
                 .lineBox(30, .jost, 26, weight: 500)
                 .contentTransition(.opacity)
             FlowLayout(spacing: 6) {
-                Text(verbatim: String(localized: "at \(describer.time(nextDates.first ?? now)), next", locale: .app))
+                Text(verbatim: String(localized: "at \(describer.time(nextDates.first ?? now)), next", bundle: .app, locale: .app))
                     .font(.app(.golos, 13))
                     .foregroundStyle(Palette.secondary)
                     .frame(height: 24)
@@ -92,7 +92,7 @@ struct RepeatScreen: View {
         }
         switch rule {
         case .yearly(let month, let day):
-            return String(localized: "Every year, \(longDate(month: month, day: day))", locale: .app)
+            return String(localized: "Every year, \(longDate(month: month, day: day))", bundle: .app, locale: .app)
         default:
             return describer.repeatValue(schedule)
         }
@@ -162,7 +162,7 @@ struct RepeatScreen: View {
             if case .weekly(let days) = schedule.rule {
                 detailText(describer.repeatText(.weekly(days)), selected: selected)
             } else {
-                detailText(String(localized: "choose", locale: .app), selected: false)
+                detailText(String(localized: "choose", bundle: .app, locale: .app), selected: false)
             }
         case .everyDays:
             if case .everyDays(let count) = schedule.rule {
@@ -175,7 +175,7 @@ struct RepeatScreen: View {
                 detailText(describer.repeatText(.everyDays(3)), selected: false)
             }
         case .monthly:
-            detailText(String(localized: "on day \(schedule.start.day)", locale: .app), selected: selected)
+            detailText(String(localized: "on day \(schedule.start.day)", bundle: .app, locale: .app), selected: selected)
         case .yearly:
             HStack(spacing: 12) {
                 detailText(longDate(month: schedule.start.month, day: schedule.start.day), selected: selected)
@@ -221,11 +221,11 @@ struct RepeatScreen: View {
 
     private var endText: String {
         switch schedule.end {
-        case .never: return String(localized: "Never", locale: .app)
-        case .count(let count): return String(localized: "after \(count) times", locale: .app)
+        case .never: return String(localized: "Never", bundle: .app, locale: .app)
+        case .count(let count): return String(localized: "after \(count) times", bundle: .app, locale: .app)
         case .until(let date):
             let reference = calendar.date(from: DateComponents(year: date.year, month: date.month, day: date.day, hour: 12)) ?? now
-            return String(localized: "until \(reference.formatted(Date.FormatStyle(locale: locale, calendar: calendar, timeZone: calendar.timeZone).day().month(.abbreviated)))", locale: .app)
+            return String(localized: "until \(reference.formatted(Date.FormatStyle(locale: locale, calendar: calendar, timeZone: calendar.timeZone).day().month(.abbreviated)))", bundle: .app, locale: .app)
         }
     }
 

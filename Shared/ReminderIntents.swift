@@ -46,9 +46,13 @@ struct ToggleReminderIntent: AppIntent {
     func perform() async throws -> some IntentResult {
         guard let id = UUID(uuidString: reminderID) else { return .result() }
         let date = Date(timeIntervalSince1970: occurrence)
+        let snoozed = SharedStore.load()?.reminders.first { $0.id == id }?.snoozedUntil
         _ = SharedStore.setDone(done, reminder: id, occurrence: date)
         if done {
             await ReminderNotifications.clear(id, occurrence: date)
+            if let snoozed {
+                await ReminderNotifications.clear(id, occurrence: snoozed)
+            }
             await ReminderNotifications.endActivities(for: id)
         }
         WidgetCenter.shared.reloadAllTimelines()

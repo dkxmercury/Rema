@@ -34,23 +34,25 @@ final class StoreSnapshots: XCTestCase {
             throw XCTSkip("SNAPSHOT_DIR не задан")
         }
         let previous = AppLanguage.current
-        let previousCode = AppFonts.languageCode
         defer {
             AppLanguage.choose(previous)
-            AppFonts.languageCode = previousCode
+            WatchLanguage.use(nil)
         }
         AppLanguage.choose(.english)
-        AppFonts.languageCode = "en"
-        let now = Date()
+        WatchLanguage.use("en")
         let calendar = Calendar.current
-        func at(_ minutes: Double) -> Date { now.addingTimeInterval(minutes * 60) }
+        let today = calendar.startOfDay(for: Date())
+        func at(_ hour: Int, _ minute: Int) -> Date {
+            calendar.date(bySettingHour: hour, minute: minute, second: 0, of: today) ?? today
+        }
+        let now = at(13, 50)
         let items = [
-            WatchItem(reminderID: UUID(), title: "Take vitamins", occurrence: at(-240), done: true, urgent: false),
-            WatchItem(reminderID: UUID(), title: "Call the supplier", occurrence: at(40), done: false, urgent: true),
-            WatchItem(reminderID: UUID(), title: "Buy bread and milk", occurrence: at(290), done: false, urgent: false),
-            WatchItem(reminderID: UUID(), title: "Water the plants", occurrence: at(440), done: false, urgent: false),
-        ].filter { calendar.isDate($0.occurrence, inSameDayAs: now) }
-        let screen = WatchHome(model: WatchModel(payload: WatchPayload(items: items, generated: now)))
+            WatchItem(reminderID: UUID(), title: "Take vitamins", occurrence: at(9, 0), done: true, urgent: false),
+            WatchItem(reminderID: UUID(), title: "Call the supplier", occurrence: at(14, 30), done: false, urgent: true),
+            WatchItem(reminderID: UUID(), title: "Buy bread and milk", occurrence: at(19, 0), done: false, urgent: false),
+            WatchItem(reminderID: UUID(), title: "Water the plants", occurrence: at(21, 30), done: false, urgent: false),
+        ]
+        let screen = WatchHome(model: WatchModel(payload: WatchPayload(items: items, generated: now)), moment: now)
             .environment(\.locale, Locale(identifier: "en"))
             .environment(\.colorScheme, .dark)
         let traits = UITraitCollection { traits in

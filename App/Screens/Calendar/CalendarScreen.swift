@@ -181,6 +181,8 @@ struct CalendarScreen: View {
         var id: UUID { reminder.id }
     }
 
+    private static let shownResults = 50
+
     private var matches: (upcoming: [Match], earlier: [Match]) {
         let needle = query.trimmingCharacters(in: .whitespaces)
         guard !needle.isEmpty else { return ([], []) }
@@ -210,13 +212,13 @@ struct CalendarScreen: View {
             if !found.upcoming.isEmpty {
                 SectionLabel(text: "Upcoming")
                     .padding(.top, 20)
-                resultList(found.upcoming)
+                resultList(Array(found.upcoming.prefix(Self.shownResults)))
                     .padding(.top, 8)
             }
             if !found.earlier.isEmpty {
                 SectionLabel(text: found.earlier.allSatisfy(\.done) ? "Completed" : "Earlier")
                     .padding(.top, 18)
-                resultList(found.earlier)
+                resultList(Array(found.earlier.prefix(Self.shownResults)))
                     .padding(.top, 8)
             }
             if !query.trimmingCharacters(in: .whitespaces).isEmpty {
@@ -321,10 +323,10 @@ struct CalendarScreen: View {
         let style = Date.FormatStyle(locale: locale, calendar: calendar, timeZone: calendar.timeZone)
         let day = date.formatted(style.day().month(.wide))
         if calendar.isDate(date, inSameDayAs: now) {
-            return String(localized: "today, \(day)", locale: .app)
+            return String(localized: "today, \(day)", bundle: .app, locale: .app)
         }
         if let tomorrow = calendar.date(byAdding: .day, value: 1, to: now), calendar.isDate(date, inSameDayAs: tomorrow) {
-            return String(localized: "tomorrow, \(day)", locale: .app)
+            return String(localized: "tomorrow, \(day)", bundle: .app, locale: .app)
         }
         let days = calendar.dateComponents([.day], from: calendar.startOfDay(for: now), to: calendar.startOfDay(for: date)).day ?? 0
         if days > 1, days < 7 {
@@ -449,7 +451,7 @@ struct CalendarScreen: View {
 
     private func dayAccessibility(_ day: LocalDate, count: Int, isToday: Bool) -> String {
         let name = date(day).formatted(Date.FormatStyle(locale: locale, calendar: calendar, timeZone: calendar.timeZone).day().month(.wide))
-        let parts = [name, isToday ? String(localized: "today", locale: .app) : nil, String(localized: "\(count) reminders", locale: .app)]
+        let parts = [name, isToday ? String(localized: "today", bundle: .app, locale: .app) : nil, String(localized: "\(count) reminders", bundle: .app, locale: .app)]
         return parts.compactMap { $0 }.joined(separator: ", ")
     }
 

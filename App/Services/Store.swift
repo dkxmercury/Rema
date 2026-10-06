@@ -45,6 +45,7 @@ final class Store {
     }
 
     func save(_ reminder: Reminder) {
+        fresh()
         var updated = reminder
         updated.updatedAt = Date()
         var previous: [UUID] = []
@@ -74,6 +75,7 @@ final class Store {
     }
 
     func complete(_ id: UUID, through occurrence: Date) {
+        fresh()
         guard var reminder = reminder(id) else { return }
         reminder.completedThrough = max(reminder.completedThrough ?? occurrence, occurrence)
         reminder.snoozedUntil = nil
@@ -81,24 +83,28 @@ final class Store {
     }
 
     func reopen(_ id: UUID, before occurrence: Date) {
+        fresh()
         guard var reminder = reminder(id) else { return }
         reminder.completedThrough = occurrence.addingTimeInterval(-1)
         save(reminder)
     }
 
     func snooze(_ id: UUID, until date: Date) {
+        fresh()
         guard var reminder = reminder(id) else { return }
         reminder.snoozedUntil = date
         save(reminder)
     }
 
     func delete(_ id: UUID) {
+        fresh()
         guard var reminder = reminder(id) else { return }
         reminder.deletedAt = Date()
         save(reminder)
     }
 
     func save(_ place: Place) {
+        fresh()
         var updated = place
         updated.updatedAt = Date()
         if let index = places.firstIndex(where: { $0.id == place.id }) {
@@ -110,6 +116,7 @@ final class Store {
     }
 
     func deletePlace(_ id: UUID) {
+        fresh()
         guard let index = places.firstIndex(where: { $0.id == id }) else { return }
         places[index].deletedAt = Date()
         places[index].updatedAt = Date()
@@ -126,6 +133,7 @@ final class Store {
     }
 
     func save(_ sound: CustomSound) {
+        fresh()
         if let index = sounds.firstIndex(where: { $0.id == sound.id }) {
             sounds[index] = sound
         } else {
@@ -164,16 +172,45 @@ final class Store {
     }
 
     func update(_ change: (inout Settings) -> Void) {
+        fresh()
         change(&settings)
         settings.updatedAt = Date()
+        settings.touched = true
         persist()
     }
 
-    func reloadIfChanged() {
-        guard let modified = SharedStore.modified(in: directory), modified != loadedAt else { return }
+    // A guest's deletions have no copy on a server to remove, so old ones are dropped instead of piling up.
+    func dropTombstones(before date: Date) {
+        fresh()
+        let count = reminders.count + places.count + sounds.count
+        reminders.removeAll { ($0.deletedAt ?? .distantFuture) < date }
+        places.removeAll { ($0.deletedAt ?? .distantFuture) < date }
+        sounds.removeAll { ($0.deletedAt ?? .distantFuture) < date }
+        guard reminders.count + places.count + sounds.count != count else { return }
+        persist(edit: false)
+    }
+
+    @discardableResult
+    func reloadIfChanged(edit: Bool = true) -> Bool {
+        guard changedOnDisk else { return false }
         load()
         onChange?()
-        onEdit?()
+        if edit {
+            onEdit?()
+        }
+        return true
+    }
+
+    private var changedOnDisk: Bool {
+        guard let modified = SharedStore.modified(in: directory) else { return false }
+        return modified != loadedAt
+    }
+
+    // The widget, the share sheet and the watch write the same file while this copy sits in memory.
+    private func fresh() {
+        if changedOnDisk {
+            load()
+        }
     }
 
     private func load() {

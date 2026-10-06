@@ -200,4 +200,32 @@ struct SyncTests {
         #expect(change["kind"] as? String == "reminders")
         #expect((change["data"] as? [String: Any])?["title"] as? String == "Позвонить")
     }
+
+    @Test func refusedRecordsSurviveAFullResync() {
+        let call = reminder("Отклонено")
+        let local = snapshot(reminders: [call])
+        let sent = SyncPlan.changes(in: local, state: SyncState())
+        let refused = sent.map { SyncRejection(kind: $0.kind.rawValue, clientId: $0.clientId, reason: "clock") }
+        let outcome = SyncMerge.apply(respond([], rejected: refused), sent: sent, to: local, state: SyncState(), now: created)
+        let full = SyncMerge.reconcile(outcome.snapshot, state: outcome.state, seen: [])
+        #expect(full.snapshot.reminders == [call])
+        var edited = call
+        edited.title = "Исправлено"
+        edited.updatedAt = created.addingTimeInterval(60)
+        #expect(SyncPlan.changes(in: snapshot(reminders: [edited]), state: full.state).map(\.clientId) == [call.id.uuidString])
+    }
+
+    @Test func settingsPutBackToDefaultsStillSync() {
+        var settings = Settings.standard(at: created.addingTimeInterval(60))
+        settings.touched = true
+        #expect(SyncPlan.changes(in: snapshot(settings: settings), state: SyncState()).map(\.kind) == [.prefs])
+    }
+
+    @Test func olderFilesStillDecode() throws {
+        let state = try JSONDecoder().decode(SyncState.self, from: Data(#"{"cursor":3,"known":{"reminders/x":5}}"#.utf8))
+        #expect(state.cursor == 3)
+        #expect(state.held == nil)
+        let settings = try JSONValue(encoding: Settings.standard(at: created)).decode(Settings.self)
+        #expect(settings.touched == nil)
+    }
 }

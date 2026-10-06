@@ -110,7 +110,7 @@ struct PlacesScreen: View {
                 VStack(alignment: .leading, spacing: 1) {
                     Text(verbatim: place.name)
                         .font(.app(.golos, 16, weight: 600))
-                    Text(verbatim: place.remembered ? String(localized: "radius \(Int(place.radius)) m", locale: .app) : String(localized: "only for this reminder", locale: .app))
+                    Text(verbatim: place.remembered ? String(localized: "radius \(Int(place.radius)) m", bundle: .app, locale: .app) : String(localized: "only for this reminder", bundle: .app, locale: .app))
                         .font(.app(.golos, 12))
                         .foregroundStyle(Palette.secondary)
                 }

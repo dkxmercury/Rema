@@ -41,7 +41,7 @@ final class SyncService {
     }
 
     func schedule(after delay: Duration = .seconds(2)) {
-        guard Account.shared.isSignedIn else { return }
+        guard Account.shared.isSignedIn, Remote.shared.isOn(.sync) else { return }
         scheduled?.cancel()
         scheduled = Task {
             try? await Task.sleep(for: delay)
@@ -73,7 +73,7 @@ final class SyncService {
     }
 
     func becameActive() {
-        guard Account.shared.isSignedIn else { return }
+        guard Account.shared.isSignedIn, Remote.shared.isOn(.sync) else { return }
         if Remote.shared.isOn(.realtime) {
             realtime.start()
         }
@@ -114,23 +114,55 @@ final class SyncService {
         RecentPhrases.clear()
     }
 
+    // Another account's records must not leak into this one; what was written here after its session ended moves in like a guest's.
+    private func leaveAccount() {
+        let snapshot = Store.shared.snapshot
+        let known = state.known
+        func unsynced(_ kind: SyncKind, _ id: UUID) -> Bool {
+            known[SyncState.key(kind, id.uuidString)] == nil
+        }
+        let reminders = snapshot.reminders.filter { $0.deletedAt == nil && unsynced(.reminders, $0.id) }
+        let used = Set(reminders.flatMap(\.placeIDs))
+        let places = snapshot.places.filter { $0.deletedAt == nil && (unsynced(.places, $0.id) || used.contains($0.id)) }
+        Self.clearLocal()
+        if !reminders.isEmpty || !places.isEmpty {
+            Store.shared.seed(reminders: reminders, places: places, sounds: [])
+        }
+    }
+
+    func dropGuestTombstones() {
+        guard state.account == nil, !Account.shared.isSignedIn else { return }
+        Store.shared.dropTombstones(before: Date().addingTimeInterval(-30 * 86_400))
+    }
+
+    private static var appVersion: String {
+        let info = Bundle.main.infoDictionary
+        return "\(info?["CFBundleShortVersionString"] as? String ?? "")-\(info?["CFBundleVersion"] as? String ?? "")"
+    }
+
     private func perform() async {
-        guard let session = Account.shared.session else { return }
+        guard Remote.shared.isOn(.sync), let session = Account.shared.session else { return }
         status = .syncing
         if state.account != session.userID {
-            // Data left by another account must not leak into this one; a guest's data moves in.
             if state.account != nil {
-                Self.clearLocal()
+                leaveAccount()
             }
             state = SyncState(account: session.userID)
+        }
+        // A record an older version could not read is fetched again once the app knows its shape.
+        if state.appVersion != Self.appVersion {
+            state.cursor = 0
+            state.appVersion = Self.appVersion
         }
         let full = state.needsFullResync(now: Date())
         if full {
             state.cursor = 0
         }
         var seen = Set<String>()
+        var finished = false
         do {
             for _ in 0..<40 {
+                Store.shared.reloadIfChanged(edit: false)
                 let changes = SyncPlan.changes(in: Store.shared.snapshot, state: state, limit: Self.pageLimit)
                 let request = SyncRequest(since: state.cursor, changes: changes)
                 let response = try await Backend.request("POST", "/api/rema/sync", body: request, token: session.token, as: SyncResponse.self)
@@ -138,6 +170,7 @@ final class SyncService {
                 if full {
                     seen.formUnion(response.records.map { "\($0.kind)/\($0.clientId)" })
                 }
+                Store.shared.reloadIfChanged(edit: false)
                 let outcome = SyncMerge.apply(response, sent: changes, to: Store.shared.snapshot, state: state, now: Date())
                 state = outcome.state
                 if outcome.changed {
@@ -146,10 +179,12 @@ final class SyncService {
                 saveState()
                 await SoundSync.exchange(outcome.soundFiles, token: session.token)
                 if !response.more && changes.count < Self.pageLimit {
+                    finished = true
                     break
                 }
             }
-            if full {
+            // Forgetting is safe only after the last page; a cut-off pass has not seen everything yet.
+            if full && finished {
                 let outcome = SyncMerge.reconcile(Store.shared.snapshot, state: state, seen: seen)
                 state = outcome.state
                 if outcome.changed {
@@ -188,6 +223,8 @@ private final class Realtime {
         return URLSession(configuration: configuration)
     }()
 
+    private var connected = false
+
     func start() {
         guard task == nil else { return }
         task = Task { await loop() }
@@ -199,12 +236,20 @@ private final class Realtime {
     }
 
     private func loop() async {
+        var failures = 0
         while !Task.isCancelled {
             guard let token = Account.shared.session?.token else { break }
+            connected = false
             try? await listen(token: token)
-            try? await Task.sleep(for: .seconds(10))
+            failures = connected ? 0 : failures + 1
+            // After a server restart every phone reconnects; growing, slightly random pauses keep them from arriving at once.
+            let pause = min(300, 10 * Double(1 << min(failures, 5))) + Double.random(in: 0...5)
+            try? await Task.sleep(for: .seconds(pause))
         }
-        task = nil
+        // A loop stopped from outside may end after a new one began, so only a natural end clears the slot.
+        if !Task.isCancelled {
+            task = nil
+        }
     }
 
     // Another phone saved something; the event only says when, the sync itself fetches what.
@@ -227,6 +272,7 @@ private final class Realtime {
                         let subscriptions: [String]
                     }
                     try await Backend.send("POST", "/api/realtime", body: Body(clientId: connect.clientId, subscriptions: SyncKind.allCases.map(\.rawValue)), token: token)
+                    connected = true
                 } else if !event.isEmpty {
                     SyncService.shared.schedule(after: .milliseconds(1500))
                 }

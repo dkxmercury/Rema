@@ -20,7 +20,7 @@ struct EarlyScreen: View {
             Palette.background.ignoresSafeArea()
             ScrollView {
                 VStack(spacing: 0) {
-                    Text(verbatim: String(localized: "\(draft.title.isEmpty ? String(localized: "New reminder", locale: .app) : draft.title) · you can pick several", locale: .app))
+                    Text(verbatim: String(localized: "\(draft.title.isEmpty ? String(localized: "New reminder", bundle: .app, locale: .app) : draft.title) · you can pick several", bundle: .app, locale: .app))
                         .font(.app(.golos, 15))
                         .foregroundStyle(Palette.secondary)
                         .multilineTextAlignment(.center)
@@ -89,7 +89,7 @@ struct EarlyScreen: View {
                 Text("Custom time")
                     .font(.app(.golos, 16))
                     .frame(maxWidth: .infinity, alignment: .leading)
-                Text(verbatim: custom.isEmpty ? String(localized: "none", locale: .app) : custom.map { describer.leadText($0) }.joined(separator: ", "))
+                Text(verbatim: custom.isEmpty ? String(localized: "none", bundle: .app, locale: .app) : custom.map { describer.leadText($0) }.joined(separator: ", "))
                     .font(.app(.golos, 14))
                     .foregroundStyle(Palette.secondary)
                 Glyph(paths: Icons.chevron, size: 16, lineWidth: 2, color: Palette.secondary)
@@ -112,7 +112,7 @@ struct EarlyScreen: View {
         var entries = draft.preAlerts.sorted(by: >).map { minutes in
             Entry(date: occurrence.addingTimeInterval(-Double(minutes) * 60), label: describer.leadText(minutes), isMain: false)
         }
-        entries.append(Entry(date: occurrence, label: String(localized: "on time", locale: .app), isMain: true))
+        entries.append(Entry(date: occurrence, label: String(localized: "on time", bundle: .app, locale: .app), isMain: true))
         return entries
     }
 

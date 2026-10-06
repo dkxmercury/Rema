@@ -55,7 +55,7 @@ struct SettingsScreen: View {
                     if lock.available {
                         section("Protection") {
                             PanelList {
-                                ToggleRow(icon: Icons.faceID, iconColor: Palette.text, title: "\(lock.biometryName) sign-in", subtitle: String(localized: "Rema opens only after \(lock.biometryName)", locale: .app), isOn: lockBinding, minHeight: 60)
+                                ToggleRow(icon: Icons.faceID, iconColor: Palette.text, title: "\(lock.biometryName) sign-in", subtitle: String(localized: "Rema opens only after \(lock.biometryName)", bundle: .app, locale: .app), isOn: lockBinding, minHeight: 60)
                                 if lock.enabled {
                                     Hairline()
                                     lockDelayRow
@@ -90,7 +90,7 @@ struct SettingsScreen: View {
                             nagRow
                             if Remote.shared.isOn(.missed) {
                                 Hairline()
-                                ToggleRow(icon: Icons.bell, iconColor: Palette.text, title: "Missed reminders", subtitle: String(localized: "a badge on the icon and one more reminder in \(Int(Remote.shared.number(.missedFollowUp))) minutes", locale: .app), isOn: $missed, minHeight: 60)
+                                ToggleRow(icon: Icons.bell, iconColor: Palette.text, title: "Missed reminders", subtitle: String(localized: "a badge on the icon and one more reminder in \(Int(Remote.shared.number(.missedFollowUp))) minutes", bundle: .app, locale: .app), isOn: $missed, minHeight: 60)
                                     .onChange(of: missed) { _, _ in Notifier.shared.scheduleSoon() }
                             }
                         }
@@ -106,7 +106,7 @@ struct SettingsScreen: View {
                         section("Places") {
                             PanelList {
                                 NavigationRow(icon: Icons.pin, iconColor: Palette.text, title: "My places", minHeight: 52, action: onPlaces) {
-                                    value(String(localized: "\(store.activePlaces.count) of \(20)", locale: .app))
+                                    value(String(localized: "\(store.activePlaces.count) of \(20)", bundle: .app, locale: .app))
                                 }
                             }
                         }
@@ -114,11 +114,11 @@ struct SettingsScreen: View {
                     if weather.available {
                         section("Weather") {
                             PanelList {
-                                ToggleRow(icon: Icons.sun, iconColor: Palette.text, title: "Weather notifications", subtitle: String(localized: "in the evening about tomorrow and in the morning about today, only when there is a reason", locale: .app), isOn: weatherBinding, minHeight: 64)
+                                ToggleRow(icon: Icons.sun, iconColor: Palette.text, title: "Weather notifications", subtitle: String(localized: "in the evening about tomorrow and in the morning about today, only when there is a reason", bundle: .app, locale: .app), isOn: weatherBinding, minHeight: 64)
                                 if weather.enabled {
                                     Hairline()
                                     NavigationRow(icon: Icons.pin, iconColor: Palette.text, title: "City", minHeight: 52, action: onCity) {
-                                        value(weather.city ?? String(localized: "Not chosen", locale: .app))
+                                        value(weather.city ?? String(localized: "Not chosen", bundle: .app, locale: .app))
                                     }
                                 }
                             }
@@ -130,9 +130,9 @@ struct SettingsScreen: View {
                     }
                     section("Feedback") {
                         PanelList {
-                            ToggleRow(icon: Icons.vibration, iconColor: Palette.text, title: "Vibration", subtitle: String(localized: "a light response to touches", locale: .app), isOn: $haptics, minHeight: 56)
+                            ToggleRow(icon: Icons.vibration, iconColor: Palette.text, title: "Vibration", subtitle: String(localized: "a light response to touches", bundle: .app, locale: .app), isOn: $haptics, minHeight: 56)
                             Hairline()
-                            ToggleRow(icon: Icons.speaker, iconColor: Palette.text, title: "Interface sounds", subtitle: String(localized: "quiet clicks, silent in silent mode", locale: .app), isOn: $sounds, minHeight: 56)
+                            ToggleRow(icon: Icons.speaker, iconColor: Palette.text, title: "Interface sounds", subtitle: String(localized: "quiet clicks, silent in silent mode", bundle: .app, locale: .app), isOn: $sounds, minHeight: 56)
                         }
                     }
                     section("Language") {
@@ -146,7 +146,7 @@ struct SettingsScreen: View {
                         PanelList {
                             permissionRow("Notifications", granted: notificationsGranted, text: notificationsText, height: 49, action: notificationsAction)
                             Hairline()
-                            permissionRow("Urgent notifications", granted: permissions.urgent == .enabled, text: permissions.urgent == .enabled ? String(localized: "allowed", locale: .app) : String(localized: "not allowed", locale: .app), height: 49, action: openSystemSettings)
+                            permissionRow("Urgent notifications", granted: permissions.urgent == .enabled, text: permissions.urgent == .enabled ? String(localized: "allowed", bundle: .app, locale: .app) : String(localized: "not allowed", bundle: .app, locale: .app), height: 49, action: openSystemSettings)
                             Hairline()
                             permissionRow("Location", granted: locationGranted, text: locationText, height: 50, action: openSystemSettings)
                         }
@@ -195,9 +195,9 @@ struct SettingsScreen: View {
 
     private func lockDelayText(_ seconds: Int) -> String {
         switch seconds {
-        case 0: return String(localized: "right away", locale: .app)
-        case 60: return String(localized: "after a minute", locale: .app)
-        default: return String(localized: "after \(seconds / 60) minutes", locale: .app)
+        case 0: return String(localized: "right away", bundle: .app, locale: .app)
+        case 60: return String(localized: "after a minute", bundle: .app, locale: .app)
+        default: return String(localized: "after \(seconds / 60) minutes", bundle: .app, locale: .app)
         }
     }
 
@@ -287,7 +287,7 @@ struct SettingsScreen: View {
                         .frame(width: 36, height: 36)
                         .background(badge.fill(Palette.accent).insetShadow(badge, .black.opacity(0.14), y: -2))
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(verbatim: account.email.isEmpty ? String(localized: "Apple ID with a hidden email", locale: .app) : account.email)
+                        Text(verbatim: account.email.isEmpty ? String(localized: "Apple ID with a hidden email", bundle: .app, locale: .app) : account.email)
                             .font(.app(.golos, 16, weight: 600))
                             .lineLimit(1)
                             .truncationMode(.middle)
@@ -343,7 +343,7 @@ struct SettingsScreen: View {
     }
 
     private func every(_ minutes: Int) -> String {
-        minutes == 1 ? String(localized: "every minute", locale: .app) : String(localized: "every \(minutes) minutes", locale: .app)
+        minutes == 1 ? String(localized: "every minute", bundle: .app, locale: .app) : String(localized: "every \(minutes) minutes", bundle: .app, locale: .app)
     }
 
     private var nagRow: some View {
@@ -458,9 +458,9 @@ struct SettingsScreen: View {
 
     private var notificationsText: String {
         switch permissions.notifications {
-        case .notDetermined: return String(localized: "not requested", locale: .app)
-        case .denied: return String(localized: "off", locale: .app)
-        default: return String(localized: "on", locale: .app)
+        case .notDetermined: return String(localized: "not requested", bundle: .app, locale: .app)
+        case .denied: return String(localized: "off", bundle: .app, locale: .app)
+        default: return String(localized: "on", bundle: .app, locale: .app)
         }
     }
 
@@ -470,10 +470,10 @@ struct SettingsScreen: View {
 
     private var locationText: String {
         switch permissions.location {
-        case .authorizedAlways: return String(localized: "always", locale: .app)
-        case .authorizedWhenInUse: return String(localized: "while using", locale: .app)
-        case .notDetermined: return String(localized: "not asked", locale: .app)
-        default: return String(localized: "no access", locale: .app)
+        case .authorizedAlways: return String(localized: "always", bundle: .app, locale: .app)
+        case .authorizedWhenInUse: return String(localized: "while using", bundle: .app, locale: .app)
+        case .notDetermined: return String(localized: "not asked", bundle: .app, locale: .app)
+        default: return String(localized: "no access", bundle: .app, locale: .app)
         }
     }
 

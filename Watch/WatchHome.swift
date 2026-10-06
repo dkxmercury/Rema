@@ -28,10 +28,15 @@ enum WatchPalette {
 
 struct WatchHome: View {
     let model: WatchModel
+    var moment: Date?
 
     var body: some View {
-        TimelineView(.everyMinute) { timeline in
-            content(now: timeline.date)
+        if let moment {
+            content(now: moment)
+        } else {
+            TimelineView(.everyMinute) { timeline in
+                content(now: timeline.date)
+            }
         }
     }
 
@@ -116,11 +121,11 @@ struct WatchHome: View {
     private func countdown(from now: Date, to date: Date) -> String {
         let minutes = max(0, Int(ceil(date.timeIntervalSince(now) / 60)))
         if minutes < 60 {
-            return String(localized: "in \(minutes) min", locale: .app)
+            return String(localized: "in \(minutes) min", bundle: .app, locale: .app)
         }
         let hours = minutes / 60
         let rest = minutes % 60
-        return rest == 0 ? String(localized: "in \(hours) h", locale: .app) : String(localized: "in \(hours) h \(rest) min", locale: .app)
+        return rest == 0 ? String(localized: "in \(hours) h", bundle: .app, locale: .app) : String(localized: "in \(hours) h \(rest) min", bundle: .app, locale: .app)
     }
 }
 

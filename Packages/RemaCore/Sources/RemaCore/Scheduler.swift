@@ -20,6 +20,15 @@ public struct PlannedNotification: Equatable, Sendable {
     public let sound: SoundChoice
 }
 
+extension PlannedNotification {
+    var essential: Bool {
+        switch kind {
+        case .main, .early, .snoozed: true
+        case .nag, .missed: false
+        }
+    }
+}
+
 public enum Scheduler {
     public static let capacity = 60
     public static let nagRepeats = 12
@@ -37,9 +46,19 @@ public enum Scheduler {
         for reminder in reminders where reminder.deletedAt == nil {
             planned.append(contentsOf: plan(reminder, settings: settings, now: now, calendar: calendar, followUp: followUp))
         }
-        return Array(planned.sorted { lhs, rhs in
+        let sorted = planned.sorted { lhs, rhs in
             lhs.fireDate == rhs.fireDate ? lhs.identifier < rhs.identifier : lhs.fireDate < rhs.fireDate
-        }.prefix(capacity))
+        }
+        // The next day goes in whole; further ahead reminders come before repeats, so persistent ones cannot crowd out next week.
+        let soon = now.addingTimeInterval(86_400)
+        let near = sorted.filter { $0.fireDate <= soon }
+        let later = sorted.filter { $0.fireDate > soon }
+        let main = later.filter(\.essential)
+        let rest = later.filter { !$0.essential }
+        let chosen = (near + main + rest).prefix(capacity)
+        return chosen.sorted { lhs, rhs in
+            lhs.fireDate == rhs.fireDate ? lhs.identifier < rhs.identifier : lhs.fireDate < rhs.fireDate
+        }
     }
 
     static func plan(_ reminder: Reminder, settings: Settings, now: Date, calendar: Calendar, followUp: Int? = nil) -> [PlannedNotification] {
@@ -83,10 +102,14 @@ public enum Scheduler {
             if let snoozed = reminder.snoozedUntil, snoozed > now, occurrence <= now {
                 continue
             }
-            add(.main, at: occurrence, occurrence: occurrence)
             for minutes in Set(reminder.preAlerts) where minutes > 0 {
                 add(.early(minutes: minutes), at: occurrence.addingTimeInterval(-Double(minutes) * 60), occurrence: occurrence)
             }
+            // A snooze to the very time of the next occurrence already rings then, with its own repeats.
+            if let snoozed = reminder.snoozedUntil, snoozed > now, snoozed == occurrence {
+                continue
+            }
+            add(.main, at: occurrence, occurrence: occurrence)
             if reminder.nag {
                 for index in 1...nagRepeats {
                     add(.nag(index: index), at: occurrence.addingTimeInterval(Double(index * interval) * 60), occurrence: occurrence)

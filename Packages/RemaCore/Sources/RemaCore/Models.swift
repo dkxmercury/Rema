@@ -206,14 +206,17 @@ public struct Settings: Codable, Hashable, Sendable {
     public var nagInterval: Int
     public var appearance: Appearance
     public var updatedAt: Date
+    // Set by the first change, so settings put back to the defaults still reach the other phones.
+    public var touched: Bool?
 
-    public init(defaultSound: SoundChoice, morning: LocalTime, evening: LocalTime, nagInterval: Int, appearance: Appearance, updatedAt: Date) {
+    public init(defaultSound: SoundChoice, morning: LocalTime, evening: LocalTime, nagInterval: Int, appearance: Appearance, updatedAt: Date, touched: Bool? = nil) {
         self.defaultSound = defaultSound
         self.morning = morning
         self.evening = evening
         self.nagInterval = nagInterval
         self.appearance = appearance
         self.updatedAt = updatedAt
+        self.touched = touched
     }
 
     public static func standard(at date: Date) -> Settings {

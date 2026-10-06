@@ -343,4 +343,8 @@ extension UIApplication {
     var activeWindow: UIWindow? {
         connectedScenes.compactMap { $0 as? UIWindowScene }.flatMap(\.windows).first { $0.isKeyWindow }
     }
+
+    var mainWindow: UIWindow? {
+        connectedScenes.compactMap { $0 as? UIWindowScene }.flatMap(\.windows).first { $0.windowLevel == .normal }
+    }
 }

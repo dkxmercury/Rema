@@ -104,7 +104,7 @@ struct RootView: View {
         .alert("Update Rema", isPresented: .constant(remote.needsUpdate && !navigation.showingSignIn)) {
             Button("Open App Store") { openURL(remote.link(.appStore)) }
         } message: {
-            Text(verbatim: remote.text(remote.config.update) ?? String(localized: "This version is out of date. Install the new one from the App Store, it takes a minute.", locale: .app))
+            Text(verbatim: remote.text(remote.config.update) ?? String(localized: "This version is out of date. Install the new one from the App Store, it takes a minute.", bundle: .app, locale: .app))
         }
         .alert(
             Text(verbatim: announcement.flatMap { remote.text($0.title) } ?? "Rema"),
@@ -226,10 +226,13 @@ struct RootView: View {
         guard let request = navigation.composeRequest else { return }
         navigation.composeRequest = nil
         guard !navigation.showingSignIn, !showingIntro else { return }
-        if editing != nil || showingCalendar || composing != nil {
+        let root = UIApplication.shared.mainWindow?.rootViewController
+        if editing != nil || showingCalendar || composing != nil || showingLanguage || root?.presentedViewController != nil {
             editing = nil
             showingCalendar = false
             composing = nil
+            showingLanguage = false
+            root?.dismiss(animated: true)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { composing = request }
         } else {
             composing = request

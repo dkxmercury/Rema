@@ -11,13 +11,13 @@ struct Describer {
             parts.append(repeatText(rule))
         }
         if reminder.urgent {
-            parts.append(String(localized: "urgent", locale: .app))
+            parts.append(String(localized: "urgent", bundle: .app, locale: .app))
         }
         if let lead = reminder.preAlerts.sorted().first {
             parts.append(leadText(lead))
         }
         if reminder.nag {
-            parts.append(String(localized: "persistent", locale: .app))
+            parts.append(String(localized: "persistent", bundle: .app, locale: .app))
         }
         if reminder.schedule == nil, !reminder.placeIDs.isEmpty {
             parts.append(placeText(reminder, places: places))
@@ -28,52 +28,52 @@ struct Describer {
     func repeatText(_ rule: RepeatRule) -> String {
         switch rule {
         case .daily:
-            return String(localized: "every day", locale: .app)
+            return String(localized: "every day", bundle: .app, locale: .app)
         case .weekdays:
-            return String(localized: "on weekdays", locale: .app)
+            return String(localized: "on weekdays", bundle: .app, locale: .app)
         case .weekly(let days):
             let sorted = Set(days).sorted()
-            if sorted.count == 7 { return String(localized: "every day", locale: .app) }
-            if sorted == [.monday, .tuesday, .wednesday, .thursday, .friday] { return String(localized: "on weekdays", locale: .app) }
+            if sorted.count == 7 { return String(localized: "every day", bundle: .app, locale: .app) }
+            if sorted == [.monday, .tuesday, .wednesday, .thursday, .friday] { return String(localized: "on weekdays", bundle: .app, locale: .app) }
             return list(sorted.map(shortName))
         case .everyDays(let count):
-            return String(localized: "every \(count) days", locale: .app)
+            return String(localized: "every \(count) days", bundle: .app, locale: .app)
         case .monthlyOnDay(let day):
-            return String(localized: "monthly on day \(day)", locale: .app)
+            return String(localized: "monthly on day \(day)", bundle: .app, locale: .app)
         case .monthlyOnWeekday:
-            return String(localized: "every month", locale: .app)
+            return String(localized: "every month", bundle: .app, locale: .app)
         case .yearly:
-            return String(localized: "every year", locale: .app)
+            return String(localized: "every year", bundle: .app, locale: .app)
         }
     }
 
     func leadText(_ minutes: Int) -> String {
         switch minutes {
-        case 10_080: return String(localized: "a week before", locale: .app)
-        case 1_440: return String(localized: "a day before", locale: .app)
-        case 60: return String(localized: "an hour before", locale: .app)
+        case 10_080: return String(localized: "a week before", bundle: .app, locale: .app)
+        case 1_440: return String(localized: "a day before", bundle: .app, locale: .app)
+        case 60: return String(localized: "an hour before", bundle: .app, locale: .app)
         default:
-            if minutes % 1_440 == 0 { return String(localized: "\(minutes / 1_440) days before", locale: .app) }
-            if minutes % 60 == 0 { return String(localized: "\(minutes / 60) hours before", locale: .app) }
-            return String(localized: "\(minutes) minutes before", locale: .app)
+            if minutes % 1_440 == 0 { return String(localized: "\(minutes / 1_440) days before", bundle: .app, locale: .app) }
+            if minutes % 60 == 0 { return String(localized: "\(minutes / 60) hours before", bundle: .app, locale: .app) }
+            return String(localized: "\(minutes) minutes before", bundle: .app, locale: .app)
         }
     }
 
     func placeText(_ reminder: Reminder, places: [Place]) -> String {
         let names = reminder.placeIDs.compactMap { id in places.first { $0.id == id }?.name.lowercased(with: locale) }
-        let trigger = reminder.placeTrigger == .leave ? String(localized: "leaving", locale: .app) : String(localized: "arriving", locale: .app)
+        let trigger = reminder.placeTrigger == .leave ? String(localized: "leaving", bundle: .app, locale: .app) : String(localized: "arriving", bundle: .app, locale: .app)
         return "\(trigger): \(names.joined(separator: ", "))"
     }
 
     func countdown(from now: Date, to date: Date) -> String {
         let minutes = max(0, Int((date.timeIntervalSince(now) / 60).rounded(.up)))
         if minutes < 60 {
-            return String(localized: "in \(minutes) min", locale: .app)
+            return String(localized: "in \(minutes) min", bundle: .app, locale: .app)
         }
         if minutes < 24 * 60 {
             let hours = minutes / 60
             let rest = minutes % 60
-            return rest == 0 ? String(localized: "in \(hours) h", locale: .app) : String(localized: "in \(hours) h \(rest) min", locale: .app)
+            return rest == 0 ? String(localized: "in \(hours) h", bundle: .app, locale: .app) : String(localized: "in \(hours) h \(rest) min", bundle: .app, locale: .app)
         }
         return date.formatted(Date.FormatStyle(locale: locale, calendar: calendar, timeZone: calendar.timeZone).weekday(.abbreviated).day().month(.abbreviated))
     }
@@ -81,13 +81,13 @@ struct Describer {
     func dayAndTime(_ date: Date, now: Date) -> String {
         let time = shortTime(date)
         if calendar.isDate(date, inSameDayAs: now) {
-            return String(localized: "today at \(time)", locale: .app)
+            return String(localized: "today at \(time)", bundle: .app, locale: .app)
         }
         if let tomorrow = calendar.date(byAdding: .day, value: 1, to: now), calendar.isDate(date, inSameDayAs: tomorrow) {
-            return String(localized: "tomorrow at \(time)", locale: .app)
+            return String(localized: "tomorrow at \(time)", bundle: .app, locale: .app)
         }
         let day = date.formatted(Date.FormatStyle(locale: locale, calendar: calendar, timeZone: calendar.timeZone).day().month(.abbreviated))
-        return String(localized: "\(day) at \(time)", locale: .app)
+        return String(localized: "\(day) at \(time)", bundle: .app, locale: .app)
     }
 
     func time(_ date: Date) -> String {
@@ -109,14 +109,14 @@ struct Describer {
     }
 
     func repeatValue(_ schedule: Schedule?) -> String {
-        guard let schedule, let rule = schedule.rule else { return String(localized: "No repeat", locale: .app) }
+        guard let schedule, let rule = schedule.rule else { return String(localized: "No repeat", bundle: .app, locale: .app) }
         switch rule {
         case .yearly(let month, let day):
             let reference = calendar.date(from: DateComponents(year: 2000, month: month, day: day, hour: 12)) ?? Date()
             let date = reference.formatted(Date.FormatStyle(locale: locale, calendar: calendar, timeZone: calendar.timeZone).day().month(.abbreviated)).replacingOccurrences(of: ".", with: "")
-            return String(localized: "Every year, \(date)", locale: .app)
+            return String(localized: "Every year, \(date)", bundle: .app, locale: .app)
         case .monthlyOnDay(let day):
-            return String(localized: "Every month, day \(day)", locale: .app)
+            return String(localized: "Every month, day \(day)", bundle: .app, locale: .app)
         default:
             return repeatText(rule).capitalizedFirst(locale)
         }
@@ -135,12 +135,12 @@ struct Describer {
 
     func builtInName(_ sound: BuiltInSound) -> String {
         switch sound {
-        case .mechanika: return String(localized: "Mechanika", locale: .app)
-        case .bell: return String(localized: "Little bell", locale: .app)
-        case .drops: return String(localized: "Drops", locale: .app)
-        case .ticktock: return String(localized: "Tick-tock", locale: .app)
-        case .soft: return String(localized: "Soft", locale: .app)
-        case .silent: return String(localized: "No sound", locale: .app)
+        case .mechanika: return String(localized: "Mechanika", bundle: .app, locale: .app)
+        case .bell: return String(localized: "Little bell", bundle: .app, locale: .app)
+        case .drops: return String(localized: "Drops", bundle: .app, locale: .app)
+        case .ticktock: return String(localized: "Tick-tock", bundle: .app, locale: .app)
+        case .soft: return String(localized: "Soft", bundle: .app, locale: .app)
+        case .silent: return String(localized: "No sound", bundle: .app, locale: .app)
         }
     }
 
@@ -162,7 +162,7 @@ struct Describer {
     private func list(_ items: [String]) -> String {
         guard items.count > 1 else { return items.first ?? "" }
         if items.count == 2 {
-            return String(localized: "\(items[0]) and \(items[1])", locale: .app)
+            return String(localized: "\(items[0]) and \(items[1])", bundle: .app, locale: .app)
         }
         return items.joined(separator: ", ")
     }

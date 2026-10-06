@@ -25,8 +25,9 @@ final class WeatherAdvisor {
     private static let latitudeKey = "weather.latitude"
     private static let longitudeKey = "weather.longitude"
     private static let cityKey = "weather.city"
-    private static let notesKey = "weather.notes"
+    private static let forecastKey = "weather.forecast"
     private static let fetchedKey = "weather.fetched"
+    private static let failedKey = "weather.failed"
     private static let lastSnowKey = "weather.lastSnow"
 
     private(set) var enabled: Bool
@@ -51,10 +52,13 @@ final class WeatherAdvisor {
         return CLLocation(latitude: defaults.double(forKey: Self.latitudeKey), longitude: defaults.double(forKey: Self.longitudeKey))
     }
 
+    // Notes are written from the saved forecast each time, so a new morning time or language applies at once.
     func notes(after now: Date) -> [WeatherNote] {
-        guard enabled, available, let data = defaults.data(forKey: Self.notesKey),
-              let notes = try? JSONDecoder().decode([WeatherNote].self, from: data) else { return [] }
-        return notes.filter { $0.fireDate > now }
+        guard enabled, available, let data = defaults.data(forKey: Self.forecastKey),
+              let forecast = try? JSONDecoder().decode([DayForecast].self, from: data) else { return [] }
+        let calendar = Calendar.current
+        let lastSnow = defaults.string(forKey: Self.lastSnowKey).flatMap(Self.date)
+        return compose(forecast, today: LocalDate(now, in: calendar), now: now, lastSnow: lastSnow, calendar: calendar)
     }
 
     func setEnabled(_ on: Bool) async {
@@ -101,21 +105,31 @@ final class WeatherAdvisor {
         legal = attribution.legalPageURL
     }
 
-    // Asked again at most every three hours; the forecast does not change faster than that.
+    // Asked again at most every six hours and an hour after a failure; every request counts against the WeatherKit quota.
     func refresh(force: Bool = false) async {
-        defer { Notifier.shared.scheduleSoon() }
         guard enabled, available, let location else {
-            defaults.removeObject(forKey: Self.notesKey)
+            if defaults.data(forKey: Self.forecastKey) != nil {
+                defaults.removeObject(forKey: Self.forecastKey)
+                Notifier.shared.scheduleSoon()
+            }
             return
         }
         let now = Date()
-        if !force, let fetched = defaults.object(forKey: Self.fetchedKey) as? Date, now.timeIntervalSince(fetched) < 3 * 3600 {
-            return
+        if !force {
+            if let fetched = defaults.object(forKey: Self.fetchedKey) as? Date, now.timeIntervalSince(fetched) < 6 * 3600 {
+                return
+            }
+            if let failed = defaults.object(forKey: Self.failedKey) as? Date, now.timeIntervalSince(failed) < 3600 {
+                return
+            }
         }
         let calendar = Calendar.current
         let start = calendar.date(byAdding: .day, value: -2, to: calendar.startOfDay(for: now)) ?? now
         let end = calendar.date(byAdding: .day, value: 4, to: calendar.startOfDay(for: now)) ?? now
-        guard let days = try? await WeatherService.shared.weather(for: location, including: .daily(startDate: start, endDate: end)) else { return }
+        guard let days = try? await WeatherService.shared.weather(for: location, including: .daily(startDate: start, endDate: end)) else {
+            defaults.set(now, forKey: Self.failedKey)
+            return
+        }
         let forecast = days.map { Self.forecast($0, calendar: calendar) }
         let today = LocalDate(now, in: calendar)
         var lastSnow = (defaults.string(forKey: Self.lastSnowKey)).flatMap(Self.date)
@@ -127,9 +141,10 @@ final class WeatherAdvisor {
         if let lastSnow {
             defaults.set(Self.text(lastSnow), forKey: Self.lastSnowKey)
         }
-        let notes = compose(forecast, today: today, now: now, lastSnow: lastSnow, calendar: calendar)
-        defaults.set(try? JSONEncoder().encode(notes), forKey: Self.notesKey)
+        defaults.set(try? JSONEncoder().encode(forecast), forKey: Self.forecastKey)
         defaults.set(now, forKey: Self.fetchedKey)
+        defaults.removeObject(forKey: Self.failedKey)
+        Notifier.shared.scheduleSoon()
     }
 
     private func compose(_ forecast: [DayForecast], today: LocalDate, now: Date, lastSnow: LocalDate?, calendar: Calendar) -> [WeatherNote] {
@@ -176,36 +191,36 @@ final class WeatherAdvisor {
         let body: String
         switch event {
         case .storm:
-            title = tomorrow ? String(localized: "Thunderstorm tomorrow", locale: .app) : String(localized: "Thunderstorm today", locale: .app)
-            body = String(localized: "Take an umbrella and take care outside.", locale: .app)
+            title = tomorrow ? String(localized: "Thunderstorm tomorrow", bundle: .app, locale: .app) : String(localized: "Thunderstorm today", bundle: .app, locale: .app)
+            body = String(localized: "Take an umbrella and take care outside.", bundle: .app, locale: .app)
         case .firstSnow:
-            title = tomorrow ? String(localized: "First snow tomorrow", locale: .app) : String(localized: "First snow today", locale: .app)
-            body = String(localized: "Dress warmer and enjoy it.", locale: .app)
+            title = tomorrow ? String(localized: "First snow tomorrow", bundle: .app, locale: .app) : String(localized: "First snow today", bundle: .app, locale: .app)
+            body = String(localized: "Dress warmer and enjoy it.", bundle: .app, locale: .app)
         case .snow:
-            title = tomorrow ? String(localized: "Snow tomorrow", locale: .app) : String(localized: "Snow today", locale: .app)
-            body = String(localized: "Dress warmer and leave a little earlier.", locale: .app)
+            title = tomorrow ? String(localized: "Snow tomorrow", bundle: .app, locale: .app) : String(localized: "Snow today", bundle: .app, locale: .app)
+            body = String(localized: "Dress warmer and leave a little earlier.", bundle: .app, locale: .app)
         case .rain:
-            title = tomorrow ? String(localized: "Rain tomorrow", locale: .app) : String(localized: "Rain today", locale: .app)
-            body = String(localized: "Don't forget an umbrella.", locale: .app)
+            title = tomorrow ? String(localized: "Rain tomorrow", bundle: .app, locale: .app) : String(localized: "Rain today", bundle: .app, locale: .app)
+            body = String(localized: "Don't forget an umbrella.", bundle: .app, locale: .app)
         case .wind(let speed):
             let gusts = Measurement(value: speed, unit: UnitSpeed.metersPerSecond).formatted(.measurement(width: .abbreviated, usage: .wind, numberFormatStyle: .number.precision(.fractionLength(0))).locale(locale))
-            title = tomorrow ? String(localized: "Strong wind tomorrow", locale: .app) : String(localized: "Strong wind today", locale: .app)
-            body = String(localized: "Gusts up to \(gusts).", locale: .app)
+            title = tomorrow ? String(localized: "Strong wind tomorrow", bundle: .app, locale: .app) : String(localized: "Strong wind today", bundle: .app, locale: .app)
+            body = String(localized: "Gusts up to \(gusts).", bundle: .app, locale: .app)
         case .frost(let low):
-            title = tomorrow ? String(localized: "Frost tomorrow", locale: .app) : String(localized: "Frost today", locale: .app)
-            body = String(localized: "Down to \(degrees(low)), dress warmer.", locale: .app)
+            title = tomorrow ? String(localized: "Frost tomorrow", bundle: .app, locale: .app) : String(localized: "Frost today", bundle: .app, locale: .app)
+            body = String(localized: "Down to \(degrees(low)), dress warmer.", bundle: .app, locale: .app)
         case .heat(let high):
-            title = tomorrow ? String(localized: "Heat tomorrow", locale: .app) : String(localized: "Heat today", locale: .app)
-            body = String(localized: "Up to \(degrees(high)), drink more water.", locale: .app)
+            title = tomorrow ? String(localized: "Heat tomorrow", bundle: .app, locale: .app) : String(localized: "Heat today", bundle: .app, locale: .app)
+            body = String(localized: "Up to \(degrees(high)), drink more water.", bundle: .app, locale: .app)
         case .colder(let drop):
-            title = tomorrow ? String(localized: "Colder tomorrow", locale: .app) : String(localized: "Colder today", locale: .app)
-            body = String(localized: "\(difference(drop)) colder than the day before.", locale: .app)
+            title = tomorrow ? String(localized: "Colder tomorrow", bundle: .app, locale: .app) : String(localized: "Colder today", bundle: .app, locale: .app)
+            body = String(localized: "\(difference(drop)) colder than the day before.", bundle: .app, locale: .app)
         case .sunAfterRain:
-            title = tomorrow ? String(localized: "Sun tomorrow", locale: .app) : String(localized: "Sun today", locale: .app)
-            body = String(localized: "Finally, after the rainy days.", locale: .app)
+            title = tomorrow ? String(localized: "Sun tomorrow", bundle: .app, locale: .app) : String(localized: "Sun today", bundle: .app, locale: .app)
+            body = String(localized: "Finally, after the rainy days.", bundle: .app, locale: .app)
         case .warmWeekend(let high):
-            title = String(localized: "A warm weekend", locale: .app)
-            body = String(localized: "Up to \(degrees(high)), a good time to get outside.", locale: .app)
+            title = String(localized: "A warm weekend", bundle: .app, locale: .app)
+            body = String(localized: "Up to \(degrees(high)), a good time to get outside.", bundle: .app, locale: .app)
         }
         return WeatherNote(fireDate: fire, title: title, body: body)
     }

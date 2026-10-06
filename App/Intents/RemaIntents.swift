@@ -14,6 +14,7 @@ struct AddReminderIntent: AppIntent {
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog & ShowsSnippetView {
         let store = Store.shared
+        store.reloadIfChanged()
         let now = Date()
         let parsed = PhraseParser(now: now, calendar: .current, morning: store.settings.morning, evening: store.settings.evening, places: store.activePlaces.map(\.name), preferred: AppLanguage.current.rawValue).parse(phrase)
         guard !parsed.title.isEmpty else {
@@ -42,16 +43,18 @@ struct AddReminderIntent: AppIntent {
 struct NextReminderIntent: AppIntent {
     static let title: LocalizedStringResource = "Next reminder"
     static let description = IntentDescription("Tells what is next and how soon.")
+    static let authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
 
     init() {}
 
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog & ShowsSnippetView {
         let store = Store.shared
+        store.reloadIfChanged()
         let now = Date()
         guard let next = Agenda.upcoming(after: now, reminders: store.activeReminders, calendar: .current, limit: 1).first,
               let reminder = store.reminder(next.reminderID) else {
-            return .result(dialog: IntentDialog("Nothing ahead."), view: ReminderSnippet(title: String(localized: "Nothing ahead", locale: .app), when: ""))
+            return .result(dialog: IntentDialog("Nothing ahead."), view: ReminderSnippet(title: String(localized: "Nothing ahead", bundle: .app, locale: .app), when: ""))
         }
         let describer = Describer(locale: AppLanguage.current.locale)
         let when = "\(describer.dayAndTime(next.occurrence, now: now).capitalizedFirst(.current)), \(describer.countdown(from: now, to: next.occurrence))"
@@ -62,12 +65,14 @@ struct NextReminderIntent: AppIntent {
 struct CompleteReminderIntent: AppIntent {
     static let title: LocalizedStringResource = "Mark as done"
     static let description = IntentDescription("Marks the current or the next reminder as done.")
+    static let authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
 
     init() {}
 
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
         let store = Store.shared
+        store.reloadIfChanged()
         guard let target = IntentSupport.current(store: store, now: Date()), let reminder = store.reminder(target.reminderID) else {
             return .result(dialog: IntentDialog("Nothing to mark."))
         }
@@ -75,13 +80,15 @@ struct CompleteReminderIntent: AppIntent {
         await ReminderNotifications.clear(target.reminderID, occurrence: target.occurrence)
         await ReminderNotifications.endActivities(for: target.reminderID)
         Notifier.shared.scheduleSoon()
-        return .result(dialog: IntentDialog(stringLiteral: String(localized: "Done: \(reminder.title)", locale: .app)))
+        return .result(dialog: IntentDialog(stringLiteral: String(localized: "Done: \(reminder.title)", bundle: .app, locale: .app)))
     }
 }
 
 struct SnoozeReminderIntent: AppIntent {
     static let title: LocalizedStringResource = "Snooze reminder"
     static let description = IntentDescription("Moves the current or the next reminder a bit later.")
+
+    static let authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
 
     @Parameter(title: "Minutes", default: 10, inclusiveRange: (1, 240))
     var minutes: Int
@@ -91,6 +98,7 @@ struct SnoozeReminderIntent: AppIntent {
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
         let store = Store.shared
+        store.reloadIfChanged()
         let now = Date()
         guard let target = IntentSupport.current(store: store, now: now), let reminder = store.reminder(target.reminderID) else {
             return .result(dialog: IntentDialog("Nothing to snooze."))
@@ -99,7 +107,7 @@ struct SnoozeReminderIntent: AppIntent {
         await ReminderNotifications.clear(target.reminderID, occurrence: target.occurrence)
         await ReminderNotifications.endActivities(for: target.reminderID)
         Notifier.shared.scheduleSoon()
-        return .result(dialog: IntentDialog(stringLiteral: String(localized: "Snoozed by \(minutes) min: \(reminder.title)", locale: .app)))
+        return .result(dialog: IntentDialog(stringLiteral: String(localized: "Snoozed by \(minutes) min: \(reminder.title)", bundle: .app, locale: .app)))
     }
 }
 

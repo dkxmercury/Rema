@@ -99,9 +99,9 @@ struct ResetScreen: View {
                 sentAt = Date()
                 Feedback.play(.save)
             } catch let failure as Backend.Failure {
-                problem = failure == .rateLimited ? failure.message : String(localized: "Could not send the email. Try again.", locale: .app)
+                problem = failure == .rateLimited ? failure.message : String(localized: "Could not send the email. Try again.", bundle: .app, locale: .app)
             } catch {
-                problem = String(localized: "Could not send the email. Try again.", locale: .app)
+                problem = String(localized: "Could not send the email. Try again.", bundle: .app, locale: .app)
             }
         }
     }

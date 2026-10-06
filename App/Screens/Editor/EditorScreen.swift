@@ -213,7 +213,7 @@ struct EditorScreen: View {
             Hairline()
             ToggleRow(icon: Icons.bell, iconColor: Palette.text, title: "Persistent", subtitle: nagSubtitle, isOn: $draft.nag)
             Hairline()
-            ToggleRow(icon: Icons.bolt, iconColor: Palette.urgentIcon, title: "Through Do Not Disturb", subtitle: String(localized: "marked Urgent", locale: .app), isOn: $draft.urgent)
+            ToggleRow(icon: Icons.bolt, iconColor: Palette.urgentIcon, title: "Through Do Not Disturb", subtitle: String(localized: "marked Urgent", bundle: .app, locale: .app), isOn: $draft.urgent)
             Hairline()
             soundRow
         }
@@ -221,15 +221,15 @@ struct EditorScreen: View {
 
     private var placeValue: String {
         let names = draft.placeIDs.compactMap { id in store.places.first { $0.id == id }?.name }
-        return names.isEmpty ? String(localized: "No", locale: .app) : names.joined(separator: ", ")
+        return names.isEmpty ? String(localized: "No", bundle: .app, locale: .app) : names.joined(separator: ", ")
     }
 
     private var nagSubtitle: String {
         let minutes = draft.nagInterval ?? store.settings.nagInterval
         if minutes == 1 {
-            return String(localized: "every minute, until I mark it", locale: .app)
+            return String(localized: "every minute, until I mark it", bundle: .app, locale: .app)
         }
-        return String(localized: "every \(minutes) minutes, until I mark it", locale: .app)
+        return String(localized: "every \(minutes) minutes, until I mark it", bundle: .app, locale: .app)
     }
 
     private var soundRow: some View {

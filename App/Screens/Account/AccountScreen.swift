@@ -121,7 +121,7 @@ struct AccountScreen: View {
                 Glyph(paths: Icons.person, size: 24, lineWidth: 1.9, color: Palette.text)
             }
             VStack(alignment: .leading, spacing: 3) {
-                Text(verbatim: summary.email.isEmpty ? String(localized: "Apple ID with a hidden email", locale: .app) : summary.email)
+                Text(verbatim: summary.email.isEmpty ? String(localized: "Apple ID with a hidden email", bundle: .app, locale: .app) : summary.email)
                     .font(.app(.golos, 17, weight: 600))
                     .lineLimit(1)
                     .truncationMode(.middle)
@@ -173,17 +173,17 @@ struct AccountScreen: View {
 
     private var statusText: String {
         switch summary.status {
-        case .saved, .idle: String(localized: "Everything is saved in the account", locale: .app)
-        case .syncing: String(localized: "Saving…", locale: .app)
-        case .offline: String(localized: "No connection, changes will be saved later", locale: .app)
-        case .failed: String(localized: "Not saved yet, trying again", locale: .app)
+        case .saved, .idle: String(localized: "Everything is saved in the account", bundle: .app, locale: .app)
+        case .syncing: String(localized: "Saving…", bundle: .app, locale: .app)
+        case .offline: String(localized: "No connection, changes will be saved later", bundle: .app, locale: .app)
+        case .failed: String(localized: "Not saved yet, trying again", bundle: .app, locale: .app)
         }
     }
 
     private var statusTime: String? {
         guard summary.status == .saved || summary.status == .idle, let savedAt = summary.savedAt else { return nil }
         if Date().timeIntervalSince(savedAt) < 60 {
-            return String(localized: "just now", locale: .app)
+            return String(localized: "just now", bundle: .app, locale: .app)
         }
         let formatter = RelativeDateTimeFormatter()
         formatter.locale = locale
@@ -210,9 +210,9 @@ struct AccountScreen: View {
             do {
                 try await onDelete()
             } catch let failure as Backend.Failure {
-                problem = failure == .offline ? failure.message : String(localized: "Could not delete the account. Try again.", locale: .app)
+                problem = failure == .offline ? failure.message : String(localized: "Could not delete the account. Try again.", bundle: .app, locale: .app)
             } catch {
-                problem = String(localized: "Could not delete the account. Try again.", locale: .app)
+                problem = String(localized: "Could not delete the account. Try again.", bundle: .app, locale: .app)
             }
             busy = false
         }

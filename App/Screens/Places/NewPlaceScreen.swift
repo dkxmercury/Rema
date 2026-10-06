@@ -49,7 +49,7 @@ struct NewPlaceScreen: View {
                         .padding(.top, 14)
                     if askToRemember {
                         PanelList {
-                            ToggleRow(icon: Icons.star, iconColor: Palette.text, title: "Remember place", subtitle: String(localized: "it will appear in My places", locale: .app), isOn: $remember, minHeight: 60)
+                            ToggleRow(icon: Icons.star, iconColor: Palette.text, title: "Remember place", subtitle: String(localized: "it will appear in My places", bundle: .app, locale: .app), isOn: $remember, minHeight: 60)
                         }
                         .padding(.top, 12)
                     }
@@ -60,7 +60,7 @@ struct NewPlaceScreen: View {
                     HStack(spacing: 8) {
                         ForEach(suggestions, id: \.key) { suggestion in
                             Chip(title: LocalizedStringKey(suggestion.key), horizontalPadding: 17.5) {
-                                name = String(localized: String.LocalizationValue(suggestion.key), locale: .app)
+                                name = String(localized: String.LocalizationValue(suggestion.key), bundle: .app, locale: .app)
                                 icon = suggestion.icon
                                 Feedback.play(.select)
                             }
@@ -70,7 +70,7 @@ struct NewPlaceScreen: View {
                     HStack(alignment: .firstTextBaseline) {
                         SectionLabel(text: "Radius")
                         Spacer()
-                        Text(verbatim: String(localized: "\(Int(radius)) m", locale: .app))
+                        Text(verbatim: String(localized: "\(Int(radius)) m", bundle: .app, locale: .app))
                             .font(.app(.jost, 18, weight: 600))
                             .contentTransition(.numericText())
                     }
@@ -268,7 +268,7 @@ struct NewPlaceScreen: View {
             return
         }
         var place = existing ?? Place(name: trimmed, icon: icon.rawValue, latitude: center.latitude, longitude: center.longitude, radius: radius, createdAt: Date())
-        place.name = trimmed.isEmpty ? String(localized: "Place on the map", locale: .app) : trimmed
+        place.name = trimmed.isEmpty ? String(localized: "Place on the map", bundle: .app, locale: .app) : trimmed
         place.icon = icon.rawValue
         place.latitude = center.latitude
         place.longitude = center.longitude

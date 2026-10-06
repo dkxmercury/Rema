@@ -43,9 +43,9 @@ struct HomeScreen: View {
                     markerProgress: shown ? 1 : 0,
                     markers: content.markers,
                     windowTime: lift.map { clockText($0.minutes) } ?? content.next?.time ?? content.nowText,
-                    windowCaption: lift.map { String(localized: "was \(clockText($0.original))", locale: .app) } ?? content.next?.countdown ?? String(localized: "now", locale: .app),
+                    windowCaption: lift.map { String(localized: "was \(clockText($0.original))", bundle: .app, locale: .app) } ?? content.next?.countdown ?? String(localized: "now", bundle: .app, locale: .app),
                     lift: lift,
-                    badge: content.missedCount > 0 && lift == nil ? String(localized: "\(content.missedCount) missed", locale: .app) : nil
+                    badge: content.missedCount > 0 && lift == nil ? String(localized: "\(content.missedCount) missed", bundle: .app, locale: .app) : nil
                 )
                 .overlay { handles }
                 .padding(.top, 14)
@@ -102,7 +102,7 @@ struct HomeScreen: View {
             }
 
             if let moved {
-                MovedToast(text: String(localized: "Moved to \(moved.time)", locale: .app)) {
+                MovedToast(text: String(localized: "Moved to \(moved.time)", bundle: .app, locale: .app)) {
                     moved.undo()
                     withAnimation(Motion.standard) { self.moved = nil }
                 }
@@ -272,7 +272,7 @@ struct HomeScreen: View {
     }
 
     private func movingRow(_ row: HomeContent.Row, _ lift: DialLift) -> HomeContent.Row {
-        let was = String(localized: "was \(clockText(lift.original))", locale: .app)
+        let was = String(localized: "was \(clockText(lift.original))", bundle: .app, locale: .app)
         return HomeContent.Row(
             id: row.id,
             reminderID: row.reminderID,

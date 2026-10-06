@@ -13,6 +13,8 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
     }
 
     private var pending: Task<Void, Never>?
+    @MainActor private var running: Task<Void, Never>?
+    @MainActor private var again = false
     private var store: Store { Store.shared }
 
     func configure() {
@@ -22,14 +24,14 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
     }
 
     private var categories: Set<UNNotificationCategory> {
-        let done = UNNotificationAction(identifier: "done", title: String(localized: "Done", locale: .app))
-        let tenMinutes = UNNotificationAction(identifier: "snooze10", title: String(localized: "In 10 minutes", locale: .app))
-        let fifteenMinutes = UNNotificationAction(identifier: "snooze15", title: String(localized: "In 15 minutes", locale: .app))
-        let hour = UNNotificationAction(identifier: "snooze60", title: String(localized: "In an hour", locale: .app))
-        let morning = UNNotificationAction(identifier: "morning", title: String(localized: "Tomorrow morning", locale: .app))
-        let skip = UNNotificationAction(identifier: "skip", title: String(localized: "Skip today", locale: .app))
-        let call = UNNotificationAction(identifier: "call", title: String(localized: "Call", locale: .app), options: [.foreground], icon: UNNotificationActionIcon(systemImageName: "phone.fill"))
-        let open = UNNotificationAction(identifier: "open", title: String(localized: "Open", locale: .app), options: [.foreground], icon: UNNotificationActionIcon(systemImageName: "safari"))
+        let done = UNNotificationAction(identifier: "done", title: String(localized: "Done", bundle: .app, locale: .app))
+        let tenMinutes = UNNotificationAction(identifier: "snooze10", title: String(localized: "In 10 minutes", bundle: .app, locale: .app))
+        let fifteenMinutes = UNNotificationAction(identifier: "snooze15", title: String(localized: "In 15 minutes", bundle: .app, locale: .app))
+        let hour = UNNotificationAction(identifier: "snooze60", title: String(localized: "In an hour", bundle: .app, locale: .app))
+        let morning = UNNotificationAction(identifier: "morning", title: String(localized: "Tomorrow morning", bundle: .app, locale: .app))
+        let skip = UNNotificationAction(identifier: "skip", title: String(localized: "Skip today", bundle: .app, locale: .app))
+        let call = UNNotificationAction(identifier: "call", title: String(localized: "Call", bundle: .app, locale: .app), options: [.foreground], icon: UNNotificationActionIcon(systemImageName: "phone.fill"))
+        let open = UNNotificationAction(identifier: "open", title: String(localized: "Open", bundle: .app, locale: .app), options: [.foreground], icon: UNNotificationActionIcon(systemImageName: "safari"))
         return [
             UNNotificationCategory(identifier: "reminder", actions: [done, tenMinutes, hour, morning], intentIdentifiers: []),
             UNNotificationCategory(identifier: "nag", actions: [done, fifteenMinutes, skip], intentIdentifiers: []),
@@ -85,8 +87,28 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         }
     }
 
+    // Rebuilds never overlap; a request that comes in during one runs right after it, and every caller waits for that.
     @MainActor
     func reschedule() async {
+        if let running {
+            again = true
+            await running.value
+            return
+        }
+        let task = Task { @MainActor in
+            repeat {
+                again = false
+                await rebuild()
+            } while again
+            running = nil
+        }
+        running = task
+        await task.value
+    }
+
+    @MainActor
+    private func rebuild() async {
+        store.reloadIfChanged()
         let center = UNUserNotificationCenter.current()
         let status = await center.notificationSettings().authorizationStatus
         guard status == .authorized || status == .provisional || status == .ephemeral else { return }
@@ -120,8 +142,8 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
             content.userInfo = ["reminder": item.reminderID.uuidString, "occurrence": item.occurrence.timeIntervalSince1970]
             addContact(of: item.title, to: content)
             if item.kind == .missed {
-                content.title = String(localized: "Not done: \(item.title)", locale: .app)
-                content.badge = NSNumber(value: Agenda.missed(item.fireDate, reminders: store.activeReminders, calendar: .current).count)
+                content.title = String(localized: "Not done: \(item.title)", bundle: .app, locale: .app)
+                content.badge = NSNumber(value: max(1, Agenda.missed(item.fireDate, reminders: store.activeReminders, calendar: .current).count))
             }
             let parts = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: item.fireDate)
             let trigger = UNCalendarNotificationTrigger(dateMatching: parts, repeats: false)
@@ -144,7 +166,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
                 region.notifyOnExit = reminder.placeTrigger == .leave
                 let content = UNMutableNotificationContent()
                 content.title = reminder.title
-                content.body = reminder.placeTrigger == .leave ? String(localized: "Leaving: \(place.name)", locale: .app) : String(localized: "Arrived: \(place.name)", locale: .app)
+                content.body = reminder.placeTrigger == .leave ? String(localized: "Leaving: \(place.name)", bundle: .app, locale: .app) : String(localized: "Arrived: \(place.name)", bundle: .app, locale: .app)
                 content.sound = SoundPlayer.notificationSound(reminder.sound, settings: store.settings, sounds: store.sounds)
                 content.categoryIdentifier = "place"
                 content.interruptionLevel = reminder.urgent ? .timeSensitive : .active
@@ -172,32 +194,32 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         case .main:
             return when
         case .early:
-            return String(localized: "\(when), reminding in advance", locale: .app)
+            return String(localized: "\(when), reminding in advance", bundle: .app, locale: .app)
         case .snoozed:
-            return String(localized: "Snoozed reminder", locale: .app)
+            return String(localized: "Snoozed reminder", bundle: .app, locale: .app)
         case .missed:
-            return String(localized: "It was at \(describer.time(item.occurrence)). Open to mark it or move it.", locale: .app)
+            return String(localized: "It was at \(describer.time(item.occurrence)). Open to mark it or move it.", bundle: .app, locale: .app)
         case .nag(let index):
             let interval = store.reminder(item.reminderID)?.nagInterval ?? store.settings.nagInterval
-            let next = index == Scheduler.nagRepeats ? String(localized: "This is the last reminder.", locale: .app) : String(localized: "I'll repeat in \(interval) minutes until you tap Done.", locale: .app)
+            let next = index == Scheduler.nagRepeats ? String(localized: "This is the last reminder.", bundle: .app, locale: .app) : String(localized: "I'll repeat in \(interval) minutes until you tap Done.", bundle: .app, locale: .app)
             return "\(ordinal(index + 1)). \(next)"
         }
     }
 
     private func ordinal(_ number: Int) -> String {
         switch number {
-        case 2: return String(localized: "Reminding for the 2nd time", locale: .app)
-        case 3: return String(localized: "Reminding for the 3rd time", locale: .app)
-        case 4: return String(localized: "Reminding for the 4th time", locale: .app)
-        case 5: return String(localized: "Reminding for the 5th time", locale: .app)
-        case 6: return String(localized: "Reminding for the 6th time", locale: .app)
-        case 7: return String(localized: "Reminding for the 7th time", locale: .app)
-        case 8: return String(localized: "Reminding for the 8th time", locale: .app)
-        case 9: return String(localized: "Reminding for the 9th time", locale: .app)
-        case 10: return String(localized: "Reminding for the 10th time", locale: .app)
-        case 11: return String(localized: "Reminding for the 11th time", locale: .app)
-        case 12: return String(localized: "Reminding for the 12th time", locale: .app)
-        default: return String(localized: "Reminding for the 13th time", locale: .app)
+        case 2: return String(localized: "Reminding for the 2nd time", bundle: .app, locale: .app)
+        case 3: return String(localized: "Reminding for the 3rd time", bundle: .app, locale: .app)
+        case 4: return String(localized: "Reminding for the 4th time", bundle: .app, locale: .app)
+        case 5: return String(localized: "Reminding for the 5th time", bundle: .app, locale: .app)
+        case 6: return String(localized: "Reminding for the 6th time", bundle: .app, locale: .app)
+        case 7: return String(localized: "Reminding for the 7th time", bundle: .app, locale: .app)
+        case 8: return String(localized: "Reminding for the 8th time", bundle: .app, locale: .app)
+        case 9: return String(localized: "Reminding for the 9th time", bundle: .app, locale: .app)
+        case 10: return String(localized: "Reminding for the 10th time", bundle: .app, locale: .app)
+        case 11: return String(localized: "Reminding for the 11th time", bundle: .app, locale: .app)
+        case 12: return String(localized: "Reminding for the 12th time", bundle: .app, locale: .app)
+        default: return String(localized: "Reminding for the 13th time", bundle: .app, locale: .app)
         }
     }
 
@@ -218,6 +240,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
             }
             if let raw = info["reminder"] as? String, let id = UUID(uuidString: raw) {
                 let occurrence = Date(timeIntervalSince1970: info["occurrence"] as? Double ?? Date().timeIntervalSince1970)
+                store.reloadIfChanged()
                 apply(action, to: id, occurrence: occurrence)
             }
             await reschedule()

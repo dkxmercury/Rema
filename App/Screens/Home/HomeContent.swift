@@ -88,7 +88,7 @@ extension HomeContent {
                 time: describer.time(item.occurrence),
                 countdown: describer.countdown(from: now, to: item.occurrence),
                 title: reminder.title,
-                note: pending.map { String(localized: "I'll also remind \(describer.leadText($0))", locale: .app) },
+                note: pending.map { String(localized: "I'll also remind \(describer.leadText($0))", bundle: .app, locale: .app) },
                 urgent: reminder.urgent
             )
         }
@@ -99,7 +99,7 @@ extension HomeContent {
                 id: "place-\(parcel.id.uuidString)",
                 reminderID: parcel.id,
                 icon: .place,
-                label: String(localized: "By place", locale: .app),
+                label: String(localized: "By place", bundle: .app, locale: .app),
                 title: parcel.title,
                 subtitle: describer.placeText(parcel, places: places)
             ))
@@ -113,7 +113,7 @@ extension HomeContent {
                 id: "yearly-\(reminder.id.uuidString)",
                 reminderID: reminder.id,
                 icon: .yearly,
-                label: String(localized: "Every year", locale: .app),
+                label: String(localized: "Every year", bundle: .app, locale: .app),
                 title: reminder.title,
                 subtitle: describer.dayAndTime(yearly.occurrence, now: now)
             ))
@@ -222,20 +222,20 @@ enum SampleData {
     // The widget gallery speaks the phone's language, the Russian sample above stays for the design checks.
     static var gallery: HomeContent {
         let names = [
-            String(localized: "Take vitamins", locale: .app),
-            String(localized: "Call the supplier", locale: .app),
-            String(localized: "Buy bread and milk", locale: .app),
-            String(localized: "Water the plants", locale: .app),
-            String(localized: "Pick up the parcel", locale: .app),
-            String(localized: "Renew the domain", locale: .app),
+            String(localized: "Take vitamins", bundle: .app, locale: .app),
+            String(localized: "Call the supplier", bundle: .app, locale: .app),
+            String(localized: "Buy bread and milk", bundle: .app, locale: .app),
+            String(localized: "Water the plants", bundle: .app, locale: .app),
+            String(localized: "Pick up the parcel", bundle: .app, locale: .app),
+            String(localized: "Renew the domain", bundle: .app, locale: .app),
         ]
         var list = reminders
         for index in list.indices where index < names.count {
             list[index].title = names[index]
         }
         var spots = places
-        spots[0].name = String(localized: "Work", locale: .app)
-        spots[1].name = String(localized: "Gym", locale: .app)
+        spots[0].name = String(localized: "Work", bundle: .app, locale: .app)
+        spots[1].name = String(localized: "Gym", bundle: .app, locale: .app)
         var local = calendar
         local.locale = .app
         local.firstWeekday = Calendar.current.firstWeekday

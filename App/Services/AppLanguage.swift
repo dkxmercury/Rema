@@ -63,14 +63,14 @@ enum AppLanguage: String, CaseIterable, Identifiable {
 
     var localizedName: String {
         switch self {
-        case .russian: String(localized: "Russian", locale: .app)
-        case .english: String(localized: "English", locale: .app)
-        case .ukrainian: String(localized: "Ukrainian", locale: .app)
-        case .uzbekLatin: String(localized: "Uzbek, Latin", locale: .app)
-        case .uzbekCyrillic: String(localized: "Uzbek, Cyrillic", locale: .app)
-        case .arabic: String(localized: "Arabic", locale: .app)
-        case .french: String(localized: "French", locale: .app)
-        case .german: String(localized: "German", locale: .app)
+        case .russian: String(localized: "Russian", bundle: .app, locale: .app)
+        case .english: String(localized: "English", bundle: .app, locale: .app)
+        case .ukrainian: String(localized: "Ukrainian", bundle: .app, locale: .app)
+        case .uzbekLatin: String(localized: "Uzbek, Latin", bundle: .app, locale: .app)
+        case .uzbekCyrillic: String(localized: "Uzbek, Cyrillic", bundle: .app, locale: .app)
+        case .arabic: String(localized: "Arabic", bundle: .app, locale: .app)
+        case .french: String(localized: "French", bundle: .app, locale: .app)
+        case .german: String(localized: "German", bundle: .app, locale: .app)
         }
     }
 
@@ -89,6 +89,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         Localization.selected = Bundle.main.path(forResource: language.folder, ofType: "lproj").flatMap(Bundle.init(path:))
         Localization.language = language.rawValue
         AppFonts.languageCode = language.rawValue
+        Bundle.app = Localization.selected ?? .main
     }
 }
 

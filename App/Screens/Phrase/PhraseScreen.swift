@@ -293,9 +293,9 @@ struct PhraseScreen: View {
         let title = parsed.title.lowercased(with: locale)
         guard let when else {
             if placeLine == nil, keyboardShown, !parsed.title.isEmpty {
-                return String(localized: "or pick an option above the keyboard", locale: .app)
+                return String(localized: "or pick an option above the keyboard", bundle: .app, locale: .app)
             }
-            return placeLine == nil ? String(localized: "for example, tomorrow at 9", locale: .app) : title
+            return placeLine == nil ? String(localized: "for example, tomorrow at 9", bundle: .app, locale: .app) : title
         }
         let countdown = describer.countdown(from: now, to: when)
         return title.isEmpty ? countdown : "\(countdown) · \(title)"
@@ -319,11 +319,11 @@ struct PhraseScreen: View {
 
     private var exampleSamples: [String] {
         Remote.shared.exampleOverride ?? [
-            String(localized: "in 2 hours", locale: .app),
-            String(localized: "on Friday evening", locale: .app),
-            String(localized: "every Tue and Thu at 8", locale: .app),
-            String(localized: "every year on October 12", locale: .app),
-            String(localized: "when I leave work", locale: .app),
+            String(localized: "in 2 hours", bundle: .app, locale: .app),
+            String(localized: "on Friday evening", bundle: .app, locale: .app),
+            String(localized: "every Tue and Thu at 8", bundle: .app, locale: .app),
+            String(localized: "every year on October 12", bundle: .app, locale: .app),
+            String(localized: "when I leave work", bundle: .app, locale: .app),
         ]
     }
 
@@ -501,8 +501,8 @@ struct PhraseScreen: View {
     private func exampleValue(_ sample: String) -> String {
         let result = parser.parse(sample)
         if result.placeTrigger != nil || exampleIsPlace(sample) {
-            let name = result.placeNames.first ?? String(localized: "Work", locale: .app)
-            return String(localized: "by place · \(name)", locale: .app)
+            let name = result.placeNames.first ?? String(localized: "Work", bundle: .app, locale: .app)
+            return String(localized: "by place · \(name)", bundle: .app, locale: .app)
         }
         guard let schedule = result.schedule,
               let date = Recurrence.next(schedule, after: now.addingTimeInterval(-60), limit: 1, calendar: calendar).first else { return "" }
@@ -511,10 +511,10 @@ struct PhraseScreen: View {
             return "\(describer.weekdayList(days)) · \(describer.shortTime(date))"
         case .yearly:
             let day = date.formatted(Date.FormatStyle(locale: locale, calendar: calendar, timeZone: calendar.timeZone).day().month(.abbreviated)).replacingOccurrences(of: ".", with: "")
-            return String(localized: "yearly, \(day)", locale: .app)
+            return String(localized: "yearly, \(day)", bundle: .app, locale: .app)
         default:
             if calendar.isDate(date, inSameDayAs: now) {
-                return String(localized: "today, \(describer.shortTime(date))", locale: .app)
+                return String(localized: "today, \(describer.shortTime(date))", bundle: .app, locale: .app)
             }
             var symbols = calendar
             symbols.locale = locale
@@ -529,17 +529,17 @@ struct PhraseScreen: View {
 
     private var confirmTitle: String {
         if let when {
-            return String(localized: "Remind \(describer.dayAndTime(when, now: now))", locale: .app)
+            return String(localized: "Remind \(describer.dayAndTime(when, now: now))", bundle: .app, locale: .app)
         }
         if !reminder.placeIDs.isEmpty {
-            return String(localized: "Remind by place", locale: .app)
+            return String(localized: "Remind by place", bundle: .app, locale: .app)
         }
-        return String(localized: "Choose a time", locale: .app)
+        return String(localized: "Choose a time", bundle: .app, locale: .app)
     }
 
     private func confirm() {
         guard !parsed.title.isEmpty else { return }
-        guard reminder.schedule != nil || !reminder.placeIDs.isEmpty else {
+        guard when != nil || !reminder.placeIDs.isEmpty else {
             pickingDate = true
             return
         }

@@ -32,18 +32,41 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
 
     private static func handleRefresh(_ task: BGTask) {
         scheduleRefresh()
+        let finish = Completion(task)
         let work = Task { @MainActor in
+            Store.shared.reloadIfChanged()
             await Remote.shared.refresh()
             if Remote.shared.isOn(.sync) {
+                await Account.shared.refreshIfNeeded()
                 await SyncService.shared.run()
             }
             await WeatherAdvisor.shared.refresh()
             await Notifier.shared.reschedule()
-            task.setTaskCompleted(success: true)
+            finish(true)
         }
         task.expirationHandler = {
             work.cancel()
+            finish(false)
         }
+    }
+}
+
+// The system wants exactly one answer per task, whichever comes first, the work or the deadline.
+private final class Completion: @unchecked Sendable {
+    private let task: BGTask
+    private let lock = NSLock()
+    private var done = false
+
+    init(_ task: BGTask) {
+        self.task = task
+    }
+
+    func callAsFunction(_ success: Bool) {
+        lock.lock()
+        defer { lock.unlock() }
+        guard !done else { return }
+        done = true
+        task.setTaskCompleted(success: success)
     }
 }
 
@@ -68,6 +91,7 @@ struct RemaApp: App {
                 Store.shared.reloadIfChanged()
                 Notifier.shared.scheduleSoon()
                 LiveActivities.refresh(store: Store.shared)
+                SyncService.shared.dropGuestTombstones()
                 Task {
                     await Remote.shared.refresh()
                     await WeatherAdvisor.shared.refresh()

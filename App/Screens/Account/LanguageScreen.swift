@@ -55,7 +55,7 @@ struct LanguageScreen: View {
                     Text(verbatim: language.nativeName)
                         .font(.app(.golos, 16, weight: 600))
                         .environment(\.layoutDirection, language == .arabic ? .rightToLeft : .leftToRight)
-                    Text(verbatim: language == phone ? String(localized: "as on the phone", locale: .app) : language.localizedName)
+                    Text(verbatim: language == phone ? String(localized: "as on the phone", bundle: .app, locale: .app) : language.localizedName)
                         .font(.app(.golos, 12))
                         .foregroundStyle(Palette.secondary)
                 }

@@ -92,23 +92,23 @@ extension Backend.Failure {
     var message: String {
         switch self {
         case .offline:
-            String(localized: "No internet connection. Try again when you are online.", locale: .app)
+            String(localized: "No internet connection. Try again when you are online.", bundle: .app, locale: .app)
         case .unauthorized, .invalid(nil):
-            String(localized: "Wrong email or password.", locale: .app)
+            String(localized: "Wrong email or password.", bundle: .app, locale: .app)
         case .rateLimited:
-            String(localized: "Too many attempts. Try again in a minute.", locale: .app)
+            String(localized: "Too many attempts. Try again in a minute.", bundle: .app, locale: .app)
         case .conflict(let code) where code == "email_taken":
-            String(localized: "This email already belongs to another way of signing in.", locale: .app)
+            String(localized: "This email already belongs to another way of signing in.", bundle: .app, locale: .app)
         case .invalid(let code) where code == "validation_not_unique":
-            String(localized: "This email is already registered. Sign in with your password.", locale: .app)
+            String(localized: "This email is already registered. Sign in with your password.", bundle: .app, locale: .app)
         case .invalid(let code) where code?.contains("email") == true:
-            String(localized: "Enter the whole email, like name@example.com.", locale: .app)
+            String(localized: "Enter the whole email, like name@example.com.", bundle: .app, locale: .app)
         case .invalid(let code) where code?.contains("length") == true || code?.contains("min") == true:
-            String(localized: "The password needs at least 8 characters.", locale: .app)
+            String(localized: "The password needs at least 8 characters.", bundle: .app, locale: .app)
         case .invalid:
-            String(localized: "Check the email and password and try again.", locale: .app)
+            String(localized: "Check the email and password and try again.", bundle: .app, locale: .app)
         default:
-            String(localized: "Something went wrong. Try again.", locale: .app)
+            String(localized: "Something went wrong. Try again.", bundle: .app, locale: .app)
         }
     }
 }
