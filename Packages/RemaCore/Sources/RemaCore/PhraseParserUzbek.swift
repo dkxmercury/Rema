@@ -201,6 +201,15 @@ extension PhraseParser {
     private func uzTimes(_ text: String, _ state: inout State) {
         let words = "o'n bir|o'n ikki|o'n uch|o'n to'rt|o'n besh|o'n olti|o'n yetti|o'n etti|o'n sakkiz|o'n to'qqiz|o'n|yigirma bir|yigirma ikki|yigirma uch|yigirma|bir|ikki|uch|to'rt|besh|olti|yetti|etti|sakkiz|to'qqiz"
         let count = "(yigirma besh|yigirma|o'n besh|o'n|besh|chorak|\\d{1,2})"
+        take("(?:taxminan |taxminiy )?soat (\\d{1,2}|\(words)) ?lar(?:da|ga)?(?: atrofida)?", text, &state) { m, s in
+            uzClock(group(m, 1, text), minute: 0, before: false, &s)
+        }
+        take("taxminan soat (\\d{1,2}|\(words))(?:[:.](\\d{2}))?(?: ?da| ?ga)?", text, &state) { m, s in
+            uzClock(group(m, 1, text), minute: group(m, 2, text).flatMap(Int.init) ?? 0, before: false, &s)
+        }
+        take("soat (\\d{1,2}|\(words)) (?:bilan|va) (?:\\d{1,2}|\(words)) (?:orasida|oralig'ida)", text, &state) { m, s in
+            uzClock(group(m, 1, text), minute: 0, before: false, &s)
+        }
         take("soat (\\d{1,2}|\(words)) yarim(?:da|ga)?", text, &state) { m, s in
             uzClock(group(m, 1, text), minute: 30, before: false, &s)
         }

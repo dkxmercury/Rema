@@ -3,7 +3,7 @@ import Foundation
 extension PhraseParser {
     private static let arMonths = "(يناير|فبراير|مارس|ابريل|مايو|يونيو|يوليو|اغسطس|سبتمبر|اكتوبر|نوفمبر|ديسمبر|شباط|اذار|نيسان|ايار|حزيران|تموز|اب|ايلول)"
     static let arWeekday = "(?:يوم )?(?:ال)?(اثنين|ثلاثاء|اربعاء|خميس|جمعة|جمعه|سبت|احد)"
-    private static let arFillers: Set<String> = ["ذكرني", "ذكّرني", "فضلك", "رجاء", "رجاءً"]
+    private static let arFillers: Set<String> = ["ذكرني", "ذكّرني", "فضلك", "رجاء", "رجاءً", "تقريبا", "تقريبًا"]
     private static let arLead: Set<String> = ["ان", "أن", "من", "يجب", "علي", "عليّ"]
     private static let arDangling: Set<String> = ["في", "عند", "و", "على", "من", "الى", "إلى", "ب", "ان", "أن"]
 
@@ -183,16 +183,26 @@ extension PhraseParser {
 
     private func arTimes(_ text: String, _ state: inout State) {
         let modifier = "(?: (صباحا|مساء|ظهرا|ليلا))?"
-        let hours = "(\\d{1,2}|الحادية عشرة|الحادية عشر|الثانية عشرة|الثانية عشر|الواحدة|الثانية|الثالثة|الرابعة|الخامسة|السادسة|السابعة|الثامنة|التاسعة|العاشرة)"
+        let hourWords = "الحادية عشرة|الحادية عشر|الثانية عشرة|الثانية عشر|الواحدة|الثانية|الثالثة|الرابعة|الخامسة|السادسة|السابعة|الثامنة|التاسعة|العاشرة"
+        let hours = "(\\d{1,2}|\(hourWords))"
         let count = "(?:خمس وعشرين|عشرين|عشر|خمس)(?: دقائق| دقيقة)?"
+        let fraction = "(والنصف|والربع|والثلث|الا (?:ال)?ربعا?|الا (?:ال)?ثلثا?|و\(count)|الا \(count))"
+        take("(?:حوالي|نحو|قرابة|تقريبا) (?:في )?(?:الساعة |الساعه )?\(hours)(?::(\\d{2}))?(?: \(fraction))?\(modifier)", text, &state) { m, s in
+            let part = arFraction(group(m, 3, text))
+            return arClock(group(m, 1, text), minute: group(m, 2, text).flatMap(Int.init) ?? part.minute, before: part.before, group(m, 4, text), &s)
+        }
+        take("بين (?:الساعة |الساعه )?\(hours) و ?(?:الساعة |الساعه )?(?:\\d{1,2}|\(hourWords))\(modifier)", text, &state) { m, s in
+            arClock(group(m, 1, text), minute: 0, before: false, group(m, 2, text), &s)
+        }
         take("(?:الساعة |الساعه |في |عند )?(\\d{1,2}):(\\d{2})\(modifier)", text, &state) { m, s in
             guard let hour = group(m, 1, text).flatMap(Int.init), let minute = group(m, 2, text).flatMap(Int.init), hour < 24, minute < 60 else { return false }
             s.time = LocalTime(hour: arHour(hour, group(m, 3, text)), minute: minute)
             s.meridiem = group(m, 3, text) != nil
             return true
         }
-        take("(?:في |عند )?(?:الساعة|الساعه) \(hours)(?: (والنصف|والربع|والثلث|الا (?:ال)?ربعا?|الا (?:ال)?ثلثا?|و\(count)|الا \(count)))?\(modifier)", text, &state) { m, s in
-            arClock(group(m, 1, text), group(m, 2, text) ?? "", group(m, 3, text), &s)
+        take("(?:في |عند )?(?:الساعة|الساعه) \(hours)(?: \(fraction))?\(modifier)", text, &state) { m, s in
+            let part = arFraction(group(m, 2, text))
+            return arClock(group(m, 1, text), minute: part.minute, before: part.before, group(m, 3, text), &s)
         }
         take("(?:الساعة|الساعه|عند) (\\d{1,2})\(modifier)", text, &state) { m, s in
             guard let hour = group(m, 1, text).flatMap(Int.init), hour < 24 else { return false }
@@ -210,9 +220,14 @@ extension PhraseParser {
 
     private static let arHours = ["الواحدة": 1, "الثانية": 2, "الثالثة": 3, "الرابعة": 4, "الخامسة": 5, "السادسة": 6, "السابعة": 7, "الثامنة": 8, "التاسعة": 9, "العاشرة": 10, "الحادية عشرة": 11, "الحادية عشر": 11, "الثانية عشرة": 12, "الثانية عشر": 12]
 
-    private func arClock(_ word: String?, _ fraction: String, _ modifier: String?, _ s: inout State) -> Bool {
+    private func arFraction(_ fraction: String?) -> (minute: Int, before: Bool) {
+        guard let fraction else { return (0, false) }
         let minute = [("نصف", 30), ("ربع", 15), ("ثلث", 20), ("خمس وعشرين", 25), ("عشرين", 20), ("عشر", 10), ("خمس", 5)].first { fraction.contains($0.0) }?.1 ?? 0
-        guard let word, let hour = Int(word) ?? PhraseParser.arHours[word], let time = PhraseParser.clock(hour, minute: minute, before: fraction.hasPrefix("الا")) else { return false }
+        return (minute, fraction.hasPrefix("الا"))
+    }
+
+    private func arClock(_ word: String?, minute: Int, before: Bool, _ modifier: String?, _ s: inout State) -> Bool {
+        guard let word, let hour = Int(word) ?? PhraseParser.arHours[word], let time = PhraseParser.clock(hour, minute: minute, before: before) else { return false }
         s.time = LocalTime(hour: arHour(time.hour, modifier), minute: time.minute)
         s.meridiem = modifier != nil
         return true

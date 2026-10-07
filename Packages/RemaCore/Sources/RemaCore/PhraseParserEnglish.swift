@@ -174,6 +174,16 @@ extension PhraseParser {
         let meridiem = "\\s?(am|pm|a\\.m\\.|p\\.m\\.)?"
         let clock = "(\\d{1,2}|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)"
         let hourWord = "(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)"
+        take("(?:at )?(?:around|about|approximately|roughly|sometime around|somewhere around) (?:at )?\(clock)(?::(\\d{2}))?\(meridiem)(?! (?:minutes?|mins?|hours?|hrs?|days?|weeks?))", text, &state) { m, s in
+            englishClock(group(m, 1, text), minute: group(m, 2, text).flatMap(Int.init) ?? 0, before: false, group(m, 3, text), &s)
+        }
+        take("(?:at |by )?\(clock) ?-?ish\(meridiem)", text, &state) { m, s in
+            englishClock(group(m, 1, text), minute: 0, before: false, group(m, 2, text), &s)
+        }
+        // «Between 2 and 3 pm» puts the shared pm on both ends.
+        take("(?:between|from) (\\d{1,2})(?::(\\d{2}))?\(meridiem) (?:and|to|till|until) \\d{1,2}(?::\\d{2})?\(meridiem)(?! \(PhraseParser.englishMonths))", text, &state) { m, s in
+            englishClock(group(m, 1, text), minute: group(m, 2, text).flatMap(Int.init) ?? 0, before: false, group(m, 3, text) ?? group(m, 4, text), &s)
+        }
         take("(?:at |by )?half past \(clock)\(meridiem)", text, &state) { m, s in
             englishClock(group(m, 1, text), minute: 30, before: false, group(m, 2, text), &s)
         }

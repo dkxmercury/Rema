@@ -265,6 +265,18 @@ public struct PhraseParser {
 
     private func times(_ text: String, _ state: inout State) {
         let modifier = "( утра| вечера| дня| ночи)?"
+        let hourWord = "(час|один|два|три|четыре|пять|шесть|семь|восемь|девять|десять|одиннадцать|двенадцать)"
+        let ordinal = "(первого|второго|третьего|четвертого|пятого|шестого|седьмого|восьмого|девятого|десятого|одиннадцатого|двенадцатого)"
+        let around = "(часа|часу|одного|одному|двух|двум|трех|трем|четырех|четырем|пяти|шести|семи|восьми|девяти|десяти|одиннадцати|двенадцати)"
+        take("(?:около|в районе|ближе к|примерно к|часам к|часикам к) (?:(\\d{1,2})(?:[:.](\\d{2}))?|\(around))(?: час\\w*)?\(modifier)(?! \(PhraseParser.monthPattern))", text, &state) { m, s in
+            russianClock(group(m, 1, text).flatMap(Int.init) ?? group(m, 3, text).flatMap(PhraseParser.ruHourCase), minute: group(m, 2, text), group(m, 4, text), &s)
+        }
+        take("(?:примерно|приблизительно|где-то|где то|часов|часиков) (?:в|к) (?:(\\d{1,2})(?:[:.](\\d{2}))?|\(hourWord))(?: час\\w*)?\(modifier)(?! \(PhraseParser.monthPattern))", text, &state) { m, s in
+            russianClock(group(m, 1, text).flatMap(Int.init) ?? group(m, 3, text).flatMap(PhraseParser.ruHour), minute: group(m, 2, text), group(m, 4, text), &s)
+        }
+        take("(?:между|с) (\\d{1,2})(?:[:.](\\d{2}))? (?:и|до) \\d{1,2}(?:[:.]\\d{2})?(?: час\\w*)?\(modifier)(?! \(PhraseParser.monthPattern))", text, &state) { m, s in
+            russianClock(group(m, 1, text).flatMap(Int.init), minute: group(m, 2, text), group(m, 3, text), &s)
+        }
         take("(?:в |к )?(\\d{1,2})[:.](\\d{2})\(modifier)", text, &state) { m, s in
             guard let hour = group(m, 1, text).flatMap(Int.init), let minute = group(m, 2, text).flatMap(Int.init), hour < 24, minute < 60 else { return false }
             s.time = LocalTime(hour: adjust(hour, group(m, 3, text)), minute: minute)
@@ -277,8 +289,6 @@ public struct PhraseParser {
             s.meridiem = group(m, 2, text) != nil
             return true
         }
-        let hourWord = "(час|один|два|три|четыре|пять|шесть|семь|восемь|девять|десять|одиннадцать|двенадцать)"
-        let ordinal = "(первого|второго|третьего|четвертого|пятого|шестого|седьмого|восьмого|девятого|десятого|одиннадцатого|двенадцатого)"
         take("(?:в |к )?(?:пол|половин[аеуы] )\(ordinal)\(modifier)", text, &state) { m, s in
             guard let next = group(m, 1, text).flatMap(PhraseParser.ruOrdinal) else { return false }
             s.time = LocalTime(hour: adjust(next == 1 ? 12 : next - 1, group(m, 2, text)), minute: 30)
@@ -337,6 +347,17 @@ public struct PhraseParser {
 
     static func ruOrdinal(_ word: String) -> Int? {
         ["первого": 1, "второго": 2, "третьего": 3, "четвертого": 4, "пятого": 5, "шестого": 6, "седьмого": 7, "восьмого": 8, "девятого": 9, "десятого": 10, "одиннадцатого": 11, "двенадцатого": 12][word]
+    }
+
+    static func ruHourCase(_ word: String) -> Int? {
+        ["часа": 1, "часу": 1, "одного": 1, "одному": 1, "двух": 2, "двум": 2, "трех": 3, "трем": 3, "четырех": 4, "четырем": 4, "пяти": 5, "шести": 6, "семи": 7, "восьми": 8, "девяти": 9, "десяти": 10, "одиннадцати": 11, "двенадцати": 12][word]
+    }
+
+    private func russianClock(_ hour: Int?, minute: String?, _ modifier: String?, _ s: inout State) -> Bool {
+        guard let hour, let time = PhraseParser.clock(hour, minute: minute.flatMap(Int.init) ?? 0, before: false) else { return false }
+        s.time = LocalTime(hour: adjust(time.hour, modifier), minute: time.minute)
+        s.meridiem = modifier != nil
+        return true
     }
 
     private func adjust(_ hour: Int, _ modifier: String?) -> Int {

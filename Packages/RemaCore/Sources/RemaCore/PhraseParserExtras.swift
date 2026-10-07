@@ -4,6 +4,7 @@ extension PhraseParser {
     struct Extras {
         var lunch: String
         var afterWork: String
+        var towardEvening: String
         var weekend: String
         var everyWeekend: String
         var monthEnd: String
@@ -67,11 +68,16 @@ extension PhraseParser {
             s.dayPart = LocalTime(hour: 18, minute: 30)
             return true
         }
+        take(phrases.towardEvening, text, &state) { _, s in
+            s.dayPart = LocalTime(hour: max(evening.hour - 1, 12), minute: evening.minute)
+            return true
+        }
     }
 
     static let russianExtras = Extras(
         lunch: "(в обед|во время обеда)",
         afterWork: "после работы",
+        towardEvening: "(ближе к вечеру|под вечер|к вечеру|к концу дня|ближе к концу дня)",
         weekend: "(на выходных|в выходные)",
         everyWeekend: "(каждые выходные|по выходным)",
         monthEnd: "(в конце месяца|в последний день месяца)",
@@ -85,6 +91,7 @@ extension PhraseParser {
     static let englishExtras = Extras(
         lunch: "(at lunch(?:time)?|during lunch)",
         afterWork: "after work",
+        towardEvening: "(?:(?:towards?|closer to|by) (?:the )?evening|late (?:in the )?afternoon|(?:by |at )?the end of the day)",
         weekend: "(?:on |at |this |over )?(?:the )?weekend",
         everyWeekend: "(every weekend|on weekends)",
         monthEnd: "(at the end of the month|(?:on )?the last day of the month|end of the month)",
@@ -98,6 +105,7 @@ extension PhraseParser {
     static let ukrainianExtras = Extras(
         lunch: "(в обід|у обід|на обід|під час обіду)",
         afterWork: "після роботи",
+        towardEvening: "(ближче до вечора|під вечір|надвечір|до вечора|ближче до кінця дня)",
         weekend: "(на вихідних|у вихідні|в вихідні)",
         everyWeekend: "(щовихідних|кожні вихідні|по вихідних)",
         monthEnd: "(в кінці місяця|у кінці місяця|наприкінці місяця|в останній день місяця|у останній день місяця)",
@@ -111,6 +119,7 @@ extension PhraseParser {
     static let uzbekExtras = Extras(
         lunch: "(tushlikda|tushlik vaqtida|tushlik paytida)",
         afterWork: "(ishdan keyin|ishdan so'ng)",
+        towardEvening: "(kechga yaqin|kechqurunga yaqin|kech tomon|kunning oxirida)",
         weekend: "(dam olish kunlari(?:da)?|dam olish kuni|hafta oxirida)",
         everyWeekend: "(har dam olish kunlari|har dam olish kuni|har hafta oxirida)",
         monthEnd: "(oy oxirida|oyning oxirida|oyning oxirgi kunida|oyning so'nggi kunida)",
@@ -124,6 +133,7 @@ extension PhraseParser {
     static let arabicExtras = Extras(
         lunch: "(وقت الغداء|عند الغداء|في الغداء)",
         afterWork: "(بعد العمل|بعد الدوام)",
+        towardEvening: "(?:في )?(?:قرب المساء|قبيل المساء|اخر النهار|نهاية اليوم)",
         weekend: "(?:في )?(?:عطلة )?نهاية الاسبوع",
         everyWeekend: "كل (?:عطلة )?نهاية (?:ال)?اسبوع",
         monthEnd: "(?:في )?(نهاية الشهر|اخر يوم من الشهر|اخر يوم في الشهر)",
@@ -137,6 +147,7 @@ extension PhraseParser {
     static let frenchExtras = Extras(
         lunch: "(à l'heure du déjeuner|a l'heure du dejeuner|au déjeuner|au dejeuner|pendant la pause déjeuner)",
         afterWork: "(après le travail|apres le travail|après le boulot|apres le boulot)",
+        towardEvening: "(en fin de journée|en fin de journee|en fin d'après-midi|en fin d'apres-midi|vers le soir|sur le soir)",
         weekend: "(ce week-end|ce weekend|le week-end|le weekend|pendant le week-end)",
         everyWeekend: "(tous les week-ends|tous les weekends|chaque week-end|chaque weekend)",
         monthEnd: "(à la fin du mois|a la fin du mois|en fin de mois|le dernier jour du mois)",
@@ -150,6 +161,7 @@ extension PhraseParser {
     static let germanExtras = Extras(
         lunch: "(zum mittagessen|beim mittagessen|in der mittagspause)",
         afterWork: "nach der arbeit",
+        towardEvening: "(gegen abend|am späten nachmittag|später am nachmittag|zum abend hin|bis zum abend)",
         weekend: "(am wochenende|übers wochenende|dieses wochenende)",
         everyWeekend: "(jedes wochenende|an wochenenden|wochenends)",
         monthEnd: "(am monatsende|ende des monats|zum monatsende|am letzten tag des monats)",

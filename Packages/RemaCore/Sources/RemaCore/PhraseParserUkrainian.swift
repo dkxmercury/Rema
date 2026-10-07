@@ -158,6 +158,16 @@ extension PhraseParser {
         let nominative = "(перша|друга|третя|четверта|п'ята|шоста|сьома|восьма|дев'ята|десята|одинадцята|дванадцята)"
         let locative = "(двадцять першій|двадцять другій|двадцять третій|двадцятій|першій|другій|третій|четвертій|п'ятій|шостій|сьомій|восьмій|дев'ятій|десятій|одинадцятій|дванадцятій|тринадцятій|чотирнадцятій|п'ятнадцятій|шістнадцятій|сімнадцятій|вісімнадцятій|дев'ятнадцятій)"
         let cardinal = "(одна|одну|дві|три|чотири|п'ять|шість|сім|вісім|дев'ять|десять|одинадцять|дванадцять)"
+        let genitive = "(двадцять першої|двадцять другої|двадцять третьої|двадцятої|першої|другої|третьої|четвертої|п'ятої|шостої|сьомої|восьмої|дев'ятої|десятої|одинадцятої|дванадцятої|тринадцятої|чотирнадцятої|п'ятнадцятої|шістнадцятої|сімнадцятої|вісімнадцятої|дев'ятнадцятої)"
+        take("(?:близько|біля|ближче до|десь до) (?:(\\d{1,2})(?:[:.](\\d{2}))?|\(genitive))(?: години)?\(modifier)(?! \(PhraseParser.ukMonths))", text, &state) { m, s in
+            ukClock(group(m, 1, text).flatMap(Int.init) ?? group(m, 3, text).flatMap(PhraseParser.ukOrdinal), minute: group(m, 2, text).flatMap(Int.init) ?? 0, before: false, group(m, 4, text), &s)
+        }
+        take("(?:приблизно|десь|орієнтовно) (?:о|об) (?:(\\d{1,2})(?:[:.](\\d{2}))?|\(locative))(?: годині)?\(modifier)(?! \(PhraseParser.ukMonths))", text, &state) { m, s in
+            ukClock(group(m, 1, text).flatMap(Int.init) ?? group(m, 3, text).flatMap(PhraseParser.ukOrdinal), minute: group(m, 2, text).flatMap(Int.init) ?? 0, before: false, group(m, 4, text), &s)
+        }
+        take("(?:між|з) (\\d{1,2})(?:[:.](\\d{2}))? (?:і|й|та|до) \\d{1,2}(?:[:.]\\d{2})?(?: години)?\(modifier)(?! \(PhraseParser.ukMonths))", text, &state) { m, s in
+            ukClock(group(m, 1, text).flatMap(Int.init), minute: group(m, 2, text).flatMap(Int.init) ?? 0, before: false, group(m, 3, text), &s)
+        }
         take("(?:о пів|опів|пів) на \(accusative)\(modifier)", text, &state) { m, s in
             ukClock(group(m, 1, text).flatMap(PhraseParser.ukOrdinal), minute: 30, before: true, group(m, 2, text), &s)
         }
@@ -200,7 +210,7 @@ extension PhraseParser {
     private static let ukMinutes = ["п'ять": 5, "п'яти": 5, "десять": 10, "десяти": 10, "п'ятнадцять": 15, "п'ятнадцяти": 15, "чверть": 15, "чверті": 15, "двадцять": 20, "двадцяти": 20, "двадцять п'ять": 25, "двадцяти п'яти": 25, "тридцять": 30, "сорок": 40, "сорок п'ять": 45, "п'ятдесят": 50]
 
     static func ukOrdinal(_ word: String) -> Int? {
-        let stem = word.hasSuffix("ій") ? String(word.dropLast(2)) : String(word.dropLast())
+        let stem = word.hasSuffix("ьої") ? String(word.dropLast(3)) : word.hasSuffix("ої") || word.hasSuffix("ій") ? String(word.dropLast(2)) : String(word.dropLast())
         return ["перш": 1, "друг": 2, "трет": 3, "четверт": 4, "п'ят": 5, "шост": 6, "сьом": 7, "восьм": 8, "дев'ят": 9, "десят": 10, "одинадцят": 11, "дванадцят": 12, "тринадцят": 13, "чотирнадцят": 14, "п'ятнадцят": 15, "шістнадцят": 16, "сімнадцят": 17, "вісімнадцят": 18, "дев'ятнадцят": 19, "двадцят": 20, "двадцять перш": 21, "двадцять друг": 22, "двадцять трет": 23][stem]
     }
 

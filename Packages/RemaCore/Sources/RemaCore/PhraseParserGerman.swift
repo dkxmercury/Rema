@@ -182,6 +182,15 @@ extension PhraseParser {
         let clock = "(\\d{1,2}|eins|zwei|drei|vier|fünf|sechs|sieben|acht|neun|zehn|elf|zwölf)"
         let hourWords = "dreiundzwanzig|zweiundzwanzig|einundzwanzig|zwanzig|dreizehn|vierzehn|fünfzehn|sechzehn|siebzehn|achtzehn|neunzehn|eins|zwei|drei|vier|fünf|sechs|sieben|acht|neun|zehn|elf|zwölf"
         let minutes = "(fünfundvierzig|fünfzehn|dreißig|dreissig|zwanzig|vierzig|fünfzig|zehn|fünf)"
+        take("(?:(?:ungefähr|etwa|circa|ca\\.|zirka) (?:um |gegen )?|so (?:um|gegen) )\(clock)(?:[:.](\\d{2}))?(?: uhr)?(?! (?:minuten|stunden|tage|wochen))", text, &state) { m, s in
+            germanClock(group(m, 1, text), minute: group(m, 2, text).flatMap(Int.init) ?? 0, before: false, &s)
+        }
+        take("(?:um|gegen) \(clock)(?:[:.](\\d{2}))?(?: uhr)? (?:herum|rum)", text, &state) { m, s in
+            germanClock(group(m, 1, text), minute: group(m, 2, text).flatMap(Int.init) ?? 0, before: false, &s)
+        }
+        take("(?:zwischen (\\d{1,2})(?:[:.](\\d{2}))?(?: uhr)? und|von (\\d{1,2})(?:[:.](\\d{2}))?(?: uhr)? bis) \\d{1,2}(?:[:.]\\d{2})?(?: uhr)?(?!\\.? \(PhraseParser.deMonths))", text, &state) { m, s in
+            germanClock(group(m, 1, text) ?? group(m, 3, text), minute: (group(m, 2, text) ?? group(m, 4, text)).flatMap(Int.init) ?? 0, before: false, &s)
+        }
         take("(?:um |gegen |ab )?(\\d{1,2}|fünf|zehn|zwanzig) (?:minuten )?(vor|nach) (halb )?\(clock)", text, &state) { m, s in
             let word = group(m, 1, text) ?? ""
             guard let minute = Int(word) ?? PhraseParser.germanMinutes[word] else { return false }

@@ -173,6 +173,19 @@ extension PhraseParser {
         let part = "( du matin| du soir| de l'après-midi| de l'apres-midi)?"
         let words = "vingt et une|vingt-et-une|vingt-deux|vingt-trois|vingt|dix-sept|dix-huit|dix-neuf|dix|une|deux|trois|quatre|cinq|six|sept|huit|neuf|onze|douze|treize|quatorze|quinze|seize"
         let fraction = "( et demie?| et quart| moins le quart| moins quart| moins (cinq|dix|vingt-cinq|vingt|\\d{1,2}))"
+        let about = "(?:environ|à peu près|a peu pres|aux alentours de|autour de|vers les)"
+        take("\(about) (?:à |a )?(\\d{1,2}) ?(?:h|heures?)(?: ?(\\d{2}))?\(part)", text, &state) { m, s in
+            frenchClock(group(m, 1, text), minute: group(m, 2, text).flatMap(Int.init) ?? 0, before: false, group(m, 3, text), &s)
+        }
+        take("\(about) (?:à |a )?(\(words)) heures?\(part)", text, &state) { m, s in
+            frenchClock(group(m, 1, text), minute: 0, before: false, group(m, 2, text), &s)
+        }
+        take("(?:à |a |vers )?(\\d{1,2}|\(words)) ?(?:h|heures?)(?: ?(\\d{2}))?\(part) environ", text, &state) { m, s in
+            frenchClock(group(m, 1, text), minute: group(m, 2, text).flatMap(Int.init) ?? 0, before: false, group(m, 3, text), &s)
+        }
+        take("(?:entre (\\d{1,2}) ?(?:h|heures?)?(?: ?(\\d{2}))? et|de (\\d{1,2}) ?(?:h|heures?)(?: ?(\\d{2}))? à) \\d{1,2} ?(?:h|heures?)(?: ?\\d{2})?\(part)", text, &state) { m, s in
+            frenchClock(group(m, 1, text) ?? group(m, 3, text), minute: (group(m, 2, text) ?? group(m, 4, text)).flatMap(Int.init) ?? 0, before: false, group(m, 5, text), &s)
+        }
         take("(?:à |a |vers )(\\d{1,2}|\(words)) ?(?:h|heures?)\(fraction)\(part)", text, &state) { m, s in
             frenchFraction(group(m, 1, text), group(m, 2, text), group(m, 3, text), group(m, 4, text), &s)
         }
