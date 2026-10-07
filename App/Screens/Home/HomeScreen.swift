@@ -77,7 +77,7 @@ struct HomeScreen: View {
                     list
                         .padding(.top, 12)
                 }
-                if !content.tiles.isEmpty {
+                if !content.tiles.isEmpty, scheduledCount == 0 {
                     tiles
                         .padding(.top, 12)
                 }
