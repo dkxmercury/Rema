@@ -2023,6 +2023,52 @@
         }
       }
     },
+    "All scheduled": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كل التذكيرات المجدولة"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alles Geplante"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tous les rappels prévus"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Все запланированные"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Усі заплановані"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Барча режалаштирилганлар"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Barcha rejalashtirilganlar"
+          }
+        }
+      }
+    },
     "Allow microphone access in Settings to dictate reminders.": {
       "localizations": {
         "ar": {
@@ -14393,6 +14439,52 @@
         }
       }
     },
+    "Repeats are shown once, on their nearest day": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تظهر التذكيرات المتكررة مرة واحدة، في أقرب يوم لها"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wiederholungen stehen nur einmal da, am nächsten Termin"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les rappels répétés n’apparaissent qu’une fois, à leur prochaine date"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повторы показаны один раз, по ближайшему дню"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повтори показано один раз, за найближчим днем"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Такрорланадиганлари бир марта, энг яқин кунида кўрсатилган"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Takrorlanadiganlari bir marta, eng yaqin kunida ko‘rsatilgan"
+          }
+        }
+      }
+    },
     "Russian": {
       "localizations": {
         "ar": {
@@ -14665,6 +14757,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "«Remind me in Rema» yoki «What is next in Rema» deb ayting. Shu amallar «Tezkor buyruqlar» ilovasida ham bor."
+          }
+        }
+      }
+    },
+    "Scheduled": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المجدولة"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geplant"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "À venir"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Запланировано"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Заплановано"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Режалаштирилган"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rejalashtirilgan"
           }
         }
       }

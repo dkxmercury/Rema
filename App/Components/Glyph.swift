@@ -36,6 +36,7 @@ enum Icons {
     static let close = ["M6.5 6.5l11 11M17.5 6.5l-11 11"]
     static let back = ["M14.5 6l-6 6 6 6"]
     static let chevron = ["M9.5 6l6 6-6 6"]
+    static let list = ["M9 6.5h11M9 12h11M9 17.5h11", "M4.5 6.5h.01M4.5 12h.01M4.5 17.5h.01"]
     static let repeatArrows = ["M17 3l3.5 3.5L17 10", "M4 12v-1.5A4 4 0 0 1 8 6.5h12.5", "M7 21l-3.5-3.5L7 14", "M20 12v1.5a4 4 0 0 1-4 4H3.5"]
     static let early = ["M4.5 12a7.5 7.5 0 1 0 2.2-5.3", "M4 4v3.5h3.5", "M12 8v4l2.5 1.5"]
     static let bell = ["M6.5 9.5a5.5 5.5 0 0 1 11 0c0 5 2.3 7 2.3 7H4.2s2.3-2 2.3-7z", "M10 20a2.2 2.2 0 0 0 4 0", "M3 5.5a8 8 0 0 1 2.2-3M21 5.5a8 8 0 0 0-2.2-3"]

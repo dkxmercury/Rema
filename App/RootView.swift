@@ -21,6 +21,7 @@ enum RootRoute: Hashable {
     case deleteAccount
     case city
     case features
+    case scheduled
 }
 
 // Lives outside the views, so the screen stack survives when a language change rebuilds them.
@@ -163,6 +164,12 @@ struct RootView: View {
             CityScreen { navigation.path.removeLast() }
         case .features:
             FeaturesScreen(onPlaces: { navigation.path.append(.places) }, onBack: { navigation.path.removeLast() })
+        case .scheduled:
+            ScheduledScreen(
+                content: ScheduledContent.make(reminders: store.reminders, places: store.places, now: Date(), calendar: .current, locale: AppLanguage.current.locale),
+                onOpen: open,
+                onBack: { navigation.path.removeLast() }
+            )
         case .account:
             if let summary = accountSummary {
                 AccountScreen(
@@ -296,6 +303,8 @@ struct RootView: View {
                 },
                 onCalendar: { showingCalendar = true },
                 onSettings: { navigation.path.append(.settings) },
+                scheduledCount: ScheduledContent.count(reminders: store.reminders, now: timeline.date, calendar: .current),
+                onScheduled: { navigation.path.append(.scheduled) },
                 zoom: zoom,
                 onDelete: { id in
                     withAnimation(Motion.standard) { store.delete(id) }

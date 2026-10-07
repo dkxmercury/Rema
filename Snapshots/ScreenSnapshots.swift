@@ -9,6 +9,14 @@ final class ScreenSnapshots: XCTestCase {
         try render(HomeScreen(content: SampleData.home), name: "D-Home-Dark", style: .dark)
     }
 
+    func testScheduled() throws {
+        let content = ScheduledContent.make(reminders: SampleData.reminders, places: SampleData.places, now: SampleData.now, calendar: SampleData.calendar, locale: russian)
+        let count = ScheduledContent.count(reminders: SampleData.reminders, now: SampleData.now, calendar: SampleData.calendar)
+        try render(ScheduledScreen(content: content, onBack: {}), name: "D-Scheduled", style: .light)
+        try render(ScheduledScreen(content: content, onBack: {}), name: "Dark-Scheduled", style: .dark)
+        try render(HomeScreen(content: SampleData.home, scheduledCount: count), name: "Home-Scheduled", style: .dark)
+    }
+
     func testSafeAreaProbe() throws {
         try render(SafeAreaProbe(), name: "Probe", style: .light)
     }

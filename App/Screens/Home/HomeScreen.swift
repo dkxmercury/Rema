@@ -15,6 +15,8 @@ struct HomeScreen: View {
     var onVoice: () -> Void = {}
     var onCalendar: () -> Void = {}
     var onSettings: () -> Void = {}
+    var scheduledCount = 0
+    var onScheduled: () -> Void = {}
     var zoom: Namespace.ID?
     var onDelete: (UUID) -> Void = { _ in }
     var onMove: (UUID, Date) -> (() -> Void)? = { _, _ in nil }
@@ -56,6 +58,10 @@ struct HomeScreen: View {
                     nextSummary(next)
                         .padding(.top, 10)
                         .onTapGesture { onOpen(next.reminderID) }
+                }
+                if scheduledCount > 0, lift == nil {
+                    scheduledButton
+                        .padding(.top, 12)
                 }
                 if let habit, lift == nil {
                     HabitSuggestionCard(suggestion: habit) { accepted in
@@ -342,6 +348,20 @@ struct HomeScreen: View {
         }
         .multilineTextAlignment(.center)
         .contentShape(Rectangle())
+    }
+
+    private var scheduledButton: some View {
+        Button(action: onScheduled) {
+            HStack(spacing: 8) {
+                Glyph(paths: Icons.list, size: 16, lineWidth: 2, color: Palette.text)
+                Text("All scheduled")
+                Text(verbatim: "\(scheduledCount)")
+                    .font(.app(.jost, 16, weight: 500))
+                    .foregroundStyle(Palette.accentText)
+                Glyph(paths: Icons.chevron, size: 14, lineWidth: 2.2, color: Palette.secondary)
+            }
+        }
+        .buttonStyle(RaisedChipStyle(radius: 20))
     }
 
     private var list: some View {

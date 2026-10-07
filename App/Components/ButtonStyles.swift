@@ -45,8 +45,10 @@ struct RaisedButtonStyle: ButtonStyle {
 }
 
 struct RaisedChipStyle: ButtonStyle {
+    var radius: CGFloat = 12
+
     func makeBody(configuration: Configuration) -> some View {
-        let shape = RoundedRectangle(cornerRadius: 12, style: .circular)
+        let shape = RoundedRectangle(cornerRadius: radius, style: .circular)
         let pressed = configuration.isPressed
         configuration.label
             .font(.app(.golos, 14, weight: 600))
