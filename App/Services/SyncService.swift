@@ -21,7 +21,7 @@ final class SyncService {
 
     @ObservationIgnored private var state: SyncState
     @ObservationIgnored private var scheduled: Task<Void, Never>?
-    @ObservationIgnored private var current: Task<Void, Never>?
+    @ObservationIgnored private var running: Task<Void, Never>?
     @ObservationIgnored private var again = false
     @ObservationIgnored private let realtime = Realtime()
 
@@ -50,25 +50,26 @@ final class SyncService {
         }
     }
 
+    // One loop at a time; a request during it runs once more right after, and every caller waits for that pass.
     func run() async {
-        guard current == nil else {
+        if let running {
             again = true
+            await running.value
             return
         }
-        repeat {
-            again = false
-            let task = Task { await perform() }
-            current = task
-            await task.value
-            current = nil
-        } while again
+        let task = Task { @MainActor in
+            repeat {
+                again = false
+                await perform()
+            } while again
+            running = nil
+        }
+        running = task
+        await task.value
     }
 
     func flush() async -> Bool {
-        while let current {
-            await current.value
-        }
-        await perform()
+        await run()
         return !hasPendingChanges
     }
 

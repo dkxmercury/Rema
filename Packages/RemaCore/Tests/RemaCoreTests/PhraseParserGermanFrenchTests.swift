@@ -36,6 +36,10 @@ struct PhraseParserGermanTests {
         #expect(suit.title == "Anzug abholen")
         #expect(when(suit) == "2026-10-09 19:00")
         #expect(when(parser.parse("morgen abend Papa anrufen")) == "2026-10-06 19:00")
+        let joined = parser.parse("am Freitagabend Anzug abholen")
+        #expect(joined.title == "Anzug abholen")
+        #expect(when(joined) == "2026-10-09 19:00")
+        #expect(when(parser.parse("Dienstagmorgen Müll rausbringen")) == "2026-10-06 09:00")
     }
 
     @Test func repeats() {

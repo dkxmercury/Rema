@@ -157,6 +157,19 @@ extension PhraseParser {
             }
             return true
         }
+        // German writes the part of the day into the weekday, am Freitagabend.
+        take("(?:am |nächsten |kommenden )?(montag|dienstag|mittwoch|donnerstag|freitag|samstag|sonntag)(morgen|vormittag|mittag|nachmittag|abend|nacht)", text, &state) { m, s in
+            guard s.rule == nil, let word = group(m, 1, text), let day = self.deWeekday(word), let part = group(m, 2, text) else { return false }
+            s.weekdays = [day]
+            switch part {
+            case "morgen", "vormittag": s.dayPart = morning
+            case "mittag": s.time = LocalTime(hour: 12, minute: 0)
+            case "nachmittag": s.dayPart = LocalTime(hour: 14, minute: 0)
+            case "abend": s.dayPart = evening
+            default: s.dayPart = LocalTime(hour: 23, minute: 0)
+            }
+            return true
+        }
         take("(?:am |nächsten |kommenden )?\(PhraseParser.deWeekdaysFull)", text, &state) { m, s in
             guard s.rule == nil, let word = group(m, 1, text), let day = self.deWeekday(word) else { return false }
             s.weekdays = [day]

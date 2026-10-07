@@ -1810,7 +1810,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ajoute un rappel à partir d’une phrase, par exemple « demain à 9 h appeler maman »."
+            "value": "Ajoute un rappel à partir d’une phrase, par exemple « demain à 9 h appeler maman »."
           }
         },
         "ru": {
@@ -2408,7 +2408,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Vous êtes à %@"
+            "value": "Arrivée : %@"
           }
         },
         "ru": {
@@ -3616,7 +3616,7 @@
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Пункт керування і кнопка дії"
+            "value": "Центр керування і кнопка дії"
           }
         },
         "uz-Cyrl": {
@@ -4386,7 +4386,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Supprimer le lieu ?"
+            "value": "Supprimer le lieu ?"
           }
         },
         "ru": {
@@ -4478,7 +4478,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Supprimer le rappel ?"
+            "value": "Supprimer le rappel ?"
           }
         },
         "ru": {
@@ -4524,7 +4524,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Supprimer le compte ?"
+            "value": "Supprimer le compte ?"
           }
         },
         "ru": {
@@ -4892,7 +4892,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Terminé : %@"
+            "value": "Terminé : %@"
           }
         },
         "ru": {
@@ -6548,7 +6548,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mot de passe oublié ?"
+            "value": "Mot de passe oublié ?"
           }
         },
         "ru": {
@@ -8142,7 +8142,7 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "War um %@. Öffne die App, um es abzuhaken oder zu verschieben."
+            "value": "Das war um %@. Öffne die App, um es abzuhaken oder zu verschieben."
           }
         },
         "fr": {
@@ -8280,13 +8280,13 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Verlassen: %@"
+            "value": "Ort verlassen: %@"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Vous quittez %@"
+            "value": "Départ : %@"
           }
         },
         "ru": {
@@ -9074,7 +9074,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Déplacé à %@"
+            "value": "Reporté à %@"
           }
         },
         "ru": {
@@ -9994,7 +9994,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Pas encore fait : %@"
+            "value": "Pas encore fait : %@"
           }
         },
         "ru": {
@@ -10500,7 +10500,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Actuellement : %@"
+            "value": "Actuellement : %@"
           }
         },
         "ru": {
@@ -11018,7 +11018,7 @@
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Відкрийте Пункт керування, натисніть «+» і додайте кнопку Rema. Якщо в iPhone є кнопка дії, призначте на неї Rema в Параметрах."
+            "value": "Відкрийте Центр керування, натисніть «+» і додайте кнопку Rema. Якщо в iPhone є кнопка дії, призначте на неї Rema в Параметрах."
           }
         },
         "uz-Cyrl": {
@@ -11064,7 +11064,7 @@
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Відкрити Команди"
+            "value": "Відкрити «Швидкі команди»"
           }
         },
         "uz-Cyrl": {
@@ -11788,7 +11788,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Écouter : %@"
+            "value": "Écouter : %@"
           }
         },
         "ru": {
@@ -12306,7 +12306,7 @@
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Rema на екрані «Початок»"
+            "value": "Rema на початковому екрані"
           }
         },
         "uz-Cyrl": {
@@ -12524,7 +12524,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Le rappeler aussi 2 heures avant ?"
+            "value": "Le rappeler aussi 2 heures avant ?"
           }
         },
         "ru": {
@@ -12800,7 +12800,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Le rappeler aussi la veille ?"
+            "value": "Le rappeler aussi la veille ?"
           }
         },
         "ru": {
@@ -13950,7 +13950,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Répéter tous les vendredis ?"
+            "value": "Répéter tous les vendredis ?"
           }
         },
         "ru": {
@@ -13996,7 +13996,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Répéter tous les lundis ?"
+            "value": "Répéter tous les lundis ?"
           }
         },
         "ru": {
@@ -14042,7 +14042,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Répéter tous les samedis ?"
+            "value": "Répéter tous les samedis ?"
           }
         },
         "ru": {
@@ -14088,7 +14088,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Répéter tous les dimanches ?"
+            "value": "Répéter tous les dimanches ?"
           }
         },
         "ru": {
@@ -14134,7 +14134,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Répéter tous les jeudis ?"
+            "value": "Répéter tous les jeudis ?"
           }
         },
         "ru": {
@@ -14180,7 +14180,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Répéter tous les mardis ?"
+            "value": "Répéter tous les mardis ?"
           }
         },
         "ru": {
@@ -14226,7 +14226,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Répéter tous les mercredis ?"
+            "value": "Répéter tous les mercredis ?"
           }
         },
         "ru": {
@@ -14548,7 +14548,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Dites « Rappelle-moi dans Rema » ou « Qu’est-ce qui vient dans Rema ». Les mêmes actions sont dans l’app Raccourcis."
+            "value": "Dites « Rappelle-moi dans Rema » ou « Qu’est-ce qui vient dans Rema ». Les mêmes actions sont dans l’app Raccourcis."
           }
         },
         "ru": {
@@ -14560,7 +14560,7 @@
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Скажіть «Remind me in Rema» або «What is next in Rema». Ті самі дії є в застосунку «Команди»."
+            "value": "Скажіть «Remind me in Rema» або «What is next in Rema». Ті самі дії є в застосунку «Швидкі команди»."
           }
         },
         "uz-Cyrl": {
@@ -15446,7 +15446,7 @@
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Siri і Команди"
+            "value": "Siri і Швидкі команди"
           }
         },
         "uz-Cyrl": {
@@ -15618,7 +15618,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Reporté de %1$lld min : %2$@"
+            "value": "Reporté de %1$lld min : %2$@"
           }
         },
         "ru": {
@@ -15906,7 +15906,7 @@
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Щоб встигнути з подарунком"
+            "value": "Щоб устигнути з подарунком"
           }
         },
         "uz-Cyrl": {
@@ -17332,7 +17332,7 @@
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ця пошта вже зареєстрована. Увійдіть з паролем."
+            "value": "Ця пошта вже зареєстрована. Увійдіть із паролем."
           }
         },
         "uz-Cyrl": {
@@ -17568,13 +17568,13 @@
         "uz-Cyrl": {
           "stringUnit": {
             "state": "translated",
-            "value": "«Безовта қилманг» орқали"
+            "value": "«Безовта қилинмасин»дан ўтиш"
           }
         },
         "uz-Latn": {
           "stringUnit": {
             "state": "translated",
-            "value": "«Bezovta qilmang» orqali"
+            "value": "«Bezovta qilinmasin»dan o‘tish"
           }
         }
       }
@@ -18016,13 +18016,13 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Удерживайте пустое место на экране «Домой», нажмите «Изменить» и «Добавить виджет». Отмечать напоминания можно прямо на виджете."
+            "value": "Удерживайте пустое место на экране «Домой», нажмите «Править» и «Добавить виджет». Отмечать напоминания можно прямо на виджете."
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Утримуйте порожнє місце на екрані «Початок», натисніть «Змінити» і «Додати віджет». Позначати нагадування можна просто на віджеті."
+            "value": "Утримуйте порожнє місце на початковому екрані, натисніть «Редагувати» і «Додати віджет». Позначати нагадування можна просто на віджеті."
           }
         },
         "uz-Cyrl": {
@@ -18884,7 +18884,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "La météo le matin et le soir ?"
+            "value": "La météo le matin et le soir ?"
           }
         },
         "ru": {
@@ -19160,7 +19160,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Quoi rappeler et quand ?"
+            "value": "Quoi rappeler et quand ?"
           }
         },
         "ru": {
@@ -19252,7 +19252,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Que dois-je rappeler ?"
+            "value": "Que dois-je rappeler ?"
           }
         },
         "ru": {
@@ -19448,7 +19448,7 @@
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Коли до нагадування менше години, згорніть Rema. Відлік з’явиться вгорі екрана й на екрані блокування."
+            "value": "Коли до нагадування менше години, згорніть Rema. Відлік з’явиться вгорі екрана й на замкненому екрані."
           }
         },
         "uz-Cyrl": {
@@ -19482,7 +19482,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Quand le rappeler ?"
+            "value": "Quand le rappeler ?"
           }
         },
         "ru": {
@@ -19562,7 +19562,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "لا يغلق هذا الأدوات والإشعارات. وإن لم يعمل %@ يمكنك إدخال رمز الهاتف."
+            "value": "لا يغلق هذا الأدوات والإشعارات. وإن لم يعمل %@ يمكنك إدخال رمز دخول الهاتف."
           }
         },
         "de": {
@@ -19586,7 +19586,7 @@
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Віджети й сповіщення це не закриває. Якщо %@ не спрацював, можна ввести код телефона."
+            "value": "Віджети й сповіщення це не закриває. Якщо %@ не спрацював, можна ввести код-пароль телефона."
           }
         },
         "uz-Cyrl": {
@@ -19804,7 +19804,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Écrivez « quand je quitte le travail » ou « quand j’arrive à la maison ». Il faut l’accès à la localisation et au moins un lieu."
+            "value": "Écrivez « quand je quitte le travail » ou « quand j’arrive à la maison ». Il faut l’accès à la localisation et au moins un lieu."
           }
         },
         "ru": {
@@ -20295,25 +20295,25 @@
               "few": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "число на значку й ще одне нагадування за %lld хвилини"
+                  "value": "число на значку й ще одне нагадування через %lld хвилини"
                 }
               },
               "many": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "число на значку й ще одне нагадування за %lld хвилин"
+                  "value": "число на значку й ще одне нагадування через %lld хвилин"
                 }
               },
               "one": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "число на значку й ще одне нагадування за %lld хвилину"
+                  "value": "число на значку й ще одне нагадування через %lld хвилину"
                 }
               },
               "other": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "число на значку й ще одне нагадування за %lld хвилини"
+                  "value": "число на значку й ще одне нагадування через %lld хвилини"
                 }
               }
             }
@@ -21318,7 +21318,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "شراء الخبز عندما اغادر العمل"
+            "value": "شراء الخبز عندما أغادر العمل"
           }
         },
         "de": {
@@ -22338,7 +22338,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "كل سنة في 12 اكتوبر"
+            "value": "كل سنة في 12 أكتوبر"
           }
         },
         "de": {
@@ -22534,7 +22534,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "pour les rappels « quand j’arrive » et « quand je pars »"
+            "value": "pour les rappels « quand j’arrive » et « quand je pars »"
           }
         },
         "ru": {
@@ -23920,13 +23920,13 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "الجمعة مساء"
+            "value": "الجمعة مساءً"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "am Freitag abends"
+            "value": "am Freitagabend"
           }
         },
         "fr": {
@@ -23944,7 +23944,7 @@
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "у п'ятницю ввечері"
+            "value": "у п’ятницю ввечері"
           }
         },
         "uz-Cyrl": {
@@ -24806,7 +24806,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "avant %@"
+            "value": "c’était %@"
           }
         },
         "ru": {
@@ -24840,7 +24840,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "عندما اغادر العمل"
+            "value": "عندما أغادر العمل"
           }
         },
         "de": {
@@ -24978,7 +24978,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "علامة «عاجل» تتجاوز «عدم الإزعاج» والتركيز. أضف كلمة «عاجل» إلى العبارة أو فعّلها في التذكير نفسه."
+            "value": "علامة «عاجل» تتجاوز «عدم الإزعاج» و«التركيز». أضف كلمة «عاجل» إلى العبارة أو فعّلها في التذكير نفسه."
           }
         },
         "de": {
@@ -24990,7 +24990,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "La mention « Urgent » passe outre Ne pas déranger et Concentration. Ajoutez le mot « urgent » à la phrase ou activez-la dans le rappel."
+            "value": "La mention « Urgent » passe outre Ne pas déranger et Concentration. Ajoutez le mot « urgent » à la phrase ou activez-la dans le rappel."
           }
         },
         "ru": {
@@ -25002,19 +25002,19 @@
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Позначка «Терміново» пробиває «Не турбувати» і Фокус. Додайте у фразу слово «терміново» або ввімкніть позначку в самому нагадуванні."
+            "value": "Позначка «Терміново» пробиває «Не турбувати» і «Зосередження». Додайте у фразу слово «терміново» або ввімкніть позначку в самому нагадуванні."
           }
         },
         "uz-Cyrl": {
           "stringUnit": {
             "state": "translated",
-            "value": "«Шошилинч» белгиси «Безовта қилинмасин» ва Фокусдан ҳам ўтади. Иборага «шошилинч» сўзини қўшинг ёки эслатманинг ўзида ёқинг."
+            "value": "«Шошилинч» белгиси «Безовта қилинмасин» ва «Фокус» режимларидан ҳам ўтади. Иборага «шошилинч» сўзини қўшинг ёки эслатманинг ўзида ёқинг."
           }
         },
         "uz-Latn": {
           "stringUnit": {
             "state": "translated",
-            "value": "«Shoshilinch» belgisi «Bezovta qilinmasin» va Fokusdan ham o‘tadi. Iboraga «shoshilinch» so‘zini qo‘shing yoki eslatmaning o‘zida yoqing."
+            "value": "«Shoshilinch» belgisi «Bezovta qilinmasin» va «Fokus» rejimlaridan ham o‘tadi. Iboraga «shoshilinch» so‘zini qo‘shing yoki eslatmaning o‘zida yoqing."
           }
         }
       }
