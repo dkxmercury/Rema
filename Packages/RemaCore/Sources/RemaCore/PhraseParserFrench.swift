@@ -171,6 +171,17 @@ extension PhraseParser {
 
     private func frTimes(_ text: String, _ state: inout State) {
         let part = "( du matin| du soir| de l'après-midi| de l'apres-midi)?"
+        let words = "vingt et une|vingt-et-une|vingt-deux|vingt-trois|vingt|dix-sept|dix-huit|dix-neuf|dix|une|deux|trois|quatre|cinq|six|sept|huit|neuf|onze|douze|treize|quatorze|quinze|seize"
+        let fraction = "( et demie?| et quart| moins le quart| moins quart| moins (cinq|dix|vingt-cinq|vingt|\\d{1,2}))"
+        take("(?:à |a |vers )(\\d{1,2}|\(words)) ?(?:h|heures?)\(fraction)\(part)", text, &state) { m, s in
+            frenchFraction(group(m, 1, text), group(m, 2, text), group(m, 3, text), group(m, 4, text), &s)
+        }
+        take("(?:à |a |vers )?(midi|minuit)\(fraction)", text, &state) { m, s in
+            frenchFraction(group(m, 1, text), group(m, 2, text), group(m, 3, text), nil, &s)
+        }
+        take("(?:à |a |vers )(\(words)) heures?(?: (cinq|dix|quinze|vingt-cinq|vingt|trente|quarante-cinq|quarante|cinquante))?\(part)", text, &state) { m, s in
+            frenchClock(group(m, 1, text), minute: PhraseParser.frenchMinutes[group(m, 2, text) ?? ""] ?? 0, before: false, group(m, 3, text), &s)
+        }
         take("(?:à |a |vers )?(\\d{1,2}) ?(?:h|:) ?(\\d{2})\(part)", text, &state) { m, s in
             guard let hour = group(m, 1, text).flatMap(Int.init), let minute = group(m, 2, text).flatMap(Int.init), hour < 24, minute < 60 else { return false }
             s.time = LocalTime(hour: frHour(hour, group(m, 3, text)), minute: minute)
@@ -202,6 +213,25 @@ extension PhraseParser {
             return hour < 12 ? hour + 12 : hour
         }
         return hour == 12 ? 0 : hour
+    }
+
+    private static let frenchHours = ["une": 1, "deux": 2, "trois": 3, "quatre": 4, "cinq": 5, "six": 6, "sept": 7, "huit": 8, "neuf": 9, "dix": 10, "onze": 11, "douze": 12, "midi": 12, "treize": 13, "quatorze": 14, "quinze": 15, "seize": 16, "dix-sept": 17, "dix-huit": 18, "dix-neuf": 19, "vingt": 20, "vingt et une": 21, "vingt-et-une": 21, "vingt-deux": 22, "vingt-trois": 23]
+    private static let frenchMinutes = ["cinq": 5, "dix": 10, "quinze": 15, "vingt": 20, "vingt-cinq": 25, "trente": 30, "quarante": 40, "quarante-cinq": 45, "cinquante": 50]
+
+    private func frenchClock(_ word: String?, minute: Int, before: Bool, _ part: String?, _ s: inout State) -> Bool {
+        guard let word, let hour = word == "minuit" ? (before ? 24 : 0) : Int(word) ?? PhraseParser.frenchHours[word], let time = PhraseParser.clock(hour, minute: minute, before: before) else { return false }
+        s.time = LocalTime(hour: frHour(time.hour, part), minute: time.minute)
+        s.meridiem = part != nil
+        return true
+    }
+
+    private func frenchFraction(_ hour: String?, _ fraction: String?, _ count: String?, _ part: String?, _ s: inout State) -> Bool {
+        guard let fraction else { return false }
+        if fraction.contains("demi") { return frenchClock(hour, minute: 30, before: false, part, &s) }
+        if fraction.contains("et quart") { return frenchClock(hour, minute: 15, before: false, part, &s) }
+        if fraction.contains("quart") { return frenchClock(hour, minute: 15, before: true, part, &s) }
+        guard let count, let minute = Int(count) ?? PhraseParser.frenchMinutes[count] else { return false }
+        return frenchClock(hour, minute: minute, before: true, part, &s)
     }
 
     private func frAlerts(_ text: String, _ state: inout State) {

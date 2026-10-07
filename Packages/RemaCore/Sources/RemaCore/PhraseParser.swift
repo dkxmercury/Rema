@@ -281,13 +281,13 @@ public struct PhraseParser {
         let ordinal = "(первого|второго|третьего|четвертого|пятого|шестого|седьмого|восьмого|девятого|десятого|одиннадцатого|двенадцатого)"
         take("(?:в |к )?(?:пол|половин[аеуы] )\(ordinal)\(modifier)", text, &state) { m, s in
             guard let next = group(m, 1, text).flatMap(PhraseParser.ruOrdinal) else { return false }
-            s.time = LocalTime(hour: adjust(next - 1, group(m, 2, text)), minute: 30)
+            s.time = LocalTime(hour: adjust(next == 1 ? 12 : next - 1, group(m, 2, text)), minute: 30)
             s.meridiem = group(m, 2, text) != nil
             return true
         }
         take("(?:в |к )?четверть \(ordinal)\(modifier)", text, &state) { m, s in
             guard let next = group(m, 1, text).flatMap(PhraseParser.ruOrdinal) else { return false }
-            s.time = LocalTime(hour: adjust(next - 1, group(m, 2, text)), minute: 15)
+            s.time = LocalTime(hour: adjust(next == 1 ? 12 : next - 1, group(m, 2, text)), minute: 15)
             s.meridiem = group(m, 2, text) != nil
             return true
         }
@@ -319,6 +319,16 @@ public struct PhraseParser {
         take("(днем)", text, &state) { _, s in s.dayPart = LocalTime(hour: 13, minute: 0); return true }
         take("(вечером)", text, &state) { _, s in s.dayPart = evening; return true }
         take("(ночью)", text, &state) { _, s in s.dayPart = LocalTime(hour: 23, minute: 0); return true }
+    }
+
+    // «Без пяти девять», «quarter to nine» and «halb neun» count back from the named hour.
+    static func clock(_ hour: Int, minute: Int, before: Bool) -> LocalTime? {
+        if before {
+            guard (1...24).contains(hour), (1..<60).contains(minute) else { return nil }
+            return LocalTime(hour: hour == 1 ? 12 : hour - 1, minute: 60 - minute)
+        }
+        guard (0...23).contains(hour), (0..<60).contains(minute) else { return nil }
+        return LocalTime(hour: hour, minute: minute)
     }
 
     static func ruHour(_ word: String) -> Int? {

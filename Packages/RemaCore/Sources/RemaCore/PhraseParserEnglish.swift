@@ -172,6 +172,29 @@ extension PhraseParser {
 
     private func englishTimes(_ text: String, _ state: inout State) {
         let meridiem = "\\s?(am|pm|a\\.m\\.|p\\.m\\.)?"
+        let clock = "(\\d{1,2}|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)"
+        let hourWord = "(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)"
+        take("(?:at |by )?half past \(clock)\(meridiem)", text, &state) { m, s in
+            englishClock(group(m, 1, text), minute: 30, before: false, group(m, 2, text), &s)
+        }
+        take("(?:at |by )?(?:a )?quarter (past|after|to|till|of) \(clock)\(meridiem)", text, &state) { m, s in
+            englishClock(group(m, 2, text), minute: 15, before: !["past", "after"].contains(group(m, 1, text) ?? ""), group(m, 3, text), &s)
+        }
+        take("(at |by )?(\\d{1,2}|five|ten|twenty-five|twenty five|twenty) (minutes )?(past|after|to|till) \(clock)\(meridiem)", text, &state) { m, s in
+            let word = group(m, 2, text) ?? ""
+            // A bare «5 to 6» may be a range, digits count as minutes only after «at» or with «minutes».
+            guard let minute = Int(word) ?? PhraseParser.englishMinutes[word], Int(word) == nil || group(m, 1, text) != nil || group(m, 3, text) != nil else { return false }
+            return englishClock(group(m, 5, text), minute: minute, before: !["past", "after"].contains(group(m, 4, text) ?? ""), group(m, 6, text), &s)
+        }
+        take("(?:at |by )half \(clock)\(meridiem)", text, &state) { m, s in
+            englishClock(group(m, 1, text), minute: 30, before: false, group(m, 2, text), &s)
+        }
+        take("(?:at |by )\(hourWord)(?: (oh five|fifteen|thirty|forty-five|forty five|twenty-five|twenty five|twenty|ten|forty|fifty))?(?: o'clock)?\(meridiem)", text, &state) { m, s in
+            englishClock(group(m, 1, text), minute: PhraseParser.englishMinutes[group(m, 2, text) ?? ""] ?? 0, before: false, group(m, 3, text), &s)
+        }
+        take("\(hourWord) o'clock\(meridiem)", text, &state) { m, s in
+            englishClock(group(m, 1, text), minute: 0, before: false, group(m, 2, text), &s)
+        }
         take("(?:at |by )?(\\d{1,2}):(\\d{2})\(meridiem)", text, &state) { m, s in
             guard let hour = group(m, 1, text).flatMap(Int.init), let minute = group(m, 2, text).flatMap(Int.init), hour < 24, minute < 60 else { return false }
             s.time = LocalTime(hour: englishHour(hour, group(m, 3, text)), minute: minute)
@@ -204,6 +227,16 @@ extension PhraseParser {
             return hour < 12 ? hour + 12 : hour
         }
         return hour == 12 ? 0 : hour
+    }
+
+    private static let englishHours = ["one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10, "eleven": 11, "twelve": 12]
+    private static let englishMinutes = ["oh five": 5, "five": 5, "ten": 10, "fifteen": 15, "twenty": 20, "twenty-five": 25, "twenty five": 25, "thirty": 30, "forty": 40, "forty-five": 45, "forty five": 45, "fifty": 50]
+
+    private func englishClock(_ word: String?, minute: Int, before: Bool, _ meridiem: String?, _ s: inout State) -> Bool {
+        guard let word, let hour = Int(word) ?? PhraseParser.englishHours[word], let time = PhraseParser.clock(hour, minute: minute, before: before) else { return false }
+        s.time = LocalTime(hour: englishHour(time.hour, meridiem), minute: time.minute)
+        s.meridiem = meridiem != nil
+        return true
     }
 
     private func englishAlerts(_ text: String, _ state: inout State) {

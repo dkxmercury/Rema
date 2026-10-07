@@ -154,6 +154,28 @@ extension PhraseParser {
 
     private func ukTimes(_ text: String, _ state: inout State) {
         let modifier = "( ранку| вечора| дня| ночі)?"
+        let accusative = "(першу|другу|третю|четверту|п'яту|шосту|сьому|восьму|дев'яту|десяту|одинадцяту|дванадцяту)"
+        let nominative = "(перша|друга|третя|четверта|п'ята|шоста|сьома|восьма|дев'ята|десята|одинадцята|дванадцята)"
+        let locative = "(двадцять першій|двадцять другій|двадцять третій|двадцятій|першій|другій|третій|четвертій|п'ятій|шостій|сьомій|восьмій|дев'ятій|десятій|одинадцятій|дванадцятій|тринадцятій|чотирнадцятій|п'ятнадцятій|шістнадцятій|сімнадцятій|вісімнадцятій|дев'ятнадцятій)"
+        let cardinal = "(одна|одну|дві|три|чотири|п'ять|шість|сім|вісім|дев'ять|десять|одинадцять|дванадцять)"
+        take("(?:о пів|опів|пів) на \(accusative)\(modifier)", text, &state) { m, s in
+            ukClock(group(m, 1, text).flatMap(PhraseParser.ukOrdinal), minute: 30, before: true, group(m, 2, text), &s)
+        }
+        // «Чверть на третю» is a quarter past two, that is 45 minutes before three.
+        take("(?:о |об )?чверть на \(accusative)\(modifier)", text, &state) { m, s in
+            ukClock(group(m, 1, text).flatMap(PhraseParser.ukOrdinal), minute: 45, before: true, group(m, 2, text), &s)
+        }
+        take("(?:о |об )?за (двадцять п'ять|двадцять|п'ятнадцять|десять|п'ять|чверть|\\d{1,2})(?: хвилин[аи]?)? \(nominative)\(modifier)", text, &state) { m, s in
+            let count = group(m, 1, text) ?? ""
+            return ukClock(group(m, 2, text).flatMap(PhraseParser.ukOrdinal), minute: Int(count) ?? PhraseParser.ukMinutes[count] ?? 0, before: true, group(m, 3, text), &s)
+        }
+        take("без (двадцяти п'яти|двадцяти|п'ятнадцяти|десяти|п'яти|чверті|\\d{1,2})(?: хвилин)? \(cardinal)\(modifier)", text, &state) { m, s in
+            let count = group(m, 1, text) ?? ""
+            return ukClock(group(m, 2, text).flatMap { PhraseParser.ukCardinals[$0] }, minute: Int(count) ?? PhraseParser.ukMinutes[count] ?? 0, before: true, group(m, 3, text), &s)
+        }
+        take("(?:о|об) \(locative)(?: (сорок п'ять|двадцять п'ять|п'ятнадцять|тридцять|двадцять|десять|сорок|п'ятдесят))?(?: годині)?\(modifier)", text, &state) { m, s in
+            ukClock(group(m, 1, text).flatMap(PhraseParser.ukOrdinal), minute: PhraseParser.ukMinutes[group(m, 2, text) ?? ""] ?? 0, before: false, group(m, 3, text), &s)
+        }
         take("(?:о |об |на |до )?(\\d{1,2})[:.](\\d{2})\(modifier)", text, &state) { m, s in
             guard let hour = group(m, 1, text).flatMap(Int.init), let minute = group(m, 2, text).flatMap(Int.init), hour < 24, minute < 60 else { return false }
             s.time = LocalTime(hour: ukHour(hour, group(m, 3, text)), minute: minute)
@@ -172,6 +194,21 @@ extension PhraseParser {
         take("(вдень|удень)", text, &state) { _, s in s.dayPart = LocalTime(hour: 13, minute: 0); return true }
         take("(ввечері|увечері|ввечорі)", text, &state) { _, s in s.dayPart = evening; return true }
         take("(вночі|уночі)", text, &state) { _, s in s.dayPart = LocalTime(hour: 23, minute: 0); return true }
+    }
+
+    private static let ukCardinals = ["одна": 1, "одну": 1, "дві": 2, "три": 3, "чотири": 4, "п'ять": 5, "шість": 6, "сім": 7, "вісім": 8, "дев'ять": 9, "десять": 10, "одинадцять": 11, "дванадцять": 12]
+    private static let ukMinutes = ["п'ять": 5, "п'яти": 5, "десять": 10, "десяти": 10, "п'ятнадцять": 15, "п'ятнадцяти": 15, "чверть": 15, "чверті": 15, "двадцять": 20, "двадцяти": 20, "двадцять п'ять": 25, "двадцяти п'яти": 25, "тридцять": 30, "сорок": 40, "сорок п'ять": 45, "п'ятдесят": 50]
+
+    static func ukOrdinal(_ word: String) -> Int? {
+        let stem = word.hasSuffix("ій") ? String(word.dropLast(2)) : String(word.dropLast())
+        return ["перш": 1, "друг": 2, "трет": 3, "четверт": 4, "п'ят": 5, "шост": 6, "сьом": 7, "восьм": 8, "дев'ят": 9, "десят": 10, "одинадцят": 11, "дванадцят": 12, "тринадцят": 13, "чотирнадцят": 14, "п'ятнадцят": 15, "шістнадцят": 16, "сімнадцят": 17, "вісімнадцят": 18, "дев'ятнадцят": 19, "двадцят": 20, "двадцять перш": 21, "двадцять друг": 22, "двадцять трет": 23][stem]
+    }
+
+    private func ukClock(_ hour: Int?, minute: Int, before: Bool, _ modifier: String?, _ s: inout State) -> Bool {
+        guard let hour, let time = PhraseParser.clock(hour, minute: minute, before: before) else { return false }
+        s.time = LocalTime(hour: ukHour(time.hour, modifier), minute: time.minute)
+        s.meridiem = modifier != nil
+        return true
     }
 
     private func ukHour(_ hour: Int, _ modifier: String?) -> Int {

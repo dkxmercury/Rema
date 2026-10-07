@@ -199,6 +199,20 @@ extension PhraseParser {
     }
 
     private func uzTimes(_ text: String, _ state: inout State) {
+        let words = "o'n bir|o'n ikki|o'n uch|o'n to'rt|o'n besh|o'n olti|o'n yetti|o'n etti|o'n sakkiz|o'n to'qqiz|o'n|yigirma bir|yigirma ikki|yigirma uch|yigirma|bir|ikki|uch|to'rt|besh|olti|yetti|etti|sakkiz|to'qqiz"
+        let count = "(yigirma besh|yigirma|o'n besh|o'n|besh|chorak|\\d{1,2})"
+        take("soat (\\d{1,2}|\(words)) yarim(?:da|ga)?", text, &state) { m, s in
+            uzClock(group(m, 1, text), minute: 30, before: false, &s)
+        }
+        take("soat (\\d{1,2}|\(words)) ?dan \(count)(?: daqiqa)? o'tganda", text, &state) { m, s in
+            uzClock(group(m, 1, text), minute: group(m, 2, text).flatMap { Int($0) ?? PhraseParser.uzMinutes[$0] } ?? 0, before: false, &s)
+        }
+        take("soat (\\d{1,2}|\(words)) ?ga \(count)(?: daqiqa)? qolganda", text, &state) { m, s in
+            uzClock(group(m, 1, text), minute: group(m, 2, text).flatMap { Int($0) ?? PhraseParser.uzMinutes[$0] } ?? 0, before: true, &s)
+        }
+        take("soat (\(words))(?: ?da| ?ga)?", text, &state) { m, s in
+            uzClock(group(m, 1, text), minute: 0, before: false, &s)
+        }
         take("(?:soat )?(\\d{1,2})[:.](\\d{2}) ?(?:da|ga)?", text, &state) { m, s in
             guard let hour = group(m, 1, text).flatMap(Int.init), let minute = group(m, 2, text).flatMap(Int.init), hour < 24, minute < 60 else { return false }
             s.time = LocalTime(hour: hour, minute: minute)
@@ -215,6 +229,15 @@ extension PhraseParser {
         take("(kunduzi)", text, &state) { _, s in s.dayPart = LocalTime(hour: 13, minute: 0); return true }
         take("(kechqurun|kechki payt|kechda)", text, &state) { _, s in s.dayPart = evening; return true }
         take("(kechasi|tunda)", text, &state) { _, s in s.dayPart = LocalTime(hour: 23, minute: 0); return true }
+    }
+
+    private static let uzHours = ["bir": 1, "ikki": 2, "uch": 3, "to'rt": 4, "besh": 5, "olti": 6, "yetti": 7, "etti": 7, "sakkiz": 8, "to'qqiz": 9, "o'n": 10, "o'n bir": 11, "o'n ikki": 12, "o'n uch": 13, "o'n to'rt": 14, "o'n besh": 15, "o'n olti": 16, "o'n yetti": 17, "o'n etti": 17, "o'n sakkiz": 18, "o'n to'qqiz": 19, "yigirma": 20, "yigirma bir": 21, "yigirma ikki": 22, "yigirma uch": 23]
+    private static let uzMinutes = ["besh": 5, "o'n": 10, "o'n besh": 15, "chorak": 15, "yigirma": 20, "yigirma besh": 25]
+
+    private func uzClock(_ word: String?, minute: Int, before: Bool, _ s: inout State) -> Bool {
+        guard let word, let hour = Int(word) ?? PhraseParser.uzHours[word], let time = PhraseParser.clock(hour, minute: minute, before: before) else { return false }
+        s.time = time
+        return true
     }
 
     private func uzAlerts(_ text: String, _ state: inout State) {

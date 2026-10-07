@@ -5,19 +5,19 @@ extension PhraseParser {
         "morgen", "heute", "übermorgen", "um", "uhr", "jeden", "jede", "jedes", "täglich", "stunden", "stunde", "minuten",
         "montag", "dienstag", "mittwoch", "donnerstag", "freitag", "samstag", "sonntag", "erinnere", "mich", "abends",
         "morgens", "nächsten", "wenn", "ich", "vorher", "dringend", "alle", "tage", "werktags", "jährlich", "monatlich", "einer",
-        "wochenende", "arbeit", "zweiten", "monatsende", "mittagessen", "mittagspause", "monats",
+        "wochenende", "arbeit", "zweiten", "monatsende", "mittagessen", "mittagspause", "monats", "halb", "viertel", "dreiviertel",
     ]
     private static let frenchWords: Set<String> = [
         "demain", "aujourd'hui", "après-demain", "à", "chaque", "tous", "toutes", "dans", "heures", "heure", "lundi", "mardi",
         "mercredi", "jeudi", "vendredi", "samedi", "dimanche", "rappelle-moi", "rappelle", "soir", "matin", "prochain", "quand",
         "je", "avant", "veille", "jours", "semaine", "mois", "ans", "une", "les", "le", "la", "de", "d'appeler",
-        "week-end", "déjeuner", "travail", "boulot", "fin", "sur", "deux", "dernier",
+        "week-end", "déjeuner", "travail", "boulot", "fin", "sur", "deux", "dernier", "demie", "quart", "moins", "midi", "minuit",
     ]
     private static let englishWords: Set<String> = [
         "tomorrow", "today", "tonight", "at", "every", "in", "hours", "hour", "minutes", "monday", "tuesday", "wednesday",
         "thursday", "friday", "saturday", "sunday", "remind", "me", "evening", "morning", "next", "when", "before", "the",
         "to", "on", "days", "week", "month", "year", "an", "a",
-        "weekend", "weekends", "lunch", "work", "other", "last", "end",
+        "weekend", "weekends", "lunch", "work", "other", "last", "end", "o'clock", "half", "past", "quarter",
     ]
 
     static func latinLanguage(_ text: String, preferred: String?) -> String {
@@ -30,7 +30,8 @@ extension PhraseParser {
         var uzbek = uzbekText.split(whereSeparator: { !$0.isLetter && $0 != "'" }).map(String.init).filter { uzbekWords.contains($0) }.count
         if lower.contains(where: { "äöüß".contains($0) }) { german += 2 }
         if lower.contains(where: { "éèêàçœù".contains($0) }) { french += 2 }
-        if uzbekText.contains("o'") || uzbekText.contains("g'") { uzbek += 2 }
+        let apostrophes = uzbekText.replacingOccurrences(of: "o'clock", with: "")
+        if apostrophes.contains("o'") || apostrophes.contains("g'") { uzbek += 2 }
         let best = max(german, french, english, uzbek)
         if best == 0 {
             let code = preferred.map { String($0.prefix(2)) } ?? "en"

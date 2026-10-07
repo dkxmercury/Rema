@@ -179,6 +179,33 @@ extension PhraseParser {
     }
 
     private func deTimes(_ text: String, _ state: inout State) {
+        let clock = "(\\d{1,2}|eins|zwei|drei|vier|fünf|sechs|sieben|acht|neun|zehn|elf|zwölf)"
+        let hourWords = "dreiundzwanzig|zweiundzwanzig|einundzwanzig|zwanzig|dreizehn|vierzehn|fünfzehn|sechzehn|siebzehn|achtzehn|neunzehn|eins|zwei|drei|vier|fünf|sechs|sieben|acht|neun|zehn|elf|zwölf"
+        let minutes = "(fünfundvierzig|fünfzehn|dreißig|dreissig|zwanzig|vierzig|fünfzig|zehn|fünf)"
+        take("(?:um |gegen |ab )?(\\d{1,2}|fünf|zehn|zwanzig) (?:minuten )?(vor|nach) (halb )?\(clock)", text, &state) { m, s in
+            let word = group(m, 1, text) ?? ""
+            guard let minute = Int(word) ?? PhraseParser.germanMinutes[word] else { return false }
+            let before = group(m, 2, text) == "vor"
+            if group(m, 3, text) != nil {
+                return germanClock(group(m, 4, text), minute: before ? 30 + minute : 30 - minute, before: true, &s)
+            }
+            return germanClock(group(m, 4, text), minute: minute, before: before, &s)
+        }
+        take("(?:um |gegen |ab )?viertel (vor|nach) \(clock)", text, &state) { m, s in
+            germanClock(group(m, 2, text), minute: 15, before: group(m, 1, text) == "vor", &s)
+        }
+        take("(?:um |gegen |ab )?dreiviertel \(clock)", text, &state) { m, s in
+            germanClock(group(m, 1, text), minute: 15, before: true, &s)
+        }
+        take("(?:um |gegen |ab )?halb \(clock)", text, &state) { m, s in
+            germanClock(group(m, 1, text), minute: 30, before: true, &s)
+        }
+        take("(?:um|gegen|ab) (\(hourWords))(?: uhr(?: \(minutes))?)?(?! (?:minuten|stunden|tage|wochen))", text, &state) { m, s in
+            germanClock(group(m, 1, text), minute: PhraseParser.germanMinutes[group(m, 2, text) ?? ""] ?? 0, before: false, &s)
+        }
+        take("(ein|\(hourWords)) uhr(?: \(minutes))?", text, &state) { m, s in
+            germanClock(group(m, 1, text), minute: PhraseParser.germanMinutes[group(m, 2, text) ?? ""] ?? 0, before: false, &s)
+        }
         take("(?:um |gegen |ab )?(\\d{1,2})[:.](\\d{2})(?: uhr)?", text, &state) { m, s in
             guard let hour = group(m, 1, text).flatMap(Int.init), let minute = group(m, 2, text).flatMap(Int.init), hour < 24, minute < 60 else { return false }
             s.time = LocalTime(hour: hour, minute: minute)
@@ -195,6 +222,15 @@ extension PhraseParser {
         take("(nachmittags|am nachmittag)", text, &state) { _, s in s.dayPart = LocalTime(hour: 14, minute: 0); return true }
         take("(abends|am abend)", text, &state) { _, s in s.dayPart = evening; return true }
         take("(nachts|in der nacht)", text, &state) { _, s in s.dayPart = LocalTime(hour: 23, minute: 0); return true }
+    }
+
+    private static let germanHours = ["ein": 1, "eins": 1, "zwei": 2, "drei": 3, "vier": 4, "fünf": 5, "sechs": 6, "sieben": 7, "acht": 8, "neun": 9, "zehn": 10, "elf": 11, "zwölf": 12, "dreizehn": 13, "vierzehn": 14, "fünfzehn": 15, "sechzehn": 16, "siebzehn": 17, "achtzehn": 18, "neunzehn": 19, "zwanzig": 20, "einundzwanzig": 21, "zweiundzwanzig": 22, "dreiundzwanzig": 23]
+    private static let germanMinutes = ["fünf": 5, "zehn": 10, "fünfzehn": 15, "zwanzig": 20, "dreißig": 30, "dreissig": 30, "vierzig": 40, "fünfundvierzig": 45, "fünfzig": 50]
+
+    private func germanClock(_ word: String?, minute: Int, before: Bool, _ s: inout State) -> Bool {
+        guard let word, let hour = Int(word) ?? PhraseParser.germanHours[word], let time = PhraseParser.clock(hour, minute: minute, before: before) else { return false }
+        s.time = time
+        return true
     }
 
     private func deAlerts(_ text: String, _ state: inout State) {
