@@ -7,7 +7,7 @@ struct ScheduledContent {
         let id: String
         let reminderID: UUID
         let lead: String?
-        let dated: Bool
+        var month: String?
         let title: String
         let subtitle: String?
     }
@@ -42,7 +42,7 @@ struct ScheduledContent {
             switch reminder.schedule?.rule {
             case .yearly, .monthlyOnDay, .monthlyOnWeekday:
                 let details = [describer.time(item.occurrence), describer.subtitle(for: reminder, places: places, withRepeat: false)].compactMap { $0 }
-                let entry = Item(id: id, reminderID: reminder.id, lead: describer.shortDate(item.occurrence), dated: true, title: reminder.title, subtitle: details.joined(separator: " · "))
+                let entry = Item(id: id, reminderID: reminder.id, lead: String(calendar.component(.day, from: item.occurrence)), month: describer.shortMonth(item.occurrence), title: reminder.title, subtitle: details.joined(separator: " · "))
                 if case .yearly = reminder.schedule?.rule {
                     yearly.append(entry)
                 } else {
@@ -50,7 +50,7 @@ struct ScheduledContent {
                 }
             default:
                 hasRepeats = hasRepeats || reminder.schedule?.rule != nil
-                let entry = Item(id: id, reminderID: reminder.id, lead: describer.time(item.occurrence), dated: false, title: reminder.title, subtitle: describer.subtitle(for: reminder, places: places))
+                let entry = Item(id: id, reminderID: reminder.id, lead: describer.time(item.occurrence), title: reminder.title, subtitle: describer.subtitle(for: reminder, places: places))
                 let day = calendar.startOfDay(for: item.occurrence)
                 if days.last?.id == day {
                     days[days.count - 1].items.append(entry)
@@ -60,7 +60,7 @@ struct ScheduledContent {
             }
         }
         let placed = byPlace(active).map { reminder in
-            Item(id: reminder.id.uuidString, reminderID: reminder.id, lead: nil, dated: false, title: reminder.title, subtitle: describer.placeText(reminder, places: places))
+            Item(id: reminder.id.uuidString, reminderID: reminder.id, lead: nil, title: reminder.title, subtitle: describer.placeText(reminder, places: places))
         }
         return ScheduledContent(days: days, monthly: monthly, yearly: yearly, places: placed, hasRepeats: hasRepeats)
     }

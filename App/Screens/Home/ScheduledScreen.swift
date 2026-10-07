@@ -90,14 +90,25 @@ struct ScheduledScreen: View {
 
     private func row(_ item: ScheduledContent.Item, highlighted: Bool) -> some View {
         HStack(spacing: 14) {
-            if let lead = item.lead {
+            if let lead = item.lead, let month = item.month {
+                VStack(alignment: .leading, spacing: 0) {
+                    Text(verbatim: lead)
+                        .font(.app(.jost, 18, weight: 500))
+                        .monospacedDigit()
+                    Text(verbatim: month)
+                        .font(.app(.golos, 11, weight: 600))
+                        .textCase(.uppercase)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                        .foregroundStyle(Palette.secondary)
+                }
+                .frame(width: 50, alignment: .leading)
+            } else if let lead = item.lead {
                 Text(verbatim: lead)
-                    .font(.app(.jost, item.dated ? 16 : 18, weight: highlighted ? 600 : 500))
+                    .font(.app(.jost, 18, weight: highlighted ? 600 : 500))
                     .monospacedDigit()
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
                     .foregroundStyle(highlighted ? Palette.accentText : Palette.text)
-                    .frame(width: item.dated ? 64 : 50, alignment: .leading)
+                    .frame(width: 50, alignment: .leading)
             } else {
                 Glyph(paths: Icons.pin, size: 20, lineWidth: 2, color: Palette.secondary)
                     .frame(width: 50, alignment: .leading)

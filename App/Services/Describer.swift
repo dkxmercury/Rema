@@ -100,8 +100,8 @@ struct Describer {
         return String(format: "%d:%02d", parts.hour ?? 0, parts.minute ?? 0)
     }
 
-    func shortDate(_ date: Date) -> String {
-        date.formatted(Date.FormatStyle(locale: locale, calendar: calendar, timeZone: calendar.timeZone).day().month(.abbreviated)).replacingOccurrences(of: ".", with: "")
+    func shortMonth(_ date: Date) -> String {
+        date.formatted(Date.FormatStyle(locale: locale, calendar: calendar, timeZone: calendar.timeZone).month(.abbreviated)).replacingOccurrences(of: ".", with: "")
     }
 
     func dayTitle(_ date: Date) -> String {
