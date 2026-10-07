@@ -31,7 +31,8 @@ extension PhraseParser {
             placeTrigger: state.placeTrigger,
             placeNames: state.placeNames,
             highlights: merge(state.used),
-            hasExplicitTime: state.time != nil || state.exact != nil || state.dayPart != nil
+            hasExplicitTime: state.time != nil || state.exact != nil || state.dayPart != nil,
+            alternative: state.alternative
         )
     }
 
@@ -174,16 +175,19 @@ extension PhraseParser {
         take("(?:at |by )?(\\d{1,2}):(\\d{2})\(meridiem)", text, &state) { m, s in
             guard let hour = group(m, 1, text).flatMap(Int.init), let minute = group(m, 2, text).flatMap(Int.init), hour < 24, minute < 60 else { return false }
             s.time = LocalTime(hour: englishHour(hour, group(m, 3, text)), minute: minute)
+            s.meridiem = group(m, 3, text) != nil
             return true
         }
         take("(?:at |by )(\\d{1,2})(?: o'clock)?\(meridiem)", text, &state) { m, s in
             guard let hour = group(m, 1, text).flatMap(Int.init), hour < 24 else { return false }
             s.time = LocalTime(hour: englishHour(hour, group(m, 2, text)), minute: 0)
+            s.meridiem = group(m, 2, text) != nil
             return true
         }
         take("(\\d{1,2})\\s?(am|pm|a\\.m\\.|p\\.m\\.)", text, &state) { m, s in
             guard let hour = group(m, 1, text).flatMap(Int.init), hour <= 12 else { return false }
             s.time = LocalTime(hour: englishHour(hour, group(m, 2, text)), minute: 0)
+            s.meridiem = group(m, 2, text) != nil
             return true
         }
         take("(?:at )?noon", text, &state) { _, s in s.time = LocalTime(hour: 12, minute: 0); return true }

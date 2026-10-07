@@ -74,6 +74,9 @@ enum Corpus {
         if !phrase.preAlerts.isEmpty {
             extras.append("early " + phrase.preAlerts.sorted().map(String.init).joined(separator: ","))
         }
+        if let other = phrase.alternative {
+            extras.append(String(format: "alt %02d.%02d %02d:%02d", other.start.day, other.start.month, other.time.hour, other.time.minute))
+        }
         if let trigger = phrase.placeTrigger, !phrase.placeNames.isEmpty {
             extras.append("\(trigger.rawValue) " + phrase.placeNames.joined(separator: ","))
         }

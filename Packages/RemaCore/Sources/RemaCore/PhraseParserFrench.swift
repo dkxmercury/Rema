@@ -37,7 +37,8 @@ extension PhraseParser {
             placeTrigger: state.placeTrigger,
             placeNames: state.placeNames,
             highlights: merge(state.used),
-            hasExplicitTime: state.time != nil || state.exact != nil || state.dayPart != nil
+            hasExplicitTime: state.time != nil || state.exact != nil || state.dayPart != nil,
+            alternative: state.alternative
         )
     }
 
@@ -173,11 +174,13 @@ extension PhraseParser {
         take("(?:à |a |vers )?(\\d{1,2}) ?(?:h|:) ?(\\d{2})\(part)", text, &state) { m, s in
             guard let hour = group(m, 1, text).flatMap(Int.init), let minute = group(m, 2, text).flatMap(Int.init), hour < 24, minute < 60 else { return false }
             s.time = LocalTime(hour: frHour(hour, group(m, 3, text)), minute: minute)
+            s.meridiem = group(m, 3, text) != nil
             return true
         }
         take("(?:à |a |vers )?(\\d{1,2}) ?(?:h|heures?)\(part)", text, &state) { m, s in
             guard let hour = group(m, 1, text).flatMap(Int.init), hour < 24 else { return false }
             s.time = LocalTime(hour: frHour(hour, group(m, 2, text)), minute: 0)
+            s.meridiem = group(m, 2, text) != nil
             return true
         }
         take("(?:à|vers) (\\d{1,2})", text, &state) { m, s in

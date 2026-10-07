@@ -32,7 +32,8 @@ extension PhraseParser {
             placeTrigger: state.placeTrigger,
             placeNames: state.placeNames,
             highlights: merge(state.used),
-            hasExplicitTime: state.time != nil || state.exact != nil || state.dayPart != nil
+            hasExplicitTime: state.time != nil || state.exact != nil || state.dayPart != nil,
+            alternative: state.alternative
         )
     }
 

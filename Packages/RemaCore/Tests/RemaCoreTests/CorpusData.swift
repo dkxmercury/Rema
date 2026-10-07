@@ -2,6 +2,10 @@
 
 enum CorpusData {
     static let russian: [CorpusCase] = [
+        ok("в 7 ужин", "Ужин | 05.10 19:00 | - | alt 06.10 07:00"),
+        ok("в 9 полить цветы", "Полить цветы | 05.10 21:00 | - | alt 06.10 09:00"),
+        ok("в 3 забрать детей", "Забрать детей | 05.10 15:00 | - | alt 06.10 03:00"),
+        ok("в 7 утра пробежка", "Пробежка | 06.10 07:00 | - | -"),
         ok("завтра в 9 позвонить маме", "Позвонить маме | 06.10 09:00 | - | -"),
         ok("через 2 часа выключить духовку", "Выключить духовку | 05.10 15:50 | - | -"),
         ok("через 20 минут проверить почту", "Проверить почту | 05.10 14:10 | - | -"),
@@ -52,15 +56,15 @@ enum CorpusData {
         ok("в 23:30 выключить роутер", "Выключить роутер | 05.10 23:30 | - | -"),
         ok("через 3 часа позвонить курьеру", "Позвонить курьеру | 05.10 16:50 | - | -"),
         ok("в четверг в 8:15 анализ крови", "Анализ крови | 08.10 08:15 | - | -"),
-        gap("в полдевятого вечера позвонить брату", "Позвонить брату | 05.10 20:30 | - | -"),
-        gap("завтра без пятнадцати девять выйти из дома", "Выйти из дома | 06.10 08:45 | - | -"),
-        gap("в четверть третьего созвон", "Созвон | 05.10 14:15 | - | -"),
-        gap("завтра в половине восьмого утра пробежка", "Пробежка | 06.10 07:30 | - | -"),
-        gap("в семь вечера кино", "Кино | 05.10 19:00 | - | -"),
-        gap("в субботу в десять утра рынок", "Рынок | 10.10 10:00 | - | -"),
-        gap("около пяти позвонить в банк", "Позвонить в банк | 05.10 17:00 | - | -"),
+        ok("в полдевятого вечера позвонить брату", "Позвонить брату | 05.10 20:30 | - | -"),
+        ok("завтра без пятнадцати девять выйти из дома", "Выйти из дома | 06.10 08:45 | - | -"),
+        ok("в четверть третьего созвон", "Созвон | 05.10 14:15 | - | alt 06.10 02:15"),
+        ok("завтра в половине восьмого утра пробежка", "Пробежка | 06.10 07:30 | - | -"),
+        ok("в семь вечера кино", "Кино | 05.10 19:00 | - | -"),
+        ok("в субботу в десять утра рынок", "Рынок | 10.10 10:00 | - | -"),
+        gap("около пяти позвонить в банк", "Позвонить в банк | 05.10 17:00 | - | alt 06.10 05:00"),
         gap("ближе к вечеру забрать заказ", "Забрать заказ | 05.10 18:00 | - | -"),
-        gap("между 2 и 3 позвонить сантехнику", "Позвонить сантехнику | 05.10 14:00 | - | -"),
+        gap("между 2 и 3 позвонить сантехнику", "Позвонить сантехнику | 05.10 14:00 | - | alt 06.10 02:00"),
         gap("в пятницу через неделю сдать проект", "Сдать проект | 16.10 09:00 | - | -"),
         gap("через неделю в пятницу встреча выпускников", "Встреча выпускников | 16.10 09:00 | - | -"),
         gap("за 2 дня до 20 декабря купить подарки", "Купить подарки | 18.12 09:00 | - | -"),
@@ -81,6 +85,8 @@ enum CorpusData {
     ]
 
     static let ukrainian: [CorpusCase] = [
+        ok("о 7 вечеря", "Вечеря | 05.10 19:00 | - | alt 06.10 07:00"),
+        ok("о 7 ранку біг", "Біг | 06.10 07:00 | - | -"),
         ok("завтра о 9 подзвонити мамі", "Подзвонити мамі | 06.10 09:00 | - | -"),
         ok("через 2 години вимкнути духовку", "Вимкнути духовку | 05.10 15:50 | - | -"),
         ok("через 20 хвилин перевірити пошту", "Перевірити пошту | 05.10 14:10 | - | -"),
@@ -102,13 +108,15 @@ enum CorpusData {
         ok("в обід подзвонити в банк", "Подзвонити в банк | 06.10 13:00 | - | -"),
         gap("о пів на дев'яту вечора подзвонити братові", "Подзвонити братові | 05.10 20:30 | - | -"),
         gap("завтра за п'ятнадцять дев'ята вийти з дому", "Вийти з дому | 06.10 08:45 | - | -"),
-        gap("близько п'ятої подзвонити в банк", "Подзвонити в банк | 05.10 17:00 | - | -"),
+        gap("близько п'ятої подзвонити в банк", "Подзвонити в банк | 05.10 17:00 | - | alt 06.10 05:00"),
         gap("по буднях крім п'ятниці о 8 планірка", "Планірка | 06.10 08:00 | weekly mon,tue,wed,thu | -"),
         gap("завтра о 17, ні, о 18 подзвонити мамі", "Подзвонити мамі | 06.10 18:00 | - | -"),
         gap("треба не забути купити хліб завтра", "Купити хліб | 06.10 09:00 | - | -"),
     ]
 
     static let english: [CorpusCase] = [
+        ok("at 7 dinner", "Dinner | 05.10 19:00 | - | alt 06.10 07:00"),
+        ok("at 7 am run", "Run | 06.10 07:00 | - | -"),
         ok("tomorrow at 9 call mom", "Call mom | 06.10 09:00 | - | -"),
         ok("in 2 hours turn off the oven", "Turn off the oven | 05.10 15:50 | - | -"),
         ok("in 20 minutes check the laundry", "Check the laundry | 05.10 14:10 | - | -"),
@@ -143,10 +151,10 @@ enum CorpusData {
         ok("at midnight congratulate a friend", "Congratulate a friend | 06.10 00:00 | - | -"),
         gap("at half past eight in the evening call my brother", "Call my brother | 05.10 20:30 | - | -"),
         gap("tomorrow at quarter to nine leave home", "Leave home | 06.10 08:45 | - | -"),
-        gap("at quarter past two call", "Call | 05.10 14:15 | - | -"),
+        gap("at quarter past two call", "Call | 05.10 14:15 | - | alt 06.10 02:15"),
         gap("at seven in the evening movie", "Movie | 05.10 19:00 | - | -"),
-        gap("around five call the bank", "Call the bank | 05.10 17:00 | - | -"),
-        gap("between 2 and 3 call the plumber", "Call the plumber | 05.10 14:00 | - | -"),
+        gap("around five call the bank", "Call the bank | 05.10 17:00 | - | alt 06.10 05:00"),
+        gap("between 2 and 3 call the plumber", "Call the plumber | 05.10 14:00 | - | alt 06.10 02:00"),
         gap("a week from Friday submit the project", "Submit the project | 16.10 09:00 | - | -"),
         gap("2 days before December 20 buy gifts", "Buy gifts | 18.12 09:00 | - | -"),
         gap("weekdays except Friday at 8 standup", "Standup | 06.10 08:00 | weekly mon,tue,wed,thu | -"),
@@ -160,6 +168,8 @@ enum CorpusData {
     ]
 
     static let german: [CorpusCase] = [
+        ok("um 7 Abendessen", "Abendessen | 05.10 19:00 | - | alt 06.10 07:00"),
+        ok("um 7 Uhr morgens joggen", "Joggen | 06.10 07:00 | - | -"),
         ok("morgen um 9 Mama anrufen", "Mama anrufen | 06.10 09:00 | - | -"),
         ok("in 2 Stunden den Ofen ausschalten", "Ofen ausschalten | 05.10 15:50 | - | -"),
         ok("in 20 Minuten die Wäsche prüfen", "Wäsche prüfen | 05.10 14:10 | - | -"),
@@ -178,13 +188,15 @@ enum CorpusData {
         ok("Dienstagmorgen Zahnarzt", "Zahnarzt | 06.10 09:00 | - | -"),
         gap("um halb neun abends den Bruder anrufen", "Bruder anrufen | 05.10 20:30 | - | -"),
         gap("morgen um Viertel vor neun losgehen", "Losgehen | 06.10 08:45 | - | -"),
-        gap("gegen fünf die Bank anrufen", "Bank anrufen | 05.10 17:00 | - | -"),
+        gap("gegen fünf die Bank anrufen", "Bank anrufen | 05.10 17:00 | - | alt 06.10 05:00"),
         gap("werktags außer freitags um 8 Besprechung", "Besprechung | 06.10 08:00 | weekly mon,tue,wed,thu | -"),
         gap("morgen um 17, nein, um 18 Mama anrufen", "Mama anrufen | 06.10 18:00 | - | -"),
         gap("nicht vergessen morgen Brot kaufen", "Brot kaufen | 06.10 09:00 | - | -"),
     ]
 
     static let french: [CorpusCase] = [
+        ok("à 7h dîner", "Dîner | 05.10 19:00 | - | alt 06.10 07:00"),
+        ok("à 7h du matin courir", "Courir | 06.10 07:00 | - | -"),
         ok("demain à 9h appeler maman", "Appeler maman | 06.10 09:00 | - | -"),
         ok("dans 2 heures éteindre le four", "Éteindre le four | 05.10 15:50 | - | -"),
         ok("dans 20 minutes vérifier le linge", "Vérifier le linge | 05.10 14:10 | - | -"),
@@ -203,13 +215,15 @@ enum CorpusData {
         ok("demain acheter du pain", "Acheter du pain | 06.10 09:00 | - | -"),
         gap("à huit heures et demie du soir appeler mon frère", "Appeler mon frère | 05.10 20:30 | - | -"),
         gap("demain à neuf heures moins le quart partir", "Partir | 06.10 08:45 | - | -"),
-        gap("vers cinq heures appeler la banque", "Appeler la banque | 05.10 17:00 | - | -"),
+        gap("vers cinq heures appeler la banque", "Appeler la banque | 05.10 17:00 | - | alt 06.10 05:00"),
         gap("en semaine sauf le vendredi à 8h réunion", "Réunion | 06.10 08:00 | weekly mon,tue,wed,thu | -"),
         gap("demain à 17h, non, à 18h appeler maman", "Appeler maman | 06.10 18:00 | - | -"),
         gap("ne pas oublier d'acheter du pain demain", "Acheter du pain | 06.10 09:00 | - | -"),
     ]
 
     static let uzbekLatin: [CorpusCase] = [
+        ok("soat 7 da kechki ovqat", "Kechki ovqat | 05.10 19:00 | - | alt 06.10 07:00"),
+        ok("ertalab soat 7 da yugurish", "Yugurish | 06.10 07:00 | - | -"),
         ok("ertaga soat 9 da onamga qo‘ng‘iroq qilish", "Onamga qo‘ng‘iroq qilish | 06.10 09:00 | - | -"),
         ok("2 soatdan keyin pechni o‘chirish", "Pechni o‘chirish | 05.10 15:50 | - | -"),
         ok("20 daqiqadan keyin pochtani tekshirish", "Pochtani tekshirish | 05.10 14:10 | - | -"),
@@ -226,7 +240,7 @@ enum CorpusData {
         ok("kechqurun axlatni chiqarish", "Axlatni chiqarish | 05.10 19:00 | - | -"),
         ok("ertaga non sotib olish", "Non sotib olish | 06.10 09:00 | - | -"),
         gap("kechqurun soat sakkiz yarimda akamga qo‘ng‘iroq qilish", "Akamga qo‘ng‘iroq qilish | 05.10 20:30 | - | -"),
-        gap("soat beshlarda bankka qo‘ng‘iroq qilish", "Bankka qo‘ng‘iroq qilish | 05.10 17:00 | - | -"),
+        gap("soat beshlarda bankka qo‘ng‘iroq qilish", "Bankka qo‘ng‘iroq qilish | 05.10 17:00 | - | alt 06.10 05:00"),
         gap("ertaga soat 17 da, yo‘q, 18 da onamga qo‘ng‘iroq qilish", "Onamga qo‘ng‘iroq qilish | 06.10 18:00 | - | -"),
         gap("unutmaslik kerak ertaga non sotib olish", "Non sotib olish | 06.10 09:00 | - | -"),
     ]
@@ -247,6 +261,8 @@ enum CorpusData {
     ]
 
     static let arabic: [CorpusCase] = [
+        ok("الساعة 7 العشاء", "العشاء | 05.10 19:00 | - | alt 06.10 07:00"),
+        ok("الساعة 7 صباحًا الجري", "الجري | 06.10 07:00 | - | -"),
         ok("غدًا الساعة 9 اتصل بأمي", "اتصل بأمي | 06.10 09:00 | - | -"),
         ok("بعد ساعتين أطفئ الفرن", "أطفئ الفرن | 05.10 15:50 | - | -"),
         ok("بعد 20 دقيقة تحقق من الغسيل", "تحقق من الغسيل | 05.10 14:10 | - | -"),

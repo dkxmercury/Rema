@@ -107,7 +107,9 @@ struct PhraseParserTests {
         #expect(when(parser.parse("в 7 вечера")) == "2026-10-05 19:00")
         #expect(when(parser.parse("в 3 дня")) == "2026-10-05 15:00")
         #expect(when(parser.parse("сегодня вечером")) == "2026-10-05 19:00")
-        #expect(when(parser.parse("в 9 полить цветы")) == "2026-10-06 09:00")
+        #expect(when(parser.parse("в 9 полить цветы")) == "2026-10-05 21:00")
+        #expect(parser.parse("в 9 полить цветы").alternative == Schedule(start: LocalDate(year: 2026, month: 10, day: 6), time: LocalTime(hour: 9, minute: 0)))
+        #expect(parser.parse("в 9 утра полить цветы").alternative == nil)
         #expect(when(parser.parse("в полдень обед")) == "2026-10-06 12:00")
         #expect(when(parser.parse("послезавтра в 10 встреча")) == "2026-10-07 10:00")
     }
