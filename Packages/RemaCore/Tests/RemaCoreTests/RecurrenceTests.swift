@@ -120,4 +120,40 @@ struct RecurrenceTests {
         #expect(LocalDate.days(in: 2, year: 2028) == 29)
         #expect(LocalDate.days(in: 2, year: 2027) == 28)
     }
+
+    @Test func dayArithmeticMatchesTheCalendar() {
+        var utc = Calendar(identifier: .gregorian)
+        utc.timeZone = TimeZone(identifier: "UTC")!
+        var date = utc.date(from: DateComponents(year: 1899, month: 12, day: 25))!
+        for _ in 0..<(366 * 210) {
+            let parts = utc.dateComponents([.year, .month, .day, .weekday], from: date)
+            let local = LocalDate(year: parts.year!, month: parts.month!, day: parts.day!)
+            #expect(LocalDate(dayNumber: local.dayNumber) == local)
+            #expect(local.adding(days: 1) == LocalDate(utc.date(byAdding: .day, value: 1, to: date)!, in: utc))
+            #expect(local.weekday.rawValue == (parts.weekday! + 5) % 7 + 1)
+            #expect(LocalDate.days(in: local.month, year: local.year) == utc.range(of: .day, in: .month, for: date)!.count)
+            date = utc.date(byAdding: .day, value: 1, to: date)!
+        }
+    }
+
+    @Test func oldRepeatsJumpToTheDateAsked() {
+        let starts = LocalDate(year: 2020, month: 1, day: 31)
+        let rules: [RepeatRule] = [.daily, .weekdays, .weekly([.tuesday, .friday]), .everyDays(3), .monthlyOnDay(31), .monthlyOnWeekday(ordinal: -1, weekday: .friday), .yearly(month: 2, day: 29)]
+        let after = tashkent.date(from: DateComponents(year: 2026, month: 10, day: 5, hour: 13, minute: 50))!
+        for rule in rules {
+            let schedule = Schedule(start: starts, time: LocalTime(hour: 9, minute: 30), rule: rule)
+            let fast = Recurrence.next(schedule, after: after, limit: 6, calendar: tashkent)
+            var slow: [Date] = []
+            var days = DaySequence(schedule: schedule)
+            while slow.count < 6, let day = days.next() {
+                let moment = tashkent.date(from: DateComponents(year: day.year, month: day.month, day: day.day, hour: 9, minute: 30))!
+                if moment > after {
+                    slow.append(moment)
+                }
+            }
+            #expect(fast == slow, "\(rule)")
+        }
+        let counted = Schedule(start: starts, time: LocalTime(hour: 9, minute: 30), rule: .daily, end: .count(5))
+        #expect(Recurrence.next(counted, after: after, limit: 3, calendar: tashkent).isEmpty)
+    }
 }

@@ -115,6 +115,7 @@ struct AuthField<Field: Hashable>: View {
         case email
         case password
         case newPassword
+        case code
     }
 
     let title: LocalizedStringKey
@@ -125,8 +126,29 @@ struct AuthField<Field: Hashable>: View {
     var submit: () -> Void = {}
     @State private var revealed = false
 
+    private var hidesText: Bool {
+        kind == .password || kind == .newPassword
+    }
+
     private var secure: Bool {
-        kind != .email && !revealed
+        hidesText && !revealed
+    }
+
+    private var keyboard: UIKeyboardType {
+        switch kind {
+        case .email: .emailAddress
+        case .code: .numberPad
+        case .password, .newPassword: .asciiCapable
+        }
+    }
+
+    private var content: UITextContentType {
+        switch kind {
+        case .email: .username
+        case .code: .oneTimeCode
+        case .newPassword: .newPassword
+        case .password: .password
+        }
     }
 
     var body: some View {
@@ -143,18 +165,18 @@ struct AuthField<Field: Hashable>: View {
                     }
                 }
                 .font(.app(.golos, 17))
-                .tracking(kind == .email ? 0 : 2)
+                .tracking(kind == .code ? 6 : (kind == .email ? 0 : 2))
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
-                .keyboardType(kind == .email ? .emailAddress : .asciiCapable)
-                .textContentType(kind == .email ? .username : (kind == .newPassword ? .newPassword : .password))
+                .keyboardType(keyboard)
+                .textContentType(content)
                 .submitLabel(kind == .email ? .next : .go)
                 .onSubmit(submit)
                 .focused(focus, equals: field)
                 .tint(Palette.accent)
                 .padding(.leading, 16)
-                .padding(.trailing, kind == .email ? 16 : 0)
-                if kind != .email {
+                .padding(.trailing, hidesText ? 0 : 16)
+                if hidesText {
                     Button {
                         revealed.toggle()
                         focus.wrappedValue = field

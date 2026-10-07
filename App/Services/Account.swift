@@ -129,9 +129,27 @@ final class Account {
         try? await Backend.send("PATCH", "/api/collections/users/records/\(session.userID)", body: Body(lang: AppLanguage.current.rawValue), token: session.token)
     }
 
-    func deleteAccount() async throws {
+    enum DeletionCheck {
+        case email(String)
+        case none
+    }
+
+    func requestDeletionCode() async throws -> DeletionCheck {
+        guard let session else { throw Backend.Failure.unauthorized }
+        struct Reply: Decodable {
+            let method: String
+            let email: String?
+        }
+        let reply = try await Backend.request("POST", "/api/rema/account/delete-code", token: session.token, as: Reply.self)
+        return reply.method == "none" ? .none : .email(reply.email ?? session.email)
+    }
+
+    func deleteAccount(code: String) async throws {
         guard let session else { return }
-        try await Backend.send("DELETE", "/api/rema/account", token: session.token)
+        struct Body: Encodable {
+            let code: String
+        }
+        try await Backend.send("POST", "/api/rema/account/delete", body: Body(code: code), token: session.token)
         end()
     }
 

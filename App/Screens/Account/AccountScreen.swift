@@ -13,11 +13,10 @@ struct AccountScreen: View {
     let summary: Summary
     var locale: Locale = AppLanguage.current.locale
     var onSignOut: (_ discardingChanges: Bool) async -> Bool = { _ in true }
-    var onDelete: () async throws -> Void = {}
+    var onDelete: () -> Void = {}
     var onBack: () -> Void
 
     @State private var askDiscard = false
-    @State private var askDelete = false
     @State private var busy = false
     @State private var problem: String?
 
@@ -71,9 +70,7 @@ struct AccountScreen: View {
                         FormProblem(text: problem)
                             .padding(.top, 12)
                     }
-                    Button {
-                        askDelete = true
-                    } label: {
+                    Button(action: onDelete) {
                         Text("Delete account")
                             .font(.app(.golos, 15, weight: 600))
                             .foregroundStyle(Palette.urgentText)
@@ -105,12 +102,6 @@ struct AccountScreen: View {
             Button("Cancel", role: .cancel) {}
         } message: {
             Text("There is no connection right now. If you sign out, these changes will be lost.")
-        }
-        .alert("Delete the account?", isPresented: $askDelete) {
-            Button("Delete", role: .destructive) { delete() }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("The account and all reminders will be deleted forever. This cannot be undone.")
         }
     }
 
@@ -203,18 +194,4 @@ struct AccountScreen: View {
         }
     }
 
-    private func delete() {
-        busy = true
-        problem = nil
-        Task {
-            do {
-                try await onDelete()
-            } catch let failure as Backend.Failure {
-                problem = failure == .offline ? failure.message : String(localized: "Could not delete the account. Try again.", bundle: .app, locale: .app)
-            } catch {
-                problem = String(localized: "Could not delete the account. Try again.", bundle: .app, locale: .app)
-            }
-            busy = false
-        }
-    }
 }

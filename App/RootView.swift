@@ -18,6 +18,7 @@ enum RootRoute: Hashable {
     case places
     case place(UUID?)
     case account
+    case deleteAccount
     case city
     case features
 }
@@ -167,15 +168,17 @@ struct RootView: View {
                         }
                         return done
                     },
-                    onDelete: {
-                        try await SyncService.shared.deleteAccount()
-                        navigation.path.removeAll { $0 == .account }
-                    },
+                    onDelete: { navigation.path.append(.deleteAccount) },
                     onBack: { navigation.path.removeLast() }
                 )
             } else {
                 Color.clear
             }
+        case .deleteAccount:
+            DeleteAccountScreen(
+                onDeleted: { navigation.path.removeAll { $0 == .account || $0 == .deleteAccount } },
+                onBack: { navigation.path.removeLast() }
+            )
         }
     }
 

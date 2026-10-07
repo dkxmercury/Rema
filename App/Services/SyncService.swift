@@ -94,8 +94,8 @@ final class SyncService {
         return true
     }
 
-    func deleteAccount() async throws {
-        try await Account.shared.deleteAccount()
+    func deleteAccount(code: String) async throws {
+        try await Account.shared.deleteAccount(code: code)
         forgetAccount()
     }
 

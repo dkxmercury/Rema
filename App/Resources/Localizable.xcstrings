@@ -3265,6 +3265,52 @@
         }
       }
     },
+    "Code from the email": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الرمز من الرسالة"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Code aus der E-Mail"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Code reçu par e-mail"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Код из письма"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Код із листа"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Хатдаги код"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xatdagi kod"
+          }
+        }
+      }
+    },
     "Colder today": {
       "localizations": {
         "ar": {
@@ -4323,6 +4369,52 @@
         }
       }
     },
+    "Delete forever": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حذف نهائي"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Endgültig löschen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supprimer définitivement"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Удалить навсегда"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Видалити назавжди"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бутунлай ўчириш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Butunlay o‘chirish"
+          }
+        }
+      }
+    },
     "Delete place": {
       "localizations": {
         "ar": {
@@ -4503,52 +4595,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Eslatma o‘chirilsinmi?"
-          }
-        }
-      }
-    },
-    "Delete the account?": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "حذف الحساب؟"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Konto löschen?"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Supprimer le compte ?"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Удалить аккаунт?"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Видалити акаунт?"
-          }
-        },
-        "uz-Cyrl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Аккаунт ўчирилсинми?"
-          }
-        },
-        "uz-Latn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Akkaunt o‘chirilsinmi?"
           }
         }
       }
@@ -5883,6 +5929,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Hammasi akkauntda saqlangan"
+          }
+        }
+      }
+    },
+    "Everything will be deleted": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سيُحذف كل شيء"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alles wird gelöscht"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tout sera supprimé"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Удалится всё"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Видалиться все"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ҳаммаси ўчирилади"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hammasi o‘chiriladi"
           }
         }
       }
@@ -14623,6 +14715,52 @@
         }
       }
     },
+    "Send a code to the email": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إرسال رمز إلى البريد"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Code per E-Mail senden"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Envoyer un code par e-mail"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отправить код на почту"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Надіслати код на пошту"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Почтага код юбориш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pochtaga kod yuborish"
+          }
+        }
+      }
+    },
     "Send email": {
       "localizations": {
         "ar": {
@@ -14665,6 +14803,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Xat yuborish"
+          }
+        }
+      }
+    },
+    "Send the code again": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إعادة إرسال الرمز"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Code erneut senden"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renvoyer le code"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отправить код ещё раз"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Надіслати код ще раз"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Кодни қайта юбориш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kodni qayta yuborish"
           }
         }
       }
@@ -16889,48 +17073,94 @@
         }
       }
     },
-    "The account and all reminders will be deleted forever. This cannot be undone.": {
+    "The code has expired. Send a new one.": {
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "سيُحذف الحساب وكل التذكيرات نهائيًا. لا يمكن التراجع عن ذلك."
+            "value": "انتهت صلاحية الرمز. أرسل رمزًا جديدًا."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Das Konto und alle Erinnerungen werden endgültig gelöscht. Das lässt sich nicht rückgängig machen."
+            "value": "Der Code ist abgelaufen. Fordere einen neuen an."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Le compte et tous les rappels seront supprimés définitivement. Cette action est irréversible."
+            "value": "Le code a expiré. Demandez-en un nouveau."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Аккаунт и все напоминания удалятся навсегда. Отменить это нельзя."
+            "value": "Код устарел. Отправьте новый."
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Акаунт і всі нагадування видаляться назавжди. Скасувати це не можна."
+            "value": "Код застарів. Надішліть новий."
           }
         },
         "uz-Cyrl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Аккаунт ва барча эслатмалар бутунлай ўчирилади. Буни бекор қилиб бўлмайди."
+            "value": "Коднинг муддати тугади. Янгисини юборинг."
           }
         },
         "uz-Latn": {
           "stringUnit": {
             "state": "translated",
-            "value": "Akkaunt va barcha eslatmalar butunlay o‘chiriladi. Buni bekor qilib bo‘lmaydi."
+            "value": "Kodning muddati tugadi. Yangisini yuboring."
+          }
+        }
+      }
+    },
+    "The code is wrong. Check the email and try again.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الرمز غير صحيح. تحقق من الرسالة وحاول مرة أخرى."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Code stimmt nicht. Prüfe die E-Mail und versuch es noch einmal."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le code ne correspond pas. Vérifiez l’e-mail et réessayez."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Код не подходит. Проверьте письмо и попробуйте ещё раз."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Код не підходить. Перевірте лист і спробуйте ще раз."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Код нотўғри. Хатни текшириб, қайта уриниб кўринг."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kod noto‘g‘ri. Xatni tekshirib, qayta urinib ko‘ring."
           }
         }
       }
@@ -17253,6 +17483,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ular akkauntingizda saqlanadi va istalgan telefoningizda paydo bo‘ladi."
+          }
+        }
+      }
+    },
+    "This account has no email, so it is deleted right after you confirm.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا يوجد بريد لهذا الحساب، لذلك سيُحذف فور تأكيدك."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieses Konto hat keine E-Mail-Adresse, deshalb wird es gleich nach deiner Bestätigung gelöscht."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce compte n’a pas d’adresse e-mail, il sera donc supprimé dès votre confirmation."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "У этого аккаунта нет почты, поэтому он удалится сразу после подтверждения."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "У цього акаунта немає пошти, тому він видалиться одразу після підтвердження."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бу аккаунтда почта йўқ, шунинг учун у тасдиқлашингиз билан ўчирилади."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu akkauntda pochta yo‘q, shuning uchun u tasdiqlashingiz bilan o‘chiriladi."
           }
         }
       }
@@ -18775,6 +19051,52 @@
         }
       }
     },
+    "We sent a 6-digit code to %@. It works for 15 minutes.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أرسلنا رمزًا من 6 أرقام إلى %@. يعمل لمدة 15 دقيقة."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wir haben einen 6-stelligen Code an %@ geschickt. Er gilt 15 Minuten."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nous avons envoyé un code à 6 chiffres à %@. Il est valable 15 minutes."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Мы отправили шестизначный код на %@. Он действует 15 минут."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ми надіслали шестизначний код на %@. Він діє 15 хвилин."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ манзилига 6 хонали код юбордик. У 15 дақиқа амал қилади."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ manziliga 6 xonali kod yubordik. U 15 daqiqa amal qiladi."
+          }
+        }
+      }
+    },
     "We will send an email with a link. Use it to set a new password.": {
       "localizations": {
         "ar": {
@@ -20059,6 +20381,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Yaqinda yozganlaringiz"
+          }
+        }
+      }
+    },
+    "Your account will be deleted together with all reminders, places, your own sounds and settings. They disappear from the server and from all your phones. This cannot be undone.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سيُحذف الحساب مع كل التذكيرات والأماكن والأصوات الخاصة والإعدادات. ستختفي من الخادم ومن كل هواتفك. لا يمكن التراجع عن ذلك."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Konto wird mit allen Erinnerungen, Orten, eigenen Tönen und Einstellungen gelöscht. Sie verschwinden vom Server und von all deinen Telefonen. Das lässt sich nicht rückgängig machen."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le compte sera supprimé avec tous les rappels, lieux, sons personnels et réglages. Ils disparaîtront du serveur et de tous vos téléphones. Cette action est irréversible."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Аккаунт удалится вместе со всеми напоминаниями, местами, своими звуками и настройками. Они пропадут с сервера и со всех ваших телефонов. Отменить это нельзя."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Акаунт видалиться разом з усіма нагадуваннями, місцями, своїми звуками й налаштуваннями. Вони зникнуть із сервера й з усіх ваших телефонів. Скасувати це не можна."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Аккаунт барча эслатмалар, жойлар, ўз товушларингиз ва созламалар билан бирга ўчирилади. Улар сервердан ва барча телефонларингиздан йўқолади. Буни бекор қилиб бўлмайди."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Akkaunt barcha eslatmalar, joylar, o‘z tovushlaringiz va sozlamalar bilan birga o‘chiriladi. Ular serverdan va barcha telefonlaringizdan yo‘qoladi. Buni bekor qilib bo‘lmaydi."
           }
         }
       }
