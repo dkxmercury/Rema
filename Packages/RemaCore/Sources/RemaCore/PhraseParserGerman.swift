@@ -6,7 +6,7 @@ extension PhraseParser {
     static let deWeekdaysFull = "(montags?|dienstags?|mittwochs?|donnerstags?|freitags?|samstags?|sonnabends?|sonntags?)"
     private static let deCount = "(\\d+|einer|einem|einen|eine|ein|zwei|drei|vier|fünf|zehn|fünfzehn|zwanzig|dreißig)"
     private static let deFillers: Set<String> = ["bitte"]
-    private static let deLead: Set<String> = ["erinnere", "erinner", "mich", "daran", "zu", "ich", "muss", "soll", "bitte"]
+    private static let deLead: Set<String> = ["erinnere", "erinner", "mich", "daran", "zu", "ich", "muss", "soll", "bitte", "der", "die", "das", "den", "dem"]
     private static let deDangling: Set<String> = ["am", "um", "an", "in", "im", "zu", "zum", "zur", "und", "der", "die", "das", "den", "dem", "von", "für", "ab"]
 
     func parseGerman(_ input: String) -> ParsedPhrase {

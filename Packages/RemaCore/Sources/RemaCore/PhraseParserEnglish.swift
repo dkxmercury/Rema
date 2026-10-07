@@ -23,7 +23,7 @@ extension PhraseParser {
 
         let schedule = resolve(&state)
         return ParsedPhrase(
-            title: title(input, used: state.used, fillers: PhraseParser.englishFillers, dangling: PhraseParser.englishDangling, lead: PhraseParser.englishLead),
+            title: title(input, used: state.used + matches(",? ?remind me( to| about)?", in: text).compactMap { span($0, text) }, fillers: PhraseParser.englishFillers, dangling: PhraseParser.englishDangling, lead: PhraseParser.englishLead),
             schedule: schedule,
             preAlerts: Array(Set(state.preAlerts)).sorted(by: >),
             urgent: state.urgent,

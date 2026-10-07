@@ -52,6 +52,7 @@ public struct PhraseParser {
     static let weekdayPattern = "(понедельник\\w*|пн|вторник\\w*|вт|сред\\w*|ср|четверг\\w*|чт|пятниц\\w*|пт|суббот\\w*|сб|воскресень\\w*|вс)"
     private static let fillers: Set<String> = ["напомни", "напомните", "напомнить", "мне", "пожалуйста", "надо", "нужно"]
     private static let dangling: Set<String> = ["и", "а", "в", "во", "на", "с", "со", "к", "по"]
+    static let conjunctions: Set<String> = ["и", "а", "і", "й", "та", "and", "und", "et", "va", "ва", "و"]
 
     struct State {
         var used: [Range<Int>] = []
@@ -251,7 +252,7 @@ public struct PhraseParser {
             }
             return true
         }
-        take("(?:в |во )?(следующ\\w+ )?\(PhraseParser.weekdayPattern)", text, &state) { m, s in
+        take("(?:в |во )?(следующ\\w+ |эт\\w+ )?\(PhraseParser.weekdayPattern)", text, &state) { m, s in
             guard s.rule == nil, let word = group(m, 2, text), let day = self.weekday(word) else { return false }
             s.weekdays = [day]
             return true
@@ -426,12 +427,31 @@ public struct PhraseParser {
                 characters[index] = " "
             }
         }
+        // A preposition right before a recognised time belonged to it; one that opens the rest, as in «к врачу», is the title's own.
+        for range in used {
+            var end = min(range.lowerBound, characters.count)
+            while true {
+                var cursor = end
+                while cursor > 0, characters[cursor - 1].isWhitespace {
+                    cursor -= 1
+                }
+                var start = cursor
+                while start > 0, !characters[start - 1].isWhitespace {
+                    start -= 1
+                }
+                guard start < cursor, dangling.contains(String(characters[start..<cursor]).lowercased().trimmingCharacters(in: .punctuationCharacters)) else { break }
+                for index in start..<cursor {
+                    characters[index] = " "
+                }
+                end = start
+            }
+        }
         let words = String(characters)
             .split(whereSeparator: { $0.isWhitespace })
             .map(String.init)
             .filter { !fillers.contains($0.lowercased().trimmingCharacters(in: .punctuationCharacters)) }
         var trimmed = words
-        while let first = trimmed.first, lead.contains(first.lowercased().trimmingCharacters(in: .punctuationCharacters)) || dangling.contains(first.lowercased()) {
+        while let first = trimmed.first?.lowercased(), lead.contains(first.trimmingCharacters(in: .punctuationCharacters)) || (dangling.contains(first) && PhraseParser.conjunctions.contains(first)) {
             trimmed.removeFirst()
         }
         while let last = trimmed.last, dangling.contains(last.lowercased()) {

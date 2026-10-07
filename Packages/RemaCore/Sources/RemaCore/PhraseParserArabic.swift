@@ -229,12 +229,12 @@ extension PhraseParser {
 
     private func arFlags(_ text: String, _ state: inout State) {
         take("(عاجل|مهم|ضروري)", text, &state) { _, s in s.urgent = true; return true }
-        take("(بالحاح|حتى انجزه|حتى اضع علامة)", text, &state) { _, s in s.nag = true; return true }
+        take("(بالحاح|حتي انجزه|حتي اضع علامة)", text, &state) { _, s in s.nag = true; return true }
     }
 
     private func arPlaces(_ text: String, _ state: inout State) {
         guard !places.isEmpty else { return }
-        take("عندما اعود الى (?:البيت|المنزل)", text, &state) { _, s in
+        take("عندما اعود الي (?:البيت|المنزل)", text, &state) { _, s in
             guard let home = places.first(where: { ["البيت", "المنزل", "بيت", "منزل"].contains(PhraseParser.arabicNormalized($0).0) }) else { return false }
             s.placeTrigger = .arrive
             s.placeNames = [home]
@@ -246,7 +246,7 @@ extension PhraseParser {
             s.placeNames = [place]
             return true
         }
-        take("عندما (?:اصل الى|اكون في|ادخل|اذهب الى) (\\p{L}+)", text, &state) { m, s in
+        take("عندما (?:اصل الي|اكون في|ادخل|اذهب الي) (\\p{L}+)", text, &state) { m, s in
             guard let word = group(m, 1, text), let place = arPlace(word) else { return false }
             s.placeTrigger = .arrive
             s.placeNames = [place]

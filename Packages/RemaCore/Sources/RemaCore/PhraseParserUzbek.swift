@@ -17,7 +17,11 @@ extension PhraseParser {
     static func looksUzbekCyrillic(_ text: String, preferred: String?) -> Bool {
         let lower = text.lowercased()
         if lower.contains(where: { "ўқғҳ".contains($0) }) { return true }
-        guard preferred?.hasPrefix("uz") == true, !lower.contains(where: { "ыщэі".contains($0) }) else { return false }
+        guard !lower.contains(where: { "ыщі".contains($0) }) else { return false }
+        let cyrillic = lower.split(whereSeparator: { !$0.isLetter }).map(String.init)
+        // These words are Uzbek and never Russian, they settle it even under a Russian interface.
+        if cyrillic.contains(where: { ["эртага", "бугун", "индинга", "эрталаб", "соат"].contains($0) }) { return true }
+        guard preferred?.hasPrefix("uz") == true else { return false }
         let words = uzbekLatin(lower).0.split(whereSeparator: { !$0.isLetter }).map(String.init)
         return words.contains { uzbekWords.contains($0) }
     }

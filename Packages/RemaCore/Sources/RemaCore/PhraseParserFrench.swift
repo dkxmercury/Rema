@@ -187,7 +187,7 @@ extension PhraseParser {
         }
         take("(?:à |a )?midi", text, &state) { _, s in s.time = LocalTime(hour: 12, minute: 0); return true }
         take("(?:à |a )?minuit", text, &state) { _, s in s.time = LocalTime(hour: 0, minute: 0); return true }
-        take("(le matin|ce matin|au matin)", text, &state) { _, s in s.dayPart = morning; return true }
+        take("(le matin|ce matin|au matin|matin)", text, &state) { _, s in s.dayPart = morning; return true }
         take("(l'après-midi|l'apres-midi|cet après-midi|cet apres-midi)", text, &state) { _, s in s.dayPart = LocalTime(hour: 14, minute: 0); return true }
         take("(le soir|au soir|soir)", text, &state) { _, s in s.dayPart = evening; return true }
         take("(la nuit|cette nuit)", text, &state) { _, s in s.dayPart = LocalTime(hour: 23, minute: 0); return true }
