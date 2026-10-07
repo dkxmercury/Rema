@@ -1,6 +1,7 @@
 import Foundation
 import ObjectiveC
 import SwiftUI
+import WidgetKit
 
 enum AppLanguage: String, CaseIterable, Identifiable {
     case russian = "ru"
@@ -83,6 +84,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         current = language
         UserDefaults.standard.set(language.rawValue, forKey: storageKey)
         apply(language)
+        WidgetCenter.shared.reloadAllTimelines()
     }
 
     private static func apply(_ language: AppLanguage) {
@@ -90,6 +92,8 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         Localization.language = language.rawValue
         AppFonts.languageCode = language.rawValue
         Bundle.app = Localization.selected ?? .main
+        AppFonts.shared?.set(language.rawValue, forKey: AppFonts.languageKey)
+        AppFonts.shared?.set(language.folder, forKey: AppFonts.folderKey)
     }
 }
 

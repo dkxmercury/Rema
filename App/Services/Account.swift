@@ -154,6 +154,10 @@ final class Account {
     }
 
     func signOut() {
+        if let token = session?.token {
+            // Sign-out doesn't wait for the network, offline the token just runs out in a month.
+            Task { try? await Backend.send("POST", "/api/rema/auth/signout", token: token) }
+        }
         end()
     }
 

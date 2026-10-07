@@ -6,6 +6,7 @@ struct DialWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: "rema.dial", provider: DayProvider()) { entry in
             DialWidgetView(entry: entry)
+                .appLanguage()
                 .containerBackground(for: .widget) { WidgetBackground() }
         }
         .configurationDisplayName("Dial")
@@ -18,6 +19,7 @@ struct NextWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: "rema.next", provider: DayProvider()) { entry in
             NextWidgetView(entry: entry)
+                .appLanguage()
                 .containerBackground(for: .widget) { WidgetBackground() }
         }
         .configurationDisplayName("Next reminder")
@@ -30,6 +32,7 @@ struct TodayWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: "rema.today", provider: DayProvider()) { entry in
             TodayWidgetView(entry: entry)
+                .appLanguage()
                 .containerBackground(for: .widget) { WidgetBackground() }
         }
         .configurationDisplayName("Today")
@@ -77,7 +80,7 @@ struct DialWidgetView: View {
                         .font(.app(.golos, 11))
                         .foregroundStyle(Palette.secondary)
                 } else {
-                    Text("Nothing ahead")
+                    Text(verbatim: String(localized: "Nothing ahead", bundle: .app, locale: .app))
                         .font(.app(.golos, 12, weight: 600))
                         .foregroundStyle(Palette.secondary)
                 }
@@ -101,7 +104,7 @@ struct NextWidgetView: View {
                     Image(systemName: "clock")
                 }
             } else {
-                Text("Nothing ahead")
+                Text(verbatim: String(localized: "Nothing ahead", bundle: .app, locale: .app))
             }
         case .accessoryCircular:
             countdownRing
@@ -135,7 +138,7 @@ struct NextWidgetView: View {
                         .foregroundStyle(Palette.secondary)
                 }
             } else {
-                Text("Nothing ahead")
+                Text(verbatim: String(localized: "Nothing ahead", bundle: .app, locale: .app))
                     .font(.app(.golos, 14, weight: 600))
                 Spacer(minLength: 0)
             }
@@ -157,7 +160,7 @@ struct NextWidgetView: View {
             VStack(spacing: 0) {
                 Text(verbatim: entry.minutesLeft.map { $0 < 100 ? "\($0)" : "\($0 / 60)" } ?? "–")
                     .font(.app(.jost, 22, weight: 500))
-                Text(minutes < 100 ? LocalizedStringKey("min") : LocalizedStringKey("h"))
+                Text(verbatim: minutes < 100 ? String(localized: "min", bundle: .app, locale: .app) : String(localized: "h", bundle: .app, locale: .app))
                     .font(.app(.golos, 10, weight: 600))
                     .opacity(0.85)
             }
@@ -180,7 +183,7 @@ struct NextWidgetView: View {
                         .opacity(0.8)
                 }
             } else {
-                Text("Nothing ahead")
+                Text(verbatim: String(localized: "Nothing ahead", bundle: .app, locale: .app))
                     .font(.app(.golos, 13, weight: 600))
             }
         }
@@ -205,7 +208,7 @@ struct TodayWidgetView: View {
             WidgetDial(style: .medium, size: 142, hour: entry.content.nowHour, minute: entry.content.nowMinute, markers: entry.content.markers)
             VStack(alignment: .leading, spacing: 0) {
                 HStack(alignment: .firstTextBaseline) {
-                    Text("Today")
+                    Text(verbatim: String(localized: "Today", bundle: .app, locale: .app))
                         .font(.app(.golos, 11, weight: 600))
                         .tracking(0.88)
                         .textCase(.uppercase)
@@ -217,7 +220,7 @@ struct TodayWidgetView: View {
                 .padding(.bottom, 4)
                 let rows = Array(entry.openRows.prefix(3))
                 if rows.isEmpty {
-                    Text("Nothing ahead")
+                    Text(verbatim: String(localized: "Nothing ahead", bundle: .app, locale: .app))
                         .font(.app(.golos, 13, weight: 600))
                         .foregroundStyle(Palette.secondary)
                         .padding(.top, 8)
@@ -249,7 +252,7 @@ struct TodayWidgetView: View {
     private var large: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .firstTextBaseline) {
-                Text(verbatim: entry.content.dateLine.capitalizedFirst(.current))
+                Text(verbatim: entry.content.dateLine.capitalizedFirst(.app))
                     .font(.app(.jost, 20, weight: 500))
                 Spacer(minLength: 4)
                 Text(verbatim: String(localized: "\(entry.doneCount) of \(entry.rows.count)", bundle: .app, locale: .app))
@@ -294,7 +297,7 @@ struct TodayWidgetView: View {
                     }
                 }
                 if rows.isEmpty {
-                    Text("Nothing for today")
+                    Text(verbatim: String(localized: "Nothing for today", bundle: .app, locale: .app))
                         .font(.app(.golos, 15, weight: 600))
                         .foregroundStyle(Palette.secondary)
                         .frame(maxWidth: .infinity)

@@ -31,7 +31,7 @@ struct ShareScreen: View {
 
     private let now = Date()
     private let calendar = Calendar.current
-    private let locale = Locale.current
+    private let locale = Locale.app
 
     init(source: String, snapshot: StoreSnapshot?, onCancel: @escaping () -> Void, onSaved: @escaping () -> Void) {
         self.source = source
@@ -63,7 +63,7 @@ struct ShareScreen: View {
             morning: settings.morning,
             evening: settings.evening,
             places: places(in: snapshot).map(\.name),
-            preferred: Bundle.main.preferredLocalizations.first
+            preferred: AppFonts.languageCode
         )
     }
 
@@ -160,7 +160,7 @@ struct ShareScreen: View {
     private var header: some View {
         HStack {
             Button(action: onCancel) {
-                Text("Cancel")
+                Text(verbatim: String(localized: "Cancel", bundle: .app, locale: .app))
                     .font(.app(.golos, 16))
                     .foregroundStyle(Palette.secondary)
                     .frame(width: 76, height: 44, alignment: .leading)
@@ -191,7 +191,7 @@ struct ShareScreen: View {
             .panel()
             .contentShape(Rectangle())
             .onTapGesture { focused = true }
-            .accessibilityLabel(Text("What and when to remind"))
+            .accessibilityLabel(Text(verbatim: String(localized: "What and when to remind", bundle: .app, locale: .app)))
     }
 
     private var excerpt: String {
@@ -215,7 +215,7 @@ struct ShareScreen: View {
             let parts = calendar.dateComponents([.hour, .minute], from: when)
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 2) {
-                    SectionLabel(text: "I'll remind")
+                    SectionLabel(verbatim: String(localized: "I'll remind", bundle: .app, locale: .app))
                     Text(verbatim: describer.time(when))
                         .font(.app(.jost, 44, weight: 500))
                         .frame(height: 48)
@@ -237,7 +237,7 @@ struct ShareScreen: View {
         } else if reminder.placeIDs.isEmpty {
             let tonight = date(on: now, at: settings.evening)
             VStack(alignment: .leading, spacing: 10) {
-                SectionLabel(text: "When to remind?")
+                SectionLabel(verbatim: String(localized: "When to remind?", bundle: .app, locale: .app))
                 FlowLayout(spacing: 8) {
                     quickTime("In an hour", now.addingTimeInterval(3600))
                     if tonight.timeIntervalSince(now) > 15 * 60 {
@@ -313,10 +313,10 @@ struct ShareScreen: View {
         }
     }
 
-    private func chipLabel(_ title: LocalizedStringKey, selected: Bool) -> some View {
+    private func chipLabel(_ title: String.LocalizationValue, selected: Bool) -> some View {
         HStack(spacing: 6) {
             Glyph(paths: selected ? Icons.check : Icons.plus, size: 14, lineWidth: 2.4, color: selected ? Palette.onSegment : Palette.text)
-            Text(title)
+            Text(verbatim: String(localized: title, bundle: .app, locale: .app))
                 .font(.app(.golos, 14, weight: 600))
         }
         .foregroundStyle(selected ? Palette.onSegment : Palette.text)
@@ -333,14 +333,14 @@ struct ShareScreen: View {
         .contentShape(Rectangle())
     }
 
-    private func quickTime(_ title: LocalizedStringKey, _ date: Date) -> some View {
+    private func quickTime(_ title: String.LocalizationValue, _ date: Date) -> some View {
         Button {
             let parts = calendar.dateComponents([.hour, .minute], from: date)
             schedule = Schedule(start: LocalDate(date, in: calendar), time: LocalTime(hour: parts.hour ?? 9, minute: parts.minute ?? 0))
             UISelectionFeedbackGenerator().selectionChanged()
         } label: {
             HStack(spacing: 8) {
-                Text(title)
+                Text(verbatim: String(localized: title, bundle: .app, locale: .app))
                 Text(verbatim: describer.shortTime(date))
                     .font(.app(.jost, 15, weight: 500))
                     .foregroundStyle(Palette.secondary)

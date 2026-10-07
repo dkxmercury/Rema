@@ -10,7 +10,22 @@ enum AppFonts {
         }
     }
 
-    nonisolated(unsafe) static var languageCode = Bundle.main.preferredLocalizations.first ?? "en"
+    // Extensions can't read the app's own settings, so the app copies its language into the shared group.
+    static let shared = UserDefaults(suiteName: "group.uz.dkx.rema")
+    static let languageKey = "app.language"
+    static let folderKey = "app.languageFolder"
+
+    nonisolated(unsafe) private static var chosenCode: String?
+
+    // Without a choice made in this process it reads the group every time, a widget process can outlive a language change.
+    static var languageCode: String {
+        get { chosenCode ?? shared?.string(forKey: languageKey) ?? Bundle.main.preferredLocalizations.first ?? "en" }
+        set { chosenCode = newValue }
+    }
+
+    static var direction: LayoutDirection {
+        languageCode.hasPrefix("ar") ? .rightToLeft : .leftToRight
+    }
 
     // Jost has no Ukrainian, Uzbek or Arabic letters, mixing fonts inside a word looks broken.
     static var jostCoversLanguage: Bool {
@@ -37,7 +52,22 @@ extension Locale {
 
 // String(localized:) reads the table of the process language, not the one chosen in the app, so lookups go to the chosen folder.
 extension Bundle {
-    nonisolated(unsafe) static var app = Bundle.main
+    nonisolated(unsafe) private static var chosenApp: Bundle?
+
+    static var app: Bundle {
+        get {
+            chosenApp ?? AppFonts.shared?.string(forKey: AppFonts.folderKey)
+                .flatMap { Bundle.main.path(forResource: $0, ofType: "lproj") }
+                .flatMap(Bundle.init(path:)) ?? .main
+        }
+        set { chosenApp = newValue }
+    }
+}
+
+extension View {
+    func appLanguage() -> some View {
+        environment(\.locale, .app).environment(\.layoutDirection, AppFonts.direction)
+    }
 }
 
 enum Typeface: String {

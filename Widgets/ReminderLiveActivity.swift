@@ -7,6 +7,7 @@ struct ReminderLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: ReminderActivity.self) { context in
             LockCard(state: context.state, reminderID: context.attributes.reminderID)
+                .appLanguage()
                 .activityBackgroundTint(Palette.panel)
                 .activitySystemActionForegroundColor(Palette.text)
         } dynamicIsland: { context in
@@ -21,7 +22,7 @@ struct ReminderLiveActivity: Widget {
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.7)
                             if context.state.urgent {
-                                Text("urgent")
+                                Text(verbatim: String(localized: "urgent", bundle: .app, locale: .app))
                                     .font(.app(.golos, 11, weight: 600))
                                     .foregroundStyle(Color(hex: 0xFF8E7A))
                                     .lineLimit(1)
@@ -30,10 +31,11 @@ struct ReminderLiveActivity: Widget {
                     }
                     .foregroundStyle(Color(hex: 0xF1EFEA))
                     .padding(.leading, 4)
+                    .appLanguage()
                 }
                 DynamicIslandExpandedRegion(.trailing) {
                     VStack(alignment: .trailing, spacing: 0) {
-                        Text("in")
+                        Text(verbatim: String(localized: "in", bundle: .app, locale: .app))
                             .font(.app(.golos, 11))
                             .foregroundStyle(Color(hex: 0xA8A29A))
                         Text(timerInterval: context.state.start...context.state.due, countsDown: true)
@@ -46,6 +48,7 @@ struct ReminderLiveActivity: Widget {
                             .frame(maxWidth: 96, alignment: .trailing)
                     }
                     .padding(.trailing, 4)
+                    .appLanguage()
                 }
                 DynamicIslandExpandedRegion(.bottom) {
                     VStack(alignment: .leading, spacing: 8) {
@@ -56,7 +59,7 @@ struct ReminderLiveActivity: Widget {
                             .frame(maxWidth: .infinity, alignment: .leading)
                         HStack(spacing: 8) {
                             Button(intent: CompleteActivityIntent(reminderID: id(context.attributes.reminderID), occurrence: context.state.due)) {
-                                Text("Done")
+                                Text(verbatim: String(localized: "Done", bundle: .app, locale: .app))
                                     .font(.app(.golos, 14, weight: 600))
                                     .foregroundStyle(Palette.onAccent)
                                     .lineLimit(1)
@@ -66,7 +69,7 @@ struct ReminderLiveActivity: Widget {
                             }
                             .buttonStyle(.plain)
                             Button(intent: SnoozeActivityIntent(reminderID: id(context.attributes.reminderID), occurrence: context.state.due)) {
-                                Text("In 10 minutes")
+                                Text(verbatim: String(localized: "In 10 minutes", bundle: .app, locale: .app))
                                     .font(.app(.golos, 14, weight: 600))
                                     .foregroundStyle(Color(hex: 0xF1EFEA))
                                     .lineLimit(1)
@@ -79,6 +82,7 @@ struct ReminderLiveActivity: Widget {
                         }
                     }
                     .padding(.horizontal, 4)
+                    .appLanguage()
                 }
             } compactLeading: {
                 IslandDial(due: context.state.due)
@@ -89,6 +93,7 @@ struct ReminderLiveActivity: Widget {
                     .monospacedDigit()
                     .foregroundStyle(Palette.accentOnDark)
                     .frame(maxWidth: 52)
+                    .appLanguage()
             } minimal: {
                 IslandDial(due: context.state.due)
                     .frame(width: 22, height: 22)
@@ -142,7 +147,7 @@ private struct LockCard: View {
             HStack(spacing: 10) {
                 Button(intent: CompleteActivityIntent(reminderID: UUID(uuidString: reminderID) ?? UUID(), occurrence: state.due)) {
                     let shape = RoundedRectangle(cornerRadius: 12, style: .circular)
-                    Text("Done")
+                    Text(verbatim: String(localized: "Done", bundle: .app, locale: .app))
                         .font(.app(.golos, 15, weight: 600))
                         .foregroundStyle(Palette.onAccent)
                         .frame(maxWidth: .infinity)
@@ -152,7 +157,7 @@ private struct LockCard: View {
                 .buttonStyle(.plain)
                 Button(intent: SnoozeActivityIntent(reminderID: UUID(uuidString: reminderID) ?? UUID(), occurrence: state.due)) {
                     let shape = RoundedRectangle(cornerRadius: 12, style: .circular)
-                    Text("In 10 minutes")
+                    Text(verbatim: String(localized: "In 10 minutes", bundle: .app, locale: .app))
                         .font(.app(.golos, 15, weight: 600))
                         .foregroundStyle(Palette.text)
                         .frame(maxWidth: .infinity)

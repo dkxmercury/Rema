@@ -19,7 +19,7 @@ final class ShareViewController: UIViewController {
             onCancel: { [weak self] in self?.finish(saved: false) },
             onSaved: { [weak self] in self?.finish(saved: true) }
         )
-        let host = UIHostingController(rootView: screen)
+        let host = UIHostingController(rootView: screen.appLanguage())
         addChild(host)
         host.view.frame = view.bounds
         host.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]

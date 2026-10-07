@@ -33,13 +33,13 @@ struct DayEntry: TimelineEntry {
     }
 
     var yearlyLine: String? {
-        content.tiles.first { $0.icon == .yearly }.map { "\($0.subtitle.capitalizedFirst(.current)) · \($0.title)" }
+        content.tiles.first { $0.icon == .yearly }.map { "\($0.subtitle.capitalizedFirst(.app)) · \($0.title)" }
     }
 
     static func make(at date: Date, snapshot: StoreSnapshot?) -> DayEntry {
         let reminders = snapshot?.reminders ?? []
         let places = snapshot?.places ?? []
-        let content = HomeContent.make(reminders: reminders, places: places, now: date, calendar: .current, locale: .current)
+        let content = HomeContent.make(reminders: reminders, places: places, now: date, calendar: .current, locale: .app)
         let active = reminders.filter { $0.deletedAt == nil }
         let next = Agenda.upcoming(after: date, reminders: active, calendar: .current, limit: 1).first
         return DayEntry(date: date, content: content, nextOccurrence: next?.occurrence)

@@ -52,6 +52,13 @@ struct SettingsScreen: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     section("Account", top: 14) { accountPanel }
+                    section("Language") {
+                        PanelList {
+                            NavigationRow(icon: Icons.globe, iconColor: Palette.text, title: "App language", minHeight: 52, action: onLanguage) {
+                                value(AppLanguage.current.nativeName)
+                            }
+                        }
+                    }
                     if lock.available {
                         section("Protection") {
                             PanelList {
@@ -133,13 +140,6 @@ struct SettingsScreen: View {
                             ToggleRow(icon: Icons.vibration, iconColor: Palette.text, title: "Vibration", subtitle: String(localized: "a light response to touches", bundle: .app, locale: .app), isOn: $haptics, minHeight: 56)
                             Hairline()
                             ToggleRow(icon: Icons.speaker, iconColor: Palette.text, title: "Interface sounds", subtitle: String(localized: "quiet clicks, silent in silent mode", bundle: .app, locale: .app), isOn: $sounds, minHeight: 56)
-                        }
-                    }
-                    section("Language") {
-                        PanelList {
-                            NavigationRow(icon: Icons.globe, iconColor: Palette.text, title: "App language", minHeight: 52, action: onLanguage) {
-                                value(AppLanguage.current.nativeName)
-                            }
                         }
                     }
                     section("Permissions") {
