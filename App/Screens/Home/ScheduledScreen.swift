@@ -25,8 +25,20 @@ struct ScheduledScreen: View {
                             rows(day.items, soonest: index == 0)
                         }
                     }
+                    if !content.monthly.isEmpty {
+                        label(Text("Every month"), accent: false, top: content.days.isEmpty ? 14 : 20)
+                        PanelList {
+                            rows(content.monthly, soonest: false)
+                        }
+                    }
+                    if !content.yearly.isEmpty {
+                        label(Text("Every year"), accent: false, top: content.days.isEmpty && content.monthly.isEmpty ? 14 : 20)
+                        PanelList {
+                            rows(content.yearly, soonest: false)
+                        }
+                    }
                     if !content.places.isEmpty {
-                        label(Text("By place"), accent: false, top: content.days.isEmpty ? 14 : 20)
+                        label(Text("By place"), accent: false, top: content.days.isEmpty && content.monthly.isEmpty && content.yearly.isEmpty ? 14 : 20)
                         PanelList {
                             rows(content.places, soonest: false)
                         }
@@ -78,12 +90,14 @@ struct ScheduledScreen: View {
 
     private func row(_ item: ScheduledContent.Item, highlighted: Bool) -> some View {
         HStack(spacing: 14) {
-            if let time = item.time {
-                Text(verbatim: time)
-                    .font(.app(.jost, 18, weight: highlighted ? 600 : 500))
+            if let lead = item.lead {
+                Text(verbatim: lead)
+                    .font(.app(.jost, item.dated ? 16 : 18, weight: highlighted ? 600 : 500))
                     .monospacedDigit()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
                     .foregroundStyle(highlighted ? Palette.accentText : Palette.text)
-                    .frame(width: 50, alignment: .leading)
+                    .frame(width: item.dated ? 64 : 50, alignment: .leading)
             } else {
                 Glyph(paths: Icons.pin, size: 20, lineWidth: 2, color: Palette.secondary)
                     .frame(width: 50, alignment: .leading)

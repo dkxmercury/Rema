@@ -5,9 +5,9 @@ struct Describer {
     var calendar: Calendar = .current
     var locale: Locale = .current
 
-    func subtitle(for reminder: Reminder, places: [Place]) -> String? {
+    func subtitle(for reminder: Reminder, places: [Place], withRepeat: Bool = true) -> String? {
         var parts: [String] = []
-        if let rule = reminder.schedule?.rule {
+        if withRepeat, let rule = reminder.schedule?.rule {
             parts.append(repeatText(rule))
         }
         if reminder.urgent {
@@ -98,6 +98,10 @@ struct Describer {
     func shortTime(_ date: Date) -> String {
         let parts = calendar.dateComponents([.hour, .minute], from: date)
         return String(format: "%d:%02d", parts.hour ?? 0, parts.minute ?? 0)
+    }
+
+    func shortDate(_ date: Date) -> String {
+        date.formatted(Date.FormatStyle(locale: locale, calendar: calendar, timeZone: calendar.timeZone).day().month(.abbreviated)).replacingOccurrences(of: ".", with: "")
     }
 
     func dayTitle(_ date: Date) -> String {

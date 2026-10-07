@@ -1,12 +1,13 @@
 import Foundation
 import RemaCore
 
-// Everything after today: a repeat once, on its nearest day, and reminders by place apart.
+// Everything after today: a repeat once, on its nearest day; monthly, yearly and by place apart.
 struct ScheduledContent {
     struct Item: Identifiable {
         let id: String
         let reminderID: UUID
-        let time: String?
+        let lead: String?
+        let dated: Bool
         let title: String
         let subtitle: String?
     }
@@ -18,11 +19,13 @@ struct ScheduledContent {
     }
 
     let days: [Day]
+    let monthly: [Item]
+    let yearly: [Item]
     let places: [Item]
     let hasRepeats: Bool
 
     var isEmpty: Bool {
-        days.isEmpty && places.isEmpty
+        days.isEmpty && monthly.isEmpty && yearly.isEmpty && places.isEmpty
     }
 
     static func make(reminders: [Reminder], places: [Place], now: Date, calendar: Calendar, locale: Locale) -> ScheduledContent {
@@ -30,28 +33,36 @@ struct ScheduledContent {
         let active = reminders.filter { $0.deletedAt == nil }
         let byID = Dictionary(active.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
         var days: [Day] = []
+        var monthly: [Item] = []
+        var yearly: [Item] = []
         var hasRepeats = false
         for item in upcoming(active, now: now, calendar: calendar) {
             guard let reminder = byID[item.reminderID] else { continue }
-            hasRepeats = hasRepeats || reminder.schedule?.rule != nil
-            let entry = Item(
-                id: "\(reminder.id.uuidString)-\(Int(item.occurrence.timeIntervalSince1970))",
-                reminderID: reminder.id,
-                time: describer.time(item.occurrence),
-                title: reminder.title,
-                subtitle: describer.subtitle(for: reminder, places: places)
-            )
-            let day = calendar.startOfDay(for: item.occurrence)
-            if days.last?.id == day {
-                days[days.count - 1].items.append(entry)
-            } else {
-                days.append(Day(id: day, title: describer.dateLine(item.occurrence), items: [entry]))
+            let id = "\(reminder.id.uuidString)-\(Int(item.occurrence.timeIntervalSince1970))"
+            switch reminder.schedule?.rule {
+            case .yearly, .monthlyOnDay, .monthlyOnWeekday:
+                let details = [describer.time(item.occurrence), describer.subtitle(for: reminder, places: places, withRepeat: false)].compactMap { $0 }
+                let entry = Item(id: id, reminderID: reminder.id, lead: describer.shortDate(item.occurrence), dated: true, title: reminder.title, subtitle: details.joined(separator: " · "))
+                if case .yearly = reminder.schedule?.rule {
+                    yearly.append(entry)
+                } else {
+                    monthly.append(entry)
+                }
+            default:
+                hasRepeats = hasRepeats || reminder.schedule?.rule != nil
+                let entry = Item(id: id, reminderID: reminder.id, lead: describer.time(item.occurrence), dated: false, title: reminder.title, subtitle: describer.subtitle(for: reminder, places: places))
+                let day = calendar.startOfDay(for: item.occurrence)
+                if days.last?.id == day {
+                    days[days.count - 1].items.append(entry)
+                } else {
+                    days.append(Day(id: day, title: describer.dateLine(item.occurrence), items: [entry]))
+                }
             }
         }
         let placed = byPlace(active).map { reminder in
-            Item(id: reminder.id.uuidString, reminderID: reminder.id, time: nil, title: reminder.title, subtitle: describer.placeText(reminder, places: places))
+            Item(id: reminder.id.uuidString, reminderID: reminder.id, lead: nil, dated: false, title: reminder.title, subtitle: describer.placeText(reminder, places: places))
         }
-        return ScheduledContent(days: days, places: placed, hasRepeats: hasRepeats)
+        return ScheduledContent(days: days, monthly: monthly, yearly: yearly, places: placed, hasRepeats: hasRepeats)
     }
 
     static func count(reminders: [Reminder], now: Date, calendar: Calendar) -> Int {
