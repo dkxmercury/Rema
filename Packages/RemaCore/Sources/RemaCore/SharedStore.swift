@@ -19,8 +19,13 @@ public enum SharedStore {
     public static let fileName = "store.json"
 
     public static var groupDirectory: URL? {
+        // The parser tests also run on Linux, which has no app groups.
+        #if canImport(Darwin)
         FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup)?
             .appendingPathComponent("Rema", isDirectory: true)
+        #else
+        nil
+        #endif
     }
 
     public static var localDirectory: URL {
