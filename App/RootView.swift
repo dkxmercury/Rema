@@ -123,6 +123,12 @@ struct RootView: View {
         }
         .onChange(of: remote.config) { _, _ in showAnnouncementIfNew() }
         .onChange(of: navigation.composeRequest?.id) { _, _ in openRequestedCompose() }
+        .onChange(of: account.isSignedIn) { _, signedIn in
+            // A session that ran out leaves no account to show, so its screens close.
+            if !signedIn {
+                navigation.path.removeAll { $0 == .account || $0 == .deleteAccount }
+            }
+        }
         .onAppear {
             showAnnouncementIfNew()
             showIntroIfNeeded()

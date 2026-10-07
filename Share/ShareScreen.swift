@@ -2,6 +2,7 @@ import RemaCore
 import SwiftUI
 import UIKit
 import UserNotifications
+import WidgetKit
 
 struct ShareScreen: View {
     let source: String
@@ -103,7 +104,7 @@ struct ShareScreen: View {
         let title = result.title.trimmingCharacters(in: .whitespacesAndNewlines)
         let places = Self.places(in: snapshot)
         return Reminder(
-            title: title.isEmpty ? text.trimmingCharacters(in: .whitespacesAndNewlines) : title,
+            title: String((title.isEmpty ? text.trimmingCharacters(in: .whitespacesAndNewlines) : title).prefix(Reminder.maximumTitleLength)),
             schedule: plan,
             preAlerts: leads ?? result.preAlerts,
             nag: result.nag,
@@ -388,38 +389,12 @@ struct ShareScreen: View {
             return
         }
         UINotificationFeedbackGenerator().notificationOccurred(.success)
+        WidgetCenter.shared.reloadAllTimelines()
         let settings = store.settings
         let describer = self.describer
         Task {
-            await ShareNotifications.schedule(item, settings: settings, describer: describer)
+            await QuickNotifications.schedule(item, settings: settings, describer: describer)
             onSaved()
-        }
-    }
-}
-
-// The app rebuilds every notification on its next launch; until then this keeps the new reminder from going silent.
-enum ShareNotifications {
-    static func schedule(_ reminder: Reminder, settings: Settings, describer: Describer) async {
-        let center = UNUserNotificationCenter.current()
-        let status = await center.notificationSettings().authorizationStatus
-        guard status == .authorized || status == .provisional || status == .ephemeral else { return }
-        let plan = Scheduler.plan(reminders: [reminder], settings: settings, now: Date(), calendar: .current, capacity: 8)
-        for item in plan {
-            let content = UNMutableNotificationContent()
-            content.title = item.title
-            let when = describer.dayAndTime(item.occurrence, now: item.fireDate).capitalizedFirst(describer.locale)
-            if case .early = item.kind {
-                content.body = String(localized: "\(when), reminding in advance", bundle: .app, locale: .app)
-            } else {
-                content.body = when
-            }
-            content.sound = .default
-            content.categoryIdentifier = item.nag ? "nag" : "reminder"
-            content.threadIdentifier = item.reminderID.uuidString
-            content.userInfo = ["reminder": item.reminderID.uuidString, "occurrence": item.occurrence.timeIntervalSince1970]
-            let parts = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: item.fireDate)
-            let trigger = UNCalendarNotificationTrigger(dateMatching: parts, repeats: false)
-            try? await center.add(UNNotificationRequest(identifier: item.identifier, content: content, trigger: trigger))
         }
     }
 }

@@ -230,6 +230,7 @@ struct RepeatScreen: View {
     }
 
     private func select(_ option: Kind) {
+        guard option != kind else { return }
         let start = schedule.start
         let rule: RepeatRule?
         switch option {

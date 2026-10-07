@@ -54,6 +54,9 @@ struct ToggleReminderIntent: AppIntent {
                 await ReminderNotifications.clear(id, occurrence: snoozed)
             }
             await ReminderNotifications.endActivities(for: id)
+        } else if let snapshot = SharedStore.load(), let reminder = snapshot.reminders.first(where: { $0.id == id }) {
+            // Unmarked by mistake, the occurrence needs its notifications back before the app runs again.
+            await QuickNotifications.schedule(reminder, settings: snapshot.settings, describer: Describer(calendar: .current, locale: .app))
         }
         WidgetCenter.shared.reloadAllTimelines()
         return .result()
@@ -104,12 +107,16 @@ struct CompleteActivityIntent: LiveActivityIntent {
     func perform() async throws -> some IntentResult {
         guard let id = UUID(uuidString: reminderID) else { return .result() }
         let date = Date(timeIntervalSince1970: occurrence)
+        #if APP
+        // Inside the app the file belongs to Store, a write from here could cross one of its saves.
+        await MainActor.run { Store.shared.complete(id, through: date) }
+        #else
         _ = SharedStore.setDone(true, reminder: id, occurrence: date)
+        #endif
         await ReminderNotifications.clear(id, occurrence: date)
         await ReminderNotifications.endActivities(for: id)
         WidgetCenter.shared.reloadAllTimelines()
         #if APP
-        await MainActor.run { Store.shared.reloadIfChanged() }
         await Notifier.shared.reschedule()
         #endif
         return .result()
@@ -136,12 +143,15 @@ struct SnoozeActivityIntent: LiveActivityIntent {
     func perform() async throws -> some IntentResult {
         guard let id = UUID(uuidString: reminderID) else { return .result() }
         let date = Date(timeIntervalSince1970: occurrence)
+        #if APP
+        await MainActor.run { Store.shared.snooze(id, until: Date().addingTimeInterval(600)) }
+        #else
         _ = SharedStore.snooze(reminder: id, until: Date().addingTimeInterval(600))
+        #endif
         await ReminderNotifications.clear(id, occurrence: date)
         await ReminderNotifications.endActivities(for: id)
         WidgetCenter.shared.reloadAllTimelines()
         #if APP
-        await MainActor.run { Store.shared.reloadIfChanged() }
         await Notifier.shared.reschedule()
         #endif
         return .result()

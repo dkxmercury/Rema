@@ -198,6 +198,10 @@ final class Store {
         if edit {
             onEdit?()
         }
+        // The share sheet and the watch write the file without asking the widgets to redraw.
+        if shared {
+            reloadWidgetsIfNeeded()
+        }
         return true
     }
 

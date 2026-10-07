@@ -21,6 +21,12 @@ struct DeleteAccountScreen: View {
     @State private var sentAt: Date?
     @FocusState private var focus: Field?
 
+    // Apple's relay takes mail only from registered senders, so a hidden address gets no code.
+    private var codeByMail: Bool {
+        let email = Account.shared.visibleEmail.lowercased()
+        return !email.isEmpty && !email.hasSuffix("@privaterelay.appleid.com")
+    }
+
     private var canSubmit: Bool {
         switch step {
         case .warning, .confirm: true
@@ -37,7 +43,7 @@ struct DeleteAccountScreen: View {
                         Text("Everything will be deleted")
                             .font(.app(.golos, 17, weight: 600))
                             .foregroundStyle(Palette.urgentText)
-                        Text("Your account will be deleted together with all reminders, places, your own sounds and settings. They disappear from the server and from all your phones. This cannot be undone.")
+                        Text("Your account will be deleted together with all reminders, places, your own sounds and settings. They disappear from the server and from this phone. This cannot be undone.")
                             .font(.app(.golos, 15))
                             .lineHeight(21, .golos, 15)
                             .foregroundStyle(Palette.secondary)
@@ -51,7 +57,7 @@ struct DeleteAccountScreen: View {
                     case .warning:
                         EmptyView()
                     case .confirm:
-                        FormNote(text: "This account has no email, so it is deleted right after you confirm.")
+                        FormNote(text: "This account has no email we can send a code to, so it is deleted right after you confirm.")
                             .padding(.top, 16)
                     case .code(let email):
                         FormNote(text: "We sent a 6-digit code to \(email). It works for 15 minutes.")
@@ -91,7 +97,11 @@ struct DeleteAccountScreen: View {
                 if busy {
                     ProgressView().tint(Palette.onAccent)
                 } else if step == .warning {
-                    Text("Send a code to the email")
+                    if codeByMail {
+                        Text("Send a code to the email")
+                    } else {
+                        Text("Continue")
+                    }
                 } else {
                     Text("Delete forever")
                 }
@@ -103,6 +113,9 @@ struct DeleteAccountScreen: View {
             let digits = String(value.filter(\.isNumber).prefix(6))
             if digits != value {
                 code = digits
+            } else if digits.count == 6 {
+                // The number pad has no return key, and the button waits under the keyboard.
+                focus = nil
             }
         }
     }
@@ -132,6 +145,10 @@ struct DeleteAccountScreen: View {
                 case .none:
                     step = .confirm
                 }
+            } catch Backend.Failure.invalid(let reason) where reason == "code_limit" {
+                problem = String(localized: "You asked for too many codes today. Try again tomorrow.", bundle: .app, locale: .app)
+            } catch Backend.Failure.unauthorized {
+                problem = String(localized: "The sign-in has expired. Sign in again.", bundle: .app, locale: .app)
             } catch let failure as Backend.Failure {
                 problem = failure.message
             } catch {
@@ -156,6 +173,8 @@ struct DeleteAccountScreen: View {
             } catch Backend.Failure.invalid(let reason) where reason == "expired_code" {
                 problem = String(localized: "The code has expired. Send a new one.", bundle: .app, locale: .app)
                 sentAt = nil
+            } catch Backend.Failure.unauthorized {
+                problem = String(localized: "The sign-in has expired. Sign in again.", bundle: .app, locale: .app)
             } catch let failure as Backend.Failure {
                 problem = failure == .offline || failure == .rateLimited ? failure.message : String(localized: "Could not delete the account. Try again.", bundle: .app, locale: .app)
             } catch {

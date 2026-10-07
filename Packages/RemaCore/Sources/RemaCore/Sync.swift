@@ -209,6 +209,19 @@ public enum SyncPlan {
         }
         return changes
     }
+
+    // A version the server refused stays only on this phone until it is edited again.
+    public static func hasRefused(in snapshot: StoreSnapshot, state: SyncState) -> Bool {
+        guard let held = state.held, !held.isEmpty else { return false }
+        func refused(_ kind: SyncKind, _ id: String, _ stamp: Int64) -> Bool {
+            let key = SyncState.key(kind, id)
+            return stamp > 0 && held[key] == stamp && stamp > (state.known[key] ?? 0)
+        }
+        return refused(.prefs, SyncState.settingsID, SyncStamp.of(snapshot.settings))
+            || snapshot.places.contains { refused(.places, $0.id.uuidString, SyncStamp.of($0)) }
+            || (snapshot.sounds ?? []).contains { refused(.sounds, $0.id.uuidString, SyncStamp.of($0)) }
+            || snapshot.reminders.contains { refused(.reminders, $0.id.uuidString, SyncStamp.of($0)) }
+    }
 }
 
 public enum SyncMerge {

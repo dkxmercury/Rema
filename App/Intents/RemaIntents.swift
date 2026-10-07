@@ -23,7 +23,7 @@ struct AddReminderIntent: AppIntent {
         let placeIDs = parsed.placeNames.compactMap { name in store.activePlaces.first { $0.name == name }?.id }
         let schedule = parsed.schedule ?? (placeIDs.isEmpty ? IntentSupport.soon(after: now) : nil)
         let reminder = Reminder(
-            title: parsed.title,
+            title: String(parsed.title.prefix(Reminder.maximumTitleLength)),
             schedule: schedule,
             preAlerts: parsed.preAlerts,
             nag: parsed.nag,
@@ -34,6 +34,7 @@ struct AddReminderIntent: AppIntent {
         )
         store.save(reminder)
         Notifier.shared.requestPermissionIfNeeded()
+        await Notifier.shared.reschedule()
         Feedback.play(.save)
         let when = IntentSupport.when(reminder, store: store, now: now)
         return .result(dialog: IntentDialog("Done, I'll remind you."), view: ReminderSnippet(title: reminder.title, when: when))
@@ -79,7 +80,7 @@ struct CompleteReminderIntent: AppIntent {
         store.complete(target.reminderID, through: target.occurrence)
         await ReminderNotifications.clear(target.reminderID, occurrence: target.occurrence)
         await ReminderNotifications.endActivities(for: target.reminderID)
-        Notifier.shared.scheduleSoon()
+        await Notifier.shared.reschedule()
         return .result(dialog: IntentDialog(stringLiteral: String(localized: "Done: \(reminder.title)", bundle: .app, locale: .app)))
     }
 }
@@ -106,7 +107,7 @@ struct SnoozeReminderIntent: AppIntent {
         store.snooze(target.reminderID, until: now.addingTimeInterval(Double(minutes) * 60))
         await ReminderNotifications.clear(target.reminderID, occurrence: target.occurrence)
         await ReminderNotifications.endActivities(for: target.reminderID)
-        Notifier.shared.scheduleSoon()
+        await Notifier.shared.reschedule()
         return .result(dialog: IntentDialog(stringLiteral: String(localized: "Snoozed by \(minutes) min: \(reminder.title)", bundle: .app, locale: .app)))
     }
 }

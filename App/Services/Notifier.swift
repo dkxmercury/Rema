@@ -15,6 +15,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
     private var pending: Task<Void, Never>?
     @MainActor private var running: Task<Void, Never>?
     @MainActor private var again = false
+    @MainActor private var background = UIBackgroundTaskIdentifier.invalid
     private var store: Store { Store.shared }
 
     func configure() {
@@ -90,20 +91,39 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
     // Rebuilds never overlap; a request that comes in during one runs right after it, and every caller waits for that.
     @MainActor
     func reschedule() async {
+        pending?.cancel()
         if let running {
             again = true
             await running.value
             return
         }
         let task = Task { @MainActor in
+            // Begun as the app leaves, a rebuild still has to finish instead of freezing halfway.
+            holdBackground()
             repeat {
                 again = false
                 await rebuild()
             } while again
             running = nil
+            releaseBackground()
         }
         running = task
         await task.value
+    }
+
+    @MainActor
+    private func holdBackground() {
+        guard background == .invalid else { return }
+        background = UIApplication.shared.beginBackgroundTask(withName: "notifications") {
+            MainActor.assumeIsolated { Notifier.shared.releaseBackground() }
+        }
+    }
+
+    @MainActor
+    private func releaseBackground() {
+        guard background != .invalid else { return }
+        UIApplication.shared.endBackgroundTask(background)
+        background = .invalid
     }
 
     @MainActor
@@ -117,10 +137,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         let plan = Scheduler.plan(reminders: store.reminders, settings: store.settings, now: now, calendar: .current, followUp: followUp)
         let places = placeRequests()
         let weather = WeatherAdvisor.shared.notes(after: now)
-        center.removeAllPendingNotificationRequests()
-        for request in places {
-            try? await center.add(request)
-        }
+        var requests = places
         for note in weather {
             let content = UNMutableNotificationContent()
             content.title = note.title
@@ -129,7 +146,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
             content.interruptionLevel = .passive
             content.threadIdentifier = "weather"
             let parts = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: note.fireDate)
-            try? await center.add(UNNotificationRequest(identifier: note.identifier, content: content, trigger: UNCalendarNotificationTrigger(dateMatching: parts, repeats: false)))
+            requests.append(UNNotificationRequest(identifier: note.identifier, content: content, trigger: UNCalendarNotificationTrigger(dateMatching: parts, repeats: false)))
         }
         for item in plan.prefix(max(0, 60 - places.count - weather.count)) {
             let content = UNMutableNotificationContent()
@@ -147,7 +164,14 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
             }
             let parts = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: item.fireDate)
             let trigger = UNCalendarNotificationTrigger(dateMatching: parts, repeats: false)
-            try? await center.add(UNNotificationRequest(identifier: item.identifier, content: content, trigger: trigger))
+            requests.append(UNNotificationRequest(identifier: item.identifier, content: content, trigger: trigger))
+        }
+        // Only what is no longer wanted goes first and the rest lands over the old copies, so a rebuild cut short never leaves the phone silent.
+        let wanted = Set(requests.map(\.identifier))
+        let stale = await center.pendingNotificationRequests().map(\.identifier).filter { !wanted.contains($0) }
+        center.removePendingNotificationRequests(withIdentifiers: stale)
+        for request in requests {
+            try? await center.add(request)
         }
         let missed = Self.missedEnabled ? Agenda.missed(now, reminders: store.activeReminders, calendar: .current).count : 0
         try? await center.setBadgeCount(missed)

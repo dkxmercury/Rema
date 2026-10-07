@@ -40,6 +40,10 @@ final class SyncService {
         !SyncPlan.changes(in: Store.shared.snapshot, state: state, limit: 1).isEmpty
     }
 
+    var hasRefusedChanges: Bool {
+        SyncPlan.hasRefused(in: Store.shared.snapshot, state: state)
+    }
+
     func schedule(after delay: Duration = .seconds(2)) {
         guard Account.shared.isSignedIn, Remote.shared.isOn(.sync) else { return }
         scheduled?.cancel()
@@ -86,7 +90,7 @@ final class SyncService {
     }
 
     func signOut(discardingChanges: Bool) async -> Bool {
-        if !discardingChanges, Account.shared.isSignedIn, !(await flush()) {
+        if !discardingChanges, Account.shared.isSignedIn, !(await flush()) || hasRefusedChanges {
             return false
         }
         Account.shared.signOut()
@@ -196,8 +200,11 @@ final class SyncService {
             savedAt = Date()
             status = .saved
         } catch Backend.Failure.unauthorized {
-            Account.shared.expire()
-            realtime.stop()
+            // A late answer for a session that already signed out must not end the one that came after it.
+            if Account.shared.session?.token == session.token {
+                Account.shared.expire(token: session.token)
+                realtime.stop()
+            }
             status = .failed
         } catch Backend.Failure.offline {
             status = .offline

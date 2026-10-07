@@ -115,9 +115,11 @@ final class Account {
         guard let session, Date().timeIntervalSince(session.issued) > 7 * 86_400 else { return }
         do {
             let auth = try await Backend.request("POST", "/api/collections/users/auth-refresh", token: session.token, as: AuthResponse.self)
+            // The phone may have signed out or into another account while the request was out.
+            guard self.session?.token == session.token else { return }
             begin(auth, method: session.method)
         } catch Backend.Failure.unauthorized {
-            expire()
+            expire(token: session.token)
         } catch {}
     }
 
@@ -145,7 +147,7 @@ final class Account {
     }
 
     func deleteAccount(code: String) async throws {
-        guard let session else { return }
+        guard let session else { throw Backend.Failure.unauthorized }
         struct Body: Encodable {
             let code: String
         }
@@ -162,7 +164,8 @@ final class Account {
     }
 
     // The token ran out while the phone was away; the data stays until someone signs in again.
-    func expire() {
+    func expire(token: String) {
+        guard session?.token == token else { return }
         session = nil
         Keychain.delete()
     }

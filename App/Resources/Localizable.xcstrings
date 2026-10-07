@@ -17073,6 +17073,52 @@
         }
       }
     },
+    "The account did not accept some changes, they are only on this phone. If you sign out, they will be lost.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لم يقبل الحساب بعض التغييرات، وهي على هذا الهاتف فقط. إذا سجّلت الخروج فستضيع."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Konto hat einige Änderungen nicht angenommen, sie sind nur auf diesem Telefon. Wenn du dich abmeldest, gehen sie verloren."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le compte n’a pas accepté certaines modifications, elles ne sont que sur ce téléphone. Si vous vous déconnectez, elles seront perdues."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Аккаунт не принял часть изменений, они есть только на этом телефоне. Если выйти, они пропадут."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Акаунт не прийняв частину змін, вони є лише на цьому телефоні. Якщо вийти, вони пропадуть."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Аккаунт баъзи ўзгаришларни қабул қилмади, улар фақат шу телефонда. Чиқсангиз, улар йўқолади."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Akkaunt ba’zi o‘zgarishlarni qabul qilmadi, ular faqat shu telefonda. Chiqsangiz, ular yo‘qoladi."
+          }
+        }
+      }
+    },
     "The code has expired. Send a new one.": {
       "localizations": {
         "ar": {
@@ -17303,6 +17349,52 @@
         }
       }
     },
+    "The sign-in has expired. Sign in again.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "انتهت صلاحية تسجيل الدخول. سجّل الدخول مرة أخرى."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Anmeldung ist abgelaufen. Melde dich erneut an."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La connexion a expiré. Reconnectez-vous."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Вход устарел. Войдите снова."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Вхід застарів. Увійдіть знову."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Кириш муддати тугади. Қайта киринг."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kirish muddati tugadi. Qayta kiring."
+          }
+        }
+      }
+    },
     "The watch app installs together with Rema. If it is not on your watch, install it in the Watch app on your iPhone.": {
       "localizations": {
         "ar": {
@@ -17487,48 +17579,48 @@
         }
       }
     },
-    "This account has no email, so it is deleted right after you confirm.": {
+    "This account has no email we can send a code to, so it is deleted right after you confirm.": {
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "لا يوجد بريد لهذا الحساب، لذلك سيُحذف فور تأكيدك."
+            "value": "لا يوجد لهذا الحساب بريد يمكن إرسال رمز إليه، لذلك سيُحذف فور تأكيدك."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Dieses Konto hat keine E-Mail-Adresse, deshalb wird es gleich nach deiner Bestätigung gelöscht."
+            "value": "Dieses Konto hat keine E-Mail-Adresse, an die wir einen Code schicken können, deshalb wird es gleich nach deiner Bestätigung gelöscht."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ce compte n’a pas d’adresse e-mail, il sera donc supprimé dès votre confirmation."
+            "value": "Ce compte n’a pas d’adresse e-mail à laquelle envoyer un code, il sera donc supprimé dès votre confirmation."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "У этого аккаунта нет почты, поэтому он удалится сразу после подтверждения."
+            "value": "У этого аккаунта нет почты, на которую можно отправить код, поэтому он удалится сразу после подтверждения."
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "У цього акаунта немає пошти, тому він видалиться одразу після підтвердження."
+            "value": "У цього акаунта немає пошти, на яку можна надіслати код, тому він видалиться одразу після підтвердження."
           }
         },
         "uz-Cyrl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Бу аккаунтда почта йўқ, шунинг учун у тасдиқлашингиз билан ўчирилади."
+            "value": "Бу аккаунтда код юбориш мумкин бўлган почта йўқ, шунинг учун у тасдиқлашингиз билан ўчирилади."
           }
         },
         "uz-Latn": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bu akkauntda pochta yo‘q, shuning uchun u tasdiqlashingiz bilan o‘chiriladi."
+            "value": "Bu akkauntda kod yuborish mumkin bo‘lgan pochta yo‘q, shuning uchun u tasdiqlashingiz bilan o‘chiriladi."
           }
         }
       }
@@ -20247,6 +20339,52 @@
         }
       }
     },
+    "You asked for too many codes today. Try again tomorrow.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "طلبت رموزًا كثيرة اليوم. حاول مرة أخرى غدًا."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du hast heute zu viele Codes angefordert. Versuch es morgen noch einmal."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vous avez demandé trop de codes aujourd’hui. Réessayez demain."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сегодня вы запросили слишком много кодов. Попробуйте завтра."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сьогодні ви запросили забагато кодів. Спробуйте завтра."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бугун жуда кўп код сўрадингиз. Эртага уриниб кўринг."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bugun juda ko‘p kod so‘radingiz. Ertaga urinib ko‘ring."
+          }
+        }
+      }
+    },
     "You can use your voice": {
       "localizations": {
         "ar": {
@@ -20385,48 +20523,48 @@
         }
       }
     },
-    "Your account will be deleted together with all reminders, places, your own sounds and settings. They disappear from the server and from all your phones. This cannot be undone.": {
+    "Your account will be deleted together with all reminders, places, your own sounds and settings. They disappear from the server and from this phone. This cannot be undone.": {
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "سيُحذف الحساب مع كل التذكيرات والأماكن والأصوات الخاصة والإعدادات. ستختفي من الخادم ومن كل هواتفك. لا يمكن التراجع عن ذلك."
+            "value": "سيُحذف الحساب مع كل التذكيرات والأماكن والأصوات الخاصة والإعدادات. ستختفي من الخادم ومن هذا الهاتف. لا يمكن التراجع عن ذلك."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Das Konto wird mit allen Erinnerungen, Orten, eigenen Tönen und Einstellungen gelöscht. Sie verschwinden vom Server und von all deinen Telefonen. Das lässt sich nicht rückgängig machen."
+            "value": "Das Konto wird mit allen Erinnerungen, Orten, eigenen Tönen und Einstellungen gelöscht. Sie verschwinden vom Server und von diesem Telefon. Das lässt sich nicht rückgängig machen."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Le compte sera supprimé avec tous les rappels, lieux, sons personnels et réglages. Ils disparaîtront du serveur et de tous vos téléphones. Cette action est irréversible."
+            "value": "Le compte sera supprimé avec tous les rappels, lieux, sons personnels et réglages. Ils disparaîtront du serveur et de ce téléphone. Cette action est irréversible."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Аккаунт удалится вместе со всеми напоминаниями, местами, своими звуками и настройками. Они пропадут с сервера и со всех ваших телефонов. Отменить это нельзя."
+            "value": "Аккаунт удалится вместе со всеми напоминаниями, местами, своими звуками и настройками. Они пропадут с сервера и с этого телефона. Отменить это нельзя."
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Акаунт видалиться разом з усіма нагадуваннями, місцями, своїми звуками й налаштуваннями. Вони зникнуть із сервера й з усіх ваших телефонів. Скасувати це не можна."
+            "value": "Акаунт видалиться разом з усіма нагадуваннями, місцями, своїми звуками й налаштуваннями. Вони зникнуть із сервера й з цього телефону. Скасувати це не можна."
           }
         },
         "uz-Cyrl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Аккаунт барча эслатмалар, жойлар, ўз товушларингиз ва созламалар билан бирга ўчирилади. Улар сервердан ва барча телефонларингиздан йўқолади. Буни бекор қилиб бўлмайди."
+            "value": "Аккаунт барча эслатмалар, жойлар, ўз товушларингиз ва созламалар билан бирга ўчирилади. Улар сервердан ва шу телефондан йўқолади. Буни бекор қилиб бўлмайди."
           }
         },
         "uz-Latn": {
           "stringUnit": {
             "state": "translated",
-            "value": "Akkaunt barcha eslatmalar, joylar, o‘z tovushlaringiz va sozlamalar bilan birga o‘chiriladi. Ular serverdan va barcha telefonlaringizdan yo‘qoladi. Buni bekor qilib bo‘lmaydi."
+            "value": "Akkaunt barcha eslatmalar, joylar, o‘z tovushlaringiz va sozlamalar bilan birga o‘chiriladi. Ular serverdan va shu telefondan yo‘qoladi. Buni bekor qilib bo‘lmaydi."
           }
         }
       }

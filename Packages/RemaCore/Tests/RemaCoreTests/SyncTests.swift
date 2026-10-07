@@ -215,6 +215,24 @@ struct SyncTests {
         #expect(SyncPlan.changes(in: snapshot(reminders: [edited]), state: full.state).map(\.clientId) == [call.id.uuidString])
     }
 
+    @Test func refusedChangesStayOnlyOnThePhone() {
+        let call = reminder("Отклонено")
+        let local = snapshot(reminders: [call])
+        let sent = SyncPlan.changes(in: local, state: SyncState())
+        let refused = sent.map { SyncRejection(kind: $0.kind.rawValue, clientId: $0.clientId, reason: "limit") }
+        let outcome = SyncMerge.apply(respond([], rejected: refused), sent: sent, to: local, state: SyncState(), now: created)
+        #expect(SyncPlan.hasRefused(in: outcome.snapshot, state: outcome.state))
+        #expect(!SyncPlan.hasRefused(in: snapshot(), state: outcome.state), "a record gone from the phone waits for nothing")
+        var edited = call
+        edited.title = "Исправлено"
+        edited.updatedAt = created.addingTimeInterval(60)
+        let next = snapshot(reminders: [edited])
+        #expect(!SyncPlan.hasRefused(in: next, state: outcome.state), "after an edit it is an ordinary pending change")
+        let accepted = SyncMerge.apply(respond([]), sent: SyncPlan.changes(in: next, state: outcome.state), to: next, state: outcome.state, now: created)
+        #expect(!SyncPlan.hasRefused(in: accepted.snapshot, state: accepted.state))
+        #expect(!SyncPlan.hasRefused(in: local, state: SyncState()))
+    }
+
     @Test func settingsPutBackToDefaultsStillSync() {
         var settings = Settings.standard(at: created.addingTimeInterval(60))
         settings.touched = true

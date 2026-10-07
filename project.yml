@@ -118,6 +118,7 @@ targets:
       - path: App/Components/Layout.swift
       - path: App/Components/MiniDial.swift
       - path: App/Components/PhraseField.swift
+      - path: Shared/QuickNotifications.swift
       - path: App/Resources/Fonts
         buildPhase: resources
       - path: App/Resources/Localizable.xcstrings

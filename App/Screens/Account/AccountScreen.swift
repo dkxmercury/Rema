@@ -17,6 +17,7 @@ struct AccountScreen: View {
     var onBack: () -> Void
 
     @State private var askDiscard = false
+    @State private var refusedChanges = false
     @State private var busy = false
     @State private var problem: String?
 
@@ -101,7 +102,11 @@ struct AccountScreen: View {
             Button("Sign out anyway", role: .destructive) { signOut(discarding: true) }
             Button("Cancel", role: .cancel) {}
         } message: {
-            Text("There is no connection right now. If you sign out, these changes will be lost.")
+            if refusedChanges {
+                Text("The account did not accept some changes, they are only on this phone. If you sign out, they will be lost.")
+            } else {
+                Text("There is no connection right now. If you sign out, these changes will be lost.")
+            }
         }
     }
 
@@ -189,6 +194,7 @@ struct AccountScreen: View {
             let done = await onSignOut(discarding)
             busy = false
             if !done {
+                refusedChanges = SyncService.shared.hasRefusedChanges
                 askDiscard = true
             }
         }

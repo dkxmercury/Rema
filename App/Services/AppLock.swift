@@ -23,6 +23,15 @@ final class AppLock {
         enabled = UserDefaults.standard.bool(forKey: Self.enabledKey)
         delay = UserDefaults.standard.object(forKey: Self.delayKey) as? Int ?? 60
         locked = enabled
+        dropIfImpossible()
+    }
+
+    // Without a phone passcode nothing could open the app again, so the protection goes away with it.
+    private func dropIfImpossible() {
+        guard enabled, !available else { return }
+        enabled = false
+        locked = false
+        UserDefaults.standard.set(false, forKey: Self.enabledKey)
     }
 
     var biometryName: String {
@@ -63,6 +72,7 @@ final class AppLock {
     }
 
     func becameActive() {
+        dropIfImpossible()
         if enabled, !locked, let leftAt, Date().timeIntervalSince(leftAt) >= Double(delay) {
             locked = true
         }

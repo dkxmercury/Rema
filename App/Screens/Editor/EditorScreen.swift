@@ -300,7 +300,14 @@ struct EditorScreen: View {
         }
         draft.title = draft.title.trimmingCharacters(in: .whitespacesAndNewlines)
         Feedback.play(.save)
-        store.save(draft)
+        store.reloadIfChanged(edit: false)
+        var reminder = draft
+        // A notification, the widget or another phone may have marked it done or snoozed it while the editor was open.
+        if let current = store.reminder(draft.id), current.schedule == draft.schedule {
+            reminder.completedThrough = current.completedThrough
+            reminder.snoozedUntil = current.snoozedUntil
+        }
+        store.save(reminder)
         Notifier.shared.requestPermissionIfNeeded()
         onClose()
     }
