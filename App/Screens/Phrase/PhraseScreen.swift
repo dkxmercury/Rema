@@ -30,6 +30,7 @@ struct PhraseScreen: View {
     @State private var recentPhrases = RecentPhrases.all
     @State private var showingExamples = false
     @State private var earlyDismissed = false
+    @State private var flippedFor: String?
 
     // Body reads the parse result a dozen times per keystroke; parsing once per text keeps typing smooth.
     final class Memo {
@@ -90,7 +91,7 @@ struct PhraseScreen: View {
         let result = parsed
         var reminder = Reminder(
             title: result.title,
-            schedule: overrides.schedule ?? result.schedule,
+            schedule: overrides.schedule ?? (flipped ? result.alternative : nil) ?? result.schedule,
             preAlerts: overrides.preAlerts ?? result.preAlerts,
             nag: result.nag,
             urgent: overrides.urgent ?? result.urgent,
@@ -101,6 +102,35 @@ struct PhraseScreen: View {
         )
         reminder.id = draft.id
         return reminder
+    }
+
+    // The other reading of a bare hour; the choice belongs to this exact text and goes away when it changes.
+    private var flipped: Bool {
+        flippedFor == text && parsed.alternative != nil
+    }
+
+    private var otherReading: Schedule? {
+        guard overrides.schedule == nil, let alternative = parsed.alternative else { return nil }
+        return flipped ? parsed.schedule : alternative
+    }
+
+    @ViewBuilder
+    private var readingChip: some View {
+        if let other = otherReading, let date = calendar.date(from: DateComponents(year: other.start.year, month: other.start.month, day: other.start.day, hour: other.time.hour, minute: other.time.minute)) {
+            Button {
+                flippedFor = flipped ? nil : text
+                Feedback.play(.select)
+            } label: {
+                HStack(spacing: 6) {
+                    Glyph(paths: Icons.clock, size: 15, lineWidth: 2, color: Palette.text)
+                    Text(verbatim: String(localized: "or \(describer.dayAndTime(date, now: now))", bundle: .app, locale: .app).capitalizedFirst(locale))
+                }
+            }
+            .buttonStyle(RaisedChipStyle())
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.top, 10)
+            .transition(.opacity)
+        }
     }
 
     private var when: Date? {
@@ -199,6 +229,7 @@ struct PhraseScreen: View {
                         .contentShape(Rectangle())
                         .onTapGesture { pickingDate = true }
                         .padding(.top, 12)
+                    readingChip
                     if let suggestion = earlySuggestion {
                         EarlySuggestionCard(suggestion: suggestion) {
                             overrides.preAlerts = (reminder.preAlerts + [suggestion.minutes]).sorted()

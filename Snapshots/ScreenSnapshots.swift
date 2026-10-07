@@ -17,6 +17,10 @@ final class ScreenSnapshots: XCTestCase {
         try render(HomeScreen(content: SampleData.home, scheduledCount: count), name: "Home-Scheduled", style: .dark)
     }
 
+    func testOtherReading() throws {
+        try render(PhraseScreen(store: sampleStore(), text: "в 7 ужин с семьёй", now: SampleData.now, calendar: SampleData.calendar, locale: russian, autofocus: false, onClose: {}), name: "Phrase-OtherReading", style: .dark)
+    }
+
     func testSafeAreaProbe() throws {
         try render(SafeAreaProbe(), name: "Probe", style: .light)
     }
