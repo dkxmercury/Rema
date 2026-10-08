@@ -23,6 +23,8 @@ struct EditorScreen: View {
     @State private var confirmingDelete = false
     @State private var titleShake = 0
     @State private var showsList = false
+    @State private var foundContact: ContactLink?
+    @State private var contactDismissed = false
     @FocusState private var titleFocused: Bool
 
     private var describer: Describer {
@@ -76,6 +78,11 @@ struct EditorScreen: View {
                         .padding(.top, 16)
                     dateCard
                         .padding(.top, 14)
+                    if let contact = shownContact {
+                        contactCard(contact)
+                            .padding(.top, 12)
+                            .transition(.opacity.combined(with: .move(edge: .top)))
+                    }
                     if showsListSection {
                         listSection
                             .padding(.top, 20)
@@ -121,6 +128,12 @@ struct EditorScreen: View {
             if isNew && draft.title.isEmpty {
                 titleFocused = true
             }
+        }
+        .task {
+            guard draft.contact == nil, ContactsFeed.authorized, !draft.title.isEmpty else { return }
+            let title = draft.title
+            let found = await Task.detached { ContactsFeed.match(title) }.value
+            withAnimation(Motion.standard) { foundContact = found }
         }
     }
 
@@ -248,6 +261,54 @@ struct EditorScreen: View {
             ToggleRow(icon: Icons.bolt, iconColor: Palette.urgentIcon, title: "Through Do Not Disturb", subtitle: String(localized: "marked Urgent", bundle: .app, locale: .app), isOn: $draft.urgent)
             Hairline()
             soundRow
+        }
+    }
+
+    private var shownContact: ContactLink? {
+        contactDismissed ? nil : draft.contact ?? foundContact
+    }
+
+    // The person the reminder is about, found in the contacts; the notification gets a «Call» button.
+    private func contactCard(_ link: ContactLink) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 12) {
+                Text(verbatim: String(link.name.prefix(1)).uppercased())
+                    .font(.app(.golos, 18, weight: 600))
+                    .foregroundStyle(Palette.accentText)
+                    .frame(width: 40, height: 40)
+                    .background(Circle().fill(Palette.accent.opacity(0.16)))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(verbatim: link.name)
+                        .font(.app(.golos, 16, weight: 600))
+                        .lineLimit(1)
+                    Text(verbatim: String(localized: "\(link.phone) · from contacts", bundle: .app, locale: .app))
+                        .font(.app(.golos, 13))
+                        .foregroundStyle(Palette.secondary)
+                        .lineLimit(1)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                Button {
+                    Feedback.play(.select)
+                    withAnimation(Motion.standard) {
+                        contactDismissed = true
+                        draft.contact = nil
+                    }
+                } label: {
+                    Glyph(paths: Icons.close, size: 14, lineWidth: 2, color: Palette.secondary)
+                        .frame(width: 44, height: 44)
+                }
+                .buttonStyle(PressableStyle())
+                .padding(.trailing, -12)
+                .accessibilityLabel(Text("Remove contact"))
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+            .panel()
+            Text(verbatim: String(localized: "Rema found \(link.name) in your contacts. The notification will have a Call button.", bundle: .app, locale: .app))
+                .font(.app(.golos, 13))
+                .foregroundStyle(Palette.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.horizontal, 6)
         }
     }
 
@@ -385,6 +446,9 @@ struct EditorScreen: View {
         store.reloadIfChanged(edit: false)
         var reminder = draft
         // A notification, the widget or another phone may have marked it done or snoozed it while the editor was open.
+        if !contactDismissed, reminder.contact == nil {
+            reminder.contact = foundContact
+        }
         let before = store.reminder(draft.id)
         if let current = before, current.schedule == draft.schedule {
             reminder.completedThrough = current.completedThrough

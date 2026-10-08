@@ -30,6 +30,7 @@ struct HomeScreen: View {
     var onAlert: (HomeAlert) -> Void = { _ in }
     var snoozeHint: SnoozeHint?
     var onSnoozeHint: (SnoozeHint, Bool) -> Void = { _, _ in }
+    var onRemindEvent: (HomeContent.Event) -> Void = { _ in }
     @State private var addPressed = false
     @State private var intro = false
     @State private var lift: DialLift?
@@ -388,26 +389,72 @@ struct HomeScreen: View {
         .buttonStyle(RaisedChipStyle(radius: 20))
     }
 
+    private enum Line: Identifiable {
+        case reminder(HomeContent.Row)
+        case event(HomeContent.Event)
+
+        var id: String {
+            switch self {
+            case .reminder(let row): row.id
+            case .event(let event): "event-\(event.id)"
+            }
+        }
+
+        var date: Date {
+            switch self {
+            case .reminder(let row): row.occurrence
+            case .event(let event): event.start
+            }
+        }
+    }
+
+    // Calendar events stand among the reminders by time, quieter and without a tick.
+    private var lines: [Line] {
+        (content.rows.map(Line.reminder) + content.events.map(Line.event)).sorted { $0.date < $1.date }
+    }
+
+    private func eventRow(_ event: HomeContent.Event) -> some View {
+        HStack(spacing: 14) {
+            Text(verbatim: event.time)
+                .font(.app(.jost, 18, weight: 500))
+                .monospacedDigit()
+                .foregroundStyle(Palette.secondary)
+                .frame(width: 50, alignment: .leading)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(verbatim: event.title)
+                    .font(.app(.golos, 16))
+                    .foregroundStyle(Palette.text.opacity(0.85))
+                    .lineLimit(2)
+                Text(verbatim: event.subtitle)
+                    .font(.app(.golos, 12))
+                    .foregroundStyle(Palette.secondary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            if event.upcoming, !event.reminded {
+                Button {
+                    Feedback.play(.select)
+                    onRemindEvent(event)
+                } label: {
+                    Text("Remind")
+                }
+                .buttonStyle(SmallButtonStyle(prominent: false, height: 32))
+            }
+        }
+        .frame(minHeight: 52)
+        .accessibilityElement(children: .combine)
+    }
+
     private var list: some View {
         VStack(spacing: 0) {
-            ForEach(content.rows) { row in
-                let moving = lift.map { $0.holds(row) } ?? false
-                AgendaRow(
-                    row: lift.map { moving ? movingRow(row, $0) : row } ?? row,
-                    onToggle: { onToggle(row) },
-                    onDelete: { remove(row.reminderID) },
-                    onPostpone: row.missed ? { postponing = row } : nil
-                )
-                    .background {
-                        if moving {
-                            Palette.accent.opacity(0.09)
-                                .padding(.horizontal, -16)
-                        }
-                    }
-                    .contentShape(Rectangle())
-                    .onTapGesture { onOpen(row.reminderID) }
-                    .transition(.opacity.combined(with: .move(edge: .top)))
-                if row.id != content.rows.last?.id {
+            ForEach(lines) { line in
+                switch line {
+                case .event(let event):
+                    eventRow(event)
+                        .transition(.opacity)
+                case .reminder(let row):
+                    reminderLine(row)
+                }
+                if line.id != lines.last?.id {
                     Rectangle()
                         .fill(Palette.hairline)
                         .frame(height: 1)
@@ -419,13 +466,34 @@ struct HomeScreen: View {
         .panel()
     }
 
+    private func reminderLine(_ row: HomeContent.Row) -> some View {
+        Group {
+            let moving = lift.map { $0.holds(row) } ?? false
+            AgendaRow(
+                row: lift.map { moving ? movingRow(row, $0) : row } ?? row,
+                onToggle: { onToggle(row) },
+                onDelete: { remove(row.reminderID) },
+                onPostpone: row.missed ? { postponing = row } : nil
+            )
+                .background {
+                    if moving {
+                        Palette.accent.opacity(0.09)
+                            .padding(.horizontal, -16)
+                    }
+                }
+                .contentShape(Rectangle())
+                .onTapGesture { onOpen(row.reminderID) }
+                .transition(.opacity.combined(with: .move(edge: .top)))
+        }
+    }
+
     private var day: some View {
         VStack(spacing: 12) {
             if let alert {
                 HomeNotice(alert: alert) { onAlert(alert) }
                     .transition(.opacity)
             }
-            if content.rows.isEmpty {
+            if content.rows.isEmpty && content.events.isEmpty {
                 emptyDay
             } else {
                 list

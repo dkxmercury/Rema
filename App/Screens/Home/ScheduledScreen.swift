@@ -172,7 +172,9 @@ struct ScheduledScreen: View {
     private func rows(_ items: [ScheduledContent.Item], soonest: Bool) -> some View {
         ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
             Button {
-                onOpen(item.reminderID)
+                if let id = item.reminderID {
+                    onOpen(id)
+                }
             } label: {
                 row(item, highlighted: soonest && index == 0)
             }

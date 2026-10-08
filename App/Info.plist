@@ -19,5 +19,11 @@
 	<string>$(GOOGLE_CLIENT_ID)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>Rema shows your calendar events on the home screen next to reminders.</string>
+	<key>NSRemindersFullAccessUsageDescription</key>
+	<string>Rema moves reminders over from the Reminders app when you ask it to.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Rema finds birthdays and phone numbers in your contacts when you ask it to.</string>
 </dict>
 </plist>

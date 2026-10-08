@@ -7,6 +7,7 @@ struct DialMarker: Identifiable {
         case upcoming
         case next
         case missed
+        case event
     }
 
     let id: Int
@@ -213,7 +214,7 @@ private struct DialMarkersLayer: View, Animatable {
                 let color = first.marker.kind == .done ? Palette.dialDone : Palette.dialUpcoming
                 context.stroke(band, with: .color(color.opacity(share)), style: StrokeStyle(lineWidth: 10 * scale * (0.6 + 0.4 * share), lineCap: .round, lineJoin: .round))
             }
-            let layered = shown.filter { $0.marker.kind == .done || $0.marker.kind == .upcoming } + shown.filter { $0.marker.kind == .next || $0.marker.kind == .missed }
+            let layered = shown.filter { $0.marker.kind == .event } + shown.filter { $0.marker.kind == .done || $0.marker.kind == .upcoming } + shown.filter { $0.marker.kind == .next || $0.marker.kind == .missed }
             for (marker, share) in layered {
                 let point = place(minutes(marker))
                 func dot(_ radius: Double, _ color: Color) {
@@ -228,6 +229,9 @@ private struct DialMarkersLayer: View, Animatable {
                 case .next:
                     dot(7.5, Palette.dialNextRing)
                     dot(5.5, Palette.accent)
+                case .event:
+                    let r = 4.5 * scale * (0.6 + 0.4 * share)
+                    context.stroke(Path(ellipseIn: CGRect(x: point.x - r, y: point.y - r, width: 2 * r, height: 2 * r)), with: .color(Palette.dialUpcoming.opacity(0.7 * share)), lineWidth: 1.8 * scale)
                 case .missed:
                     dot(10, Palette.dialFace)
                     dot(8, Palette.urgent)

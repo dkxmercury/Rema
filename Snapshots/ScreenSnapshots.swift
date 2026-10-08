@@ -126,10 +126,7 @@ final class ScreenSnapshots: XCTestCase {
     }
 
     func testRepeatMonthly() throws {
-        var report = SampleData.server
-        report.title = "Сдать отчёт"
-        report.schedule = Schedule(start: LocalDate(year: 2026, month: 10, day: 5), time: LocalTime(hour: 10, minute: 0), rule: .lastWorkday)
-        try render(RepeatScreen(draft: .constant(report), now: SampleData.now, calendar: SampleData.calendar, locale: russian, onBack: {}), name: "D-Repeat-Monthly", style: .light, height: 1000)
+        try render(RepeatScreen(draft: .constant(SampleData.monthlyReport), now: SampleData.now, calendar: SampleData.calendar, locale: russian, onBack: {}), name: "D-Repeat-Monthly", style: .light, height: 1000)
     }
 
     func testEmptyAndRightToLeft() throws {

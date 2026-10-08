@@ -185,6 +185,52 @@
         }
       }
     },
+    "%@ · from contacts": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ · من جهات الاتصال"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ · aus Kontakten"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ · des contacts"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ · из контактов"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ · з контактів"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ · контактлардан"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ · kontaktlardan"
+          }
+        }
+      }
+    },
     "%@ · you can pick several": {
       "localizations": {
         "ar": {
@@ -1875,6 +1921,52 @@
         }
       }
     },
+    "%lld without a date": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld بلا موعد"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld ohne Datum"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld sans date"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld без срока"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld без терміну"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld та муддатсиз"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld ta muddatsiz"
+          }
+        }
+      }
+    },
     "A quick look at what you can turn on and where to find it.": {
       "localizations": {
         "ar": {
@@ -2055,6 +2147,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Akkaunt"
+          }
+        }
+      }
+    },
+    "Add %lld": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إضافة %lld"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld hinzufügen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouter %lld"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Добавить %lld"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Додати %lld"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld тасини қўшиш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld tasini qo‘shish"
           }
         }
       }
@@ -2611,6 +2749,98 @@
         }
       }
     },
+    "Allow access to Reminders in Settings to move them over.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اسمح بالوصول إلى التذكيرات في الإعدادات لنقلها."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erlaube den Zugriff auf „Erinnerungen“ in den Einstellungen, um sie zu übernehmen."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Autorisez l’accès à Rappels dans Réglages pour les reprendre."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Разрешите доступ к «Напоминаниям» в Настройках, чтобы перенести их."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дозвольте доступ до «Нагадувань» у Налаштуваннях, щоб перенести їх."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Кўчириш учун Созламаларда «Эслатмалар»га рухсат беринг."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ko‘chirish uchun Sozlamalarda «Eslatmalar»ga ruxsat bering."
+          }
+        }
+      }
+    },
+    "Allow access to contacts in Settings to find birthdays.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اسمح بالوصول إلى جهات الاتصال في الإعدادات للعثور على أعياد الميلاد."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erlaube den Zugriff auf Kontakte in den Einstellungen, um Geburtstage zu finden."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Autorisez l’accès aux contacts dans Réglages pour trouver les anniversaires."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Разрешите доступ к контактам в Настройках, чтобы найти дни рождения."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дозвольте доступ до контактів у Налаштуваннях, щоб знайти дні народження."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Туғилган кунларни топиш учун Созламаларда контактларга рухсат беринг."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tug‘ilgan kunlarni topish uchun Sozlamalarda kontaktlarga ruxsat bering."
+          }
+        }
+      }
+    },
     "Allow microphone access in Settings to dictate reminders.": {
       "localizations": {
         "ar": {
@@ -3159,6 +3389,144 @@
           "stringUnit": {
             "state": "translated",
             "value": "Orqaga"
+          }
+        }
+      }
+    },
+    "Birthday of %@": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عيد ميلاد %@"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geburtstag von %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anniversaire de %@"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "День рождения: %@"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "День народження: %@"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ туғилган куни"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ tug‘ilgan kuni"
+          }
+        }
+      }
+    },
+    "Birthdays": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أعياد الميلاد"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geburtstage"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anniversaires"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дни рождения"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дні народження"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Туғилган кунлар"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tug‘ilgan kunlar"
+          }
+        }
+      }
+    },
+    "Birthdays from Contacts": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أعياد الميلاد من جهات الاتصال"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geburtstage aus Kontakten"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anniversaires des contacts"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дни рождения из контактов"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дні народження з контактів"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Контактлардан туғилган кунлар"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kontaktlardan tug‘ilgan kunlar"
           }
         }
       }
@@ -9271,6 +9639,52 @@
         }
       }
     },
+    "In Contacts": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "في جهات الاتصال"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In Kontakten"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dans les contacts"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "В контактах"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "У контактах"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Контактларда"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kontaktlarda"
+          }
+        }
+      }
+    },
     "In advance": {
       "localizations": {
         "ar": {
@@ -10021,6 +10435,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tinglayapman…"
+          }
+        }
+      }
+    },
+    "Lists": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "القوائم"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Listen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Listes"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Списки"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Списки"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Рўйхатлар"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ro‘yxatlar"
           }
         }
       }
@@ -10951,6 +11411,98 @@
         }
       }
     },
+    "Move %lld": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نقل %lld"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld übernehmen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reprendre %lld"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перенести %lld"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перенести %lld"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld тасини кўчириш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld tasini ko‘chirish"
+          }
+        }
+      }
+    },
+    "Move from Reminders": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "النقل من التذكيرات"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aus „Erinnerungen“ übernehmen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reprendre depuis Rappels"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перенос из «Напоминаний»"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перенесення з «Нагадувань»"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«Эслатмалар»дан кўчириш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«Eslatmalar»dan ko‘chirish"
+          }
+        }
+      }
+    },
     "Move it to another time?": {
       "localizations": {
         "ar": {
@@ -11683,6 +12235,98 @@
           "stringUnit": {
             "state": "translated",
             "value": "Joylashuvga ruxsat yo‘q, joyga ko‘ra eslatmalar kelmaydi."
+          }
+        }
+      }
+    },
+    "No access to the calendar, allow it in Settings": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا يوجد وصول إلى التقويم، اسمح به في الإعدادات"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kein Zugriff auf den Kalender, erlaube ihn in den Einstellungen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pas d’accès au calendrier, autorisez-le dans Réglages"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нет доступа к календарю, разрешите в Настройках"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Немає доступу до календаря, дозвольте в Налаштуваннях"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Тақвимга рухсат йўқ, Созламаларда рухсат беринг"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Taqvimga ruxsat yo‘q, Sozlamalarda ruxsat bering"
+          }
+        }
+      }
+    },
+    "No birthdays in your contacts": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا توجد أعياد ميلاد في جهات الاتصال"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Geburtstage in deinen Kontakten"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun anniversaire dans vos contacts"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "В контактах нет дней рождения"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "У контактах немає днів народження"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Контактларда туғилган кунлар йўқ"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kontaktlarda tug‘ilgan kunlar yo‘q"
           }
         }
       }
@@ -13113,6 +13757,52 @@
         }
       }
     },
+    "Only not done": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "غير المنجزة فقط"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nur unerledigte"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seulement les non faits"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Только невыполненные"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Лише невиконані"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Фақат бажарилмаганлар"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Faqat bajarilmaganlar"
+          }
+        }
+      }
+    },
     "Open": {
       "localizations": {
         "ar": {
@@ -14447,6 +15137,98 @@
         }
       }
     },
+    "Rema found %@ in your contacts. The notification will have a Call button.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "وجد Rema «%@» في جهات الاتصال. سيظهر في الإشعار زر «اتصال»."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema hat „%@“ in deinen Kontakten gefunden. Die Mitteilung bekommt eine Taste „Anrufen“."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema a trouvé « %@ » dans vos contacts. La notification aura un bouton Appeler."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema нашла «%@» в контактах. В уведомлении будет кнопка «Позвонить»."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema знайшла «%@» у контактах. У сповіщенні буде кнопка «Подзвонити»."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema контактлардан «%@» ни топди. Билдиришномада «Қўнғироқ қилиш» тугмаси бўлади."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema kontaktlardan «%@» ni topdi. Bildirishnomada «Qo‘ng‘iroq qilish» tugmasi bo‘ladi."
+          }
+        }
+      }
+    },
+    "Rema found birthdays in your contacts. Tick the ones to be reminded of every year.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "وجد Rema أعياد ميلاد في جهات الاتصال. حدد ما تريد التذكير به كل عام."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema hat Geburtstage in deinen Kontakten gefunden. Hake an, an welche jedes Jahr erinnert werden soll."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema a trouvé des anniversaires dans vos contacts. Cochez ceux à rappeler chaque année."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema нашла дни рождения в контактах. Отметьте, о каких напоминать каждый год."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema знайшла дні народження в контактах. Відмітьте, про які нагадувати щороку."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema контактлардан туғилган кунларни топди. Ҳар йили қайсиларини эслатишни белгиланг."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema kontaktlardan tug‘ilgan kunlarni topdi. Har yili qaysilarini eslatishni belgilang."
+          }
+        }
+      }
+    },
     "Rema is locked": {
       "localizations": {
         "ar": {
@@ -14631,6 +15413,52 @@
         }
       }
     },
+    "Rema will move your reminders over from the Reminders app. Dates and repeats stay, places and attachments do not. Nothing is deleted in Reminders.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سينقل Rema تذكيراتك من تطبيق التذكيرات. تبقى المواعيد والتكرارات، أما الأماكن والمرفقات فلا. لا يُحذف شيء من التذكيرات."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema übernimmt deine Erinnerungen aus der App „Erinnerungen“. Termine und Wiederholungen bleiben, Orte und Anhänge nicht. In „Erinnerungen“ wird nichts gelöscht."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema reprend vos rappels de l’app Rappels. Les dates et les répétitions restent, pas les lieux ni les pièces jointes. Rien n’est supprimé dans Rappels."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema перенесёт напоминания из приложения «Напоминания». Сроки и повторы сохранятся, места и вложения нет. В «Напоминаниях» ничего не удалится."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema перенесе нагадування з програми «Нагадування». Терміни й повтори збережуться, місця та вкладення ні. У «Нагадуваннях» нічого не видалиться."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema «Эслатмалар» иловасидан эслатмаларни кўчиради. Муддат ва такрорлар сақланади, жойлар ва иловалар йўқ. «Эслатмалар»да ҳеч нарса ўчирилмайди."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema «Eslatmalar» ilovasidan eslatmalarni ko‘chiradi. Muddat va takrorlar saqlanadi, joylar va ilovalar yo‘q. «Eslatmalar»da hech narsa o‘chirilmaydi."
+          }
+        }
+      }
+    },
     "Rema will tell you about rain, snow or frost the evening before and in the morning.": {
       "localizations": {
         "ar": {
@@ -14719,6 +15547,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Joyni eslab qolish"
+          }
+        }
+      }
+    },
+    "Remind": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ذكّرني"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erinnern"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rappeler"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напомнить"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нагадати"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Эслатиш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eslatish"
           }
         }
       }
@@ -16191,6 +17065,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Olib tashlash: %@"
+          }
+        }
+      }
+    },
+    "Remove contact": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إزالة جهة الاتصال"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kontakt entfernen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retirer le contact"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Убрать контакт"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Прибрати контакт"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Контактни олиб ташлаш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kontaktni olib tashlash"
           }
         }
       }
@@ -22693,6 +23613,98 @@
         }
       }
     },
+    "What to take": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما الذي يُنقل"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Was übernehmen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quoi reprendre"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Что взять"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Що взяти"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нимани олиш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nimani olish"
+          }
+        }
+      }
+    },
+    "When": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "متى"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wann"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quand"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Когда"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Коли"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Қачон"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qachon"
+          }
+        }
+      }
+    },
     "When I arrive": {
       "localizations": {
         "ar": {
@@ -23011,6 +24023,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Vidjet va bildirishnomalar yopilmaydi. Agar %@ ishlamasa, telefon kodini kiritish mumkin."
+          }
+        }
+      }
+    },
+    "Without a date for tomorrow at 9:00": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بلا موعد إلى الغد الساعة 9:00"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ohne Datum auf morgen 9:00"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sans date pour demain à 9:00"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Без срока на завтра в 9:00"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Без терміну на завтра о 9:00"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Муддатсизларни эртага соат 9:00 га"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Muddatsizlarni ertaga soat 9:00 ga"
           }
         }
       }
@@ -24881,6 +25939,52 @@
         }
       }
     },
+    "already in Rema": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "موجود في Rema"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "schon in Rema"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "déjà dans Rema"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "уже в Rema"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "вже в Rema"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema да бор"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema da bor"
+          }
+        }
+      }
+    },
     "always": {
       "localizations": {
         "ar": {
@@ -25203,6 +26307,52 @@
         }
       }
     },
+    "at 10:00 and a day before": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الساعة 10:00 وقبلها بيوم"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "um 10:00 und einen Tag vorher"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "à 10:00 et la veille"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "в 10:00 и за день"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "о 10:00 і за день"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "соат 10:00 да ва бир кун олдин"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "soat 10:00 da va bir kun oldin"
+          }
+        }
+      }
+    },
     "buy bread when I leave work": {
       "localizations": {
         "ar": {
@@ -25341,6 +26491,52 @@
         }
       }
     },
+    "calendar · until %@": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التقويم · حتى %@"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kalender · bis %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "calendrier · jusqu’à %@"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "календарь · до %@"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "календар · до %@"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "тақвим · %@ гача"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "taqvim · %@ gacha"
+          }
+        }
+      }
+    },
     "choose": {
       "localizations": {
         "ar": {
@@ -25383,6 +26579,98 @@
           "stringUnit": {
             "state": "translated",
             "value": "tanlash"
+          }
+        }
+      }
+    },
+    "done ones stay there": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المنجزة تبقى هناك"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "erledigte bleiben dort"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "les faits restent là-bas"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "выполненные останутся там"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "виконані залишаться там"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "бажарилганлари ўша ерда қолади"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "bajarilganlari o‘sha yerda qoladi"
+          }
+        }
+      }
+    },
+    "events on Home and in Scheduled": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المواعيد في الشاشة الرئيسية وفي المجدول"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Termine auf dem Startbildschirm und unter „Geplant“"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "les événements sur l’accueil et dans Planifié"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "встречи на главном и в «Запланировано»"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "події на головному і в «Заплановано»"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "учрашувлар бош экранда ва «Режалаштирилган»да"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "uchrashuvlar bosh ekranda va «Rejalashtirilgan»da"
           }
         }
       }
@@ -26789,6 +28077,98 @@
           "stringUnit": {
             "state": "translated",
             "value": "soat"
+          }
+        }
+      }
+    },
+    "iPhone Calendar": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تقويم iPhone"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone-Kalender"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Calendrier de l’iPhone"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Календарь iPhone"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Календар iPhone"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone тақвими"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone taqvimi"
+          }
+        }
+      }
+    },
+    "iPhone apps": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تطبيقات iPhone"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone-Apps"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apps de l’iPhone"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Приложения iPhone"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Програми iPhone"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone иловалари"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone ilovalari"
           }
         }
       }
@@ -28693,6 +30073,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "yoki klaviatura ustidagi variantni tanlang"
+          }
+        }
+      }
+    },
+    "otherwise these are skipped": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "وإلا ستُتخطى"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "sonst werden sie übersprungen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "sinon ils sont ignorés"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "иначе такие пропустим"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "інакше такі пропустимо"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "акс ҳолда улар ўтказиб юборилади"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "aks holda ular o‘tkazib yuboriladi"
           }
         }
       }

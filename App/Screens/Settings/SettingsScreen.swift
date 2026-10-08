@@ -15,6 +15,8 @@ struct SettingsScreen: View {
     var onCity: () -> Void = {}
     var onFeatures: () -> Void = {}
     var onSnooze: () -> Void = {}
+    var onBirthdays: () -> Void = {}
+    var onImport: () -> Void = {}
     let onBack: () -> Void
 
     @AppStorage(Feedback.hapticsKey) private var haptics = true
@@ -25,6 +27,7 @@ struct SettingsScreen: View {
     @State private var permissions = Permissions()
     @State private var weather = WeatherAdvisor.shared
     @State private var lock = AppLock.shared
+    @State private var calendarFeed = CalendarFeed.shared
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.colorScheme) private var colorScheme
 
@@ -46,6 +49,12 @@ struct SettingsScreen: View {
 
     private var describer: Describer {
         Describer(calendar: .current, locale: locale)
+    }
+
+    private var calendarBinding: Binding<Bool> {
+        Binding(get: { calendarFeed.enabled }, set: { on in
+            Task { await calendarFeed.setEnabled(on) }
+        })
     }
 
     var body: some View {
@@ -139,6 +148,19 @@ struct SettingsScreen: View {
                                 }
                             }
                             weatherAttribution
+                        }
+                    }
+                    section("iPhone apps") {
+                        PanelList {
+                            ToggleRow(icon: Icons.calendar, iconColor: Palette.text, title: "iPhone Calendar", subtitle: calendarFeed.denied ? String(localized: "No access to the calendar, allow it in Settings", bundle: .app, locale: .app) : String(localized: "events on Home and in Scheduled", bundle: .app, locale: .app), isOn: calendarBinding, minHeight: 60)
+                            Hairline()
+                            NavigationRow(icon: Icons.person, iconColor: Palette.text, title: "Birthdays from Contacts", minHeight: 52, action: onBirthdays) {
+                                EmptyView()
+                            }
+                            Hairline()
+                            NavigationRow(icon: Icons.list, iconColor: Palette.text, title: "Move from Reminders", minHeight: 52, action: onImport) {
+                                EmptyView()
+                            }
                         }
                     }
                     section("Theme") {

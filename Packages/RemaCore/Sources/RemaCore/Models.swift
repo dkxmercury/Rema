@@ -99,6 +99,17 @@ public struct ChecklistItem: Codable, Identifiable, Hashable, Sendable {
     }
 }
 
+// The person a reminder is about, for the «Call» button of its notification.
+public struct ContactLink: Codable, Hashable, Sendable {
+    public var name: String
+    public var phone: String
+
+    public init(name: String, phone: String) {
+        self.name = name
+        self.phone = phone
+    }
+}
+
 // One tick: which occurrence and when it was given, kept short because it travels inside every reminder.
 public struct DoneMark: Codable, Hashable, Sendable {
     public var occurrence: Date
@@ -133,6 +144,7 @@ public struct Reminder: Codable, Identifiable, Hashable, Sendable {
     public var items: [ChecklistItem]
     public var doneWhenChecked: Bool
     public var history: [DoneMark]
+    public var contact: ContactLink?
     public var completedThrough: Date?
     public var snoozedUntil: Date?
     public var createdAt: Date
@@ -153,6 +165,7 @@ public struct Reminder: Codable, Identifiable, Hashable, Sendable {
         items: [ChecklistItem] = [],
         doneWhenChecked: Bool = true,
         history: [DoneMark] = [],
+        contact: ContactLink? = nil,
         completedThrough: Date? = nil,
         snoozedUntil: Date? = nil,
         createdAt: Date,
@@ -172,6 +185,7 @@ public struct Reminder: Codable, Identifiable, Hashable, Sendable {
         self.items = items
         self.doneWhenChecked = doneWhenChecked
         self.history = history
+        self.contact = contact
         self.completedThrough = completedThrough
         self.snoozedUntil = snoozedUntil
         self.createdAt = createdAt
@@ -195,6 +209,7 @@ public struct Reminder: Codable, Identifiable, Hashable, Sendable {
         items = try container.decodeIfPresent([ChecklistItem].self, forKey: .items) ?? []
         doneWhenChecked = try container.decodeIfPresent(Bool.self, forKey: .doneWhenChecked) ?? true
         history = try container.decodeIfPresent([DoneMark].self, forKey: .history) ?? []
+        contact = try container.decodeIfPresent(ContactLink.self, forKey: .contact)
         completedThrough = try container.decodeIfPresent(Date.self, forKey: .completedThrough)
         snoozedUntil = try container.decodeIfPresent(Date.self, forKey: .snoozedUntil)
         createdAt = try container.decode(Date.self, forKey: .createdAt)

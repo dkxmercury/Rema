@@ -1,271 +1,430 @@
 {
-  "sourceLanguage" : "en",
-  "strings" : {
-    "CFBundleDisplayName" : {
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rema"
+  "sourceLanguage": "en",
+  "strings": {
+    "CFBundleDisplayName": {
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema"
           }
         },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rema"
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema"
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Rema"
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Rema"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rema"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema"
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rema"
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rema"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema"
           }
         },
-        "uz-Cyrl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rema"
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema"
           }
         },
-        "uz-Latn" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rema"
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema"
           }
         }
       }
     },
-    "NSFaceIDUsageDescription" : {
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "يفتح Face ID تطبيق Rema إذا فعّلت هذه الحماية في الإعدادات."
+    "NSCalendarsFullAccessUsageDescription": {
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يعرض Rema مواعيد التقويم على الشاشة الرئيسية بجانب التذكيرات."
           }
         },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Face ID öffnet Rema, wenn du diesen Schutz in den Einstellungen eingeschaltet hast."
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema zeigt deine Kalendertermine auf dem Startbildschirm neben den Erinnerungen."
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Face ID opens Rema when you turn on this protection in Settings."
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Rema shows your calendar events on the home screen next to reminders."
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Face ID ouvre Rema si vous avez activé cette protection dans les réglages."
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema affiche vos événements du calendrier sur l’écran d’accueil à côté des rappels."
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Face ID открывает Rema, если вы включили эту защиту в настройках."
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema показывает встречи из календаря на главном экране рядом с напоминаниями."
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Face ID відкриває Rema, якщо ви ввімкнули цей захист у налаштуваннях."
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema показує події з календаря на головному екрані поруч із нагадуваннями."
           }
         },
-        "uz-Cyrl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Агар созламаларда шу ҳимояни ёққан бўлсангиз, Face ID Rema’ни очади."
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema тақвимдаги учрашувларни бош экранда эслатмалар ёнида кўрсатади."
           }
         },
-        "uz-Latn" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Agar sozlamalarda shu himoyani yoqqan bo‘lsangiz, Face ID Rema’ni ochadi."
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema taqvimdagi uchrashuvlarni bosh ekranda eslatmalar yonida ko‘rsatadi."
           }
         }
       }
     },
-    "NSLocationWhenInUseUsageDescription" : {
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "يُستخدم الموقع لتذكيرك عند وصولك إلى أماكنك أو مغادرتها، ومرة واحدة لمعرفة مدينتك من أجل الطقس."
+    "NSContactsUsageDescription": {
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يجد Rema أعياد الميلاد وأرقام الهواتف في جهات الاتصال عندما تطلب ذلك."
           }
         },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Der Standort wird verwendet, um dich beim Ankommen an deinen Orten oder beim Verlassen zu erinnern, und einmal, um deine Stadt für das Wetter zu finden."
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema findet Geburtstage und Telefonnummern in deinen Kontakten, wenn du darum bittest."
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Location is used to remind you when you arrive at or leave your places, and once to find your city for the weather."
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Rema finds birthdays and phone numbers in your contacts when you ask it to."
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La localisation sert à vous rappeler quand vous arrivez dans vos lieux ou les quittez, et une fois pour trouver votre ville pour la météo."
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema trouve les anniversaires et les numéros dans vos contacts quand vous le demandez."
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Геопозиция нужна, чтобы напомнить, когда вы придёте в одно из своих мест или уйдёте из него, и один раз, чтобы найти ваш город для погоды."
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema находит дни рождения и номера в контактах, когда вы об этом просите."
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Геопозиція потрібна, щоб нагадати, коли ви прийдете в одне зі своїх місць або підете з нього, і один раз, щоб знайти ваше місто для погоди."
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema знаходить дні народження та номери в контактах, коли ви про це просите."
           }
         },
-        "uz-Cyrl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Жойлашув ўз жойингизга келганингизда ёки ундан кетганингизда эслатиш учун ва об-ҳаво учун шаҳрингизни бир марта топиш учун керак."
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema сўраганингизда контактлардан туғилган кунлар ва рақамларни топади."
           }
         },
-        "uz-Latn" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Joylashuv o‘z joyingizga kelganingizda yoki undan ketganingizda eslatish uchun va ob-havo uchun shahringizni bir marta topish uchun kerak."
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema so‘raganingizda kontaktlardan tug‘ilgan kunlar va raqamlarni topadi."
           }
         }
       }
     },
-    "NSMicrophoneUsageDescription" : {
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "يُستخدم الميكروفون فقط أثناء إملاء التذكير."
+    "NSFaceIDUsageDescription": {
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يفتح Face ID تطبيق Rema إذا فعّلت هذه الحماية في الإعدادات."
           }
         },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Das Mikrofon wird nur verwendet, während du eine Erinnerung diktierst."
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Face ID öffnet Rema, wenn du diesen Schutz in den Einstellungen eingeschaltet hast."
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "The microphone is used only while you dictate a reminder."
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Face ID opens Rema when you turn on this protection in Settings."
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Le micro n’est utilisé que pendant que vous dictez un rappel."
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Face ID ouvre Rema si vous avez activé cette protection dans les réglages."
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Микрофон работает, только пока вы диктуете напоминание."
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Face ID открывает Rema, если вы включили эту защиту в настройках."
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Мікрофон працює, лише поки ви диктуєте нагадування."
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Face ID відкриває Rema, якщо ви ввімкнули цей захист у налаштуваннях."
           }
         },
-        "uz-Cyrl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Микрофон фақат эслатмани айтиб ёзаётганингизда ишлайди."
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Агар созламаларда шу ҳимояни ёққан бўлсангиз, Face ID Rema’ни очади."
           }
         },
-        "uz-Latn" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mikrofon faqat eslatmani aytib yozayotganingizda ishlaydi."
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Agar sozlamalarda shu himoyani yoqqan bo‘lsangiz, Face ID Rema’ni ochadi."
           }
         }
       }
     },
-    "NSSpeechRecognitionUsageDescription" : {
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "يُحوَّل الكلام إلى نص لإنشاء تذكير."
+    "NSLocationWhenInUseUsageDescription": {
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يُستخدم الموقع لتذكيرك عند وصولك إلى أماكنك أو مغادرتها، ومرة واحدة لمعرفة مدينتك من أجل الطقس."
           }
         },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sprache wird in Text umgewandelt, um eine Erinnerung zu erstellen."
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Standort wird verwendet, um dich beim Ankommen an deinen Orten oder beim Verlassen zu erinnern, und einmal, um deine Stadt für das Wetter zu finden."
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Speech is turned into text to create a reminder."
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Location is used to remind you when you arrive at or leave your places, and once to find your city for the weather."
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La parole est convertie en texte pour créer un rappel."
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La localisation sert à vous rappeler quand vous arrivez dans vos lieux ou les quittez, et une fois pour trouver votre ville pour la météo."
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Речь превращается в текст, чтобы создать напоминание."
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Геопозиция нужна, чтобы напомнить, когда вы придёте в одно из своих мест или уйдёте из него, и один раз, чтобы найти ваш город для погоды."
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Мовлення перетворюється на текст, щоб створити нагадування."
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Геопозиція потрібна, щоб нагадати, коли ви прийдете в одне зі своїх місць або підете з нього, і один раз, щоб знайти ваше місто для погоди."
           }
         },
-        "uz-Cyrl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Эслатма яратиш учун нутқ матнга айлантирилади."
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Жойлашув ўз жойингизга келганингизда ёки ундан кетганингизда эслатиш учун ва об-ҳаво учун шаҳрингизни бир марта топиш учун керак."
           }
         },
-        "uz-Latn" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Eslatma yaratish uchun nutq matnga aylantiriladi."
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Joylashuv o‘z joyingizga kelganingizda yoki undan ketganingizda eslatish uchun va ob-havo uchun shahringizni bir marta topish uchun kerak."
+          }
+        }
+      }
+    },
+    "NSMicrophoneUsageDescription": {
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يُستخدم الميكروفون فقط أثناء إملاء التذكير."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Mikrofon wird nur verwendet, während du eine Erinnerung diktierst."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "The microphone is used only while you dictate a reminder."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le micro n’est utilisé que pendant que vous dictez un rappel."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Микрофон работает, только пока вы диктуете напоминание."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Мікрофон працює, лише поки ви диктуєте нагадування."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Микрофон фақат эслатмани айтиб ёзаётганингизда ишлайди."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mikrofon faqat eslatmani aytib yozayotganingizda ishlaydi."
+          }
+        }
+      }
+    },
+    "NSRemindersFullAccessUsageDescription": {
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ينقل Rema التذكيرات من تطبيق التذكيرات عندما تطلب ذلك."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema übernimmt Erinnerungen aus der App „Erinnerungen“, wenn du darum bittest."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Rema moves reminders over from the Reminders app when you ask it to."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema reprend les rappels de l’app Rappels quand vous le demandez."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema переносит напоминания из приложения «Напоминания», когда вы об этом просите."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema переносить нагадування з програми «Нагадування», коли ви про це просите."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema сўраганингизда «Эслатмалар» иловасидан эслатмаларни кўчиради."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema so‘raganingizda «Eslatmalar» ilovasidan eslatmalarni ko‘chiradi."
+          }
+        }
+      }
+    },
+    "NSSpeechRecognitionUsageDescription": {
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يُحوَّل الكلام إلى نص لإنشاء تذكير."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sprache wird in Text umgewandelt, um eine Erinnerung zu erstellen."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Speech is turned into text to create a reminder."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La parole est convertie en texte pour créer un rappel."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Речь превращается в текст, чтобы создать напоминание."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Мовлення перетворюється на текст, щоб створити нагадування."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Эслатма яратиш учун нутқ матнга айлантирилади."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eslatma yaratish uchun nutq matnga aylantiriladi."
           }
         }
       }
     }
   },
-  "version" : "1.0"
+  "version": "1.0"
 }

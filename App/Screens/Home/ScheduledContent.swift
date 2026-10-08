@@ -5,11 +5,12 @@ import RemaCore
 struct ScheduledContent {
     struct Item: Identifiable {
         let id: String
-        let reminderID: UUID
+        let reminderID: UUID?
         let lead: String?
         var month: String?
         let title: String
         let subtitle: String?
+        var at: Date?
     }
 
     struct Day: Identifiable {
@@ -28,7 +29,7 @@ struct ScheduledContent {
         days.isEmpty && monthly.isEmpty && yearly.isEmpty && places.isEmpty
     }
 
-    static func make(reminders: [Reminder], places: [Place], now: Date, calendar: Calendar, locale: Locale, withPlaces: Bool = true) -> ScheduledContent {
+    static func make(reminders: [Reminder], places: [Place], now: Date, calendar: Calendar, locale: Locale, withPlaces: Bool = true, events: [CalendarEntry] = []) -> ScheduledContent {
         let describer = Describer(calendar: calendar, locale: locale)
         let active = reminders.filter { $0.deletedAt == nil }
         let byID = Dictionary(active.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
@@ -50,7 +51,7 @@ struct ScheduledContent {
                 }
             default:
                 hasRepeats = hasRepeats || reminder.schedule?.rule != nil
-                let entry = Item(id: id, reminderID: reminder.id, lead: describer.time(item.occurrence), title: reminder.title, subtitle: describer.subtitle(for: reminder, places: places))
+                let entry = Item(id: id, reminderID: reminder.id, lead: describer.time(item.occurrence), title: reminder.title, subtitle: describer.subtitle(for: reminder, places: places), at: item.occurrence)
                 let day = calendar.startOfDay(for: item.occurrence)
                 if days.last?.id == day {
                     days[days.count - 1].items.append(entry)
@@ -59,6 +60,19 @@ struct ScheduledContent {
                 }
             }
         }
+        // Calendar events after today join the days by time, they open nothing.
+        let tomorrow = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: now)) ?? now
+        for event in events where event.start >= tomorrow {
+            let entry = Item(id: "event-\(event.id)", reminderID: nil, lead: describer.time(event.start), title: event.title, subtitle: String(localized: "calendar · until \(describer.time(event.end))", bundle: .app, locale: .app), at: event.start)
+            let day = calendar.startOfDay(for: event.start)
+            if let index = days.firstIndex(where: { $0.id == day }) {
+                let position = days[index].items.firstIndex { ($0.at ?? .distantPast) > event.start } ?? days[index].items.count
+                days[index].items.insert(entry, at: position)
+            } else {
+                days.append(Day(id: day, title: describer.dateLine(event.start), items: [entry]))
+            }
+        }
+        days.sort { $0.id < $1.id }
         let placed = (withPlaces ? byPlace(active) : []).map { reminder in
             Item(id: reminder.id.uuidString, reminderID: reminder.id, lead: nil, title: reminder.title, subtitle: describer.placeText(reminder, places: places))
         }

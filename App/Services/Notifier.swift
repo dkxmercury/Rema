@@ -86,7 +86,13 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         return nil
     }
 
-    private func addContact(of title: String, to content: UNMutableNotificationContent) {
+    // A person picked from the contacts wins over a number written in the title.
+    private func addContact(of title: String, link: ContactLink? = nil, to content: UNMutableNotificationContent) {
+        if let phone = link?.phone.filter({ $0.isNumber || $0 == "+" }), phone.filter(\.isNumber).count >= 5 {
+            content.categoryIdentifier += ".call"
+            content.userInfo["call"] = phone
+            return
+        }
         guard let contact = Self.contact(in: title) else { return }
         content.categoryIdentifier += ".\(contact.action)"
         content.userInfo[contact.action] = contact.value
@@ -185,7 +191,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
             content.interruptionLevel = item.urgent ? .timeSensitive : .active
             content.threadIdentifier = item.reminderID.uuidString
             content.userInfo = ["reminder": item.reminderID.uuidString, "occurrence": item.occurrence.timeIntervalSince1970]
-            addContact(of: item.title, to: content)
+            addContact(of: item.title, link: store.reminder(item.reminderID)?.contact, to: content)
             if item.kind == .missed {
                 content.title = String(localized: "Not done: \(item.title)", bundle: .app, locale: .app)
                 content.badge = NSNumber(value: max(1, Agenda.missed(item.fireDate, reminders: store.activeReminders, calendar: .current).count))
@@ -271,7 +277,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
                 content.interruptionLevel = reminder.urgent ? .timeSensitive : .active
                 content.threadIdentifier = reminder.id.uuidString
                 content.userInfo = ["reminder": reminder.id.uuidString]
-                addContact(of: reminder.title, to: content)
+                addContact(of: reminder.title, link: reminder.contact, to: content)
                 let trigger = UNLocationNotificationTrigger(region: region, repeats: true)
                 requests.append(UNNotificationRequest(identifier: "place.\(region.identifier)", content: content, trigger: trigger))
                 if requests.count >= Place.maximumCount {

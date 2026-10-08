@@ -23,6 +23,8 @@ enum RootRoute: Hashable {
     case features
     case scheduled
     case snooze
+    case birthdays
+    case importReminders
 }
 
 // Lives outside the views, so the screen stack survives when a language change rebuilds them.
@@ -63,6 +65,7 @@ struct RootView: View {
     @State private var account = Account.shared
     @State private var sync = SyncService.shared
     @State private var remote = Remote.shared
+    @State private var calendarFeed = CalendarFeed.shared
     @State private var editing: EditingTarget?
     @State private var checking: ChecklistTarget?
     @State private var composing: ComposeTarget?
@@ -168,6 +171,8 @@ struct RootView: View {
                 onCity: { navigation.path.append(.city) },
                 onFeatures: { navigation.path.append(.features) },
                 onSnooze: { navigation.path.append(.snooze) },
+                onBirthdays: { navigation.path.append(.birthdays) },
+                onImport: { navigation.path.append(.importReminders) },
                 onBack: { navigation.path.removeLast() }
             )
         case .defaultSound:
@@ -180,11 +185,15 @@ struct RootView: View {
             CityScreen { navigation.path.removeLast() }
         case .snooze:
             SnoozeScreen(store: store) { navigation.path.removeLast() }
+        case .birthdays:
+            BirthdaysScreen(store: store) { navigation.path.removeLast() }
+        case .importReminders:
+            ImportScreen(store: store) { navigation.path.removeLast() }
         case .features:
             FeaturesScreen(onPlaces: { navigation.path.append(.places) }, onBack: { navigation.path.removeLast() })
         case .scheduled:
             ScheduledScreen(
-                content: ScheduledContent.make(reminders: store.reminders, places: store.places, now: Date(), calendar: .current, locale: AppLanguage.current.locale, withPlaces: remote.isOn(.places)),
+                content: ScheduledContent.make(reminders: store.reminders, places: store.places, now: Date(), calendar: .current, locale: AppLanguage.current.locale, withPlaces: remote.isOn(.places), events: calendarFeed.entries(from: Date(), to: Date().addingTimeInterval(14 * 86_400))),
                 done: DoneContent.make(reminders: store.reminders, now: Date(), calendar: .current, locale: AppLanguage.current.locale),
                 onOpen: open,
                 onBack: { navigation.path.removeLast() },
@@ -331,7 +340,8 @@ struct RootView: View {
                     now: timeline.date,
                     calendar: .current,
                     locale: AppLanguage.current.locale,
-                    missed: Notifier.missedEnabled
+                    missed: Notifier.missedEnabled,
+                    events: calendarFeed.day(timeline.date)
                 ),
                 onToggle: toggle,
                 onOpen: open,
@@ -361,9 +371,20 @@ struct RootView: View {
                 alert: homeAlert,
                 onAlert: answerAlert,
                 snoozeHint: remote.isOn(.suggestions) ? snoozeHint : nil,
-                onSnoozeHint: answerSnoozeHint
+                onSnoozeHint: answerSnoozeHint,
+                onRemindEvent: remindEvent
             )
         }
+    }
+
+    // A calendar event becomes a reminder at its start with a quarter of an hour ahead.
+    private func remindEvent(_ event: HomeContent.Event) {
+        let calendar = Calendar.current
+        let parts = calendar.dateComponents([.hour, .minute], from: event.start)
+        let reminder = Reminder(title: event.title, schedule: Schedule(start: LocalDate(event.start, in: calendar), time: LocalTime(hour: parts.hour ?? 9, minute: parts.minute ?? 0)), preAlerts: [15], createdAt: Date())
+        withAnimation(Motion.standard) { store.save(reminder) }
+        Feedback.play(.save)
+        Notifier.shared.requestPermissionIfNeeded()
     }
 
     private func postpone(_ row: HomeContent.Row, _ choice: HomeScreen.Postpone) {

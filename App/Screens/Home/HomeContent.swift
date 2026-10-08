@@ -1,6 +1,13 @@
 import Foundation
 import RemaCore
 
+struct CalendarEntry: Identifiable, Equatable {
+    let id: String
+    let title: String
+    let start: Date
+    let end: Date
+}
+
 struct HomeContent {
     struct Row: Identifiable {
         let id: String
@@ -12,6 +19,17 @@ struct HomeContent {
         let done: Bool
         let highlighted: Bool
         var missed = false
+    }
+
+    struct Event: Identifiable {
+        let id: String
+        let start: Date
+        let end: Date
+        let time: String
+        let title: String
+        let subtitle: String
+        let upcoming: Bool
+        let reminded: Bool
     }
 
     struct Tile: Identifiable {
@@ -46,10 +64,11 @@ struct HomeContent {
     let rows: [Row]
     let tiles: [Tile]
     var missedCount = 0
+    var events: [Event] = []
 }
 
 extension HomeContent {
-    static func make(reminders: [Reminder], places: [Place], now: Date, calendar: Calendar, locale: Locale, missed showsMissed: Bool = false) -> HomeContent {
+    static func make(reminders: [Reminder], places: [Place], now: Date, calendar: Calendar, locale: Locale, missed showsMissed: Bool = false, events entries: [CalendarEntry] = []) -> HomeContent {
         let describer = Describer(calendar: calendar, locale: locale)
         let active = reminders.filter { $0.deletedAt == nil }
         let byID = Dictionary(active.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
@@ -72,6 +91,26 @@ extension HomeContent {
             let kind: DialMarker.Kind = item.done ? .done : (isMissed(item) ? .missed : (isNext(item) ? .next : .upcoming))
             let movable = !item.done && byID[item.reminderID].map { $0.schedule?.rule == nil } == true
             return DialMarker(id: index, hour: parts.hour ?? 0, minute: parts.minute ?? 0, kind: kind, reminderID: item.reminderID, occurrence: item.occurrence, movable: movable)
+        }
+
+        let eventMarkers = entries.enumerated().map { index, entry -> DialMarker in
+            let parts = calendar.dateComponents([.hour, .minute], from: entry.start)
+            return DialMarker(id: 10_000 + index, hour: parts.hour ?? 0, minute: parts.minute ?? 0, kind: .event)
+        }
+        let events = entries.map { entry in
+            Event(
+                id: entry.id,
+                start: entry.start,
+                end: entry.end,
+                time: describer.time(entry.start),
+                title: entry.title,
+                subtitle: String(localized: "calendar · until \(describer.time(entry.end))", bundle: .app, locale: .app),
+                upcoming: entry.start > now,
+                reminded: active.contains { reminder in
+                    guard reminder.title == entry.title, let schedule = reminder.schedule else { return false }
+                    return calendar.date(from: DateComponents(year: schedule.start.year, month: schedule.start.month, day: schedule.start.day, hour: schedule.time.hour, minute: schedule.time.minute)) == entry.start
+                }
+            )
         }
 
         let rows = today.compactMap { item -> Row? in
@@ -124,11 +163,12 @@ extension HomeContent {
             nowHour: clock.hour ?? 0,
             nowMinute: clock.minute ?? 0,
             nowText: describer.time(now),
-            markers: markers,
+            markers: eventMarkers + markers,
             next: next,
             rows: rows,
             tiles: tiles,
-            missedCount: missed.count
+            missedCount: missed.count,
+            events: events
         )
     }
 }
@@ -226,6 +266,10 @@ enum SampleData {
         ],
         createdAt: now
     )
+
+    static var monthlyReport: Reminder {
+        Reminder(title: "Сдать отчёт", schedule: Schedule(start: LocalDate(year: 2026, month: 10, day: 5), time: LocalTime(hour: 10, minute: 0), rule: .lastWorkday), createdAt: now)
+    }
 
     // Ticks of the last days, for the history.
     static var withHistory: [Reminder] {
