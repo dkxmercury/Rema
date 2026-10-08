@@ -110,7 +110,7 @@ final class Store {
     func reopen(_ id: UUID, before occurrence: Date) {
         fresh()
         guard var reminder = reminder(id) else { return }
-        reminder.completedThrough = occurrence.addingTimeInterval(-1)
+        reminder.reopen(before: occurrence)
         save(reminder)
     }
 

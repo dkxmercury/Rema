@@ -20,6 +20,7 @@ struct ShareScreen: View {
         var text: String?
         var minute: Int?
         var parsed: ParsedPhrase?
+        var pieces: [PhrasePiece]?
     }
 
     @State private var text: String
@@ -30,6 +31,9 @@ struct ShareScreen: View {
     @State private var focused = false
     @State private var saving = false
     @State private var memo = Memo()
+    @State private var removed: Set<Int> = []
+    @State private var removedFor = ""
+    @State private var keptWhole: String?
 
     // A sheet left open for a while still reads «in 5 minutes» from the real current minute.
     private var now: Date { Date() }
@@ -44,16 +48,23 @@ struct ShareScreen: View {
         _text = State(initialValue: Self.phrase(from: source, parser: Self.parser(snapshot: snapshot, now: Date())))
     }
 
-    // A shared message is usually several sentences; the one with a date is the one worth remembering.
+    // A shared message is usually several sentences; the ones with a date are worth remembering, several of them become several reminders.
     static func phrase(from source: String, parser: PhraseParser) -> String {
-        let flat = String(source.prefix(2_000)).replacingOccurrences(of: "\n", with: " ").trimmingCharacters(in: .whitespacesAndNewlines)
+        let limited = String(source.prefix(2_000))
         var sentences: [String] = []
-        flat.enumerateSubstrings(in: flat.startIndex..., options: .bySentences) { sentence, _, _, _ in
-            if let sentence = sentence?.trimmingCharacters(in: .whitespacesAndNewlines), !sentence.isEmpty {
-                sentences.append(sentence)
+        for line in limited.components(separatedBy: .newlines) {
+            line.enumerateSubstrings(in: line.startIndex..., options: .bySentences) { sentence, _, _, _ in
+                if let sentence = sentence?.trimmingCharacters(in: CharacterSet(charactersIn: ".!;").union(.whitespacesAndNewlines)), !sentence.isEmpty {
+                    sentences.append(sentence)
+                }
             }
         }
-        let chosen = sentences.first { parser.parse($0).schedule != nil } ?? flat
+        let dated = sentences.filter { parser.parse($0).schedule != nil }
+        if dated.count >= 2 {
+            return String(dated.prefix(10).joined(separator: "; ").prefix(1_000))
+        }
+        let flat = limited.replacingOccurrences(of: "\n", with: " ").trimmingCharacters(in: .whitespacesAndNewlines)
+        let chosen = dated.first ?? flat
         let trimmed = chosen.trimmingCharacters(in: CharacterSet(charactersIn: ".!").union(.whitespaces))
         return String(trimmed.prefix(Reminder.maximumTitleLength))
     }
@@ -87,11 +98,105 @@ struct ShareScreen: View {
         if memo.text == text, memo.minute == minute, let parsed = memo.parsed {
             return parsed
         }
-        let parsed = Self.parser(snapshot: snapshot, now: now).parse(text)
+        let parser = Self.parser(snapshot: snapshot, now: now)
+        let parsed = parser.parse(text)
         memo.text = text
         memo.minute = minute
         memo.parsed = parsed
+        memo.pieces = parser.pieces(text)
         return parsed
+    }
+
+    private var pieces: [(index: Int, piece: PhrasePiece)]? {
+        _ = parsed
+        guard keptWhole != text, let all = memo.pieces else { return nil }
+        let gone = removedFor == text ? removed : []
+        return all.enumerated().filter { !gone.contains($0.offset) }.map { (index: $0.offset, piece: $0.element) }
+    }
+
+    private func pieceReminder(_ parsed: ParsedPhrase) -> Reminder {
+        let places = Self.places(in: snapshot)
+        return Reminder(
+            title: String(parsed.title.prefix(Reminder.maximumTitleLength)),
+            schedule: parsed.schedule,
+            preAlerts: parsed.preAlerts,
+            nag: parsed.nag,
+            urgent: parsed.urgent,
+            placeIDs: parsed.placeNames.compactMap { name in places.first { $0.name == name }?.id },
+            placeTrigger: parsed.placeTrigger ?? .arrive,
+            createdAt: now
+        )
+    }
+
+    private func multiList(_ pieces: [(index: Int, piece: PhrasePiece)]) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            SectionLabel(verbatim: String(localized: "You'll get \(pieces.count) reminders", bundle: .app, locale: .app))
+                .padding(.horizontal, 4)
+                .padding(.bottom, 8)
+            if !pieces.isEmpty {
+                VStack(spacing: 0) {
+                    ForEach(Array(pieces.enumerated()), id: \.element.index) { position, entry in
+                        pieceRow(entry.index, entry.piece)
+                        if position < pieces.count - 1 {
+                            Hairline()
+                        }
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 4)
+                .panel()
+            }
+            Button {
+                UISelectionFeedbackGenerator().selectionChanged()
+                withAnimation(Motion.standard) { keptWhole = text }
+            } label: {
+                Text(verbatim: String(localized: "Keep as one reminder", bundle: .app, locale: .app))
+                    .font(.app(.golos, 15, weight: 600))
+                    .foregroundStyle(Palette.accentText)
+                    .frame(height: 40)
+                    .padding(.horizontal, 4)
+            }
+            .buttonStyle(RowPressStyle())
+            .padding(.top, 6)
+        }
+    }
+
+    private func pieceRow(_ index: Int, _ piece: PhrasePiece) -> some View {
+        let schedule = piece.parsed.schedule
+        let date = schedule.flatMap { Recurrence.next($0, after: now.addingTimeInterval(-60), limit: 1, calendar: calendar).first }
+        let line = schedule?.rule.map(describer.repeatText) ?? date.map { describer.dayTitle($0).lowercased(with: locale) } ?? ""
+        return HStack(spacing: 14) {
+            Text(verbatim: date.map(describer.time) ?? "")
+                .font(.app(.jost, 22, weight: 500))
+                .monospacedDigit()
+                .frame(width: 62, alignment: .leading)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(verbatim: piece.parsed.title)
+                    .font(.app(.golos, 16, weight: 600))
+                    .lineLimit(2)
+                Text(verbatim: line)
+                    .font(.app(.golos, 12))
+                    .foregroundStyle(Palette.secondary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            Button {
+                UISelectionFeedbackGenerator().selectionChanged()
+                withAnimation(Motion.standard) {
+                    if removedFor != text {
+                        removedFor = text
+                        removed = []
+                    }
+                    removed.insert(index)
+                }
+            } label: {
+                Glyph(paths: Icons.close, size: 16, lineWidth: 2, color: Palette.secondary)
+                    .frame(width: 44, height: 44)
+            }
+            .buttonStyle(PressableStyle())
+            .padding(.trailing, -10)
+            .accessibilityLabel(Text(verbatim: String(localized: "Remove \(piece.parsed.title)", bundle: .app, locale: .app)))
+        }
+        .frame(minHeight: 60)
     }
 
     private var reminder: Reminder {
@@ -140,10 +245,15 @@ struct ShareScreen: View {
                         sourceLine
                             .padding(.top, 8)
                     }
-                    whenCard
-                        .padding(.top, 12)
-                    options
-                        .padding(.top, 12)
+                    if let pieces {
+                        multiList(pieces)
+                            .padding(.top, 14)
+                    } else {
+                        whenCard
+                            .padding(.top, 12)
+                        options
+                            .padding(.top, 12)
+                    }
                 }
                 .padding(.horizontal, 18)
                 .padding(.top, 8)
@@ -152,10 +262,10 @@ struct ShareScreen: View {
             .scrollIndicators(.hidden)
             .scrollDismissesKeyboard(.interactively)
             PrimaryBar(action: save) {
-                Text(verbatim: confirmTitle)
+                Text(verbatim: pieces.map { String(localized: "Save \($0.count)", bundle: .app, locale: .app) } ?? confirmTitle)
                     .contentTransition(.numericText())
             }
-            .disabled(!canSave || saving)
+            .disabled((pieces.map(\.isEmpty) ?? !canSave) || saving)
         }
         .foregroundStyle(Palette.text)
         .animation(Motion.standard, value: when)
@@ -381,12 +491,21 @@ struct ShareScreen: View {
     }
 
     private func save() {
-        guard canSave, !saving else { return }
+        let chosen: [Reminder]
+        if let pieces {
+            chosen = pieces.map { pieceReminder($0.piece.parsed) }
+        } else {
+            chosen = canSave ? [reminder] : []
+        }
+        guard !chosen.isEmpty, !saving else { return }
         saving = true
-        var item = reminder
-        item.updatedAt = Date()
+        let items = chosen.map { item -> Reminder in
+            var stamped = item
+            stamped.updatedAt = Date()
+            return stamped
+        }
         var store = SharedStore.load() ?? StoreSnapshot(reminders: [], places: [], settings: settings, sounds: nil)
-        store.reminders.append(item)
+        store.reminders.append(contentsOf: items)
         guard (try? SharedStore.save(store)) != nil else {
             saving = false
             UINotificationFeedbackGenerator().notificationOccurred(.error)
@@ -397,7 +516,9 @@ struct ShareScreen: View {
         let settings = store.settings
         let describer = self.describer
         Task {
-            await QuickNotifications.schedule(item, settings: settings, describer: describer)
+            for item in items {
+                await QuickNotifications.schedule(item, settings: settings, describer: describer)
+            }
             onSaved()
         }
     }

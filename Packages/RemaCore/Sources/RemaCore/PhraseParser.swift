@@ -11,6 +11,8 @@ public struct ParsedPhrase: Equatable, Sendable {
     public var highlights: [Range<Int>]
     public var hasExplicitTime: Bool
     public var alternative: Schedule? = nil
+    public var hasExplicitDay = false
+    public var corrected = false
 }
 
 // The field reparses the phrase on every keystroke, and compiling a pattern costs far more than matching it.
@@ -73,6 +75,7 @@ public struct PhraseParser {
         var alternative: Schedule?
         var marks: [Mark] = []
         var nextWeek = false
+        var corrected = false
     }
 
     struct Mark {
@@ -125,7 +128,9 @@ public struct PhraseParser {
             placeNames: state.placeNames,
             highlights: merge(state.used),
             hasExplicitTime: state.time != nil || state.exact != nil || state.dayPart != nil,
-            alternative: state.alternative
+            alternative: state.alternative,
+            hasExplicitDay: state.date != nil || state.dayOffset != nil || !state.weekdays.isEmpty || state.rule != nil || state.exact != nil,
+            corrected: state.corrected
         )
     }
 

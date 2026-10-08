@@ -114,6 +114,10 @@ final class ScreenSnapshots: XCTestCase {
         try render(HomeScreen(content: home), name: "Home-Checklist", style: .dark)
     }
 
+    func testMulti() throws {
+        try render(PhraseScreen(store: sampleStore(), text: "завтра в 9 позвонить маме, в 12 обед с Ильёй, вечером купить хлеб", now: SampleData.now, calendar: SampleData.calendar, locale: russian, autofocus: false, onClose: {}), name: "D-Multi", style: .dark)
+    }
+
     func testEmptyAndRightToLeft() throws {
         let empty = HomeContent.make(reminders: [], places: [], now: SampleData.now, calendar: SampleData.calendar, locale: russian)
         try render(HomeScreen(content: empty), name: "Home-Empty", style: .light)

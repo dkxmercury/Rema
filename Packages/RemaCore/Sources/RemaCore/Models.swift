@@ -95,9 +95,26 @@ public struct ChecklistItem: Codable, Identifiable, Hashable, Sendable {
     }
 }
 
+// One tick: which occurrence and when it was given, kept short because it travels inside every reminder.
+public struct DoneMark: Codable, Hashable, Sendable {
+    public var occurrence: Date
+    public var at: Date
+
+    public init(occurrence: Date, at: Date) {
+        self.occurrence = occurrence
+        self.at = at
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case occurrence = "o"
+        case at = "a"
+    }
+}
+
 public struct Reminder: Codable, Identifiable, Hashable, Sendable {
     public static let maximumTitleLength = 200
     public static let maximumItems = 40
+    public static let historyLimit = 60
 
     public var id: UUID
     public var title: String
@@ -111,6 +128,7 @@ public struct Reminder: Codable, Identifiable, Hashable, Sendable {
     public var sound: SoundChoice
     public var items: [ChecklistItem]
     public var doneWhenChecked: Bool
+    public var history: [DoneMark]
     public var completedThrough: Date?
     public var snoozedUntil: Date?
     public var createdAt: Date
@@ -130,6 +148,7 @@ public struct Reminder: Codable, Identifiable, Hashable, Sendable {
         sound: SoundChoice = .standard,
         items: [ChecklistItem] = [],
         doneWhenChecked: Bool = true,
+        history: [DoneMark] = [],
         completedThrough: Date? = nil,
         snoozedUntil: Date? = nil,
         createdAt: Date,
@@ -148,6 +167,7 @@ public struct Reminder: Codable, Identifiable, Hashable, Sendable {
         self.sound = sound
         self.items = items
         self.doneWhenChecked = doneWhenChecked
+        self.history = history
         self.completedThrough = completedThrough
         self.snoozedUntil = snoozedUntil
         self.createdAt = createdAt
@@ -170,6 +190,7 @@ public struct Reminder: Codable, Identifiable, Hashable, Sendable {
         sound = try container.decode(SoundChoice.self, forKey: .sound)
         items = try container.decodeIfPresent([ChecklistItem].self, forKey: .items) ?? []
         doneWhenChecked = try container.decodeIfPresent(Bool.self, forKey: .doneWhenChecked) ?? true
+        history = try container.decodeIfPresent([DoneMark].self, forKey: .history) ?? []
         completedThrough = try container.decodeIfPresent(Date.self, forKey: .completedThrough)
         snoozedUntil = try container.decodeIfPresent(Date.self, forKey: .snoozedUntil)
         createdAt = try container.decode(Date.self, forKey: .createdAt)
@@ -186,14 +207,25 @@ public struct Reminder: Codable, Identifiable, Hashable, Sendable {
     }
 
     // A repeating list comes back unticked the next time, the items themselves stay.
-    public mutating func markDone(through occurrence: Date) {
+    public mutating func markDone(through occurrence: Date, at moment: Date = Date()) {
         completedThrough = max(completedThrough ?? occurrence, occurrence)
         snoozedUntil = nil
+        if !history.contains(where: { $0.occurrence == occurrence }) {
+            history.append(DoneMark(occurrence: occurrence, at: moment))
+            if history.count > Self.historyLimit {
+                history.removeFirst(history.count - Self.historyLimit)
+            }
+        }
         if schedule?.rule != nil {
             for index in items.indices {
                 items[index].done = false
             }
         }
+    }
+
+    public mutating func reopen(before occurrence: Date) {
+        completedThrough = occurrence.addingTimeInterval(-1)
+        history.removeAll { $0.occurrence >= occurrence }
     }
 }
 

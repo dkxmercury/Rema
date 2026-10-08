@@ -31,6 +31,8 @@ struct PhraseScreen: View {
     @State private var showingExamples = false
     @State private var earlyDismissed = false
     @State private var flippedFor: String?
+    @State private var keptWhole: String?
+    @State private var removed = Removed()
 
     // Body reads the parse result a dozen times per keystroke; parsing once per text keeps typing smooth.
     final class Memo {
@@ -46,6 +48,12 @@ struct PhraseScreen: View {
         var parsed: ParsedPhrase?
         var examples: [String: String] = [:]
         var items: (title: String, items: [ChecklistItem])?
+        var pieces: (key: Key, pieces: [PhrasePiece]?)?
+    }
+
+    struct Removed {
+        var text = ""
+        var indexes: Set<Int> = []
     }
 
     struct Overrides: Equatable {
@@ -92,6 +100,28 @@ struct PhraseScreen: View {
         memo.key = key
         memo.parsed = parsed
         return parsed
+    }
+
+    private var allPieces: [PhrasePiece]? {
+        guard keptWhole != text else { return nil }
+        let key = Memo.Key(text: text, places: store.activePlaces.map(\.name), morning: store.settings.morning, evening: store.settings.evening, minute: Int(now.timeIntervalSince1970 / 60))
+        if let cached = memo.pieces, cached.key == key {
+            return cached.pieces
+        }
+        let pieces = parser.pieces(text)
+        memo.pieces = (key, pieces)
+        return pieces
+    }
+
+    // Each part of «завтра в 9 позвонить маме, в 12 обед с Ильёй» with its own time becomes its own reminder.
+    private var multi: [(index: Int, piece: PhrasePiece)]? {
+        guard let all = allPieces else { return nil }
+        let gone = removed.text == text ? removed.indexes : []
+        return all.enumerated().filter { !gone.contains($0.offset) }.map { (index: $0.offset, piece: $0.element) }
+    }
+
+    private var fieldHighlights: [Range<Int>] {
+        allPieces.map { $0.flatMap(\.parsed.highlights) } ?? parsed.highlights
     }
 
     private var describer: Describer {
@@ -321,30 +351,13 @@ struct PhraseScreen: View {
                 VStack(spacing: 0) {
                     input
                         .padding(.top, 14)
-                    ReminderPreview(when: when, place: placeLine, summary: summaryLine, summaryLines: 2, describer: describer, calendar: calendar)
-                        .contentShape(Rectangle())
-                        .onTapGesture { pickingDate = true }
-                        .padding(.top, 12)
-                    readingChip
-                    if let suggestion = earlySuggestion {
-                        EarlySuggestionCard(suggestion: suggestion) {
-                            overrides.preAlerts = (reminder.preAlerts + [suggestion.minutes]).sorted()
-                            Feedback.play(.select)
-                        } onDismiss: {
-                            earlyDismissed = true
-                        }
-                        .padding(.top, 12)
-                        .transition(.opacity.combined(with: .move(edge: .top)))
+                    if let multi {
+                        multiList(multi)
+                            .padding(.top, 22)
+                            .transition(.opacity)
+                    } else {
+                        single
                     }
-                    if showsListOffer {
-                        listOffer
-                            .padding(.top, 12)
-                            .transition(.opacity.combined(with: .move(edge: .top)))
-                    }
-                    addOns
-                        .padding(.top, 12)
-                    suggestions
-                        .padding(.top, 14)
                 }
                 .padding(.horizontal, 18)
                 .padding(.bottom, 120)
@@ -362,10 +375,10 @@ struct PhraseScreen: View {
                 }
             }
             PrimaryBar(action: confirm) {
-                Text(verbatim: confirmTitle)
+                Text(verbatim: multi.map { String(localized: "Save \($0.count)", bundle: .app, locale: .app) } ?? confirmTitle)
                     .contentTransition(.numericText())
             }
-            .disabled(parsed.title.isEmpty)
+            .disabled(multi.map(\.isEmpty) ?? parsed.title.isEmpty)
             if showsQuickTimes {
                 quickTimes
                     .frame(maxHeight: .infinity, alignment: .bottom)
@@ -374,6 +387,7 @@ struct PhraseScreen: View {
         }
         .foregroundStyle(Palette.text)
         .animation(Motion.standard, value: showsQuickTimes)
+        .animation(Motion.standard, value: multi?.map(\.index))
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in keyboardShown = true }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in keyboardShown = false }
         .animation(Motion.standard, value: when)
@@ -382,13 +396,136 @@ struct PhraseScreen: View {
         .animation(Motion.standard, value: earlySuggestion)
     }
 
+    @ViewBuilder
+    private var single: some View {
+        ReminderPreview(when: when, place: placeLine, summary: summaryLine, summaryLines: 2, describer: describer, calendar: calendar)
+            .contentShape(Rectangle())
+            .onTapGesture { pickingDate = true }
+            .padding(.top, 12)
+        readingChip
+        if let suggestion = earlySuggestion {
+            EarlySuggestionCard(suggestion: suggestion) {
+                overrides.preAlerts = (reminder.preAlerts + [suggestion.minutes]).sorted()
+                Feedback.play(.select)
+            } onDismiss: {
+                earlyDismissed = true
+            }
+            .padding(.top, 12)
+            .transition(.opacity.combined(with: .move(edge: .top)))
+        }
+        if showsListOffer {
+            listOffer
+                .padding(.top, 12)
+                .transition(.opacity.combined(with: .move(edge: .top)))
+        }
+        addOns
+            .padding(.top, 12)
+        suggestions
+            .padding(.top, 14)
+    }
+
+    private func multiList(_ pieces: [(index: Int, piece: PhrasePiece)]) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            SectionLabel(verbatim: String(localized: "You'll get \(pieces.count) reminders", bundle: .app, locale: .app))
+                .padding(.horizontal, 4)
+                .padding(.bottom, 8)
+            if !pieces.isEmpty {
+                VStack(spacing: 0) {
+                    ForEach(Array(pieces.enumerated()), id: \.element.index) { position, entry in
+                        pieceRow(entry.index, entry.piece)
+                        if position < pieces.count - 1 {
+                            Hairline()
+                        }
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 4)
+                .panel()
+            }
+            Text("Rema splits the phrase at commas and conjunctions when each part has its own time. Remove extra ones with the cross.")
+                .font(.app(.golos, 13))
+                .foregroundStyle(Palette.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.horizontal, 6)
+                .padding(.top, 10)
+            Button {
+                Feedback.play(.select)
+                withAnimation(Motion.standard) { keptWhole = text }
+            } label: {
+                Text("Keep as one reminder")
+                    .font(.app(.golos, 15, weight: 600))
+                    .foregroundStyle(Palette.accentText)
+                    .frame(height: 40)
+                    .padding(.horizontal, 4)
+            }
+            .buttonStyle(RowPressStyle())
+            .padding(.top, 4)
+        }
+    }
+
+    private func pieceRow(_ index: Int, _ piece: PhrasePiece) -> some View {
+        let schedule = piece.parsed.schedule
+        let date = schedule.flatMap { Recurrence.next($0, after: now.addingTimeInterval(-60), limit: 1, calendar: calendar).first }
+        let line: String = {
+            if let rule = schedule?.rule {
+                return describer.repeatText(rule)
+            }
+            return date.map { describer.dayTitle($0).lowercased(with: locale) } ?? ""
+        }()
+        return HStack(spacing: 14) {
+            Text(verbatim: date.map(describer.time) ?? "")
+                .font(.app(.jost, 24, weight: 500))
+                .monospacedDigit()
+                .frame(width: 66, alignment: .leading)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(verbatim: piece.parsed.title)
+                    .font(.app(.golos, 16, weight: 600))
+                    .lineLimit(2)
+                Text(verbatim: line)
+                    .font(.app(.golos, 12))
+                    .foregroundStyle(Palette.secondary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            Button {
+                Feedback.play(.select)
+                withAnimation(Motion.standard) {
+                    if removed.text != text {
+                        removed = Removed(text: text)
+                    }
+                    removed.indexes.insert(index)
+                }
+            } label: {
+                Glyph(paths: Icons.close, size: 16, lineWidth: 2, color: Palette.secondary)
+                    .frame(width: 44, height: 44)
+            }
+            .buttonStyle(PressableStyle())
+            .padding(.trailing, -10)
+            .accessibilityLabel(Text(verbatim: String(localized: "Remove \(piece.parsed.title)", bundle: .app, locale: .app)))
+        }
+        .frame(minHeight: 64)
+    }
+
+    private func pieceReminder(_ parsed: ParsedPhrase) -> Reminder {
+        Reminder(
+            title: parsed.title,
+            schedule: parsed.schedule,
+            preAlerts: parsed.preAlerts,
+            nag: parsed.nag,
+            urgent: parsed.urgent,
+            placeIDs: parsed.placeNames.compactMap { name in store.activePlaces.first { $0.name == name }?.id },
+            placeTrigger: parsed.placeTrigger ?? .arrive,
+            items: Checklist.isShopping(parsed.title) ? Checklist.items(in: parsed.title).map { ChecklistItem(text: $0) } : [],
+            createdAt: now
+        )
+    }
+
     private var earlySuggestion: EarlySuggestion? {
         guard !earlyDismissed, Remote.shared.isOn(.suggestions), let when else { return nil }
         return Suggestions.early(title: parsed.title, when: when, preAlerts: reminder.preAlerts, now: now)
     }
 
     private var input: some View {
-        PhraseField(text: $text, highlights: parsed.highlights, focused: $focused, onSubmit: confirm)
+        PhraseField(text: $text, highlights: fieldHighlights, focused: $focused, onSubmit: confirm)
             .overlay(alignment: .topLeading) {
                 if text.isEmpty {
                     Text("What and when to remind?")
@@ -559,7 +696,7 @@ struct PhraseScreen: View {
     }
 
     private var showsQuickTimes: Bool {
-        keyboardShown && !parsed.title.isEmpty && reminder.schedule == nil && reminder.placeIDs.isEmpty
+        keyboardShown && multi == nil && !parsed.title.isEmpty && reminder.schedule == nil && reminder.placeIDs.isEmpty
     }
 
     private var quickTimes: some View {
@@ -670,6 +807,17 @@ struct PhraseScreen: View {
     }
 
     private func confirm() {
+        if let multi {
+            guard !multi.isEmpty else { return }
+            Feedback.play(.save)
+            for entry in multi {
+                store.save(pieceReminder(entry.piece.parsed))
+            }
+            RecentPhrases.remember(text)
+            Notifier.shared.requestPermissionIfNeeded()
+            onClose()
+            return
+        }
         guard !parsed.title.isEmpty else { return }
         guard when != nil || !reminder.placeIDs.isEmpty else {
             pickingDate = true

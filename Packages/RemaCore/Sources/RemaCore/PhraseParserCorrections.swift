@@ -32,6 +32,7 @@ extension PhraseParser {
             pass(current, &state)
         }
         state.used.append(contentsOf: removed + gaps)
+        state.corrected = rounds > 0
         // «В 7 вечера, нет, в 8»: the replacement keeps the half of the day of what it replaced.
         if let earlier = dropped.last(where: { $0.time && $0.clock != nil }), let clock = earlier.clock, earlier.meridiem || clock.hour >= 12,
            let time = state.time, (1...11).contains(time.hour), !state.meridiem, state.dayPart == nil {
