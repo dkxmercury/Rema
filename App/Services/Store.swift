@@ -143,6 +143,10 @@ final class Store {
         for reminder in reminders where reminder.placeIDs.contains(id) {
             var updated = reminder
             updated.placeIDs.removeAll { $0 == id }
+            // Without its only place and without a time the reminder would never come again.
+            if updated.schedule == nil, updated.placeIDs.isEmpty, updated.deletedAt == nil {
+                updated.deletedAt = Date()
+            }
             save(updated)
         }
         persist()

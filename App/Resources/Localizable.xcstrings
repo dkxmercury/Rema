@@ -9885,6 +9885,52 @@
         }
       }
     },
+    "No access to location, so place reminders will not come.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا وصول إلى الموقع، لذلك لن تصل التذكيرات حسب المكان."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kein Zugriff auf den Standort, ortsbezogene Erinnerungen kommen nicht."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pas d’accès à la localisation, les rappels selon le lieu n’arriveront pas."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нет доступа к геопозиции, напоминания по месту не придут."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Немає доступу до геопозиції, нагадування за місцем не прийдуть."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Жойлашувга рухсат йўқ, жойга кўра эслатмалар келмайди."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Joylashuvga ruxsat yo‘q, joyga ko‘ra eslatmalar kelmaydi."
+          }
+        }
+      }
+    },
     "No connection, changes will be saved later": {
       "localizations": {
         "ar": {
@@ -13469,6 +13515,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Eslatmalar akkauntda saqlanadi"
+          }
+        }
+      }
+    },
+    "Reminders that come only at this place will be deleted too.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ستُحذف معه التذكيرات المرتبطة بهذا المكان فقط."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erinnerungen, die nur an diesen Ort gebunden sind, werden mit gelöscht."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les rappels liés uniquement à ce lieu seront supprimés avec lui."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напоминания только по этому месту удалятся вместе с ним."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нагадування лише за цим місцем видаляться разом із ним."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Фақат шу жойга боғлиқ эслатмалар у билан бирга ўчирилади."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Faqat shu joyga bog‘liq eslatmalar u bilan birga o‘chiriladi."
           }
         }
       }
@@ -23479,6 +23571,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "soat"
+          }
+        }
+      }
+    },
+    "iPhone watches at most 20 places at once, so this reminder may not come by place.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يراقب iPhone عشرين مكانًا كحد أقصى في وقت واحد، لذلك قد لا يصل هذا التذكير حسب المكان."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das iPhone überwacht höchstens 20 Orte gleichzeitig, diese Erinnerung kommt nach Ort vielleicht nicht."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’iPhone surveille au plus 20 lieux à la fois, ce rappel pourrait ne pas arriver selon le lieu."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone следит не больше чем за 20 местами сразу, это напоминание может не прийти по месту."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone стежить не більш ніж за 20 місцями одночасно, це нагадування може не прийти за місцем."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone бир вақтда 20 тадан ортиқ жойни кузатмайди, бу эслатма жойга кўра келмаслиги мумкин."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone bir vaqtda 20 tadan ortiq joyni kuzatmaydi, bu eslatma joyga ko‘ra kelmasligi mumkin."
           }
         }
       }

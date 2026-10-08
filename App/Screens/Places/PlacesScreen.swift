@@ -8,6 +8,10 @@ struct PlacesScreen: View {
     @Binding var trigger: PlaceTrigger
     let onNewPlace: () -> Void
     let onBack: () -> Void
+    var reminderID: UUID?
+
+    @State private var location = LocationService.shared.status
+    @Environment(\.scenePhase) private var scenePhase
 
     private var places: [Place] {
         store.activePlaces + store.livePlaces.filter { !$0.remembered && placeIDs.contains($0.id) }
@@ -35,6 +39,13 @@ struct PlacesScreen: View {
                         .padding(.top, 12)
                     list
                         .padding(.top, 12)
+                    if location.refused {
+                        PlaceNotice(text: "No access to location, so place reminders will not come.", showsSettings: true)
+                            .padding(.top, 12)
+                    } else if overBudget {
+                        PlaceNotice(text: "iPhone watches at most 20 places at once, so this reminder may not come by place.")
+                            .padding(.top, 12)
+                    }
                     Text(trigger == .leave ? LocalizedStringKey("Fires when you leave any of the chosen places") : LocalizedStringKey("Fires when you arrive at any of the chosen places"))
                         .font(.app(.golos, 13))
                         .foregroundStyle(Palette.secondary)
@@ -58,8 +69,21 @@ struct PlacesScreen: View {
         .animation(Motion.standard, value: placeIDs)
         .animation(Motion.standard, value: trigger)
         .task {
-            _ = await LocationService.shared.requestPermission()
+            location = await LocationService.shared.requestPermission()
         }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active {
+                location = LocationService.shared.status
+            }
+        }
+    }
+
+    // iOS follows at most 20 regions for an app, the places past that never fire.
+    private var overBudget: Bool {
+        let others = store.activeReminders
+            .filter { $0.id != reminderID && !($0.schedule?.rule == nil && $0.completedThrough != nil) }
+            .reduce(0) { $0 + $1.placeIDs.count }
+        return others + placeIDs.count > Place.maximumCount
     }
 
     private var canAdd: Bool {

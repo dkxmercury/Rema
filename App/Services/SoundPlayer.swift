@@ -27,7 +27,10 @@ enum SoundPlayer {
             guard let file = BuiltInSound(rawValue: id)?.fileName else { return nil }
             return librarySounds.appendingPathComponent(file)
         case .custom(let id):
-            guard let sound = sounds.first(where: { $0.id == id }) else { return nil }
+            // A deleted sound falls back to Mechanika, the same name the screens show for it.
+            guard let sound = sounds.first(where: { $0.id == id && $0.deletedAt == nil }) else {
+                return url(for: .builtIn(BuiltInSound.mechanika.rawValue), settings: settings, sounds: sounds)
+            }
             return librarySounds.appendingPathComponent(sound.fileName)
         }
     }
@@ -47,7 +50,7 @@ enum SoundPlayer {
             guard let file = BuiltInSound(rawValue: id)?.fileName else { return nil }
             return UNNotificationSound(named: UNNotificationSoundName(file))
         case .custom(let id):
-            guard let sound = sounds.first(where: { $0.id == id }) else { return .default }
+            guard let sound = sounds.first(where: { $0.id == id && $0.deletedAt == nil }) else { return notificationSound(.builtIn(BuiltInSound.mechanika.rawValue), settings: settings, sounds: sounds) }
             return UNNotificationSound(named: UNNotificationSoundName(sound.fileName))
         }
     }

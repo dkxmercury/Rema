@@ -162,7 +162,7 @@ struct PhraseScreen: View {
                 case .sound:
                     SoundScreen(store: store, choice: soundBinding, locale: locale) { path.removeLast() }
                 case .places:
-                    PlacesScreen(store: store, title: parsed.title, placeIDs: placesBinding, trigger: triggerBinding, onNewPlace: { path.append(.newPlace) }, onBack: { path.removeLast() })
+                    PlacesScreen(store: store, title: parsed.title, placeIDs: placesBinding, trigger: triggerBinding, onNewPlace: { path.append(.newPlace) }, onBack: { path.removeLast() }, reminderID: draft.id)
                 case .newPlace:
                     NewPlaceScreen(store: store, askToRemember: true, onSaved: { place in
                         overrides.placeIDs = reminder.placeIDs + [place.id]

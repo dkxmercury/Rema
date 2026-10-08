@@ -7,6 +7,9 @@ struct PlacesListScreen: View {
     let onAdd: () -> Void
     let onBack: () -> Void
 
+    @State private var location = LocationService.shared.status
+    @Environment(\.scenePhase) private var scenePhase
+
     private var places: [Place] {
         store.activePlaces
     }
@@ -20,6 +23,10 @@ struct PlacesListScreen: View {
                         .padding(.top, 14)
                     if !places.isEmpty {
                         list
+                            .padding(.top, 12)
+                    }
+                    if location.refused {
+                        PlaceNotice(text: "No access to location, so place reminders will not come.", showsSettings: true)
                             .padding(.top, 12)
                     }
                     Text("Up to 20 places. Any name, only you see it.")
@@ -43,6 +50,11 @@ struct PlacesListScreen: View {
         }
         .foregroundStyle(Palette.text)
         .animation(Motion.standard, value: places)
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active {
+                location = LocationService.shared.status
+            }
+        }
     }
 
     private var list: some View {

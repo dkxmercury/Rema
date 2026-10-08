@@ -50,7 +50,7 @@ struct EditorScreen: View {
             case .sound:
                 SoundScreen(store: store, choice: $draft.sound, locale: locale) { pop() }
             case .places:
-                PlacesScreen(store: store, title: draft.title, placeIDs: $draft.placeIDs, trigger: $draft.placeTrigger, onNewPlace: { path.append(.newPlace) }, onBack: pop)
+                PlacesScreen(store: store, title: draft.title, placeIDs: $draft.placeIDs, trigger: $draft.placeTrigger, onNewPlace: { path.append(.newPlace) }, onBack: pop, reminderID: draft.id)
             case .newPlace:
                 NewPlaceScreen(store: store, askToRemember: true, onSaved: { place in
                     draft.placeIDs.append(place.id)

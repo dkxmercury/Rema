@@ -202,8 +202,13 @@ final class SyncService {
                 }
                 saveState()
             }
-            savedAt = Date()
-            status = .saved
+            if finished {
+                savedAt = Date()
+                status = .saved
+            } else {
+                // Forty pages did not reach the end of a big account; the next pass goes on from the saved cursor.
+                schedule(after: .seconds(1))
+            }
         } catch Backend.Failure.unauthorized {
             // A late answer for a session that already signed out must not end the one that came after it.
             if Account.shared.session?.token == session.token {

@@ -128,6 +128,10 @@ struct NewPlaceScreen: View {
                 store.deletePlace(existing.id)
                 onBack()
             }
+        } message: {
+            if orphans > 0 {
+                Text("\(orphans) reminders") + Text(verbatim: ". ") + Text("Reminders that come only at this place will be deleted too.")
+            }
         }
         .task {
             guard existing == nil, abs(center.latitude) < 0.0001, abs(center.longitude) < 0.0001 else { return }
@@ -137,6 +141,11 @@ struct NewPlaceScreen: View {
                 }
             }
         }
+    }
+
+    private var orphans: Int {
+        guard let existing else { return 0 }
+        return store.activeReminders.filter { $0.schedule == nil && $0.placeIDs == [existing.id] && $0.completedThrough == nil }.count
     }
 
     private var keeps: Bool {

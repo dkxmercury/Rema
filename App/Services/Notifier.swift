@@ -183,7 +183,8 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         guard LocationService.shared.allowed, Remote.shared.isOn(.places) else { return [] }
         var requests: [UNNotificationRequest] = []
         for reminder in store.activeReminders where !reminder.placeIDs.isEmpty {
-            if reminder.isPlaceOnly, reminder.completedThrough != nil { continue }
+            // A one-off reminder that is done stops watching its places too, a repeating one keeps them.
+            if reminder.schedule?.rule == nil, reminder.completedThrough != nil { continue }
             for placeID in reminder.placeIDs {
                 guard let place = store.livePlaces.first(where: { $0.id == placeID }) else { continue }
                 let region = CLCircularRegion(center: place.coordinate, radius: max(place.radius, 100), identifier: "\(reminder.id.uuidString).\(place.id.uuidString)")

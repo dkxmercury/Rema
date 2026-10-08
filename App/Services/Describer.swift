@@ -133,7 +133,7 @@ struct Describer {
         case .builtIn(let id):
             return builtInName(BuiltInSound(rawValue: id) ?? .mechanika)
         case .custom(let id):
-            return sounds.first { $0.id == id }?.name ?? builtInName(.mechanika)
+            return sounds.first { $0.id == id && $0.deletedAt == nil }?.name ?? builtInName(.mechanika)
         }
     }
 
