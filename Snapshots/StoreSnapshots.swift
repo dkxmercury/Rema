@@ -26,6 +26,9 @@ final class StoreSnapshots: XCTestCase {
             try shoot(HomeScreen(content: sample.home(at: sample.now)), "\(code)-08-dark", sample, style: .dark)
             try shoot(PhraseScreen(store: store, text: sample.weekly, now: sample.now, calendar: sample.calendar, locale: sample.locale, autofocus: false, onClose: {}), "\(code)-09-repeat", sample, style: .dark)
             try shoot(FeaturesScreen(onBack: {}), "\(code)-10-features", sample)
+            let friends = sample.friendsStore()
+            try shoot(HomeScreen(content: sample.friendsHome(at: sample.now), alert: sample.invitation), "\(code)-11-friends", sample)
+            try shoot(SharedDetailScreen(store: friends, reminderID: sample.movie.id, now: sample.now, calendar: sample.calendar, locale: sample.locale, onEdit: {}, onClose: {}), "\(code)-12-shared", sample)
             // The site shows these when the visitor's phone is in dark mode.
             try shoot(VoiceScreen(store: store, now: sample.now, calendar: sample.calendar, locale: sample.locale, recognizer: recognizer, live: false, onFinish: { _ in }), "\(code)-site-dark-voice", sample, style: .dark)
             try shoot(CalendarScreen(store: store, now: sample.now, calendar: sample.calendar, locale: sample.locale, onClose: {}), "\(code)-site-dark-calendar", sample, style: .dark)
@@ -126,6 +129,7 @@ struct StoreSample {
     let gym: Place
     let server: Reminder
     let parcel: Reminder
+    let movie: Reminder
     let reminders: [Reminder]
 
     init(language: AppLanguage) {
@@ -151,6 +155,13 @@ struct StoreSample {
             createdAt: created
         )
         parcel = Reminder(title: english ? "Pick up the parcel" : "Забрать посылку", schedule: nil, placeIDs: [work.id, gym.id], placeTrigger: .leave, createdAt: created)
+        var movie = Reminder(title: english ? "Movie night" : "Кино с друзьями", schedule: Schedule(start: LocalDate(year: 2026, month: 10, day: 5), time: LocalTime(hour: 20, minute: 0), timeZone: "Asia/Tashkent"), createdAt: created)
+        movie.shared = SharedInfo(owner: SharedPerson(id: "me", name: english ? "Alex" : "Саша"), status: SharedStatus.owner, members: [
+            SharedMember(id: "anna", name: english ? "Anna" : "Аня", status: SharedStatus.accepted),
+            SharedMember(id: "ilya", name: english ? "Ilya" : "Илья", status: SharedStatus.accepted),
+            SharedMember(id: "mom", name: english ? "Mom" : "Мама", status: SharedStatus.invited),
+        ], doneMode: .each)
+        self.movie = movie
         var vitamins = Reminder(
             title: english ? "Take vitamins" : "Выпить витамины",
             schedule: Schedule(start: LocalDate(year: 2026, month: 10, day: 1), time: LocalTime(hour: 9, minute: 0), rule: .daily),
@@ -180,6 +191,24 @@ struct StoreSample {
 
     var spoken: String {
         language == .english ? "remind me on Friday evening to pick up the suit from the dry cleaner" : "напомни в пятницу вечером забрать костюм из химчистки"
+    }
+
+    // The screens about sharing show one more reminder, made with friends, and an invitation from one of them.
+    func friendsStore() -> Store {
+        let store = Store(directory: FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString))
+        store.seed(reminders: reminders + [movie], places: [work, gym], sounds: [])
+        return store
+    }
+
+    func friendsHome(at moment: Date) -> HomeContent {
+        HomeContent.make(reminders: reminders + [movie], places: [work, gym], now: moment, calendar: calendar, locale: locale, missed: false)
+    }
+
+    var invitation: HomeAlert {
+        let english = language == .english
+        let name = english ? "Ilya" : "Илья"
+        let title = english ? "Board games on Saturday" : "Настолки в субботу"
+        return .invitation(UUID(), String(localized: "\(name) shares a reminder with you: \(title)", bundle: .app, locale: .app))
     }
 
     func store() -> Store {
