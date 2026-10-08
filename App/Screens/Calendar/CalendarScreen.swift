@@ -82,7 +82,7 @@ struct CalendarScreen: View {
             if let deleted {
                 UndoToast(text: String(localized: "Reminder deleted", bundle: .app, locale: .app)) {
                     withAnimation(Motion.standard) {
-                        store.restore(deleted.id)
+                        store.restore(deleted.reminder, places: deleted.places)
                         self.deleted = nil
                     }
                 }
@@ -195,7 +195,8 @@ struct CalendarScreen: View {
     }
 
     private struct Deleted: Equatable {
-        let id: UUID
+        let reminder: Reminder
+        let places: [Place]
         let token = UUID()
     }
 
@@ -581,9 +582,11 @@ struct CalendarScreen: View {
     }
 
     private func delete(_ id: UUID) {
+        guard let copy = store.reminder(id) else { return }
+        let places = store.releasedPlaces(of: id)
         withAnimation(Motion.standard) {
             store.delete(id)
-            deleted = Deleted(id: id)
+            deleted = Deleted(reminder: copy, places: places)
         }
     }
 

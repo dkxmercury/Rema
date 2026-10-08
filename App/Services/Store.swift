@@ -103,16 +103,24 @@ final class Store {
         save(reminder)
     }
 
-    func restore(_ id: UUID) {
+    // The one-off places a deletion releases, kept so that an undo can bring them back.
+    func releasedPlaces(of id: UUID) -> [Place] {
+        guard let reminder = reminder(id) else { return [] }
+        let others = Set(activeReminders.filter { $0.id != id }.flatMap(\.placeIDs))
+        return places.filter { reminder.placeIDs.contains($0.id) && !$0.remembered && $0.deletedAt == nil && !others.contains($0.id) }
+    }
+
+    // Undo saves the copies taken before the deletion again; a synced deletion has already removed the tombstone.
+    func restore(_ reminder: Reminder, places released: [Place]) {
         fresh()
-        guard var reminder = reminder(id), let deletedAt = reminder.deletedAt else { return }
-        reminder.deletedAt = nil
-        // Deleting released the reminder's one-off places, they come back together with it.
-        for index in places.indices where reminder.placeIDs.contains(places[index].id) && (places[index].deletedAt ?? .distantPast) >= deletedAt.addingTimeInterval(-1) {
-            places[index].deletedAt = nil
-            places[index].updatedAt = Date()
+        for place in released {
+            var revived = place
+            revived.deletedAt = nil
+            save(revived)
         }
-        save(reminder)
+        var revived = reminder
+        revived.deletedAt = nil
+        save(revived)
     }
 
     func save(_ place: Place) {

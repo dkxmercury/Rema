@@ -127,6 +127,18 @@ struct SchedulerTests {
         #expect(plan == plan.sorted { $0.fireDate == $1.fireDate ? $0.identifier < $1.identifier : $0.fireDate < $1.fireDate })
     }
 
+    @Test func morningRepeatsDoNotPushOutTheEvening() {
+        let calls = [14, 15, 16].map { hour in
+            Reminder(title: "Звонок \(hour)", schedule: once(hour, 0), nag: true, createdAt: now)
+        }
+        let dinner = Reminder(title: "Ужин", schedule: once(21, 0), createdAt: now)
+        let plan = Scheduler.plan(reminders: calls + [dinner], settings: settings, now: now, calendar: calendar, capacity: 20)
+        #expect(plan.count == 20)
+        #expect(plan.contains { $0.reminderID == dinner.id && $0.kind == .main })
+        #expect(calls.allSatisfy { call in plan.contains { $0.reminderID == call.id && $0.kind == .main } })
+        #expect(plan == plan.sorted { $0.fireDate == $1.fireDate ? $0.identifier < $1.identifier : $0.fireDate < $1.fireDate })
+    }
+
     @Test func snoozeToTheNextOccurrenceRingsOnce() {
         let daily = Schedule(start: LocalDate(year: 2026, month: 10, day: 1), time: LocalTime(hour: 9, minute: 0), rule: .daily)
         var pills = Reminder(title: "Таблетки", schedule: daily, nag: true, createdAt: now)

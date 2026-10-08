@@ -309,8 +309,10 @@ struct RootView: View {
                 onScheduled: { navigation.path.append(.scheduled) },
                 zoom: zoom,
                 onDelete: { id in
+                    guard let copy = store.reminder(id) else { return nil }
+                    let places = store.releasedPlaces(of: id)
                     withAnimation(Motion.standard) { store.delete(id) }
-                    return { withAnimation(Motion.standard) { store.restore(id) } }
+                    return { withAnimation(Motion.standard) { store.restore(copy, places: places) } }
                 },
                 onMove: move,
                 habit: remote.isOn(.suggestions) ? Suggestions.habit(in: store.reminders, now: timeline.date, calendar: .current, dismissed: dismissedHabits) : nil,

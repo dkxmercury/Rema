@@ -49,13 +49,11 @@ public enum Scheduler {
         let sorted = planned.sorted { lhs, rhs in
             lhs.fireDate == rhs.fireDate ? lhs.identifier < rhs.identifier : lhs.fireDate < rhs.fireDate
         }
-        // The next day goes in whole; further ahead reminders come before repeats, so persistent ones cannot crowd out next week.
+        // Within the next day reminders come before the repeats of persistent ones, so a morning series cannot push out an evening reminder; further ahead the same order keeps next week.
         let soon = now.addingTimeInterval(86_400)
         let near = sorted.filter { $0.fireDate <= soon }
         let later = sorted.filter { $0.fireDate > soon }
-        let main = later.filter(\.essential)
-        let rest = later.filter { !$0.essential }
-        let chosen = (near + main + rest).prefix(capacity)
+        let chosen = (near.filter(\.essential) + near.filter { !$0.essential } + later.filter(\.essential) + later.filter { !$0.essential }).prefix(capacity)
         return chosen.sorted { lhs, rhs in
             lhs.fireDate == rhs.fireDate ? lhs.identifier < rhs.identifier : lhs.fireDate < rhs.fireDate
         }

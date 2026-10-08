@@ -134,9 +134,10 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         guard status == .authorized || status == .provisional || status == .ephemeral else { return }
         let now = Date()
         let followUp = Self.missedEnabled ? Int(Remote.shared.number(.missedFollowUp)) : nil
-        let plan = Scheduler.plan(reminders: store.reminders, settings: store.settings, now: now, calendar: .current, followUp: followUp)
         let places = placeRequests()
         let weather = WeatherAdvisor.shared.notes(after: now)
+        // Places and weather take their slots first; the planner picks what matters most for the rest.
+        let plan = Scheduler.plan(reminders: store.reminders, settings: store.settings, now: now, calendar: .current, capacity: max(0, Scheduler.capacity - places.count - weather.count), followUp: followUp)
         var requests = places
         for note in weather {
             let content = UNMutableNotificationContent()
@@ -148,7 +149,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
             let parts = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: note.fireDate)
             requests.append(UNNotificationRequest(identifier: note.identifier, content: content, trigger: UNCalendarNotificationTrigger(dateMatching: parts, repeats: false)))
         }
-        for item in plan.prefix(max(0, 60 - places.count - weather.count)) {
+        for item in plan {
             let content = UNMutableNotificationContent()
             content.title = item.title
             content.body = body(for: item, now: now)
