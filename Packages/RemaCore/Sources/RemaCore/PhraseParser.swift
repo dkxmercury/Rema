@@ -72,6 +72,7 @@ public struct PhraseParser {
         var meridiem = false
         var alternative: Schedule?
         var marks: [Mark] = []
+        var nextWeek = false
     }
 
     struct Mark {
@@ -143,6 +144,12 @@ public struct PhraseParser {
         guard let range = Range(match.range, in: text) else { return nil }
         let lower = text.distance(from: text.startIndex, to: range.lowerBound)
         return lower..<(lower + text.distance(from: range.lowerBound, to: range.upperBound))
+    }
+
+    func saysNext(_ match: NSTextCheckingResult, _ text: String) -> Bool {
+        guard let range = Range(match.range, in: text) else { return false }
+        let words = text[range]
+        return ["следующ", "наступн", "next ", "nächsten", "prochain"].contains { words.contains($0) }
     }
 
     func isFree(_ range: Range<Int>, _ state: State) -> Bool {
@@ -309,6 +316,7 @@ public struct PhraseParser {
         take("(?:в |во )?(следующ\\w+ |эт\\w+ )?\(PhraseParser.weekdayPattern)", text, &state) { m, s in
             guard s.rule == nil || s.rule == .weekly([]), let word = group(m, 2, text), let day = self.weekday(word) else { return false }
             s.weekdays = [day]
+            s.nextWeek = saysNext(m, text)
             if s.rule == .weekly([]) {
                 s.rule = .weekly([day])
             }
@@ -587,6 +595,15 @@ public struct PhraseParser {
                 if state.weekdays.contains(candidate.weekday), moment(candidate) > now {
                     start = candidate
                     break
+                }
+            }
+            // «В следующую пятницу» early in the week may mean either Friday, the one of the next week goes first.
+            if state.nextWeek, state.rule == nil, state.weekdays.count == 1 {
+                let first = (calendar.firstWeekday + 5) % 7 + 1
+                let weekStart = today.adding(days: -((today.weekday.rawValue - first + 7) % 7))
+                if start < weekStart.adding(days: 7) {
+                    state.alternative = Schedule(start: start, time: clock)
+                    start = start.adding(days: 7)
                 }
             }
         } else {

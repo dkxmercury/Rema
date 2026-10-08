@@ -13,6 +13,7 @@ struct VoiceScreen: View {
     @State private var finishing = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.openURL) private var openURL
+    @Environment(\.scenePhase) private var scenePhase
 
     init(store: Store, now: Date = Date(), calendar: Calendar = .current, locale: Locale = AppLanguage.current.locale, recognizer: VoiceRecognizer = VoiceRecognizer(), live: Bool = true, onFinish: @escaping (String?) -> Void) {
         self.store = store
@@ -84,7 +85,7 @@ struct VoiceScreen: View {
             .padding(.top, 15)
 
             microphone
-                .padding(.bottom, 54)
+                .padding(.bottom, 34)
                 .frame(maxHeight: .infinity, alignment: .bottom)
                 .ignoresSafeArea(.container, edges: .bottom)
         }
@@ -98,6 +99,12 @@ struct VoiceScreen: View {
             }
         }
         .onDisappear { recognizer.stop() }
+        .onChange(of: scenePhase) { _, phase in
+            // Back from Settings with the microphone allowed, listening starts by itself.
+            if phase == .active, live, recognizer.needsSettings {
+                listen()
+            }
+        }
         .task(id: recognizer.transcript) {
             guard live, recognizer.listening, !recognizer.transcript.isEmpty else { return }
             try? await Task.sleep(for: .seconds(2))
@@ -131,21 +138,22 @@ struct VoiceScreen: View {
     }
 
     private var transcript: some View {
-        PhraseField(text: .constant(recognizer.transcript), highlights: parsed.highlights, pending: pendingWord, editable: false)
-            .overlay(alignment: .topLeading) {
-                if recognizer.transcript.isEmpty {
-                    Text("For example, remind me tomorrow at 9 to call mom")
-                        .font(.app(.golos, 24, weight: 600))
-                        .foregroundStyle(Palette.faint)
-                        .lineSpacing(3)
-                        .allowsHitTesting(false)
-                }
+        ZStack(alignment: .topLeading) {
+            PhraseField(text: .constant(recognizer.transcript), highlights: parsed.highlights, pending: pendingWord, editable: false)
+            if recognizer.transcript.isEmpty {
+                Text("For example, remind me tomorrow at 9 to call mom")
+                    .font(.app(.golos, 24, weight: 600))
+                    .foregroundStyle(Palette.faint)
+                    .lineSpacing(3)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .allowsHitTesting(false)
             }
-            .frame(minHeight: 64, alignment: .topLeading)
-            .padding(16)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .panel()
-            .accessibilityElement(children: .combine)
+        }
+        .frame(minHeight: 64, alignment: .topLeading)
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .panel()
+        .accessibilityElement(children: .combine)
     }
 
     private var animated: Bool {
@@ -153,6 +161,26 @@ struct VoiceScreen: View {
     }
 
     private var microphone: some View {
+        VStack(spacing: 22) {
+            rings
+            VStack(spacing: 4) {
+                if recognizer.failure == nil {
+                    Text("Listening…")
+                        .font(.app(.golos, 15, weight: 600))
+                    Text("Tap to finish")
+                        .font(.app(.golos, 13))
+                        .foregroundStyle(Palette.secondary)
+                } else if !recognizer.needsSettings {
+                    Text("Tap to try again")
+                        .font(.app(.golos, 15, weight: 600))
+                }
+            }
+            .fixedSize()
+            .frame(height: 40, alignment: .top)
+        }
+    }
+
+    private var rings: some View {
         TimelineView(.animation(paused: !animated || !recognizer.listening)) { timeline in
             let breath = animated && recognizer.listening ? (sin(timeline.date.timeIntervalSinceReferenceDate * .pi / 0.8) + 1) / 2 : 0
             let level = animated ? recognizer.level : 0
@@ -169,27 +197,13 @@ struct VoiceScreen: View {
             }
             .frame(width: 200, height: 200)
         }
-        .overlay(alignment: .bottom) {
-            VStack(spacing: 4) {
-                if recognizer.failure == nil {
-                    Text("Listening…")
-                        .font(.app(.golos, 15, weight: 600))
-                    Text("Tap to finish")
-                        .font(.app(.golos, 13))
-                        .foregroundStyle(Palette.secondary)
-                } else {
-                    Text("Tap to try again")
-                        .font(.app(.golos, 15, weight: 600))
-                }
-            }
-            .fixedSize()
-            .alignmentGuide(.bottom) { $0[.top] + 16 }
-        }
     }
 
     private var micButton: some View {
         Button {
-            if recognizer.failure != nil {
+            if recognizer.needsSettings, let url = URL(string: UIApplication.openSettingsURLString) {
+                openURL(url)
+            } else if recognizer.failure != nil {
                 Feedback.play(.select)
                 listen()
             } else {
@@ -205,6 +219,6 @@ struct VoiceScreen: View {
             .frame(width: 88, height: 88)
         }
         .buttonStyle(PressableStyle())
-        .accessibilityLabel(recognizer.failure == nil ? Text("Finish") : Text("Try again"))
+        .accessibilityLabel(recognizer.failure == nil ? Text("Finish") : recognizer.needsSettings ? Text("Settings") : Text("Try again"))
     }
 }

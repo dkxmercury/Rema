@@ -193,6 +193,7 @@ extension PhraseParser {
         take("(?:am |nächsten |kommenden )?\(PhraseParser.deWeekdaysFull)", text, &state) { m, s in
             guard s.rule == nil || s.rule == .weekly([]), let word = group(m, 1, text), let day = self.deWeekday(word) else { return false }
             s.weekdays = [day]
+            s.nextWeek = saysNext(m, text)
             if s.rule == .weekly([]) {
                 s.rule = .weekly([day])
             }

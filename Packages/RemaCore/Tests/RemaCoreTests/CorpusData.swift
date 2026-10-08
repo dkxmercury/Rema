@@ -144,6 +144,8 @@ enum CorpusData {
         ok("в 5 гулять с собакой", "Гулять с собакой | 05.10 17:00 | - | alt 06.10 05:00"),
         ok("в 10 лекция", "Лекция | 05.10 22:00 | - | alt 06.10 10:00"),
         ok("в 8 разговор с шефом", "Разговор с шефом | 05.10 20:00 | - | alt 06.10 08:00"),
+        ok("в следующую пятницу встреча", "Встреча | 16.10 09:00 | - | alt 09.10 09:00"),
+        ok("в эту пятницу встреча", "Встреча | 09.10 09:00 | - | -"),
     ]
 
     static let ukrainian: [CorpusCase] = [
@@ -286,6 +288,8 @@ enum CorpusData {
         ok("at three stores compare prices", "At three stores compare prices | - | - | -"),
         ok("invite five to six friends", "Invite five to six friends | - | - | -"),
         ok("at 5 shopping with Anna", "Shopping with Anna | 05.10 17:00 | - | alt 06.10 05:00"),
+        ok("next Friday call Anna", "Call Anna | 16.10 09:00 | - | alt 09.10 09:00"),
+        ok("this Friday call Anna", "Call Anna | 09.10 09:00 | - | -"),
         ok("buy sun cream", "Buy sun cream | - | - | -"),
         ok("on Monday study for the SAT", "Study for the SAT | 12.10 09:00 | - | -"),
         ok("every morning at 7 drink water", "Drink water | 06.10 07:00 | daily | -"),

@@ -186,11 +186,36 @@ private struct DialMarkersLayer: View, Animatable {
         Canvas { context, canvas in
             let scale = canvas.width / 280
             let count = Double(max(markers.count, 1))
-            for (index, marker) in markers.enumerated() {
+            let shown = markers.enumerated().compactMap { index, marker -> (marker: DialMarker, share: Double)? in
                 let share = min(max(progress * (count + 1) - Double(index), 0), 1)
-                guard share > 0, lift?.holds(marker) != true else { continue }
-                let center = geometry.point(angle: geometry.angle(hour: marker.hour, minute: marker.minute), radius: 133)
-                let point = CGPoint(x: center.x * scale, y: center.y * scale)
+                guard share > 0, lift?.holds(marker) != true else { return nil }
+                return (marker, share)
+            }
+            func place(_ minutes: Double) -> CGPoint {
+                let center = geometry.point(angle: minutes / 1440 * 360, radius: 133)
+                return CGPoint(x: center.x * scale, y: center.y * scale)
+            }
+            func minutes(_ marker: DialMarker) -> Double {
+                Double(marker.hour * 60 + marker.minute)
+            }
+            // A busy stretch of the day would become a row of overlapping dots, neighbours are joined into one band.
+            let plain = shown.filter { $0.marker.kind == .done || $0.marker.kind == .upcoming }.sorted { minutes($0.marker) < minutes($1.marker) }
+            for (first, second) in zip(plain, plain.dropFirst()) where first.marker.kind == second.marker.kind {
+                let start = minutes(first.marker)
+                let end = minutes(second.marker)
+                guard end > start, end - start <= 20 else { continue }
+                let share = min(first.share, second.share)
+                var band = Path()
+                band.move(to: place(start))
+                for step in 1...4 {
+                    band.addLine(to: place(start + (end - start) * Double(step) / 4))
+                }
+                let color = first.marker.kind == .done ? Palette.dialDone : Palette.dialUpcoming
+                context.stroke(band, with: .color(color.opacity(share)), style: StrokeStyle(lineWidth: 10 * scale * (0.6 + 0.4 * share), lineCap: .round, lineJoin: .round))
+            }
+            let layered = shown.filter { $0.marker.kind == .done || $0.marker.kind == .upcoming } + shown.filter { $0.marker.kind == .next || $0.marker.kind == .missed }
+            for (marker, share) in layered {
+                let point = place(minutes(marker))
                 func dot(_ radius: Double, _ color: Color) {
                     let r = radius * scale * (0.6 + 0.4 * share)
                     context.fill(Path(ellipseIn: CGRect(x: point.x - r, y: point.y - r, width: 2 * r, height: 2 * r)), with: .color(color.opacity(share)))

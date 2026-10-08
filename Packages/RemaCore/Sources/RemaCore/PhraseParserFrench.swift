@@ -168,6 +168,7 @@ extension PhraseParser {
         take("\(PhraseParser.frWeekdays)(?: prochain)?", text, &state) { m, s in
             guard s.rule == nil || s.rule == .weekly([]), let word = group(m, 1, text), let day = self.frWeekday(word) else { return false }
             s.weekdays = [day]
+            s.nextWeek = saysNext(m, text)
             return true
         }
     }

@@ -87,9 +87,17 @@ struct HomeScreen: View {
                     ScrollView {
                         day
                             .padding(.horizontal, 18)
-                            .padding(.vertical, 4)
+                            .padding(.top, 4)
+                            .padding(.bottom, 24)
                     }
                     .scrollIndicators(.hidden)
+                    .mask {
+                        VStack(spacing: 0) {
+                            Color.black
+                            LinearGradient(colors: [.black, .black.opacity(0)], startPoint: .top, endPoint: .bottom)
+                                .frame(height: 28)
+                        }
+                    }
                     .padding(.horizontal, -18)
                 }
                 .padding(.top, 12)

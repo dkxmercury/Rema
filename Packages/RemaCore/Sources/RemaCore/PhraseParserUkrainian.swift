@@ -156,6 +156,7 @@ extension PhraseParser {
         take("(?:в |у |во )?(наступн\\w+ )?\(PhraseParser.ukWeekdays)", text, &state) { m, s in
             guard s.rule == nil || s.rule == .weekly([]), let word = group(m, 2, text), let day = self.ukWeekday(word) else { return false }
             s.weekdays = [day]
+            s.nextWeek = saysNext(m, text)
             if s.rule == .weekly([]) {
                 s.rule = .weekly([day])
             }
