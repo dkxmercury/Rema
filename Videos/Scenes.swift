@@ -127,8 +127,8 @@ final class Scenes: XCTestCase {
         if share.waitForExistence(timeout: 5) {
             tap(share, "SHARE")
             pause(1.2)
-            // The friends come up under the keyboard; the screen is pushed up a little, the keyboard stays.
-            app.scrollViews.firstMatch.swipeUp(velocity: .slow)
+            // The friends come up under the keyboard. A swipe flings them past the top, so the sheet is dragged just enough.
+            drag(app, from: 340, by: -150)
             pause(1)
             for name in english ? ["Anna", "Ilya"] : ["Аня", "Илья"] {
                 let chip = app.buttons[name].firstMatch
@@ -239,6 +239,15 @@ final class Scenes: XCTestCase {
     private func tap(_ element: XCUIElement, _ name: String) {
         mark(name, element)
         element.tap()
+    }
+
+    // The finger stays down at the end, so the sheet stops right there. The mark keeps where the drag starts and how far it goes.
+    private func drag(_ app: XCUIApplication, from y: CGFloat, by distance: CGFloat) {
+        let window = app.windows.firstMatch
+        let x = window.frame.width / 2
+        let start = window.coordinate(withNormalizedOffset: .zero).withOffset(CGVector(dx: x, dy: y))
+        print("SCENE-MARK SCROLL \(Date().timeIntervalSince1970) \(x) \(y) 0.0 \(distance)")
+        start.press(forDuration: 0.1, thenDragTo: start.withOffset(CGVector(dx: 0, dy: distance)), withVelocity: .slow, thenHoldForDuration: 0.4)
     }
 
     private func finish() {
