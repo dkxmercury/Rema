@@ -8379,48 +8379,48 @@
         }
       }
     },
-    "Everybody gets it at the same moment, %@ by %@ time. Only you can change it.": {
+    "Everybody gets it at the same moment, at %@ your time. Friends see it in their own time. Only you can change it.": {
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "يصل للجميع في اللحظة نفسها، الساعة %1$@ بتوقيت %2$@. وحدك يمكنك تعديله."
+            "value": "يصل للجميع في اللحظة نفسها، الساعة %@ بتوقيتك. يراه الأصدقاء بتوقيتهم. وحدك يمكنك تعديله."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Alle bekommen sie im selben Moment, um %1$@ Uhr Ortszeit %2$@. Ändern kannst nur du."
+            "value": "Alle bekommen sie im selben Moment, um %@ Uhr deiner Zeit. Freunde sehen ihre eigene Uhrzeit. Ändern kannst nur du."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tout le monde le reçoit au même moment, à %1$@ heure de %2$@. Vous seul pouvez le modifier."
+            "value": "Tout le monde le reçoit au même moment, à %@ chez vous. Vos amis le voient à leur heure. Vous seul pouvez le modifier."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "У всех придёт в один и тот же момент, в %1$@ по времени %2$@. Менять можете только вы."
+            "value": "У всех придёт в один и тот же момент, в %@ по вашему времени. Друзья увидят его по своему времени. Менять можете только вы."
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "У всіх прийде в той самий момент, о %1$@ за часом %2$@. Змінювати можете лише ви."
+            "value": "У всіх прийде в той самий момент, о %@ за вашим часом. Друзі побачать його за своїм часом. Змінювати можете лише ви."
           }
         },
         "uz-Cyrl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ҳаммага бир вақтда, %2$@ вақти билан %1$@ да келади. Фақат сиз ўзгартира оласиз."
+            "value": "Ҳаммага бир вақтда келади, сизнинг вақтингиз билан %@ да. Дўстлар уни ўз вақти билан кўради. Фақат сиз ўзгартира оласиз."
           }
         },
         "uz-Latn": {
           "stringUnit": {
             "state": "translated",
-            "value": "Hammaga bir vaqtda, %2$@ vaqti bilan %1$@ da keladi. Faqat siz o‘zgartira olasiz."
+            "value": "Hammaga bir vaqtda keladi, sizning vaqtingiz bilan %@ da. Do‘stlar uni o‘z vaqti bilan ko‘radi. Faqat siz o‘zgartira olasiz."
           }
         }
       }

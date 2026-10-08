@@ -154,7 +154,7 @@ public extension Reminder {
 
 public enum SharedMerge {
     // Items from the server become reminders here. What each person keeps for themselves stays: early alerts, persistence, the sound,
-    // a snooze, the ticks of the history. Reminders with changes still waiting to be sent are left as they are.
+    // a list, a snooze, the ticks of the history. Reminders with changes still waiting to be sent are left as they are.
     public static func apply(_ items: [SharedItem], to reminders: [Reminder], waiting: Set<UUID>, now: Date) -> [Reminder] {
         var result = reminders
         for item in items {
@@ -170,7 +170,6 @@ public enum SharedMerge {
             var reminder = index.map { result[$0] } ?? Reminder(id: id, title: data.title, schedule: data.schedule, createdAt: now)
             reminder.title = String(data.title.prefix(Reminder.maximumTitleLength))
             reminder.schedule = data.schedule
-            reminder.items = []
             reminder.shared = SharedInfo(owner: owner, status: item.myStatus, members: item.members, doneMode: data.doneMode)
             let through = data.doneMode == .one ? item.doneThrough : item.myDone
             let done = through > 0 ? Date(timeIntervalSince1970: Double(through) / 1000) : nil

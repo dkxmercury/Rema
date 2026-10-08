@@ -55,7 +55,15 @@ struct FriendsScreen: View {
         .animation(Motion.standard, value: openInvites)
         .task {
             await service.refresh()
-            myName = service.myName
+            if !nameFocused {
+                myName = service.myName
+            }
+        }
+        .onDisappear {
+            let typed = myName.trimmingCharacters(in: .whitespacesAndNewlines)
+            if account.isSignedIn, typed != service.myName {
+                Task { try? await service.setMyName(typed) }
+            }
         }
     }
 

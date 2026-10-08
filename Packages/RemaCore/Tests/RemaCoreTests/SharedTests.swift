@@ -64,10 +64,12 @@ struct SharedTests {
         local.preAlerts = [30]
         local.nag = true
         local.sound = .builtIn("gong")
+        local.items = [ChecklistItem(text: "Билеты")]
         let changed = movieJSON().replacingOccurrences(of: "Кино «Дюна»", with: "Кино «Дюна», 2 часть")
         let merged = try #require(SharedMerge.apply([try item(changed)], to: [local], waiting: [], now: now).first)
         #expect(merged.title == "Кино «Дюна», 2 часть")
         #expect(merged.preAlerts == [30] && merged.nag && merged.sound == .builtIn("gong"))
+        #expect(merged.items.map(\.text) == ["Билеты"])
     }
 
     @Test func ticksComeFromTheRightPlace() throws {

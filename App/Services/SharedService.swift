@@ -91,8 +91,9 @@ final class SharedService {
         Set(state.outbox.compactMap { UUID(uuidString: $0.id) })
     }
 
+    // Until it is changed here, friends see the name the account already has.
     var myName: String {
-        state.myName ?? ""
+        state.myName ?? Account.shared.session?.name ?? ""
     }
 
     // The name I gave a friend wins over the one they gave themselves.

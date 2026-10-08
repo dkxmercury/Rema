@@ -714,8 +714,7 @@ struct PhraseScreen: View {
             }
             .padding(.top, 12)
             if let when {
-                let city = TimeZone.current.identifier.split(separator: "/").last.map { $0.replacingOccurrences(of: "_", with: " ") } ?? TimeZone.current.identifier
-                Note(verbatim: String(localized: "Everybody gets it at the same moment, \(describer.time(when)) by \(city) time. Only you can change it.", bundle: .app, locale: .app))
+                Note(verbatim: String(localized: "Everybody gets it at the same moment, at \(describer.time(when)) your time. Friends see it in their own time. Only you can change it.", bundle: .app, locale: .app))
                     .padding(.top, 10)
             }
         }
