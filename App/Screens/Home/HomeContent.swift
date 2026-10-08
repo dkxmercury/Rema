@@ -215,6 +215,15 @@ enum SampleData {
         ]
     }()
 
+    // A day longer than the screen, for the scrolling check.
+    static var busyDay: [Reminder] {
+        let day = LocalDate(year: 2026, month: 10, day: 5)
+        return (0..<24).map { index in
+            let title = index == 0 ? String(repeating: "Очень длинное название напоминания ", count: 6) : "Дело \(index + 1)"
+            return Reminder(title: title, schedule: Schedule(start: day, time: LocalTime(hour: 14 + index / 4, minute: index % 4 * 15)), createdAt: now)
+        }
+    }
+
     static var home: HomeContent {
         HomeContent.make(reminders: reminders, places: places, now: now, calendar: calendar, locale: Locale(identifier: "ru_RU"))
     }

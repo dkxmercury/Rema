@@ -87,11 +87,7 @@ final class ScreenSnapshots: XCTestCase {
     func testStates() throws {
         let empty = HomeContent.make(reminders: [], places: [], now: SampleData.now, calendar: SampleData.calendar, locale: russian)
         try render(HomeScreen(content: empty, loadingAccount: true), name: "Home-Loading", style: .dark)
-        let day = LocalDate(year: 2026, month: 10, day: 5)
-        let many = (0..<24).map { index in
-            Reminder(title: index == 0 ? String(repeating: "Очень длинное название напоминания ", count: 6) : "Дело \(index + 1)", schedule: Schedule(start: day, time: LocalTime(hour: 14 + index / 4, minute: index % 4 * 15)), createdAt: SampleData.now)
-        }
-        try render(HomeScreen(content: HomeContent.make(reminders: many, places: [], now: SampleData.now, calendar: SampleData.calendar, locale: russian)), name: "Home-Many", style: .light)
+        try render(HomeScreen(content: HomeContent.make(reminders: SampleData.busyDay, places: [], now: SampleData.now, calendar: SampleData.calendar, locale: russian)), name: "Home-Many", style: .light)
         let recognizer = VoiceRecognizer()
         recognizer.failure = "Разрешите доступ к микрофону в Настройках, чтобы диктовать напоминания."
         recognizer.needsSettings = true
