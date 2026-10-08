@@ -78,11 +78,14 @@ final class WeatherAdvisor {
         return true
     }
 
-    func search(_ query: String) async -> [CLPlacemark] {
+    func search(_ query: String) async throws -> [CLPlacemark] {
         let text = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard text.count >= 2 else { return [] }
-        let found = (try? await CLGeocoder().geocodeAddressString(text)) ?? []
-        return found.filter { $0.location != nil }
+        do {
+            return try await CLGeocoder().geocodeAddressString(text).filter { $0.location != nil }
+        } catch let error as CLError where error.code == .geocodeFoundNoResult {
+            return []
+        }
     }
 
     func choose(_ mark: CLPlacemark) {

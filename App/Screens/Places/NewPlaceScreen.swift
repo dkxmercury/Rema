@@ -16,6 +16,7 @@ struct NewPlaceScreen: View {
     @State private var center: CLLocationCoordinate2D
     @State private var position: MapCameraPosition
     @State private var query = ""
+    @State private var searchProblem: String?
     @State private var nameShake = 0
     @State private var confirmingDelete = false
     @FocusState private var nameFocused: Bool
@@ -47,6 +48,14 @@ struct NewPlaceScreen: View {
                 VStack(alignment: .leading, spacing: 0) {
                     map
                         .padding(.top, 14)
+                    if let searchProblem {
+                        Text(verbatim: searchProblem)
+                            .font(.app(.golos, 13))
+                            .foregroundStyle(Palette.secondary)
+                            .padding(.top, 8)
+                            .padding(.horizontal, 4)
+                            .transition(.opacity)
+                    }
                     if askToRemember {
                         PanelList {
                             ToggleRow(icon: Icons.star, iconColor: Palette.text, title: "Remember place", subtitle: String(localized: "it will appear in My places", bundle: .app, locale: .app), isOn: $remember, minHeight: 60)
@@ -110,6 +119,8 @@ struct NewPlaceScreen: View {
         }
         .foregroundStyle(Palette.text)
         .animation(Motion.standard, value: radius)
+        .animation(Motion.small, value: searchProblem)
+        .onChange(of: query) { _, _ in searchProblem = nil }
         .confirmationDialog("Delete place?", isPresented: $confirmingDelete, titleVisibility: .visible) {
             Button("Delete", role: .destructive) {
                 guard let existing else { return }
@@ -245,14 +256,24 @@ struct NewPlaceScreen: View {
         let request = MKLocalSearch.Request()
         request.naturalLanguageQuery = text
         request.region = MKCoordinateRegion(center: center, latitudinalMeters: 50_000, longitudinalMeters: 50_000)
-        guard let response = try? await MKLocalSearch(request: request).start(), let item = response.mapItems.first else {
-            Feedback.play(.error)
-            return
+        let item: MKMapItem
+        do {
+            guard let found = try await MKLocalSearch(request: request).start().mapItems.first else { return missed(nil) }
+            item = found
+        } catch {
+            return missed(error)
         }
         searchFocused = false
         withAnimation(Motion.standard) {
             position = .region(PinPickerMap.region(around: item.placemark.coordinate, meters: max(radius * 5, 600)))
         }
+    }
+
+    private func missed(_ error: Error?) {
+        Feedback.play(.error)
+        let underlying = (error as NSError?)?.userInfo[NSUnderlyingErrorKey] as? NSError
+        let offline = (error as NSError?)?.domain == NSURLErrorDomain || underlying?.domain == NSURLErrorDomain
+        searchProblem = offline ? String(localized: "No internet connection. Try again when you are online.", bundle: .app, locale: .app) : String(localized: "Nothing found", bundle: .app, locale: .app)
     }
 
     private func save() {

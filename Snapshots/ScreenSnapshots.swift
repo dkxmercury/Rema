@@ -84,6 +84,15 @@ final class ScreenSnapshots: XCTestCase {
         try render(PlacesScreen(store: store, title: "Забрать посылку", placeIDs: .constant([SampleData.work.id]), trigger: .constant(.leave), onNewPlace: {}, onBack: {}), name: "Dark-Places", style: .dark)
     }
 
+    func testStates() throws {
+        let empty = HomeContent.make(reminders: [], places: [], now: SampleData.now, calendar: SampleData.calendar, locale: russian)
+        try render(HomeScreen(content: empty, loadingAccount: true), name: "Home-Loading", style: .dark)
+        let recognizer = VoiceRecognizer()
+        recognizer.failure = "Разрешите доступ к микрофону в Настройках, чтобы диктовать напоминания."
+        recognizer.needsSettings = true
+        try render(VoiceScreen(store: sampleStore(), now: SampleData.now, calendar: SampleData.calendar, locale: russian, recognizer: recognizer, live: false, onFinish: { _ in }), name: "Voice-Denied", style: .dark)
+    }
+
     func testEmptyAndRightToLeft() throws {
         let empty = HomeContent.make(reminders: [], places: [], now: SampleData.now, calendar: SampleData.calendar, locale: russian)
         try render(HomeScreen(content: empty), name: "Home-Empty", style: .light)

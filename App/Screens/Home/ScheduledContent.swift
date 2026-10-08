@@ -28,7 +28,7 @@ struct ScheduledContent {
         days.isEmpty && monthly.isEmpty && yearly.isEmpty && places.isEmpty
     }
 
-    static func make(reminders: [Reminder], places: [Place], now: Date, calendar: Calendar, locale: Locale) -> ScheduledContent {
+    static func make(reminders: [Reminder], places: [Place], now: Date, calendar: Calendar, locale: Locale, withPlaces: Bool = true) -> ScheduledContent {
         let describer = Describer(calendar: calendar, locale: locale)
         let active = reminders.filter { $0.deletedAt == nil }
         let byID = Dictionary(active.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
@@ -59,15 +59,15 @@ struct ScheduledContent {
                 }
             }
         }
-        let placed = byPlace(active).map { reminder in
+        let placed = (withPlaces ? byPlace(active) : []).map { reminder in
             Item(id: reminder.id.uuidString, reminderID: reminder.id, lead: nil, title: reminder.title, subtitle: describer.placeText(reminder, places: places))
         }
         return ScheduledContent(days: days, monthly: monthly, yearly: yearly, places: placed, hasRepeats: hasRepeats)
     }
 
-    static func count(reminders: [Reminder], now: Date, calendar: Calendar) -> Int {
+    static func count(reminders: [Reminder], now: Date, calendar: Calendar, withPlaces: Bool = true) -> Int {
         let active = reminders.filter { $0.deletedAt == nil }
-        return upcoming(active, now: now, calendar: calendar).count + byPlace(active).count
+        return upcoming(active, now: now, calendar: calendar).count + (withPlaces ? byPlace(active).count : 0)
     }
 
     private static func upcoming(_ reminders: [Reminder], now: Date, calendar: Calendar) -> [AgendaItem] {

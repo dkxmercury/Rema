@@ -6,6 +6,7 @@ struct CityScreen: View {
 
     @State private var query = ""
     @State private var results: [CLPlacemark] = []
+    @State private var problem: String?
     @State private var locating = false
     @State private var advisor = WeatherAdvisor.shared
     @FocusState private var searchFocused: Bool
@@ -53,6 +54,13 @@ struct CityScreen: View {
                         }
                     }
                     .padding(.top, 12)
+                    if let problem {
+                        Text(verbatim: problem)
+                            .font(.app(.golos, 13))
+                            .foregroundStyle(Palette.secondary)
+                            .padding(.top, 10)
+                            .padding(.horizontal, 4)
+                    }
                     if let city = advisor.city {
                         Text("Now: \(city)")
                             .font(.app(.golos, 13))
@@ -75,9 +83,16 @@ struct CityScreen: View {
         .task(id: query) {
             try? await Task.sleep(for: .milliseconds(400))
             guard !Task.isCancelled else { return }
-            let found = await advisor.search(query)
-            guard !Task.isCancelled else { return }
-            results = found
+            do {
+                let found = try await advisor.search(query)
+                guard !Task.isCancelled else { return }
+                results = found
+                problem = found.isEmpty && query.trimmingCharacters(in: .whitespacesAndNewlines).count >= 2 ? String(localized: "Nothing found", bundle: .app, locale: .app) : nil
+            } catch {
+                guard !Task.isCancelled else { return }
+                results = []
+                problem = String(localized: "No internet connection. Try again when you are online.", bundle: .app, locale: .app)
+            }
         }
     }
 

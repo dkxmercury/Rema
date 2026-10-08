@@ -25,6 +25,7 @@ struct HomeScreen: View {
     var onPostpone: (HomeContent.Row, Postpone) -> Void = { _, _ in }
     var tip: Tip?
     var onTip: (Tip, Bool) -> Void = { _, _ in }
+    var loadingAccount = false
     @State private var addPressed = false
     @State private var intro = false
     @State private var lift: DialLift?
@@ -397,11 +398,18 @@ struct HomeScreen: View {
 
     private var emptyDay: some View {
         VStack(spacing: 6) {
-            Text("Nothing for today")
-                .font(.app(.golos, 16, weight: 600))
-            Text("Write below what and when to remind you")
-                .font(.app(.golos, 13))
-                .foregroundStyle(Palette.secondary)
+            if loadingAccount {
+                ProgressView()
+                    .padding(.bottom, 4)
+                Text("Loading from your account…")
+                    .font(.app(.golos, 16, weight: 600))
+            } else {
+                Text("Nothing for today")
+                    .font(.app(.golos, 16, weight: 600))
+                Text("Write below what and when to remind you")
+                    .font(.app(.golos, 13))
+                    .foregroundStyle(Palette.secondary)
+            }
         }
         .multilineTextAlignment(.center)
         .frame(maxWidth: .infinity)

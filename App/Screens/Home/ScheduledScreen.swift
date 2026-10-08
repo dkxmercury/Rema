@@ -4,6 +4,7 @@ struct ScheduledScreen: View {
     let content: ScheduledContent
     var onOpen: (UUID) -> Void = { _ in }
     let onBack: () -> Void
+    var loading = false
 
     var body: some View {
         ZStack {
@@ -11,7 +12,7 @@ struct ScheduledScreen: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     if content.isEmpty {
-                        Text("Nothing ahead")
+                        Text(loading ? LocalizedStringKey("Loading from your account…") : LocalizedStringKey("Nothing ahead"))
                             .font(.app(.golos, 16, weight: 600))
                             .foregroundStyle(Palette.secondary)
                             .frame(maxWidth: .infinity)

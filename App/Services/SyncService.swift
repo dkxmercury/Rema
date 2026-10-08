@@ -36,6 +36,11 @@ final class SyncService {
         savedAt = state.lastSync
     }
 
+    // Right after signing in on a new phone the day looks empty only because the account has not arrived yet.
+    var loadingFirstTime: Bool {
+        Account.shared.isSignedIn && Remote.shared.isOn(.sync) && savedAt == nil && status != .offline && status != .failed
+    }
+
     var hasPendingChanges: Bool {
         !SyncPlan.changes(in: Store.shared.snapshot, state: state, limit: 1).isEmpty
     }

@@ -166,9 +166,10 @@ struct RootView: View {
             FeaturesScreen(onPlaces: { navigation.path.append(.places) }, onBack: { navigation.path.removeLast() })
         case .scheduled:
             ScheduledScreen(
-                content: ScheduledContent.make(reminders: store.reminders, places: store.places, now: Date(), calendar: .current, locale: AppLanguage.current.locale),
+                content: ScheduledContent.make(reminders: store.reminders, places: store.places, now: Date(), calendar: .current, locale: AppLanguage.current.locale, withPlaces: remote.isOn(.places)),
                 onOpen: open,
-                onBack: { navigation.path.removeLast() }
+                onBack: { navigation.path.removeLast() },
+                loading: sync.loadingFirstTime
             )
         case .account:
             if let summary = accountSummary {
@@ -303,7 +304,7 @@ struct RootView: View {
                 },
                 onCalendar: { showingCalendar = true },
                 onSettings: { navigation.path.append(.settings) },
-                scheduledCount: ScheduledContent.count(reminders: store.reminders, now: timeline.date, calendar: .current),
+                scheduledCount: ScheduledContent.count(reminders: store.reminders, now: timeline.date, calendar: .current, withPlaces: remote.isOn(.places)),
                 onScheduled: { navigation.path.append(.scheduled) },
                 zoom: zoom,
                 onDelete: { id in
@@ -314,7 +315,8 @@ struct RootView: View {
                 onHabit: answerHabit,
                 onPostpone: postpone,
                 tip: tips.next(store: store, now: timeline.date),
-                onTip: answerTip
+                onTip: answerTip,
+                loadingAccount: sync.loadingFirstTime
             )
         }
     }

@@ -8,6 +8,7 @@ final class VoiceRecognizer {
     var listening = false
     var level: Double = 0
     var failure: String?
+    var needsSettings = false
 
     @ObservationIgnored private let engine = AVAudioEngine()
     @ObservationIgnored private var request: SFSpeechAudioBufferRecognitionRequest?
@@ -15,16 +16,19 @@ final class VoiceRecognizer {
 
     func start(locale: Locale, hints: [String] = []) {
         failure = nil
+        needsSettings = false
         transcript = ""
         Task { @MainActor in
             let speech = await withCheckedContinuation { continuation in
                 SFSpeechRecognizer.requestAuthorization { continuation.resume(returning: $0) }
             }
             guard speech == .authorized else {
+                needsSettings = true
                 failure = String(localized: "Allow speech recognition in Settings to dictate reminders.", bundle: .app, locale: .app)
                 return
             }
             guard await AVAudioApplication.requestRecordPermission() else {
+                needsSettings = true
                 failure = String(localized: "Allow microphone access in Settings to dictate reminders.", bundle: .app, locale: .app)
                 return
             }

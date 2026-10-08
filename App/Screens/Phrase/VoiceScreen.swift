@@ -12,6 +12,7 @@ struct VoiceScreen: View {
     @State private var recognizer: VoiceRecognizer
     @State private var finishing = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.openURL) private var openURL
 
     init(store: Store, now: Date = Date(), calendar: Calendar = .current, locale: Locale = AppLanguage.current.locale, recognizer: VoiceRecognizer = VoiceRecognizer(), live: Bool = true, onFinish: @escaping (String?) -> Void) {
         self.store = store
@@ -63,6 +64,19 @@ struct VoiceScreen: View {
                         .frame(maxWidth: .infinity)
                         .padding(.top, 20)
                         .transition(.opacity)
+                }
+                if recognizer.needsSettings {
+                    Button {
+                        if let url = URL(string: UIApplication.openSettingsURLString) {
+                            openURL(url)
+                        }
+                    } label: {
+                        Text("Settings")
+                    }
+                    .buttonStyle(SmallButtonStyle(prominent: false))
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 12)
+                    .transition(.opacity)
                 }
                 Spacer(minLength: 0)
             }
@@ -191,6 +205,6 @@ struct VoiceScreen: View {
             .frame(width: 88, height: 88)
         }
         .buttonStyle(PressableStyle())
-        .accessibilityLabel(Text("Finish"))
+        .accessibilityLabel(recognizer.failure == nil ? Text("Finish") : Text("Try again"))
     }
 }
