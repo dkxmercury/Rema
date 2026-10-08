@@ -47,7 +47,9 @@ jobs:
         env:
           LANGUAGES: ${{ inputs.languages }}
           SCENES: ${{ inputs.scenes }}
-        # Every scene in each language; next to each video a json file with the seconds where the scene begins and ends.
+        # Every scene in each language; next to each video a json file with the marks the scene printed, in seconds of the video.
+        # A scene that fails must not stop the others, so the shell runs without -e.
+        shell: bash {0}
         run: |
           set -uo pipefail
 
@@ -56,6 +58,7 @@ jobs:
           SCENES="${SCENES:-Phrase Repeat List Calendar Friends}"
           mkdir -p videos logs
 
+          # A clean simulator for every language: what one run left behind never leaks into the next.
           prepare() {
             local language="$1" locale keyboards
             if [ "$language" = "ru" ]; then
@@ -65,7 +68,9 @@ jobs:
               locale="en_US"
               keyboards=("en_US@sw=QWERTY;hw=Automatic")
             fi
-            xcrun simctl boot "$DEVICE" 2>/dev/null || true
+            xcrun simctl shutdown "$DEVICE" 2>/dev/null || true
+            xcrun simctl erase "$DEVICE"
+            xcrun simctl boot "$DEVICE"
             xcrun simctl bootstatus "$DEVICE" -b > /dev/null
             run() { xcrun simctl spawn "$DEVICE" defaults write "$@"; }
             run -g AppleLanguages -array "${locale/_/-}"
@@ -73,11 +78,9 @@ jobs:
             run -g AppleKeyboards -array "${keyboards[@]}"
             run -g AppleKeyboardsExpanded -int 1
             # Corrections, the word bar and the swipe typing tour would change what the scene shows.
-            run com.apple.Preferences KeyboardAutocorrection -bool false
-            run com.apple.Preferences KeyboardPrediction -bool false
-            run com.apple.Preferences KeyboardAutocapitalization -bool false
-            run com.apple.Preferences KeyboardCheckSpelling -bool false
-            run com.apple.Preferences KeyboardContinuousPathEnabled -bool false
+            for key in KeyboardAutocorrection KeyboardPrediction KeyboardShowPredictionBar KeyboardAutocapitalization KeyboardCheckSpelling KeyboardContinuousPathEnabled; do
+              run com.apple.Preferences "$key" -bool false
+            done
             run com.apple.Preferences DidShowContinuousPathIntroduction -bool true
             xcrun simctl shutdown "$DEVICE"
             xcrun simctl boot "$DEVICE"
@@ -89,6 +92,7 @@ jobs:
             prepare "$language"
             for scene in $SCENES; do
               name="$language-$(echo "$scene" | tr '[:upper:]' '[:lower:]')"
+              xcrun simctl terminate "$DEVICE" uz.dkx.rema 2>/dev/null || true
               # The app gets a time zone where it is early afternoon, so the day on the dial is full; the status bar shows the same time.
               read -r zone clock < <(python3 -c '
           import datetime
@@ -111,17 +115,18 @@ jobs:
               sleep 1
               kill -INT "$recorder"
               wait "$recorder" 2>/dev/null
-              python3 - "$name" "$started" <<'EOF'
+              python3 - "$name" "$started" "$zone" <<'EOF'
           import json, re, sys
-          name, started = sys.argv[1], float(sys.argv[2])
+          name, started, zone = sys.argv[1], float(sys.argv[2]), sys.argv[3]
           log = open(f"logs/{name}.log", encoding="utf-8", errors="replace").read()
-          marks = {kind.lower(): round(float(value) - started, 2) for kind, value in re.findall(r"SCENE-(START|END) ([0-9.]+)", log)}
-          json.dump(marks, open(f"videos/{name}.json", "w"))
+          marks = [[kind.lower(), round(float(value) - started, 2)] for kind, value in re.findall(r"SCENE-MARK (\w+) ([0-9.]+)", log)]
+          json.dump({"zone": zone, "marks": marks}, open(f"videos/{name}.json", "w"))
           print(name, marks, "passed" if "** TEST EXECUTE SUCCEEDED **" in log else "check the log")
           EOF
             done
           done
-          ls -la videos
+          cp ~/Library/Logs/DiagnosticReports/Rema* logs/ 2>/dev/null || true
+          ls -la videos logs
 
       - name: Videos
         if: always()
