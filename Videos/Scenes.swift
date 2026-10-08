@@ -121,7 +121,8 @@ final class Scenes: XCTestCase {
             tree(app, "invitation")
         }
         compose(app)
-        type(english ? "movie in 2 hours" : "через 2 часа кино", into: app)
+        // In an hour the new one comes before the demo reminders of the evening, so it stays on the screen above the bar.
+        type(english ? "movie in an hour" : "через час кино", into: app)
         pause(1)
         let share = app.buttons[english ? "With friends" : "С друзьями"].firstMatch
         if share.waitForExistence(timeout: 5) {
@@ -155,7 +156,8 @@ final class Scenes: XCTestCase {
                     pause(1)
                 }
             }
-            reveal(app, english ? "Movie" : "Кино")
+            // The demo already has a shared «Movie night», so only the exact title is the new one.
+            reveal(app, english ? "Movie" : "Кино", exact: true)
         } else {
             tree(app, "with friends")
         }
@@ -222,10 +224,10 @@ final class Scenes: XCTestCase {
         app.typeText("\n")
     }
 
-    // The new reminder, found by the start of its title, is marked with its place for the highlight.
+    // The new reminder, found by its title or the start of it, is marked with its place for the highlight.
     @discardableResult
-    private func reveal(_ app: XCUIApplication, _ title: String) -> XCUIElement? {
-        let element = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH[c] %@", title)).firstMatch
+    private func reveal(_ app: XCUIApplication, _ title: String, exact: Bool = false) -> XCUIElement? {
+        let element = app.staticTexts.matching(NSPredicate(format: exact ? "label ==[c] %@" : "label BEGINSWITH[c] %@", title)).firstMatch
         guard element.waitForExistence(timeout: 8) else {
             tree(app, "new reminder")
             return nil
