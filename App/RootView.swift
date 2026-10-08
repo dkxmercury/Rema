@@ -64,6 +64,7 @@ struct RootView: View {
     @State private var sync = SyncService.shared
     @State private var remote = Remote.shared
     @State private var editing: EditingTarget?
+    @State private var checking: ChecklistTarget?
     @State private var composing: ComposeTarget?
     @State private var showingCalendar = false
     @State private var showingLanguage = false
@@ -82,6 +83,16 @@ struct RootView: View {
         }
         .fullScreenCover(item: $editing) { target in
             EditorScreen(draft: target.reminder, isNew: target.isNew, store: store, onClose: { editing = nil })
+        }
+        .sheet(item: $checking) { target in
+            ChecklistSheet(store: store, reminderID: target.id, onEdit: {
+                checking = nil
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) { edit(target.id) }
+            }, onClose: { checking = nil })
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
+            .presentationCornerRadius(30)
+            .presentationBackground(Palette.background)
         }
         .fullScreenCover(item: $composing) { target in
             PhraseScreen(store: store, startWithVoice: target.voice, onClose: { composing = nil })
@@ -367,7 +378,7 @@ struct RootView: View {
             let morning = store.settings.morning
             date = calendar.date(bySettingHour: morning.hour, minute: morning.minute, second: 0, of: tomorrow) ?? tomorrow
         case .custom:
-            open(row.reminderID)
+            edit(row.reminderID)
             return
         }
         guard let reminder = store.reminder(row.reminderID) else { return }
@@ -390,7 +401,7 @@ struct RootView: View {
         SnoozeStats.reset(hint.reminderID)
         store.reloadIfChanged(edit: false)
         if accepted {
-            open(hint.reminderID)
+            edit(hint.reminderID)
         }
     }
 
@@ -456,7 +467,17 @@ struct RootView: View {
         }
     }
 
+    // A reminder with a list opens the list to tick, the editor is one tap further.
     private func open(_ id: UUID) {
+        guard let reminder = store.reminder(id) else { return }
+        if reminder.items.isEmpty {
+            editing = EditingTarget(reminder: reminder, isNew: false)
+        } else {
+            checking = ChecklistTarget(id: id)
+        }
+    }
+
+    private func edit(_ id: UUID) {
         guard let reminder = store.reminder(id) else { return }
         editing = EditingTarget(reminder: reminder, isNew: false)
     }

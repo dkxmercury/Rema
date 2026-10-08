@@ -45,6 +45,7 @@ struct PhraseScreen: View {
         var key: Key?
         var parsed: ParsedPhrase?
         var examples: [String: String] = [:]
+        var items: (title: String, items: [ChecklistItem])?
     }
 
     struct Overrides: Equatable {
@@ -54,6 +55,7 @@ struct PhraseScreen: View {
         var sound: SoundChoice?
         var placeIDs: [UUID]?
         var placeTrigger: PlaceTrigger?
+        var items: [ChecklistItem]?
     }
 
     init(store: Store, text: String = "", now: Date? = nil, calendar: Calendar = .current, locale: Locale = AppLanguage.current.locale, startWithVoice: Bool = false, autofocus: Bool = true, onClose: @escaping () -> Void) {
@@ -107,10 +109,93 @@ struct PhraseScreen: View {
             placeIDs: overrides.placeIDs ?? result.placeNames.compactMap { name in store.activePlaces.first { $0.name == name }?.id },
             placeTrigger: overrides.placeTrigger ?? result.placeTrigger ?? .arrive,
             sound: overrides.sound ?? .standard,
+            items: listItems,
             createdAt: now
         )
         reminder.id = draft.id
         return reminder
+    }
+
+    // «Купить хлеб, молоко и яйца» fills the list by itself until the person touches it.
+    private var listItems: [ChecklistItem] {
+        if let items = overrides.items {
+            return items
+        }
+        let title = parsed.title
+        if let cached = memo.items, cached.title == title {
+            return cached.items
+        }
+        let items = Checklist.isShopping(title) ? Checklist.items(in: title).map { ChecklistItem(text: $0) } : []
+        memo.items = (title, items)
+        return items
+    }
+
+    private var showsListOffer: Bool {
+        !parsed.title.isEmpty && (Checklist.isShopping(parsed.title) || !listItems.isEmpty)
+    }
+
+    private var listOffer: some View {
+        let items = listItems
+        let learned = Checklist.suggestions(for: items, in: store.reminders, excluding: draft.id)
+        let taken = Set(items.map { Checklist.split($0.text).name.lowercased() })
+        let hints = learned.isEmpty ? Array(ChecklistHints.staples.filter { !taken.contains($0.lowercased()) }.prefix(5)) : learned
+        let previous = items.isEmpty ? Checklist.previous(for: parsed.title, in: store.reminders, excluding: draft.id) : nil
+        return VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(alignment: .top, spacing: 12) {
+                    Glyph(paths: Icons.list, size: 20, lineWidth: 2, color: Palette.accentText)
+                        .frame(width: 36, height: 36)
+                        .background(RoundedRectangle(cornerRadius: 10, style: .circular).fill(Palette.accent.opacity(0.16)))
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Make a list?")
+                            .font(.app(.golos, 16, weight: 600))
+                        Text("You can tick items right in the shop.")
+                            .font(.app(.golos, 14))
+                            .foregroundStyle(Palette.secondary)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                ChecklistRows(items: items, framed: false, onToggle: { item in
+                    var updated = items
+                    if let index = updated.firstIndex(where: { $0.id == item.id }) {
+                        updated[index].done.toggle()
+                    }
+                    overrides.items = updated
+                }, onAdd: { text in
+                    overrides.items = items + [ChecklistItem(text: text)]
+                }, onRemove: { item in
+                    overrides.items = items.filter { $0.id != item.id }
+                })
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 14)
+            .padding(.bottom, 6)
+            .panel()
+            .overlay {
+                RoundedRectangle(cornerRadius: 22, style: .circular)
+                    .strokeBorder(Palette.accent.opacity(0.45), lineWidth: 1.5)
+            }
+            if !hints.isEmpty, items.count < Reminder.maximumItems {
+                ChecklistSuggestions(title: learned.isEmpty ? "Often bought" : "You often buy", names: hints) { name in
+                    overrides.items = items + [ChecklistItem(text: name)]
+                }
+                .padding(.top, 12)
+            }
+            if let previous {
+                Button {
+                    Feedback.play(.select)
+                    overrides.items = previous
+                } label: {
+                    Text(verbatim: String(localized: "Like last time · \(previous.count) items", bundle: .app, locale: .app))
+                        .font(.app(.golos, 15, weight: 600))
+                        .foregroundStyle(Palette.accentText)
+                        .frame(height: 40)
+                        .padding(.horizontal, 4)
+                }
+                .buttonStyle(RowPressStyle())
+                .padding(.top, 10)
+            }
+        }
     }
 
     // The other reading of a bare hour; the choice belongs to this exact text and goes away when it changes.
@@ -250,6 +335,11 @@ struct PhraseScreen: View {
                         }
                         .padding(.top, 12)
                         .transition(.opacity.combined(with: .move(edge: .top)))
+                    }
+                    if showsListOffer {
+                        listOffer
+                            .padding(.top, 12)
+                            .transition(.opacity.combined(with: .move(edge: .top)))
                     }
                     addOns
                         .padding(.top, 12)

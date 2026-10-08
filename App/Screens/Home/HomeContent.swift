@@ -215,6 +215,18 @@ enum SampleData {
         ]
     }()
 
+    static let groceries = Reminder(
+        title: "Купить продукты",
+        schedule: Schedule(start: LocalDate(year: 2026, month: 10, day: 5), time: LocalTime(hour: 19, minute: 0)),
+        items: [
+            ChecklistItem(text: "Хлеб", done: true),
+            ChecklistItem(text: "Молоко 2 л"),
+            ChecklistItem(text: "Яйца 10 шт"),
+            ChecklistItem(text: "Сыр"),
+        ],
+        createdAt: now
+    )
+
     // A day longer than the screen, for the scrolling check.
     static var busyDay: [Reminder] {
         let day = LocalDate(year: 2026, month: 10, day: 5)

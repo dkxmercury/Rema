@@ -264,7 +264,8 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
                 region.notifyOnExit = reminder.placeTrigger == .leave
                 let content = UNMutableNotificationContent()
                 content.title = reminder.title
-                content.body = reminder.placeTrigger == .leave ? String(localized: "Leaving: \(place.name)", bundle: .app, locale: .app) : String(localized: "Arrived: \(place.name)", bundle: .app, locale: .app)
+                let arrival = reminder.placeTrigger == .leave ? String(localized: "Leaving: \(place.name)", bundle: .app, locale: .app) : String(localized: "Arrived: \(place.name)", bundle: .app, locale: .app)
+                content.body = [arrival, listLine(reminder.id)].compactMap { $0 }.joined(separator: "\n")
                 content.sound = SoundPlayer.notificationSound(reminder.sound, settings: store.settings, sounds: store.sounds)
                 content.categoryIdentifier = "place"
                 content.interruptionLevel = reminder.urgent ? .timeSensitive : .active
@@ -290,9 +291,9 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         let when = describer.dayAndTime(item.occurrence, now: item.fireDate).capitalizedFirst(.current)
         switch item.kind {
         case .main:
-            return when
+            return [when, listLine(item.reminderID)].compactMap { $0 }.joined(separator: "\n")
         case .early:
-            return String(localized: "\(when), reminding in advance", bundle: .app, locale: .app)
+            return [String(localized: "\(when), reminding in advance", bundle: .app, locale: .app), listLine(item.reminderID)].compactMap { $0 }.joined(separator: "\n")
         case .snoozed:
             return String(localized: "Snoozed reminder", bundle: .app, locale: .app)
         case .missed:
@@ -302,6 +303,14 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
             let next = index == Scheduler.nagRepeats ? String(localized: "This is the last reminder.", bundle: .app, locale: .app) : String(localized: "I'll repeat in \(interval) minutes until you tap Done.", bundle: .app, locale: .app)
             return "\(ordinal(index + 1)). \(next)"
         }
+    }
+
+    // What is still to tick, right in the notification, so the list is at hand in the shop.
+    private func listLine(_ id: UUID) -> String? {
+        let left = (store.reminder(id)?.items ?? []).filter { !$0.done }.map(\.text)
+        guard !left.isEmpty else { return nil }
+        let shown = left.prefix(8).joined(separator: ", ")
+        return left.count > 8 ? "\(shown)…" : shown
     }
 
     private func ordinal(_ number: Int) -> String {

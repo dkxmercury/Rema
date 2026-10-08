@@ -69,8 +69,7 @@ public enum SharedStore {
               let index = snapshot.reminders.firstIndex(where: { $0.id == id }) else { return false }
         var reminder = snapshot.reminders[index]
         if done {
-            reminder.completedThrough = max(reminder.completedThrough ?? occurrence, occurrence)
-            reminder.snoozedUntil = nil
+            reminder.markDone(through: occurrence)
         } else {
             reminder.completedThrough = occurrence.addingTimeInterval(-1)
         }

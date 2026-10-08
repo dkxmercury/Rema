@@ -20,6 +20,15 @@ public enum Agenda {
         return items.sorted { $0.occurrence == $1.occurrence ? $0.reminderID.uuidString < $1.reminderID.uuidString : $0.occurrence < $1.occurrence }
     }
 
+    // The occurrence a list belongs to: today's one not done yet, otherwise the next one.
+    public static func current(_ reminder: Reminder, now: Date, calendar: Calendar) -> Date? {
+        guard let schedule = reminder.schedule else { return nil }
+        if let today = day(now, reminders: [reminder], calendar: calendar).first(where: { !$0.done }) {
+            return today.occurrence
+        }
+        return Recurrence.next(schedule, after: max(now, reminder.completedThrough ?? now), limit: 1, calendar: calendar).first
+    }
+
     public static func upcoming(after now: Date, reminders: [Reminder], calendar: Calendar, limit: Int = 20) -> [AgendaItem] {
         var items: [AgendaItem] = []
         for reminder in reminders where reminder.deletedAt == nil {

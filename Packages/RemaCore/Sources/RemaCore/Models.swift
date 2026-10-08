@@ -81,8 +81,23 @@ public enum SoundChoice: Codable, Hashable, Sendable {
     case custom(UUID)
 }
 
+public struct ChecklistItem: Codable, Identifiable, Hashable, Sendable {
+    public static let maximumLength = 120
+
+    public var id: UUID
+    public var text: String
+    public var done: Bool
+
+    public init(id: UUID = UUID(), text: String, done: Bool = false) {
+        self.id = id
+        self.text = String(text.prefix(Self.maximumLength))
+        self.done = done
+    }
+}
+
 public struct Reminder: Codable, Identifiable, Hashable, Sendable {
     public static let maximumTitleLength = 200
+    public static let maximumItems = 40
 
     public var id: UUID
     public var title: String
@@ -94,6 +109,8 @@ public struct Reminder: Codable, Identifiable, Hashable, Sendable {
     public var placeIDs: [UUID]
     public var placeTrigger: PlaceTrigger
     public var sound: SoundChoice
+    public var items: [ChecklistItem]
+    public var doneWhenChecked: Bool
     public var completedThrough: Date?
     public var snoozedUntil: Date?
     public var createdAt: Date
@@ -111,6 +128,8 @@ public struct Reminder: Codable, Identifiable, Hashable, Sendable {
         placeIDs: [UUID] = [],
         placeTrigger: PlaceTrigger = .arrive,
         sound: SoundChoice = .standard,
+        items: [ChecklistItem] = [],
+        doneWhenChecked: Bool = true,
         completedThrough: Date? = nil,
         snoozedUntil: Date? = nil,
         createdAt: Date,
@@ -127,6 +146,8 @@ public struct Reminder: Codable, Identifiable, Hashable, Sendable {
         self.placeIDs = placeIDs
         self.placeTrigger = placeTrigger
         self.sound = sound
+        self.items = items
+        self.doneWhenChecked = doneWhenChecked
         self.completedThrough = completedThrough
         self.snoozedUntil = snoozedUntil
         self.createdAt = createdAt
@@ -134,8 +155,45 @@ public struct Reminder: Codable, Identifiable, Hashable, Sendable {
         self.deletedAt = deletedAt
     }
 
+    // Reminders saved before lists came in have no items in their data.
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        title = try container.decode(String.self, forKey: .title)
+        schedule = try container.decodeIfPresent(Schedule.self, forKey: .schedule)
+        preAlerts = try container.decode([Int].self, forKey: .preAlerts)
+        nag = try container.decode(Bool.self, forKey: .nag)
+        nagInterval = try container.decodeIfPresent(Int.self, forKey: .nagInterval)
+        urgent = try container.decode(Bool.self, forKey: .urgent)
+        placeIDs = try container.decode([UUID].self, forKey: .placeIDs)
+        placeTrigger = try container.decode(PlaceTrigger.self, forKey: .placeTrigger)
+        sound = try container.decode(SoundChoice.self, forKey: .sound)
+        items = try container.decodeIfPresent([ChecklistItem].self, forKey: .items) ?? []
+        doneWhenChecked = try container.decodeIfPresent(Bool.self, forKey: .doneWhenChecked) ?? true
+        completedThrough = try container.decodeIfPresent(Date.self, forKey: .completedThrough)
+        snoozedUntil = try container.decodeIfPresent(Date.self, forKey: .snoozedUntil)
+        createdAt = try container.decode(Date.self, forKey: .createdAt)
+        updatedAt = try container.decode(Date.self, forKey: .updatedAt)
+        deletedAt = try container.decodeIfPresent(Date.self, forKey: .deletedAt)
+    }
+
     public var isPlaceOnly: Bool {
         schedule == nil && !placeIDs.isEmpty
+    }
+
+    public var checkedCount: Int {
+        items.filter(\.done).count
+    }
+
+    // A repeating list comes back unticked the next time, the items themselves stay.
+    public mutating func markDone(through occurrence: Date) {
+        completedThrough = max(completedThrough ?? occurrence, occurrence)
+        snoozedUntil = nil
+        if schedule?.rule != nil {
+            for index in items.indices {
+                items[index].done = false
+            }
+        }
     }
 }
 

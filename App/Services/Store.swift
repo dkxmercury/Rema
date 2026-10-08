@@ -78,9 +78,32 @@ final class Store {
     func complete(_ id: UUID, through occurrence: Date) {
         fresh()
         guard var reminder = reminder(id) else { return }
-        reminder.completedThrough = max(reminder.completedThrough ?? occurrence, occurrence)
-        reminder.snoozedUntil = nil
+        reminder.markDone(through: occurrence)
         SnoozeStats.reset(id)
+        save(reminder)
+    }
+
+    func toggleItem(_ itemID: UUID, of id: UUID) {
+        fresh()
+        guard var reminder = reminder(id), let index = reminder.items.firstIndex(where: { $0.id == itemID }) else { return }
+        reminder.items[index].done.toggle()
+        save(reminder)
+    }
+
+    func addItem(_ text: String, to id: UUID) {
+        fresh()
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, var reminder = reminder(id), reminder.items.count < Reminder.maximumItems else { return }
+        reminder.items.append(ChecklistItem(text: trimmed))
+        save(reminder)
+    }
+
+    func checkAll(_ id: UUID) {
+        fresh()
+        guard var reminder = reminder(id) else { return }
+        for index in reminder.items.indices {
+            reminder.items[index].done = true
+        }
         save(reminder)
     }
 

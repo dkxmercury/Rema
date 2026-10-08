@@ -22,6 +22,7 @@ struct EditorScreen: View {
     @State private var pickingDate = false
     @State private var confirmingDelete = false
     @State private var titleShake = 0
+    @State private var showsList = false
     @FocusState private var titleFocused: Bool
 
     private var describer: Describer {
@@ -75,6 +76,11 @@ struct EditorScreen: View {
                         .padding(.top, 16)
                     dateCard
                         .padding(.top, 14)
+                    if showsListSection {
+                        listSection
+                            .padding(.top, 20)
+                            .transition(.opacity.combined(with: .move(edge: .top)))
+                    }
                     settingsPanel
                         .padding(.top, 12)
                     if !isNew {
@@ -218,6 +224,16 @@ struct EditorScreen: View {
                     .fixedSize()
                 }
             }
+            if !showsListSection {
+                Hairline()
+                NavigationRow(icon: Icons.list, iconColor: Palette.text, title: "List", action: {
+                    withAnimation(Motion.standard) { showsList = true }
+                }) {
+                    Text("No")
+                        .font(.app(.golos, 14))
+                        .foregroundStyle(Palette.secondary)
+                }
+            }
             if Remote.shared.isOn(.places) || !draft.placeIDs.isEmpty {
                 Hairline()
                 NavigationRow(icon: Icons.pin, iconColor: Palette.text, title: "By place", action: { path.append(.places) }) {
@@ -233,6 +249,50 @@ struct EditorScreen: View {
             Hairline()
             soundRow
         }
+    }
+
+    // A shopping title opens the list by itself, anything else gets it from the row below.
+    private var showsListSection: Bool {
+        showsList || !draft.items.isEmpty || Checklist.isShopping(draft.title)
+    }
+
+    private var listSection: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            SectionLabel(verbatim: draft.items.isEmpty ? String(localized: "List", bundle: .app, locale: .app) : "\(String(localized: "List", bundle: .app, locale: .app)) · \(ChecklistHints.progress(draft))")
+                .padding(.horizontal, 4)
+                .padding(.bottom, 8)
+            ChecklistRows(items: draft.items, focusOnAppear: showsList && draft.items.isEmpty, onToggle: { item in
+                if let index = draft.items.firstIndex(where: { $0.id == item.id }) {
+                    draft.items[index].done.toggle()
+                }
+            }, onAdd: { text in
+                draft.items.append(ChecklistItem(text: text))
+            }, onRemove: { item in
+                draft.items.removeAll { $0.id == item.id }
+            })
+            let hints = listHints
+            if !hints.isEmpty {
+                ChecklistSuggestions(title: "Often together with this", names: hints) { name in
+                    draft.items.append(ChecklistItem(text: name))
+                }
+                .padding(.top, 12)
+            }
+            if !draft.items.isEmpty {
+                PanelList {
+                    ToggleRow(icon: Icons.check, iconColor: Palette.text, title: "Done when all ticked", subtitle: String(localized: "the reminder marks itself", bundle: .app, locale: .app), isOn: $draft.doneWhenChecked)
+                }
+                .padding(.top, 12)
+            }
+        }
+        .animation(Motion.standard, value: draft.items)
+    }
+
+    private var listHints: [String] {
+        guard draft.items.count < Reminder.maximumItems else { return [] }
+        let learned = Checklist.suggestions(for: draft.items, in: store.reminders, excluding: draft.id, limit: 3)
+        guard learned.isEmpty, Checklist.isShopping(draft.title) else { return learned }
+        let taken = Set(draft.items.map { Checklist.split($0.text).name.lowercased() })
+        return Array(ChecklistHints.staples.filter { !taken.contains($0.lowercased()) }.prefix(3))
     }
 
     private var placeValue: String {
@@ -325,11 +385,16 @@ struct EditorScreen: View {
         store.reloadIfChanged(edit: false)
         var reminder = draft
         // A notification, the widget or another phone may have marked it done or snoozed it while the editor was open.
-        if let current = store.reminder(draft.id), current.schedule == draft.schedule {
+        let before = store.reminder(draft.id)
+        if let current = before, current.schedule == draft.schedule {
             reminder.completedThrough = current.completedThrough
             reminder.snoozedUntil = current.snoozedUntil
         }
         store.save(reminder)
+        let finished = reminder.doneWhenChecked && !reminder.items.isEmpty && reminder.items.allSatisfy(\.done)
+        if finished, before.map({ $0.items.isEmpty || !$0.items.allSatisfy(\.done) }) ?? true {
+            store.complete(reminder.id, through: Agenda.current(reminder, now: Date(), calendar: calendar) ?? Date())
+        }
         Notifier.shared.requestPermissionIfNeeded()
         onClose()
     }

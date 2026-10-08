@@ -104,6 +104,16 @@ final class ScreenSnapshots: XCTestCase {
         try render(VoiceScreen(store: sampleStore(), now: SampleData.now, calendar: SampleData.calendar, locale: russian, recognizer: recognizer, live: false, onFinish: { _ in }), name: "Voice-Denied", style: .dark)
     }
 
+    func testChecklist() throws {
+        let store = sampleStore()
+        store.save(SampleData.groceries)
+        try render(EditorScreen(draft: SampleData.groceries, isNew: false, store: store, now: SampleData.now, calendar: SampleData.calendar, locale: russian, onClose: {}), name: "D-Checklist-Editor", style: .dark, height: 1100)
+        try render(PhraseScreen(store: store, text: "завтра в 19 купить продукты", now: SampleData.now, calendar: SampleData.calendar, locale: russian, autofocus: false, onClose: {}), name: "D-Checklist-Phrase", style: .dark, height: 1000)
+        try render(ChecklistSheet(store: store, reminderID: SampleData.groceries.id, now: SampleData.now, calendar: SampleData.calendar, locale: russian, onEdit: {}, onClose: {}), name: "D-Checklist-Sheet", style: .dark, height: 560)
+        let home = HomeContent.make(reminders: SampleData.reminders.filter { $0.title != "Купить хлеб и молоко" } + [SampleData.groceries], places: SampleData.places, now: SampleData.now, calendar: SampleData.calendar, locale: russian)
+        try render(HomeScreen(content: home), name: "Home-Checklist", style: .dark)
+    }
+
     func testEmptyAndRightToLeft() throws {
         let empty = HomeContent.make(reminders: [], places: [], now: SampleData.now, calendar: SampleData.calendar, locale: russian)
         try render(HomeScreen(content: empty), name: "Home-Empty", style: .light)

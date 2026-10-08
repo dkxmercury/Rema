@@ -7,6 +7,9 @@ struct Describer {
 
     func subtitle(for reminder: Reminder, places: [Place], withRepeat: Bool = true) -> String? {
         var parts: [String] = []
+        if !reminder.items.isEmpty {
+            parts.append(String(localized: "\(reminder.checkedCount) of \(reminder.items.count)", bundle: .app, locale: .app))
+        }
         if withRepeat, let rule = reminder.schedule?.rule {
             parts.append(repeatText(rule))
         }
