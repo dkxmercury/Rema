@@ -45,6 +45,8 @@ struct Describer {
             return String(localized: "monthly on day \(day)", bundle: .app, locale: .app)
         case .monthlyOnWeekday:
             return String(localized: "every month", bundle: .app, locale: .app)
+        case .lastWorkday:
+            return String(localized: "monthly, on the last working day", bundle: .app, locale: .app)
         case .yearly:
             return String(localized: "every year", bundle: .app, locale: .app)
         }

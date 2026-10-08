@@ -1,7 +1,7 @@
 import Foundation
 
 extension PhraseParser {
-    private static let ukMonths = "(січня|лютого|березня|квітня|травня|червня|липня|серпня|вересня|жовтня|листопада|грудня)"
+    static let ukMonths = "(січня|лютого|березня|квітня|травня|червня|липня|серпня|вересня|жовтня|листопада|грудня)"
     static let ukWeekdays = "(понеділ\\w*|пн|вівтор\\w*|(?<!\\d )вт|серед(?:а|у|и|ою|і)|ср|четвер(?:г\\w*)?|чт|п'ятниц\\w*|пятниц\\w*|пт|субот\\w*|сб|неділ\\w*|нд)"
     private static let ukFillers: Set<String> = ["нагадай", "нагадайте", "нагадати", "мені", "будь", "ласка", "треба", "потрібно"]
     private static let ukDangling: Set<String> = ["і", "й", "та", "а", "в", "у", "на", "з", "із", "до", "о", "об", "по"]
@@ -20,6 +20,7 @@ extension PhraseParser {
         func pass(_ text: String, _ state: inout State) {
             extras(text, &state, PhraseParser.ukrainianExtras, weekday: ukWeekday)
             ukRepeats(text, &state)
+            limits(text, &state, PhraseParser.ukrainianLimits, weekday: ukWeekday, month: ukMonth)
             ukOffsets(text, &state)
             ukDates(text, &state)
             ukTimes(text, &state)

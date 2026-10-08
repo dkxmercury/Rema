@@ -227,6 +227,21 @@ enum SampleData {
         createdAt: now
     )
 
+    // Ticks of the last days, for the history.
+    static var withHistory: [Reminder] {
+        var list = reminders
+        for offset in 0..<12 {
+            let day = calendar.date(byAdding: .day, value: -offset, to: now)!
+            let occurrence = calendar.date(bySettingHour: 9, minute: 0, second: 0, of: day)!
+            list[0].markDone(through: occurrence, at: occurrence.addingTimeInterval(120))
+        }
+        for (month, day) in [(9, 21), (9, 24), (9, 28), (10, 1)] {
+            let occurrence = calendar.date(from: DateComponents(year: 2026, month: month, day: day, hour: 21, minute: 30))!
+            list[3].markDone(through: occurrence, at: occurrence.addingTimeInterval(300))
+        }
+        return list
+    }
+
     // A day longer than the screen, for the scrolling check.
     static var busyDay: [Reminder] {
         let day = LocalDate(year: 2026, month: 10, day: 5)

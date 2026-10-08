@@ -1,7 +1,7 @@
 import Foundation
 
 extension PhraseParser {
-    private static let uzMonths = "(yanvar|fevral|mart|aprel|may|iyun|iyul|avgust|sentabr|sentyabr|oktabr|oktyabr|noyabr|dekabr)(?:ning|da|ga|dan)?"
+    static let uzMonths = "(yanvar|fevral|mart|aprel|may|iyun|iyul|avgust|sentabr|sentyabr|oktabr|oktyabr|noyabr|dekabr)(?:ning|da|ga|dan)?"
     static let uzWeekdays = "(dushanba|seshanba|chorshanba|payshanba|juma|shanba|yakshanba)(?:da|lari|ga)?"
     private static let uzCount = "(\\d{1,4}|bir|ikki|uch|to'rt|besh|o'n|o'n besh|yigirma|o'ttiz)"
     private static let uzFillers: Set<String> = ["iltimos", "menga", "kerak"]
@@ -32,6 +32,7 @@ extension PhraseParser {
         func pass(_ text: String, _ state: inout State) {
             extras(text, &state, PhraseParser.uzbekExtras, weekday: uzWeekday)
             uzRepeats(text, &state)
+            limits(text, &state, PhraseParser.uzbekLimits, weekday: uzWeekday, month: uzMonth)
             uzOffsets(text, &state)
             uzDates(text, &state)
             uzTimes(text, &state)

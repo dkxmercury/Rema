@@ -1,7 +1,7 @@
 import Foundation
 
 extension PhraseParser {
-    private static let frMonths = "(janvier|février|fevrier|mars|avril|mai|juin|juillet|août|aout|septembre|octobre|novembre|décembre|decembre|janv|févr|fevr|avr|juil|sept|oct|nov|déc|dec)\\.?"
+    static let frMonths = "(janvier|février|fevrier|mars|avril|mai|juin|juillet|août|aout|septembre|octobre|novembre|décembre|decembre|janv|févr|fevr|avr|juil|sept|oct|nov|déc|dec)\\.?"
     static let frWeekdays = "(lundis?|mardis?|mercredis?|jeudis?|vendredis?|samedis?|dimanches?)"
     private static let frCount = "(\\d{1,4}|une|un|deux|trois|quatre|cinq|dix|quinze|vingt|trente)"
     private static let frFillers: Set<String> = ["svp", "stp"]
@@ -13,6 +13,7 @@ extension PhraseParser {
         func pass(_ text: String, _ state: inout State) {
             extras(text, &state, PhraseParser.frenchExtras, weekday: frWeekday)
             frRepeats(text, &state)
+            limits(text, &state, PhraseParser.frenchLimits, weekday: frWeekday, month: frMonth)
             frOffsets(text, &state)
             frDates(text, &state)
             frAlerts(text, &state)

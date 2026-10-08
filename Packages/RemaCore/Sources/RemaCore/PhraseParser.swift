@@ -51,7 +51,7 @@ public struct PhraseParser {
     }
 
     private static let months = ["январ", "феврал", "март", "апрел", "ма", "июн", "июл", "август", "сентябр", "октябр", "ноябр", "декабр"]
-    private static let monthPattern = "(января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря)"
+    static let monthPattern = "(января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря)"
     static let weekdayPattern = "(понедельник\\w*|пн|вторник\\w*|(?<!\\d )вт|сред(?:а|у|ы|ой|е|ам|ами|ах)|ср|четверг\\w*|чт|пятниц\\w*|пт|суббот\\w*|сб|воскресень\\w*|вс)"
     private static let fillers: Set<String> = ["напомни", "напомните", "напомнить", "мне", "пожалуйста", "надо", "нужно"]
     private static let dangling: Set<String> = ["и", "а", "в", "во", "на", "с", "со", "к", "по"]
@@ -76,6 +76,8 @@ public struct PhraseParser {
         var marks: [Mark] = []
         var nextWeek = false
         var corrected = false
+        var end = RepeatEnd.never
+        var span: Int?
     }
 
     struct Mark {
@@ -108,6 +110,7 @@ public struct PhraseParser {
         func pass(_ text: String, _ state: inout State) {
             extras(text, &state, PhraseParser.russianExtras, weekday: weekday)
             repeats(text, &state)
+            limits(text, &state, PhraseParser.russianLimits, weekday: weekday, month: month)
             offsets(text, &state)
             dates(text, &state)
             times(text, &state)
@@ -289,9 +292,9 @@ public struct PhraseParser {
     }
 
     private func dates(_ text: String, _ state: inout State) {
-        take("(сегодня)", text, &state) { _, s in s.dayOffset = 0; return true }
+        take("(сегодня|седня|сення)", text, &state) { _, s in s.dayOffset = 0; return true }
         take("(послезавтра)", text, &state) { _, s in s.dayOffset = 2; return true }
-        take("(завтра)", text, &state) { _, s in s.dayOffset = 1; return true }
+        take("(завтра|завтро|зовтра|завтр)", text, &state) { _, s in s.dayOffset = 1; return true }
         take("(\\d{1,2}) \(PhraseParser.monthPattern)( (\\d{4}))?", text, &state) { m, s in
             guard let day = group(m, 1, text).flatMap(Int.init), let month = group(m, 2, text).flatMap(self.month), (1...31).contains(day) else { return false }
             let year = group(m, 4, text).flatMap(Int.init)
@@ -406,9 +409,9 @@ public struct PhraseParser {
         }
         take("в полдень", text, &state) { _, s in s.time = LocalTime(hour: 12, minute: 0); return true }
         take("в полночь", text, &state) { _, s in s.time = LocalTime(hour: 0, minute: 0); return true }
-        take("(утром)", text, &state) { _, s in s.dayPart = morning; return true }
+        take("(утром|утречком|с утра пораньше)", text, &state) { _, s in s.dayPart = morning; return true }
         take("((?<!с )(?<!со )днем)", text, &state) { _, s in s.dayPart = LocalTime(hour: 13, minute: 0); return true }
-        take("(вечером)", text, &state) { _, s in s.dayPart = evening; return true }
+        take("(вечером|вечерком|вечерочком)", text, &state) { _, s in s.dayPart = evening; return true }
         take("(ночью)", text, &state) { _, s in s.dayPart = LocalTime(hour: 23, minute: 0); return true }
     }
 
@@ -593,6 +596,10 @@ public struct PhraseParser {
             start = date
         } else if let offset = state.dayOffset {
             start = today.adding(days: offset)
+            // «В пятницу через неделю» is the first Friday after the week has passed.
+            while !state.weekdays.isEmpty, !state.weekdays.contains(start.weekday) {
+                start = start.adding(days: 1)
+            }
         } else if !state.weekdays.isEmpty {
             start = today
             for step in 0..<8 {
@@ -645,7 +652,11 @@ public struct PhraseParser {
                 start = start.adding(days: 1)
             }
         }
-        return Schedule(start: start, time: clock, rule: rule)
+        var end = rule == nil ? RepeatEnd.never : state.end
+        if let span = state.span, rule != nil, end == .never {
+            end = .until(start.adding(days: max(span, 1) - 1))
+        }
+        return Schedule(start: start, time: clock, rule: rule, end: end)
     }
 
     func title(_ input: String, used: [Range<Int>], fillers: Set<String>, dangling: Set<String>, lead: Set<String> = []) -> String {

@@ -11,6 +11,14 @@ struct RecurrenceTests {
 
     let tashkent = RecurrenceTests.calendar("Asia/Tashkent")
 
+    @Test func lastWorkdayStepsBackFromTheWeekend() {
+        let schedule = Schedule(start: LocalDate(year: 2026, month: 10, day: 1), time: LocalTime(hour: 9, minute: 0), rule: .lastWorkday)
+        let next = Recurrence.next(schedule, after: moment(2026, 10, 5), limit: 4, calendar: tashkent)
+        #expect(next == [moment(2026, 10, 30, 9), moment(2026, 11, 30, 9), moment(2026, 12, 31, 9), moment(2027, 1, 29, 9)])
+        let ending = Schedule(start: LocalDate(year: 2026, month: 10, day: 1), time: LocalTime(hour: 9, minute: 0), rule: .lastWorkday, end: .until(LocalDate(year: 2026, month: 12, day: 1)))
+        #expect(Recurrence.next(ending, after: moment(2026, 10, 5), limit: 4, calendar: tashkent).count == 2)
+    }
+
     func moment(_ year: Int, _ month: Int, _ day: Int, _ hour: Int = 0, _ minute: Int = 0, in calendar: Calendar? = nil) -> Date {
         (calendar ?? tashkent).date(from: DateComponents(year: year, month: month, day: day, hour: hour, minute: minute))!
     }

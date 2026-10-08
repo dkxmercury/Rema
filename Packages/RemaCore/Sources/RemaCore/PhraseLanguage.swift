@@ -6,6 +6,7 @@ extension PhraseParser {
         "montag", "dienstag", "mittwoch", "donnerstag", "freitag", "samstag", "sonntag", "erinnere", "mich", "abends",
         "morgens", "nächsten", "wenn", "ich", "vorher", "dringend", "alle", "tage", "werktags", "jährlich", "monatlich", "einer",
         "wochenende", "arbeit", "zweiten", "monatsende", "mittagessen", "mittagspause", "monats", "halb", "viertel", "dreiviertel",
+        "silvester", "neujahr", "weihnachten", "heiligabend", "kaufen", "außer", "arbeitstag", "bis",
     ]
     private static let frenchWords: Set<String> = [
         "demain", "aujourd'hui", "après-demain", "à", "chaque", "tous", "toutes", "dans", "heures", "heure", "lundi", "mardi",

@@ -185,6 +185,7 @@ struct RootView: View {
         case .scheduled:
             ScheduledScreen(
                 content: ScheduledContent.make(reminders: store.reminders, places: store.places, now: Date(), calendar: .current, locale: AppLanguage.current.locale, withPlaces: remote.isOn(.places)),
+                done: DoneContent.make(reminders: store.reminders, now: Date(), calendar: .current, locale: AppLanguage.current.locale),
                 onOpen: open,
                 onBack: { navigation.path.removeLast() },
                 loading: sync.loadingFirstTime

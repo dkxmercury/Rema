@@ -1,7 +1,7 @@
 import Foundation
 
 extension PhraseParser {
-    private static let deMonths = "(januar|jänner|februar|märz|april|mai|juni|juli|august|september|oktober|november|dezember|jan|feb|mär|apr|jun|jul|aug|sep|sept|okt|nov|dez)\\.?"
+    static let deMonths = "(januar|jänner|februar|märz|april|mai|juni|juli|august|september|oktober|november|dezember|jan|feb|mär|apr|jun|jul|aug|sep|sept|okt|nov|dez)\\.?"
     private static let deWeekdays = "(montags?|mo|dienstags?|di|mittwochs?|mi|donnerstags?|do|freitags?|fr|samstags?|sa|sonnabends?|sonntags?|so)"
     static let deWeekdaysFull = "(montags?|dienstags?|mittwochs?|donnerstags?|freitags?|samstags?|sonnabends?|sonntags?)"
     private static let deCount = "(\\d{1,4}|einer|einem|einen|eine|ein|zwei|drei|vier|fünf|zehn|fünfzehn|zwanzig|dreißig)"
@@ -14,6 +14,7 @@ extension PhraseParser {
         func pass(_ text: String, _ state: inout State) {
             extras(text, &state, PhraseParser.germanExtras, weekday: deWeekday)
             deRepeats(text, &state)
+            limits(text, &state, PhraseParser.germanLimits, weekday: deWeekday, month: deMonth)
             deOffsets(text, &state)
             deDates(text, &state)
             deTimes(text, &state)
@@ -84,7 +85,7 @@ extension PhraseParser {
             return true
         }
         let list = "\(PhraseParser.deWeekdays)((\\s*(,|und|&)\\s*)\(PhraseParser.deWeekdays))*"
-        take("(?:(jeden|jeder|jede) )?\(list)", text, &state) { m, s in
+        take("(?<!außer |ausser |ohne )(?:(jeden|jeder|jede) )?\(list)", text, &state) { m, s in
             guard let whole = Range(m.range, in: text) else { return false }
             let matched = String(text[whole])
             let pieces: [String] = matched.split(whereSeparator: { !$0.isLetter }).map(String.init)

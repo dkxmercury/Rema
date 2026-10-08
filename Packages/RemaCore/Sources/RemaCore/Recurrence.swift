@@ -55,7 +55,7 @@ struct DaySequence {
             if jumps > 0 {
                 cursor = start.adding(days: (jumps - 1) * step)
             }
-        case .monthlyOnDay, .monthlyOnWeekday:
+        case .monthlyOnDay, .monthlyOnWeekday, .lastWorkday:
             period = max(0, (floor.year - start.year) * 12 + floor.month - start.month - 1)
         case .yearly:
             period = max(0, floor.year - start.year - 1)
@@ -86,6 +86,14 @@ struct DaySequence {
         case .monthlyOnWeekday(let ordinal, let weekday):
             return nextMonth { year, month in
                 LocalDate.nth(ordinal, weekday, month: month, year: year)
+            }
+        case .lastWorkday:
+            return nextMonth { year, month in
+                var day = LocalDate(year: year, month: month, day: LocalDate.days(in: month, year: year))
+                while day.weekday.rawValue > 5 {
+                    day = day.adding(days: -1)
+                }
+                return day
             }
         case .yearly(let month, let day):
             while true {

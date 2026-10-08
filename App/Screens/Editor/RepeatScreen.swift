@@ -27,7 +27,7 @@ struct RepeatScreen: View {
         case .weekdays: return .weekdays
         case .weekly: return .weekly
         case .everyDays: return .everyDays
-        case .monthlyOnDay, .monthlyOnWeekday: return .monthly
+        case .monthlyOnDay, .monthlyOnWeekday, .lastWorkday: return .monthly
         case .yearly: return .yearly
         }
     }
@@ -43,6 +43,11 @@ struct RepeatScreen: View {
                         .padding(.top, 12)
                     if kind == .weekly {
                         weekdayPicker
+                            .padding(.top, 12)
+                            .transition(.opacity.combined(with: .move(edge: .top)))
+                    }
+                    if kind == .monthly {
+                        monthlyPicker
                             .padding(.top, 12)
                             .transition(.opacity.combined(with: .move(edge: .top)))
                     }
@@ -250,10 +255,56 @@ struct RepeatScreen: View {
                 detailText(describer.repeatText(.everyDays(3)), selected: false)
             }
         case .monthly:
-            detailText(String(localized: "on day \(schedule.start.day)", bundle: .app, locale: .app), selected: selected)
+            detailText(monthlyText, selected: selected)
         case .yearly:
             detailText(longDate(month: schedule.start.month, day: schedule.start.day), selected: selected)
         }
+    }
+
+    private var monthlyText: String {
+        switch schedule.rule {
+        case .monthlyOnWeekday: return String(localized: "by day of the week", bundle: .app, locale: .app)
+        case .lastWorkday: return String(localized: "last working day", bundle: .app, locale: .app)
+        default: return String(localized: "on day \(schedule.start.day)", bundle: .app, locale: .app)
+        }
+    }
+
+    // A month repeats by date or on its last working day; a weekday rule from the phrase shows as a third choice.
+    private var monthlyPicker: some View {
+        PanelList {
+            monthlyRow(String(localized: "on day \(schedule.start.day)", bundle: .app, locale: .app), rule: .monthlyOnDay(schedule.start.day))
+            Hairline()
+            monthlyRow(String(localized: "last working day", bundle: .app, locale: .app), rule: .lastWorkday)
+            if case .monthlyOnWeekday = schedule.rule, let rule = schedule.rule {
+                Hairline()
+                monthlyRow(String(localized: "by day of the week", bundle: .app, locale: .app), rule: rule)
+            }
+        }
+    }
+
+    private func monthlyRow(_ title: String, rule: RepeatRule) -> some View {
+        let selected: Bool = {
+            switch (schedule.rule, rule) {
+            case (.monthlyOnDay, .monthlyOnDay), (.lastWorkday, .lastWorkday), (.monthlyOnWeekday, .monthlyOnWeekday): return true
+            default: return false
+            }
+        }()
+        return Button {
+            guard !selected else { return }
+            Feedback.play(.select)
+            setRule(rule)
+        } label: {
+            HStack(spacing: 12) {
+                RadioMark(isOn: selected)
+                Text(verbatim: title)
+                    .font(.app(.golos, 16, weight: selected ? 600 : 400))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .frame(minHeight: 47)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(RowPressStyle())
+        .accessibilityAddTraits(selected ? .isSelected : [])
     }
 
     private func detailText(_ text: String, selected: Bool) -> some View {

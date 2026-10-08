@@ -1,7 +1,7 @@
 import Foundation
 
 extension PhraseParser {
-    private static let arMonths = "(يناير|فبراير|مارس|ابريل|مايو|يونيو|يوليو|اغسطس|سبتمبر|اكتوبر|نوفمبر|ديسمبر|شباط|اذار|نيسان|ايار|حزيران|تموز|اب|ايلول)"
+    static let arMonths = "(يناير|فبراير|مارس|ابريل|مايو|يونيو|يوليو|اغسطس|سبتمبر|اكتوبر|نوفمبر|ديسمبر|شباط|اذار|نيسان|ايار|حزيران|تموز|اب|ايلول)"
     // «اثنين» and «احد» are also «two» and «one», as a day they need «يوم» or the article.
     static let arWeekday = "((?:يوم )?(?:ال)?(?:ثلاثاء|اربعاء|خميس|جمعة|جمعه|سبت)|(?:يوم (?:ال)?|ال)(?:اثنين|احد))"
     private static let arCount = "(\\d{1,4}|خمس عشرة|خمسة عشر|عشرين|ثلاثين|اربعين|خمسين|واحدة|واحد|ثلاثة|ثلاث|اربعة|اربع|خمسة|خمس|ستة|ست|سبعة|سبع|ثمانية|ثماني|تسعة|تسع|عشرة|عشر)"
@@ -45,6 +45,7 @@ extension PhraseParser {
         func pass(_ text: String, _ state: inout State) {
             extras(text, &state, PhraseParser.arabicExtras, weekday: arWeekdayValue)
             arRepeats(text, &state)
+            limits(text, &state, PhraseParser.arabicLimits, weekday: arWeekdayValue, month: arMonth)
             arOffsets(text, &state)
             arDates(text, &state)
             arTimes(text, &state)

@@ -114,6 +114,12 @@ final class ScreenSnapshots: XCTestCase {
         try render(HomeScreen(content: home), name: "Home-Checklist", style: .dark)
     }
 
+    func testHistory() throws {
+        let done = DoneContent.make(reminders: SampleData.withHistory, now: SampleData.now, calendar: SampleData.calendar, locale: russian)
+        let content = ScheduledContent.make(reminders: SampleData.reminders, places: SampleData.places, now: SampleData.now, calendar: SampleData.calendar, locale: russian)
+        try render(ScheduledScreen(content: content, done: done, onBack: {}, tab: .done), name: "D-History", style: .dark, height: 1400)
+    }
+
     func testMulti() throws {
         try render(PhraseScreen(store: sampleStore(), text: "завтра в 9 позвонить маме, в 12 обед с Ильёй, вечером купить хлеб", now: SampleData.now, calendar: SampleData.calendar, locale: russian, autofocus: false, onClose: {}), name: "D-Multi", style: .dark)
     }

@@ -1,7 +1,7 @@
 import Foundation
 
 extension PhraseParser {
-    private static let englishMonths = "(january|jan|february|feb|march|mar|april|apr|may|june|jun|july|jul|august|aug|september|sept|sep|october|oct|november|nov|december|dec)\\.?"
+    static let englishMonths = "(january|jan|february|feb|march|mar|april|apr|may|june|jun|july|jul|august|aug|september|sept|sep|october|oct|november|nov|december|dec)\\.?"
     static let englishWeekdays = "(mondays?|mon|tuesdays?|tues|tue|wednesdays?|wed|thursdays?|thurs|thur|thu|fridays?|fri|saturdays?|sat|sundays?|sun)"
     private static let englishCount = "(\\d{1,4}|an|a|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|fifteen|twenty-five|twenty five|twenty|thirty|forty-five|forty five|forty|fifty|sixty|ninety|a couple of|couple of)"
     private static let englishCounted = "(?! (?:km|kms|kg|kgs|g|m|mi|l|ml|lbs?|oz|ft|kilomet(?:er|re)s?|kilos?|kilograms?|miles?|grams?|pounds?|lit(?:er|re)s?|met(?:er|re)s?|people|persons?|friends|guests|kids|children|stores|shops|times|pieces|items|euros?|dollars?|bucks|percent|pages|steps|reps|sets|laps|boxes|bottles|cups|glasses|tickets|seats|rooms|floors|apples|eggs|minutes?|mins?|hours?|hrs?|days?|weeks?|months?|years?)(?![\\p{L}]))"
@@ -15,6 +15,7 @@ extension PhraseParser {
         func pass(_ text: String, _ state: inout State) {
             extras(text, &state, PhraseParser.englishExtras, weekday: englishWeekday)
             englishRepeats(text, &state)
+            limits(text, &state, PhraseParser.englishLimits, weekday: englishWeekday, month: englishMonth)
             englishOffsets(text, &state)
             englishDates(text, &state)
             englishTimes(text, &state)
@@ -166,9 +167,10 @@ extension PhraseParser {
 
     private func englishDates(_ text: String, _ state: inout State) {
         take("(the day after tomorrow)", text, &state) { _, s in s.dayOffset = 2; return true }
-        take("(tomorrow)", text, &state) { _, s in s.dayOffset = 1; return true }
+        take("(?:a|one) week from", text, &state) { _, s in s.dayOffset = 7; return true }
+        take("(tomorrow|tmrw|tmr|tmw|tomorow|tommorow|tommorrow|2moro|2morrow)", text, &state) { _, s in s.dayOffset = 1; return true }
         take("(today)", text, &state) { _, s in s.dayOffset = 0; return true }
-        take("(tonight)", text, &state) { _, s in
+        take("(tonight|tonite|2nite)", text, &state) { _, s in
             s.dayOffset = 0
             s.dayPart = evening
             return true
