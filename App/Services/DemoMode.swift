@@ -47,14 +47,20 @@ enum DemoMode {
             let parts = calendar.dateComponents([.year, .month, .day], from: date)
             return LocalDate(year: parts.year ?? 2026, month: parts.month ?? 1, day: parts.day ?? 1)
         }
-        let minutes = calendar.component(.hour, from: now) * 60 + calendar.component(.minute, from: now) + 40
+        // The day is laid out from the hour of the recording, so the dial always has what is still ahead.
+        let hour = calendar.component(.hour, from: now)
+        let minutes = hour * 60 + calendar.component(.minute, from: now) + 40
         let call = LocalTime(hour: min(23, minutes / 60), minute: (minutes % 60) / 5 * 5)
+        func later(_ hours: Int, _ minute: Int = 0) -> LocalTime {
+            LocalTime(hour: min(23, hour + hours), minute: minute)
+        }
+        let morning = LocalTime(hour: max(7, min(hour - 3, 9)), minute: 0)
 
-        var vitamins = Reminder(title: english ? "Take vitamins" : "Выпить витамины", schedule: Schedule(start: day(-7), time: LocalTime(hour: 9, minute: 0), rule: .daily), nag: true, createdAt: now)
-        vitamins.completedThrough = calendar.date(bySettingHour: 9, minute: 0, second: 0, of: now)
+        var vitamins = Reminder(title: english ? "Take vitamins" : "Выпить витамины", schedule: Schedule(start: day(-7), time: morning, rule: .daily), nag: true, createdAt: now)
+        vitamins.completedThrough = calendar.date(bySettingHour: morning.hour, minute: 0, second: 0, of: now)
 
         let anniversary = calendar.dateComponents([.month, .day], from: calendar.date(byAdding: .day, value: 17, to: now) ?? now)
-        var movie = Reminder(title: english ? "Movie night" : "Кино с друзьями", schedule: Schedule(start: day(0), time: LocalTime(hour: 20, minute: 0), timeZone: zone), createdAt: now)
+        var movie = Reminder(title: english ? "Movie night" : "Кино с друзьями", schedule: Schedule(start: day(0), time: later(3), timeZone: zone), createdAt: now)
         movie.shared = SharedInfo(owner: SharedPerson(id: "demo", name: english ? "Alex" : "Саша"), status: SharedStatus.owner, members: [
             SharedMember(id: "anna", name: english ? "Anna" : "Аня", status: SharedStatus.accepted),
             SharedMember(id: "ilya", name: english ? "Ilya" : "Илья", status: SharedStatus.accepted),
@@ -64,9 +70,9 @@ enum DemoMode {
         var result = [
             vitamins,
             Reminder(title: english ? "Call the supplier" : "Позвонить поставщику", schedule: Schedule(start: day(0), time: call), preAlerts: [15], urgent: true, createdAt: now),
-            Reminder(title: english ? "Buy bread and milk" : "Купить хлеб и молоко", schedule: Schedule(start: day(0), time: LocalTime(hour: 19, minute: 0)), createdAt: now),
+            Reminder(title: english ? "Buy bread and milk" : "Купить хлеб и молоко", schedule: Schedule(start: day(0), time: later(2)), createdAt: now),
             movie,
-            Reminder(title: english ? "Water the plants" : "Полить цветы", schedule: Schedule(start: day(-7), time: LocalTime(hour: 21, minute: 30), rule: .weekly([.monday, .thursday])), createdAt: now),
+            Reminder(title: english ? "Water the plants" : "Полить цветы", schedule: Schedule(start: day(0), time: later(4, 30), rule: .daily), createdAt: now),
             Reminder(title: english ? "Dentist" : "Стоматолог", schedule: Schedule(start: day(9), time: LocalTime(hour: 15, minute: 0)), preAlerts: [1_440], createdAt: now),
             Reminder(title: english ? "Mom's birthday" : "День рождения мамы", schedule: Schedule(start: day(17), time: LocalTime(hour: 9, minute: 0), rule: .yearly(month: anniversary.month ?? 1, day: anniversary.day ?? 1)), createdAt: now),
         ]

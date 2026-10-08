@@ -130,9 +130,6 @@ final class Scenes: XCTestCase {
     private func launch(_ scene: String) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["-RemaDemo", language, "-RemaDemoScene", scene]
-        if let zone = ProcessInfo.processInfo.environment["DEMO_TZ"] {
-            app.launchEnvironment["TZ"] = zone
-        }
         app.launch()
         let start = app.buttons[english ? "New reminder" : "Новое напоминание"]
         if !start.waitForExistence(timeout: 60) {
@@ -164,7 +161,9 @@ final class Scenes: XCTestCase {
 
     private func compose(_ app: XCUIApplication) {
         app.buttons[english ? "New reminder" : "Новое напоминание"].firstMatch.tap()
-        pause(1.2)
+        // Letters sent while the keyboard is still coming up get lost.
+        _ = app.keyboards.firstMatch.waitForExistence(timeout: 10)
+        pause(0.8)
     }
 
     // A few letters at a time: one by one the test is too slow, and the edit speeds this part up anyway.

@@ -83,6 +83,12 @@ jobs:
             done
             run com.apple.Preferences DidShowContinuousPathIntroduction -bool true
             xcrun simctl shutdown "$DEVICE"
+            # The same settings straight into the files as well, the keyboard reads some of them only from there.
+            local preferences="$HOME/Library/Developer/CoreSimulator/Devices/$DEVICE/data/Library/Preferences"
+            for key in KeyboardAutocorrection KeyboardPrediction KeyboardShowPredictionBar KeyboardAutocapitalization KeyboardCheckSpelling KeyboardContinuousPathEnabled; do
+              defaults write "$preferences/com.apple.Preferences" "$key" -bool false
+            done
+            defaults write "$preferences/com.apple.Preferences" DidShowContinuousPathIntroduction -bool true
             xcrun simctl boot "$DEVICE"
             xcrun simctl bootstatus "$DEVICE" -b > /dev/null
             xcrun simctl ui "$DEVICE" appearance light
@@ -92,15 +98,9 @@ jobs:
             prepare "$language"
             for scene in $SCENES; do
               name="$language-$(echo "$scene" | tr '[:upper:]' '[:lower:]')"
-              xcrun simctl terminate "$DEVICE" uz.dkx.rema 2>/dev/null || true
-              # The app gets a time zone where it is early afternoon, so the day on the dial is full; the status bar shows the same time.
-              read -r zone clock < <(python3 -c '
-          import datetime
-          now = datetime.datetime.now(datetime.timezone.utc)
-          shift = 14 - now.hour
-          shift = shift - 24 if shift > 12 else shift + 24 if shift < -12 else shift
-          print(f"Etc/GMT{-shift:+d}", (now + datetime.timedelta(hours=shift)).strftime("%H:%M"))')
-              xcrun simctl status_bar "$DEVICE" override --time "$clock" --dataNetwork wifi --wifiMode active --wifiBars 3 \
+              # Every scene starts from a fresh install, nothing of the scene before stays in the app.
+              xcrun simctl uninstall "$DEVICE" uz.dkx.rema 2>/dev/null || true
+              xcrun simctl status_bar "$DEVICE" override --time "$(date -u +%H:%M)" --dataNetwork wifi --wifiMode active --wifiBars 3 \
                 --cellularMode active --cellularBars 4 --batteryState charged --batteryLevel 100
               xcrun simctl io "$DEVICE" recordVideo --codec=h264 --force "videos/$name.mp4" 2> "logs/record-$name.txt" &
               recorder=$!
@@ -109,18 +109,18 @@ jobs:
                 sleep 0.1
               done
               started=$(python3 -c 'import time; print(time.time())')
-              TEST_RUNNER_DEMO_LANGUAGE="$language" TEST_RUNNER_DEMO_TZ="$zone" xcodebuild test-without-building \
+              TEST_RUNNER_DEMO_LANGUAGE="$language" xcodebuild test-without-building \
                 -project Rema.xcodeproj -scheme RemaVideos -destination "id=$DEVICE" -derivedDataPath build/dd \
                 -only-testing:"RemaVideos/Scenes/test$scene" CODE_SIGNING_ALLOWED=NO > "logs/$name.log" 2>&1
               sleep 1
               kill -INT "$recorder"
               wait "$recorder" 2>/dev/null
-              python3 - "$name" "$started" "$zone" <<'EOF'
+              python3 - "$name" "$started" <<'EOF'
           import json, re, sys
-          name, started, zone = sys.argv[1], float(sys.argv[2]), sys.argv[3]
+          name, started = sys.argv[1], float(sys.argv[2])
           log = open(f"logs/{name}.log", encoding="utf-8", errors="replace").read()
           marks = [[kind.lower(), round(float(value) - started, 2)] for kind, value in re.findall(r"SCENE-MARK (\w+) ([0-9.]+)", log)]
-          json.dump({"zone": zone, "marks": marks}, open(f"videos/{name}.json", "w"))
+          json.dump({"marks": marks}, open(f"videos/{name}.json", "w"))
           print(name, marks, "passed" if "** TEST EXECUTE SUCCEEDED **" in log else "check the log")
           EOF
             done
