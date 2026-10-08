@@ -313,7 +313,8 @@ struct HomeScreen: View {
             title: row.title,
             subtitle: [was, row.subtitle].compactMap { $0 }.joined(separator: " · "),
             done: row.done,
-            highlighted: true
+            highlighted: true,
+            shared: row.shared
         )
     }
 
@@ -474,7 +475,7 @@ struct HomeScreen: View {
             AgendaRow(
                 row: lift.map { moving ? movingRow(row, $0) : row } ?? row,
                 onToggle: { onToggle(row) },
-                onDelete: { remove(row.reminderID) },
+                onDelete: row.shared ? nil : { remove(row.reminderID) },
                 onPostpone: row.missed ? { postponing = row } : nil
             )
                 .background {

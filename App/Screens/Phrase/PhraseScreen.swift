@@ -697,7 +697,7 @@ struct PhraseScreen: View {
                 FlowLayout(spacing: 8) {
                     ForEach(friendsService.friends) { friend in
                         let chosen = sharedWith.contains(friend.id)
-                        Chip(title: LocalizedStringKey(friendsService.name(of: friend.id, fallback: friend.name)), selected: chosen) {
+                        Chip(title: "\(friendsService.name(of: friend.id, fallback: friend.name))", selected: chosen) {
                             Feedback.play(chosen ? .uncheck : .check)
                             if chosen {
                                 sharedWith.removeAll { $0 == friend.id }

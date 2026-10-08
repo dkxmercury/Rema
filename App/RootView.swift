@@ -350,8 +350,18 @@ struct RootView: View {
             showingCalendar = false
             composing = nil
             showingLanguage = false
+            viewingShared = nil
+            inviting = false
             root?.dismiss(animated: true)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { editing = EditingTarget(reminder: reminder, isNew: false) }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { show(reminder) }
+        } else {
+            show(reminder)
+        }
+    }
+
+    private func show(_ reminder: Reminder) {
+        if reminder.shared != nil {
+            viewingShared = SharedTarget(id: reminder.id)
         } else {
             editing = EditingTarget(reminder: reminder, isNew: false)
         }
@@ -458,7 +468,8 @@ struct RootView: View {
             return
         }
         guard let reminder = store.reminder(row.reminderID) else { return }
-        if reminder.schedule?.rule == nil {
+        // Putting off a shared reminder is personal, the friends keep their time.
+        if reminder.schedule?.rule == nil, reminder.shared == nil {
             _ = move(row.reminderID, to: date)
         } else {
             withAnimation(Motion.standard) { store.snooze(row.reminderID, until: date) }
@@ -469,7 +480,7 @@ struct RootView: View {
     // Put off three times in a row, the time itself is probably wrong.
     private var snoozeHint: SnoozeHint? {
         _ = store.reminders
-        guard let reminder = store.activeReminders.first(where: { SnoozeStats.count($0.id) >= 3 }) else { return nil }
+        guard let reminder = store.activeReminders.first(where: { SnoozeStats.count($0.id) >= 3 && $0.shared?.isMine != false }) else { return nil }
         return SnoozeHint(reminderID: reminder.id, title: reminder.title)
     }
 
@@ -535,7 +546,7 @@ struct RootView: View {
     }
 
     private func move(_ id: UUID, to date: Date) -> (() -> Void)? {
-        guard let original = store.reminder(id), original.schedule?.rule == nil else { return nil }
+        guard let original = store.reminder(id), original.schedule?.rule == nil, original.shared?.isMine != false else { return nil }
         let parts = Calendar.current.dateComponents([.hour, .minute], from: date)
         var moved = original
         moved.schedule = Schedule(start: LocalDate(date, in: .current), time: LocalTime(hour: parts.hour ?? 0, minute: parts.minute ?? 0))
@@ -572,8 +583,13 @@ struct RootView: View {
         }
     }
 
+    // Only the one who made a shared reminder changes it, the others see it with its participants.
     private func edit(_ id: UUID) {
         guard let reminder = store.reminder(id) else { return }
+        if let shared = reminder.shared, !shared.isMine {
+            viewingShared = SharedTarget(id: id)
+            return
+        }
         editing = EditingTarget(reminder: reminder, isNew: false)
     }
 }

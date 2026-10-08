@@ -118,7 +118,7 @@ struct EditorScreen: View {
             }
         }
         .foregroundStyle(Palette.text)
-        .confirmationDialog("Delete reminder?", isPresented: $confirmingDelete, titleVisibility: .visible) {
+        .confirmationDialog(draft.shared == nil ? Text("Delete reminder?") : Text("Delete the reminder for everyone in it?"), isPresented: $confirmingDelete, titleVisibility: .visible) {
             Button("Delete", role: .destructive) {
                 Feedback.play(.delete)
                 store.delete(draft.id)

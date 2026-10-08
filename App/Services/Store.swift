@@ -51,12 +51,16 @@ final class Store {
         var updated = reminder
         updated.fit()
         updated.updatedAt = Date()
+        // The friends read the time in the zone of the one who made it, whatever screen set the time.
+        if updated.shared?.isMine == true, updated.schedule != nil, updated.schedule?.timeZone == nil {
+            updated.schedule?.timeZone = TimeZone.current.identifier
+        }
         let before = self.reminder(reminder.id)
         // A shared reminder leaves this phone at once; the friends learn it from the server.
         if updated.shared != nil, updated.deletedAt != nil {
             reminders.removeAll { $0.id == reminder.id }
             persist()
-            Task { @MainActor in SharedService.shared.removed(updated) }
+            Task { @MainActor [updated] in SharedService.shared.removed(updated) }
             return
         }
         var previous: [UUID] = []
@@ -72,7 +76,7 @@ final class Store {
         if let before, let shared = updated.shared {
             let ticked = before.completedThrough != updated.completedThrough
             let changed = shared.isMine && before.sharedData != updated.sharedData
-            Task { @MainActor in
+            Task { @MainActor [updated] in
                 if ticked {
                     SharedService.shared.ticked(updated)
                 }
@@ -356,12 +360,21 @@ final class Store {
 
     private func load() {
         guard let snapshot = SharedStore.load(from: directory) else { return }
+        let before = Dictionary(reminders.filter { $0.shared != nil }.map { ($0.id, $0.completedThrough) }, uniquingKeysWith: { first, _ in first })
         reminders = snapshot.reminders
         places = snapshot.places
         settings = snapshot.settings
         sounds = snapshot.sounds ?? []
         unreadable = snapshot.unreadable
         loadedAt = SharedStore.modified(in: directory)
+        // A tick from the widget, the watch or a notification reaches the friends too.
+        let ticked = reminders.filter { reminder in
+            guard reminder.shared != nil, let was = before[reminder.id] else { return false }
+            return was != reminder.completedThrough
+        }
+        if !ticked.isEmpty {
+            Task { @MainActor in ticked.forEach { SharedService.shared.ticked($0) } }
+        }
     }
 
     private func persist(edit: Bool = true) {

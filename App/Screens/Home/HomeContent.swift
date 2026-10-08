@@ -19,6 +19,7 @@ struct HomeContent {
         let done: Bool
         let highlighted: Bool
         var missed = false
+        var shared = false
     }
 
     struct Event: Identifiable {
@@ -211,7 +212,8 @@ extension HomeContent {
             subtitle: describer.subtitle(for: reminder, places: places),
             done: item.done,
             highlighted: highlighted,
-            missed: missed
+            missed: missed,
+            shared: reminder.shared != nil
         )
     }
 }

@@ -117,7 +117,7 @@ struct FriendScreen: View {
             .scrollIndicators(.hidden)
             .scrollDismissesKeyboard(.interactively)
             .pinnedHeader {
-                ScreenHeader(title: LocalizedStringKey(shown), leading: .back, action: onBack)
+                ScreenHeader(title: "\(shown)", leading: .back, action: onBack)
             }
         }
         .foregroundStyle(Palette.text)
