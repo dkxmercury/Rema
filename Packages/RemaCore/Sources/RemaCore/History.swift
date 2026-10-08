@@ -13,6 +13,8 @@ public struct Streak: Equatable, Sendable {
     public let count: Int
     public let daily: Bool
     public let recent: [Bool]
+    // Every time in the window was done and the repeat ran before it, so the streak is longer than the count.
+    public let longer: Bool
 }
 
 public enum History {
@@ -44,7 +46,9 @@ public enum History {
             }
             let count = done.reversed().prefix { $0 }.count
             guard count >= minimum else { return nil }
-            return Streak(reminderID: reminder.id, title: reminder.title, count: count, daily: isDaily(rule), recent: Array(done.reversed().prefix(7)))
+            let earlier = Recurrence.next(schedule, after: window.addingTimeInterval(-400 * 86_400), limit: 1, calendar: calendar).first
+            let longer = count == done.count && earlier.map { $0 < times[0] } == true
+            return Streak(reminderID: reminder.id, title: reminder.title, count: count, daily: isDaily(rule), recent: Array(done.reversed().prefix(7)), longer: longer)
         }
         .sorted { $0.count != $1.count ? $0.count > $1.count : $0.title < $1.title }
     }

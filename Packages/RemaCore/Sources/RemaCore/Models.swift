@@ -87,6 +87,7 @@ public enum SoundChoice: Codable, Hashable, Sendable {
 
 public struct ChecklistItem: Codable, Identifiable, Hashable, Sendable {
     public static let maximumLength = 120
+    public static let maximumBytes = 240
 
     public var id: UUID
     public var text: String
@@ -94,8 +95,17 @@ public struct ChecklistItem: Codable, Identifiable, Hashable, Sendable {
 
     public init(id: UUID = UUID(), text: String, done: Bool = false) {
         self.id = id
-        self.text = String(text.prefix(Self.maximumLength))
+        self.text = Self.clipped(text)
         self.done = done
+    }
+
+    // Emoji built from several symbols weigh up to 35 bytes each, so characters alone do not bound the size.
+    static func clipped(_ text: String) -> String {
+        var clipped = String(text.prefix(maximumLength))
+        while clipped.utf8.count > maximumBytes {
+            clipped.removeLast()
+        }
+        return clipped
     }
 }
 
@@ -129,7 +139,8 @@ public struct DoneMark: Codable, Hashable, Sendable {
 public struct Reminder: Codable, Identifiable, Hashable, Sendable {
     public static let maximumTitleLength = 200
     public static let maximumItems = 40
-    public static let historyLimit = 60
+    public static let historyLimit = 100
+    public static let maximumBytes = 15_000
 
     public var id: UUID
     public var title: String
@@ -225,16 +236,24 @@ public struct Reminder: Codable, Identifiable, Hashable, Sendable {
         items.filter(\.done).count
     }
 
-    // A repeating list comes back unticked the next time, the items themselves stay.
+    public func isDone(_ occurrence: Date) -> Bool {
+        completedThrough.map { $0 >= occurrence } ?? false
+    }
+
     public mutating func markDone(through occurrence: Date, at moment: Date = Date()) {
-        completedThrough = max(completedThrough ?? occurrence, occurrence)
-        snoozedUntil = nil
+        skip(through: occurrence)
         if !history.contains(where: { $0.occurrence == occurrence }) {
             history.append(DoneMark(occurrence: occurrence, at: moment))
             if history.count > Self.historyLimit {
                 history.removeFirst(history.count - Self.historyLimit)
             }
         }
+    }
+
+    // Moves on like a tick but leaves no mark, and a repeating list comes back unticked for the next time.
+    public mutating func skip(through occurrence: Date) {
+        completedThrough = max(completedThrough ?? occurrence, occurrence)
+        snoozedUntil = nil
         if schedule?.rule != nil {
             for index in items.indices {
                 items[index].done = false
@@ -245,6 +264,19 @@ public struct Reminder: Codable, Identifiable, Hashable, Sendable {
     public mutating func reopen(before occurrence: Date) {
         completedThrough = occurrence.addingTimeInterval(-1)
         history.removeAll { $0.occurrence >= occurrence }
+    }
+
+    // The server refuses a reminder over 16 KB and it would stay on this phone for good, so the oldest ticks go first.
+    public mutating func fit(within limit: Int = Reminder.maximumBytes) {
+        let encoder = JSONEncoder()
+        func size() -> Int { (try? encoder.encode(self).count) ?? 0 }
+        guard size() > limit else { return }
+        while !history.isEmpty, size() > limit {
+            history.removeFirst(min(10, history.count))
+        }
+        while !items.isEmpty, size() > limit {
+            items.removeLast()
+        }
     }
 }
 

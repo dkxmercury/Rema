@@ -2151,6 +2151,52 @@
         }
       }
     },
+    "Add": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إضافة"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hinzufügen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouter"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Добавить"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Додати"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Қўшиш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qo‘shish"
+          }
+        }
+      }
+    },
     "Add %lld": {
       "localizations": {
         "ar": {
@@ -14217,6 +14263,52 @@
         }
       }
     },
+    "Over three months in a row": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أكثر من ثلاثة أشهر على التوالي"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Über drei Monate in Folge"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plus de trois mois d’affilée"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Больше трёх месяцев подряд"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Понад три місяці поспіль"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Уч ойдан ортиқ кетма-кет"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uch oydan ortiq ketma-ket"
+          }
+        }
+      }
+    },
     "Password": {
       "localizations": {
         "ar": {
@@ -15183,6 +15275,52 @@
         }
       }
     },
+    "Rema found %@ in your contacts. Add a Call button to the notification?": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "وجد Rema «%@» في جهات الاتصال. هل تضيف زر «اتصال» إلى الإشعار؟"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema hat „%@“ in deinen Kontakten gefunden. Eine Taste „Anrufen“ in die Mitteilung aufnehmen?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema a trouvé « %@ » dans vos contacts. Ajouter un bouton Appeler à la notification ?"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema нашла «%@» в контактах. Добавить в уведомление кнопку «Позвонить»?"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema знайшла «%@» у контактах. Додати в сповіщення кнопку «Подзвонити»?"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema контактлардан «%@»ни топди. Билдиришномага «Қўнғироқ қилиш» тугмасини қўшайми?"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema kontaktlardan «%@»ni topdi. Bildirishnomaga «Qo‘ng‘iroq qilish» tugmasini qo‘shaymi?"
+          }
+        }
+      }
+    },
     "Rema found %@ in your contacts. The notification will have a Call button.": {
       "localizations": {
         "ar": {
@@ -15218,13 +15356,13 @@
         "uz-Cyrl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Rema контактлардан «%@» ни топди. Билдиришномада «Қўнғироқ қилиш» тугмаси бўлади."
+            "value": "Rema контактлардан «%@»ни топди. Билдиришномада «Қўнғироқ қилиш» тугмаси бўлади."
           }
         },
         "uz-Latn": {
           "stringUnit": {
             "state": "translated",
-            "value": "Rema kontaktlardan «%@» ni topdi. Bildirishnomada «Qo‘ng‘iroq qilish» tugmasi bo‘ladi."
+            "value": "Rema kontaktlardan «%@»ni topdi. Bildirishnomada «Qo‘ng‘iroq qilish» tugmasi bo‘ladi."
           }
         }
       }

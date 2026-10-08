@@ -32,6 +32,16 @@ struct AgendaTests {
         #expect(today.map(\.done) == [true, false, false, false])
     }
 
+    @Test func aListOpensOnTodayEvenWhenDone() {
+        let reminders = sample
+        let vitamins = reminders[0]
+        #expect(Agenda.listOccurrence(vitamins, now: moment(5, 13, 50), calendar: calendar) == moment(5, 9, 0))
+        #expect(Agenda.listOccurrence(vitamins, now: moment(6, 8, 0), calendar: calendar) == moment(6, 9, 0))
+        var call = reminders[1]
+        call.markDone(through: moment(5, 14, 30))
+        #expect(Agenda.listOccurrence(call, now: moment(7, 10, 0), calendar: calendar) == moment(5, 14, 30))
+    }
+
     @Test func snoozeIsTheNextRing() {
         var call = Reminder(title: "Позвонить", schedule: Schedule(start: LocalDate(year: 2026, month: 10, day: 5), time: LocalTime(hour: 14, minute: 0)), createdAt: moment(1, 0, 0))
         call.snoozedUntil = moment(5, 14, 10)

@@ -5,12 +5,91 @@ public struct StoreSnapshot: Codable, Sendable {
     public var places: [Place]
     public var settings: Settings
     public var sounds: [CustomSound]?
+    public var unreadable = Unreadable()
 
-    public init(reminders: [Reminder], places: [Place], settings: Settings, sounds: [CustomSound]?) {
+    // Entries a newer build wrote that this one cannot read; they are written back untouched instead of being lost.
+    public struct Unreadable: Sendable, Equatable {
+        var reminders: [JSONValue] = []
+        var places: [JSONValue] = []
+        var sounds: [JSONValue] = []
+        var settings: JSONValue?
+
+        public init() {}
+
+        public var isEmpty: Bool {
+            reminders.isEmpty && places.isEmpty && sounds.isEmpty && settings == nil
+        }
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case reminders, places, settings, sounds
+    }
+
+    public init(reminders: [Reminder], places: [Place], settings: Settings, sounds: [CustomSound]?, unreadable: Unreadable = Unreadable()) {
         self.reminders = reminders
         self.places = places
         self.settings = settings
         self.sounds = sounds
+        self.unreadable = unreadable
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        (reminders, unreadable.reminders) = try Self.lossy(Reminder.self, container, .reminders)
+        (places, unreadable.places) = try Self.lossy(Place.self, container, .places)
+        if container.contains(.sounds), (try? container.decodeNil(forKey: .sounds)) == false {
+            let (read, rest) = try Self.lossy(CustomSound.self, container, .sounds)
+            sounds = read
+            unreadable.sounds = rest
+        } else {
+            sounds = nil
+        }
+        if let read = try? container.decode(Settings.self, forKey: .settings) {
+            settings = read
+        } else {
+            settings = .standard(at: Date())
+            unreadable.settings = try container.decode(JSONValue.self, forKey: .settings)
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try Self.write(reminders, unreadable.reminders, into: &container, .reminders)
+        try Self.write(places, unreadable.places, into: &container, .places)
+        if let sounds {
+            try Self.write(sounds, unreadable.sounds, into: &container, .sounds)
+        }
+        if let raw = unreadable.settings, settings.isUntouched {
+            try container.encode(raw, forKey: .settings)
+        } else {
+            try container.encode(settings, forKey: .settings)
+        }
+    }
+
+    private struct Lossy<Value: Decodable>: Decodable {
+        let value: Value?
+
+        init(from decoder: Decoder) throws {
+            value = try? Value(from: decoder)
+        }
+    }
+
+    private static func lossy<Value: Decodable>(_ type: Value.Type, _ container: KeyedDecodingContainer<CodingKeys>, _ key: CodingKeys) throws -> ([Value], [JSONValue]) {
+        let entries = try container.decode([Lossy<Value>].self, forKey: key)
+        let read = entries.compactMap(\.value)
+        guard read.count < entries.count else { return (read, []) }
+        let raw = try container.decode([JSONValue].self, forKey: key)
+        return (read, zip(entries, raw).filter { $0.0.value == nil }.map(\.1))
+    }
+
+    private static func write<Value: Encodable>(_ values: [Value], _ raw: [JSONValue], into container: inout KeyedEncodingContainer<CodingKeys>, _ key: CodingKeys) throws {
+        var list = container.nestedUnkeyedContainer(forKey: key)
+        for value in values {
+            try list.encode(value)
+        }
+        for entry in raw {
+            try list.encode(entry)
+        }
     }
 }
 
@@ -40,7 +119,13 @@ public enum SharedStore {
     public static func load(from directory: URL = directory) -> StoreSnapshot? {
         let url = directory.appendingPathComponent(fileName)
         guard let data = try? Data(contentsOf: url) else { return nil }
-        return try? JSONDecoder().decode(StoreSnapshot.self, from: data)
+        if let snapshot = try? JSONDecoder().decode(StoreSnapshot.self, from: data) {
+            return snapshot
+        }
+        // A file nothing can read is put aside rather than overwritten by the next save, so it can still be recovered.
+        let aside = directory.appendingPathComponent("store-unreadable-\(Int(Date().timeIntervalSince1970)).json")
+        try? FileManager.default.moveItem(at: url, to: aside)
+        return nil
     }
 
     public static func save(_ snapshot: StoreSnapshot, to directory: URL = directory) throws {
@@ -70,6 +155,7 @@ public enum SharedStore {
         var reminder = snapshot.reminders[index]
         if done {
             reminder.markDone(through: occurrence, at: now)
+            reminder.fit()
         } else {
             reminder.reopen(before: occurrence)
         }

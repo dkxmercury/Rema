@@ -25,6 +25,7 @@ struct EditorScreen: View {
     @State private var showsList = false
     @State private var foundContact: ContactLink?
     @State private var contactDismissed = false
+    @State private var opened: Reminder?
     @FocusState private var titleFocused: Bool
 
     private var describer: Describer {
@@ -125,14 +126,24 @@ struct EditorScreen: View {
             }
         }
         .onAppear {
+            if opened == nil {
+                opened = draft
+                contactDismissed = ContactsFeed.isDismissed(draft.id)
+            }
             if isNew && draft.title.isEmpty {
                 titleFocused = true
             }
         }
-        .task {
-            guard draft.contact == nil, ContactsFeed.authorized, !draft.title.isEmpty else { return }
+        .task(id: draft.title) {
+            guard draft.contact == nil, !contactDismissed, ContactsFeed.authorized, !draft.title.isEmpty else {
+                foundContact = nil
+                return
+            }
+            try? await Task.sleep(for: .milliseconds(600))
+            guard !Task.isCancelled else { return }
             let title = draft.title
             let found = await Task.detached { ContactsFeed.match(title) }.value
+            guard !Task.isCancelled else { return }
             withAnimation(Motion.standard) { foundContact = found }
         }
     }
@@ -265,34 +276,55 @@ struct EditorScreen: View {
     }
 
     private var shownContact: ContactLink? {
-        contactDismissed ? nil : draft.contact ?? foundContact
+        draft.contact ?? (contactDismissed ? nil : foundContact)
     }
 
-    // The person the reminder is about, found in the contacts; the notification gets a «Call» button.
+    // The person the reminder is about, offered from the contacts; only «Add» gives the notification a «Call» button.
     private func contactCard(_ link: ContactLink) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+        let attached = draft.contact != nil
+        // The isolate keeps the digits of a number in order inside an Arabic line.
+        let phone = "\u{2066}\(link.phone)\u{2069}"
+        return VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 12) {
                 Text(verbatim: String(link.name.prefix(1)).uppercased())
                     .font(.app(.golos, 18, weight: 600))
                     .foregroundStyle(Palette.accentText)
                     .frame(width: 40, height: 40)
                     .background(Circle().fill(Palette.accent.opacity(0.16)))
+                    .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(verbatim: link.name)
                         .font(.app(.golos, 16, weight: 600))
                         .lineLimit(1)
-                    Text(verbatim: String(localized: "\(link.phone) · from contacts", bundle: .app, locale: .app))
+                    Text(verbatim: String(localized: "\(phone) · from contacts", bundle: .app, locale: .app))
                         .font(.app(.golos, 13))
                         .foregroundStyle(Palette.secondary)
                         .lineLimit(1)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
+                if !attached {
+                    Button {
+                        Feedback.play(.select)
+                        withAnimation(Motion.standard) {
+                            draft.contact = link
+                            foundContact = nil
+                        }
+                    } label: {
+                        Text("Add")
+                            .font(.app(.golos, 15, weight: 600))
+                            .foregroundStyle(Palette.accentText)
+                            .frame(minHeight: 44)
+                    }
+                    .buttonStyle(RowPressStyle())
+                }
                 Button {
                     Feedback.play(.select)
                     withAnimation(Motion.standard) {
                         contactDismissed = true
                         draft.contact = nil
+                        foundContact = nil
                     }
+                    ContactsFeed.dismiss(draft.id)
                 } label: {
                     Glyph(paths: Icons.close, size: 14, lineWidth: 2, color: Palette.secondary)
                         .frame(width: 44, height: 44)
@@ -304,7 +336,7 @@ struct EditorScreen: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
             .panel()
-            Text(verbatim: String(localized: "Rema found \(link.name) in your contacts. The notification will have a Call button.", bundle: .app, locale: .app))
+            Text(verbatim: attached ? String(localized: "Rema found \(link.name) in your contacts. The notification will have a Call button.", bundle: .app, locale: .app) : String(localized: "Rema found \(link.name) in your contacts. Add a Call button to the notification?", bundle: .app, locale: .app))
                 .font(.app(.golos, 13))
                 .foregroundStyle(Palette.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -446,18 +478,26 @@ struct EditorScreen: View {
         store.reloadIfChanged(edit: false)
         var reminder = draft
         // A notification, the widget or another phone may have marked it done or snoozed it while the editor was open.
-        if !contactDismissed, reminder.contact == nil {
-            reminder.contact = foundContact
-        }
         let before = store.reminder(draft.id)
         if let current = before, current.schedule == draft.schedule {
             reminder.completedThrough = current.completedThrough
             reminder.snoozedUntil = current.snoozedUntil
+            reminder.history = current.history
+            // Ticks given elsewhere while the editor was open stay, unless they were changed here.
+            let openedTicks = Dictionary((opened?.items ?? []).map { ($0.id, $0.done) }, uniquingKeysWith: { first, _ in first })
+            let latestTicks = Dictionary(current.items.map { ($0.id, $0.done) }, uniquingKeysWith: { first, _ in first })
+            for index in reminder.items.indices {
+                let item = reminder.items[index]
+                if openedTicks[item.id] == item.done, let latest = latestTicks[item.id] {
+                    reminder.items[index].done = latest
+                }
+            }
         }
         store.save(reminder)
+        let occurrence = Agenda.listOccurrence(reminder, now: Date(), calendar: calendar)
         let finished = reminder.doneWhenChecked && !reminder.items.isEmpty && reminder.items.allSatisfy(\.done)
-        if finished, before.map({ $0.items.isEmpty || !$0.items.allSatisfy(\.done) }) ?? true {
-            store.complete(reminder.id, through: Agenda.current(reminder, now: Date(), calendar: calendar) ?? Date())
+        if finished, !reminder.isDone(occurrence), before.map({ $0.items.isEmpty || !$0.items.allSatisfy(\.done) }) ?? true {
+            store.complete(reminder.id, through: occurrence)
         }
         Notifier.shared.requestPermissionIfNeeded()
         onClose()

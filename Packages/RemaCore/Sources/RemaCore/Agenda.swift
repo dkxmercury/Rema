@@ -29,6 +29,18 @@ public enum Agenda {
         return Recurrence.next(schedule, after: max(now, reminder.completedThrough ?? now), limit: 1, calendar: calendar).first
     }
 
+    // The time a list is ticked for. Today's one counts even when done, so a finished list opens finished and not as the next time.
+    public static func listOccurrence(_ reminder: Reminder, now: Date, calendar: Calendar) -> Date {
+        let today = day(now, reminders: [reminder], calendar: calendar)
+        if let pending = today.first(where: { !$0.done }) {
+            return pending.occurrence
+        }
+        if let finished = today.last {
+            return finished.occurrence
+        }
+        return current(reminder, now: now, calendar: calendar) ?? reminder.completedThrough ?? now
+    }
+
     public static func upcoming(after now: Date, reminders: [Reminder], calendar: Calendar, limit: Int = 20) -> [AgendaItem] {
         var items: [AgendaItem] = []
         for reminder in reminders where reminder.deletedAt == nil {

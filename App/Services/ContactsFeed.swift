@@ -32,22 +32,42 @@ enum ContactsFeed {
         return found.filter { !$0.name.isEmpty }
     }
 
-    // «Позвонить маме» finds «Мама»: the stem of a title word against first names and nicknames.
+    // «Позвонить маме» finds «Мама»: the stem of a title word against first names and nicknames, only in a title about calling or writing.
     static func match(_ title: String) -> ContactLink? {
         guard authorized else { return nil }
-        let words = Set(title.lowercased().split(whereSeparator: { !$0.isLetter }).map { stem(String($0)) }.filter { $0.count >= 3 })
+        let lowered = title.lowercased()
+        guard callWords.contains(where: { lowered.contains($0) }) else { return nil }
+        let words = Set(lowered.split(whereSeparator: { !$0.isLetter }).map { stem(String($0)) }.filter { $0.count >= 3 })
         guard !words.isEmpty else { return nil }
         let keys = [CNContactGivenNameKey, CNContactFamilyNameKey, CNContactNicknameKey, CNContactPhoneNumbersKey] as [CNKeyDescriptor]
-        var found: ContactLink?
+        var found: [ContactLink] = []
         try? CNContactStore().enumerateContacts(with: CNContactFetchRequest(keysToFetch: keys)) { contact, stop in
             guard let phone = contact.phoneNumbers.first?.value.stringValue else { return }
             let names = [contact.givenName, contact.nickname].filter { !$0.isEmpty }
             guard names.contains(where: { words.contains(stem($0.lowercased())) }) else { return }
             let full = [contact.givenName, contact.familyName].filter { !$0.isEmpty }.joined(separator: " ")
-            found = ContactLink(name: full.isEmpty ? contact.nickname : full, phone: phone)
-            stop.pointee = true
+            found.append(ContactLink(name: full.isEmpty ? contact.nickname : full, phone: phone))
+            if Set(found.map(\.phone)).count > 1 {
+                stop.pointee = true
+            }
         }
-        return found
+        // Two Sashas would be a guess, so nothing is offered then.
+        return Set(found.map(\.phone)).count == 1 ? found.first : nil
+    }
+
+    private static let callWords = ["позвон", "звонок", "набрат", "напиш", "написат", "поздрав", "подзвон", "зателефон", "call", "ring ", "phone", "text ", "anruf", "ruf ", "appel", "téléphon", "telefon", "qo‘ng‘iroq", "qo'ng'iroq", "qongiroq", "қўнғироқ", "اتصل", "كلم"]
+
+    private static let dismissedKey = "contactsDismissed"
+
+    static func isDismissed(_ id: UUID) -> Bool {
+        (UserDefaults.standard.stringArray(forKey: dismissedKey) ?? []).contains(id.uuidString)
+    }
+
+    static func dismiss(_ id: UUID) {
+        var ids = UserDefaults.standard.stringArray(forKey: dismissedKey) ?? []
+        guard !ids.contains(id.uuidString) else { return }
+        ids.append(id.uuidString)
+        UserDefaults.standard.set(Array(ids.suffix(500)), forKey: dismissedKey)
     }
 
     private static func stem(_ word: String) -> String {

@@ -15,6 +15,7 @@ final class Store {
     @ObservationIgnored private let shared: Bool
     @ObservationIgnored private var loadedAt: Date?
     @ObservationIgnored private var widgetSignature: Int?
+    @ObservationIgnored private var unreadable = StoreSnapshot.Unreadable()
     @ObservationIgnored var onChange: (() -> Void)?
     @ObservationIgnored var onEdit: (() -> Void)?
 
@@ -48,6 +49,7 @@ final class Store {
     func save(_ reminder: Reminder) {
         fresh()
         var updated = reminder
+        updated.fit()
         updated.updatedAt = Date()
         var previous: [UUID] = []
         if let index = reminders.firstIndex(where: { $0.id == reminder.id }) {
@@ -83,10 +85,27 @@ final class Store {
         save(reminder)
     }
 
+    func skip(_ id: UUID, through occurrence: Date) {
+        fresh()
+        guard var reminder = reminder(id) else { return }
+        reminder.skip(through: occurrence)
+        save(reminder)
+    }
+
     func toggleItem(_ itemID: UUID, of id: UUID) {
         fresh()
         guard var reminder = reminder(id), let index = reminder.items.firstIndex(where: { $0.id == itemID }) else { return }
         reminder.items[index].done.toggle()
+        save(reminder)
+    }
+
+    func reopenList(_ id: UUID, before occurrence: Date, except itemID: UUID) {
+        fresh()
+        guard var reminder = reminder(id) else { return }
+        reminder.reopen(before: occurrence)
+        for index in reminder.items.indices {
+            reminder.items[index].done = reminder.items[index].id != itemID
+        }
         save(reminder)
     }
 
@@ -202,7 +221,7 @@ final class Store {
     static let shared = Store()
 
     var snapshot: StoreSnapshot {
-        StoreSnapshot(reminders: reminders, places: places, settings: settings, sounds: sounds)
+        StoreSnapshot(reminders: reminders, places: places, settings: settings, sounds: sounds, unreadable: unreadable)
     }
 
     func replace(with snapshot: StoreSnapshot) {
@@ -210,6 +229,7 @@ final class Store {
         places = snapshot.places
         settings = snapshot.settings
         sounds = snapshot.sounds ?? []
+        unreadable = snapshot.unreadable
         persist(edit: false)
     }
 
@@ -218,6 +238,7 @@ final class Store {
         places = []
         sounds = []
         settings = .standard(at: Date())
+        unreadable = StoreSnapshot.Unreadable()
         persist(edit: false)
     }
 
@@ -273,6 +294,7 @@ final class Store {
         places = snapshot.places
         settings = snapshot.settings
         sounds = snapshot.sounds ?? []
+        unreadable = snapshot.unreadable
         loadedAt = SharedStore.modified(in: directory)
     }
 

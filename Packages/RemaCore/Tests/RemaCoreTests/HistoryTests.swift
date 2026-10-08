@@ -74,11 +74,11 @@ struct HistoryTests {
     @Test func historyKeepsTheNewest() {
         var vitamins = daily(at: 9)
         let start = moment(7, 1, 9, 0)
-        for day in 0..<70 {
+        for day in 0..<110 {
             let occurrence = start.addingTimeInterval(Double(day) * 86_400)
             vitamins.markDone(through: occurrence, at: occurrence)
         }
         #expect(vitamins.history.count == Reminder.historyLimit)
-        #expect(vitamins.history.last?.occurrence == start.addingTimeInterval(69 * 86_400))
+        #expect(vitamins.history.last?.occurrence == start.addingTimeInterval(109 * 86_400))
     }
 }

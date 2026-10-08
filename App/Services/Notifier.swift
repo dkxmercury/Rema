@@ -365,8 +365,10 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
     private func apply(_ action: String, to id: UUID, occurrence: Date) {
         let now = Date()
         switch action {
-        case "done", "skip":
+        case "done":
             store.complete(id, through: max(occurrence, store.reminder(id)?.snoozedUntil ?? occurrence))
+        case "skip":
+            store.skip(id, through: max(occurrence, store.reminder(id)?.snoozedUntil ?? occurrence))
         case "evening":
             let calendar = Calendar.current
             let evening = store.settings.evening

@@ -38,7 +38,7 @@ struct DoneContent {
             Streak(
                 id: streak.reminderID,
                 title: streak.title,
-                text: streak.daily ? String(localized: "\(streak.count) days in a row", bundle: .app, locale: .app) : String(localized: "\(streak.count) times in a row", bundle: .app, locale: .app),
+                text: streak.longer ? String(localized: "Over three months in a row", bundle: .app, locale: .app) : streak.daily ? String(localized: "\(streak.count) days in a row", bundle: .app, locale: .app) : String(localized: "\(streak.count) times in a row", bundle: .app, locale: .app),
                 recent: streak.recent
             )
         }

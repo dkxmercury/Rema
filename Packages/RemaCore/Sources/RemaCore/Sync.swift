@@ -205,7 +205,7 @@ public enum SyncPlan {
             add(.sounds, sound.id.uuidString, sound, stamp: SyncStamp.of(sound), deleted: sound.deletedAt != nil)
         }
         for reminder in snapshot.reminders {
-            add(.reminders, reminder.id.uuidString, reminder, stamp: SyncStamp.of(reminder), deleted: reminder.deletedAt != nil)
+            add(.reminders, reminder.id.uuidString, reminder.shared, stamp: SyncStamp.of(reminder), deleted: reminder.deletedAt != nil)
         }
         return changes
     }
@@ -309,7 +309,9 @@ private struct Merger {
         switch kind {
         case .reminders:
             var reminders = snapshot.reminders
-            merge(&reminders, id: id, record: record, key: key, stamp: SyncStamp.of)
+            merge(&reminders, id: id, record: record, key: key, stamp: SyncStamp.of) { incoming, local, data in
+                incoming.merging(local, from: data)
+            }
             snapshot.reminders = reminders
         case .places:
             var places = snapshot.places
@@ -327,7 +329,7 @@ private struct Merger {
         }
     }
 
-    private mutating func merge<Item: Codable & Identifiable & Equatable>(_ items: inout [Item], id: UUID, record: SyncRecord, key: String, stamp: (Item) -> Int64) where Item.ID == UUID {
+    private mutating func merge<Item: Codable & Identifiable & Equatable>(_ items: inout [Item], id: UUID, record: SyncRecord, key: String, stamp: (Item) -> Int64, combine: (Item, Item, JSONValue) -> Item = { item, _, _ in item }) where Item.ID == UUID {
         let index = items.firstIndex { $0.id == id }
         let local = index.map { stamp(items[$0]) }
         if let local, local > record.clientUpdatedAt {
@@ -342,9 +344,10 @@ private struct Merger {
             state.known[key] = nil
             return
         }
-        guard let data = record.data, let item = try? data.decode(Item.self), item.id == id else { return }
+        guard let data = record.data, var item = try? data.decode(Item.self), item.id == id else { return }
         state.known[key] = record.clientUpdatedAt
         if let index {
+            item = combine(item, items[index], data)
             if local != record.clientUpdatedAt || items[index] != item {
                 items[index] = item
                 changed = true
@@ -393,6 +396,58 @@ private struct Merger {
             }
         case .prefs:
             break
+        }
+    }
+}
+
+extension Reminder {
+    // The copy from another phone wins, but ticks given here stay, and a build from before lists sends none of the newer fields.
+    func merging(_ local: Reminder, from data: JSONValue) -> Reminder {
+        var result = self
+        if case .object(let fields) = data, fields["items"] == nil {
+            result.items = local.items
+            result.doneWhenChecked = local.doneWhenChecked
+            result.history = local.history.filter { mark in result.completedThrough.map { mark.occurrence <= $0 } ?? false }
+            if let through = result.completedThrough, through > (local.completedThrough ?? .distantPast) {
+                result.history.append(DoneMark(occurrence: through, at: result.updatedAt))
+                if result.schedule?.rule != nil {
+                    for index in result.items.indices {
+                        result.items[index].done = false
+                    }
+                }
+            }
+            if local.schedule?.rule?.unreadableByOlderBuilds == true {
+                result.schedule = local.schedule
+            }
+        }
+        let taken = Set(result.history.map(\.occurrence))
+        let kept = local.history.filter { mark in
+            !taken.contains(mark.occurrence) && result.completedThrough.map { mark.occurrence <= $0 } == true
+        }
+        if !kept.isEmpty {
+            result.history = Array((result.history + kept).sorted { $0.occurrence < $1.occurrence }.suffix(Self.historyLimit))
+        }
+        // What only this phone had goes back to the server a moment newer, so the other phones get it too.
+        if result != self {
+            result.updatedAt = updatedAt.addingTimeInterval(0.001)
+        }
+        result.contact = local.contact
+        return result
+    }
+
+    // Someone else's phone number stays on this phone and never goes to the server.
+    var shared: Reminder {
+        var copy = self
+        copy.contact = nil
+        return copy
+    }
+}
+
+private extension RepeatRule {
+    var unreadableByOlderBuilds: Bool {
+        switch self {
+        case .lastWorkday, .everyMonths, .evenDays, .oddDays: true
+        default: false
         }
     }
 }

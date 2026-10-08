@@ -4,6 +4,7 @@ import SwiftUI
 struct ChecklistRows: View {
     let items: [ChecklistItem]
     var removable = true
+    var addable = true
     var framed = true
     var focusOnAppear = false
     let onToggle: (ChecklistItem) -> Void
@@ -30,7 +31,7 @@ struct ChecklistRows: View {
                 row(item)
                 Hairline()
             }
-            if items.count < Reminder.maximumItems {
+            if addable, items.count < Reminder.maximumItems {
                 addRow
             }
         }
