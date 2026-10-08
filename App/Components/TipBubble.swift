@@ -24,10 +24,10 @@ struct TipBubble: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             HStack(spacing: 4) {
-                if tip == .weather {
+                if tip == .weather || tip == .friends {
                     answer("Not now", accepted: false, color: Palette.dialWindowText.opacity(0.75))
                 }
-                answer(tip == .weather ? "Turn on" : "Got it", accepted: true, color: Palette.accentOnDark)
+                answer(tip == .weather ? "Turn on" : tip == .friends ? "Show" : "Got it", accepted: true, color: Palette.accentOnDark)
             }
         }
         .padding(.top, 14)
@@ -63,6 +63,7 @@ struct TipBubble: View {
 
     private var icon: [String] {
         switch tip {
+        case .friends: Icons.people
         case .voice: Icons.microphone
         case .widget: Icons.widgets
         case .place: Icons.pin
@@ -72,6 +73,7 @@ struct TipBubble: View {
 
     private var title: LocalizedStringKey {
         switch tip {
+        case .friends: "Reminders with friends"
         case .voice: "You can use your voice"
         case .widget: "Rema on the Home Screen"
         case .place: "Places work on their own"
@@ -81,6 +83,7 @@ struct TipBubble: View {
 
     private var text: LocalizedStringKey {
         switch tip {
+        case .friends: "Share a reminder with a friend, and it comes to both of you at the same moment."
         case .voice: "Hold the plus and talk. Let go when you are done."
         case .widget: "Add a widget and the dial with the next reminder will always be in sight."
         case .place: "A reminder by place comes even when Rema is closed. Just keep location access on."

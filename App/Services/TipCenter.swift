@@ -2,6 +2,7 @@ import Foundation
 import Observation
 
 enum Tip: String {
+    case friends
     case voice
     case widget
     case place
@@ -31,6 +32,10 @@ final class TipCenter {
             return nil
         }
         let reminders = store.activeReminders
+        // The newest thing Rema can do is told first, once, on the first open after the update too.
+        if !seen.contains(Tip.friends.rawValue), Remote.shared.isOn(.sync) {
+            return .friends
+        }
         if !seen.contains(Tip.voice.rawValue), VoiceRecognizer.available, !reminders.isEmpty {
             return .voice
         }

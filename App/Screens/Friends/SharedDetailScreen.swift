@@ -14,6 +14,8 @@ struct SharedDetailScreen: View {
     @State private var confirming: Confirm?
     @State private var problem: String?
     @State private var reported = false
+    @State private var adding = false
+    @State private var removing: SharedMember?
 
     enum Confirm: Identifiable {
         case leave
@@ -114,9 +116,36 @@ struct SharedDetailScreen: View {
                             id: member.id,
                             name: member.id == me ? String(localized: "You", bundle: .app, locale: .app) : service.name(of: member.id, fallback: member.name),
                             status: statusText(member.status),
-                            done: member.status == SharedStatus.accepted
+                            done: member.status == SharedStatus.accepted,
+                            onRemove: shared.isMine ? { removing = member } : nil
                         )
                     }
+                    if shared.isMine {
+                        Hairline()
+                        ActionRow(icon: Icons.plus, title: Text("Add friends")) { adding = true }
+                    }
+                }
+                .confirmationDialog(
+                    Text(verbatim: removing.map { String(localized: "Remove \(service.name(of: $0.id, fallback: $0.name)) from this reminder?", bundle: .app, locale: .app) } ?? ""),
+                    isPresented: Binding(get: { removing != nil }, set: { if !$0 { removing = nil } }),
+                    titleVisibility: .visible,
+                    presenting: removing
+                ) { member in
+                    Button("Remove from the reminder", role: .destructive) {
+                        let kept = shared.members.filter { $0.id != member.id && ($0.status == SharedStatus.invited || $0.status == SharedStatus.accepted) }
+                        service.changeMembers(of: reminderID, to: kept.map { SharedPerson(id: $0.id, name: $0.name) })
+                    }
+                }
+                .sheet(isPresented: $adding) {
+                    MemberPicker(candidates: candidates(shared), onAdd: { people in
+                        let kept = shared.members.filter { $0.status == SharedStatus.invited || $0.status == SharedStatus.accepted }.map { SharedPerson(id: $0.id, name: $0.name) }
+                        service.changeMembers(of: reminderID, to: kept + people)
+                        adding = false
+                    }, onClose: { adding = false })
+                    .presentationDetents([.medium, .large])
+                    .presentationDragIndicator(.visible)
+                    .presentationCornerRadius(30)
+                    .presentationBackground(Palette.background)
                 }
                 if shared.doneMode == .one {
                     Note("One “done” counts for everybody.")
@@ -192,10 +221,27 @@ struct SharedDetailScreen: View {
         }
     }
 
-    private func participant(id: String, name: String, status: String, done: Bool) -> some View {
+    // Friends not in the reminder now, those who said no or left included: the one who made it can ask them again.
+    private func candidates(_ shared: SharedInfo) -> [SharedPerson] {
+        let inside = Set(shared.members.filter { $0.status == SharedStatus.invited || $0.status == SharedStatus.accepted }.map(\.id))
+        return service.friends.filter { !inside.contains($0.id) }.map { SharedPerson(id: $0.id, name: service.name(of: $0.id, fallback: $0.name)) }
+    }
+
+    private func participant(id: String, name: String, status: String, done: Bool, onRemove: (() -> Void)? = nil) -> some View {
         FriendRow(name: name, seed: id, info: status) {
-            if done {
-                Glyph(paths: Icons.check, size: 18, lineWidth: 2.6, color: Palette.accent)
+            HStack(spacing: 2) {
+                if done {
+                    Glyph(paths: Icons.check, size: 18, lineWidth: 2.6, color: Palette.accent)
+                }
+                if let onRemove {
+                    Button(action: onRemove) {
+                        Glyph(paths: Icons.close, size: 14, lineWidth: 2, color: Palette.secondary)
+                            .frame(width: 44, height: 44)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(RowPressStyle())
+                    .accessibilityLabel(Text("Remove from the reminder"))
+                }
             }
         }
     }

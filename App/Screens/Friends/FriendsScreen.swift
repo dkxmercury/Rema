@@ -14,6 +14,10 @@ struct FriendsScreen: View {
     @State private var myName = SharedService.shared.myName
     @State private var code = ""
     @State private var enteringCode = false
+    @State private var loaded = false
+    @State private var unblocking: SharedPerson?
+    @State private var touring = false
+    @AppStorage("friends.tourSeen") private var tourSeen = false
     @FocusState private var nameFocused: Bool
     @FocusState private var codeFocused: Bool
 
@@ -41,6 +45,9 @@ struct FriendsScreen: View {
             }
             .scrollIndicators(.hidden)
             .scrollDismissesKeyboard(.interactively)
+            .refreshable {
+                await service.refresh()
+            }
             .pinnedHeader {
                 ScreenHeader(title: "Friends", leading: .back, action: onBack)
             }
@@ -54,9 +61,33 @@ struct FriendsScreen: View {
         .animation(Motion.standard, value: service.state.friends)
         .animation(Motion.standard, value: openInvites)
         .task {
+            if !tourSeen {
+                touring = true
+            }
             await service.refresh()
+            loaded = true
             if !nameFocused {
                 myName = service.myName
+            }
+        }
+        .sheet(isPresented: $touring, onDismiss: { tourSeen = true }) {
+            FriendsTour {
+                tourSeen = true
+                touring = false
+            }
+            .presentationDetents([.large])
+            .presentationDragIndicator(.visible)
+            .presentationCornerRadius(30)
+            .presentationBackground(Palette.background)
+        }
+        .confirmationDialog(
+            Text(verbatim: unblocking.map { String(localized: "Unblock \(SharedNames.name(of: $0.id, fallback: $0.name))? They will be able to invite you again.", bundle: .app, locale: .app) } ?? ""),
+            isPresented: Binding(get: { unblocking != nil }, set: { if !$0 { unblocking = nil } }),
+            titleVisibility: .visible,
+            presenting: unblocking
+        ) { person in
+            Button("Unblock") {
+                Task { try? await service.unblock(person.id) }
             }
         }
         .onDisappear {
@@ -69,6 +100,10 @@ struct FriendsScreen: View {
 
     @ViewBuilder
     private var content: some View {
+        if service.problem == .offline {
+            Note(verbatim: Backend.Failure.offline.friendsMessage)
+                .padding(.top, 14)
+        }
         Note("Friends see only the reminders you share with them. You choose each one's name yourself, they don't see it.")
             .padding(.top, 14)
         SectionLabel(text: "Your name for friends")
@@ -82,7 +117,12 @@ struct FriendsScreen: View {
             .padding(.horizontal, 4)
             .padding(.top, 20)
             .padding(.bottom, 8)
-        if service.state.friends.isEmpty && openInvites.isEmpty {
+        if service.state.friends.isEmpty && openInvites.isEmpty && !loaded {
+            ProgressView()
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 22)
+                .panel()
+        } else if service.state.friends.isEmpty && openInvites.isEmpty {
             Text("No friends yet")
                 .font(.app(.golos, 16, weight: 600))
                 .foregroundStyle(Palette.secondary)
@@ -148,6 +188,30 @@ struct FriendsScreen: View {
             }
             .buttonStyle(RowPressStyle())
             .padding(.top, 10)
+        }
+        if !service.state.blocked.isEmpty {
+            SectionLabel(text: "Blocked")
+                .padding(.horizontal, 4)
+                .padding(.top, 20)
+                .padding(.bottom, 8)
+            PanelList {
+                ForEach(Array(service.state.blocked.enumerated()), id: \.element.id) { index, person in
+                    FriendRow(name: SharedNames.name(of: person.id, fallback: person.name), seed: person.id, info: "") {
+                        Button {
+                            unblocking = person
+                        } label: {
+                            Text("Unblock")
+                                .font(.app(.golos, 13, weight: 600))
+                                .foregroundStyle(Palette.accentText)
+                                .frame(minHeight: 44)
+                        }
+                        .buttonStyle(RowPressStyle())
+                    }
+                    if index < service.state.blocked.count - 1 {
+                        Hairline()
+                    }
+                }
+            }
         }
     }
 

@@ -2,6 +2,8 @@ import SwiftUI
 
 struct FeaturesScreen: View {
     var onPlaces: () -> Void = {}
+    var onFriends: () -> Void = {}
+    var onBirthdays: () -> Void = {}
     let onBack: () -> Void
 
     @Environment(\.openURL) private var openURL
@@ -45,6 +47,12 @@ struct FeaturesScreen: View {
 
     private var features: [Feature] {
         var list: [Feature] = []
+        if Remote.shared.isOn(.sync) {
+            list.append(Feature(id: 10, icon: Icons.people, title: "With friends", text: "Invite a friend with a link or a QR code, then tap “With friends” when you make a reminder. It comes to everybody at the same moment.", button: "Friends", action: onFriends))
+        }
+        list.append(Feature(id: 11, icon: Icons.list, title: "Several at once", text: "One phrase can hold several reminders: “tomorrow at 9 call mom, at 12 lunch with Ilya”."))
+        list.append(Feature(id: 12, icon: Icons.check, title: "Lists", text: "Write “buy milk, bread and eggs”, and Rema offers a list. Items are ticked one by one."))
+        list.append(Feature(id: 13, icon: Icons.calendar, title: "Birthdays and the calendar", text: "Birthdays from contacts become yearly reminders. Meetings from the iPhone calendar show on the home screen next to reminders.", button: "Birthdays", action: onBirthdays))
         if VoiceRecognizer.available {
             list.append(Feature(id: 0, icon: Icons.microphone, title: "By voice", text: "Hold the plus on the home screen and talk. Let go when you are done, and Rema will make sense of the phrase."))
         }

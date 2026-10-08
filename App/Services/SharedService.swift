@@ -73,6 +73,8 @@ final class SharedService {
         var acknowledged: [String: Int64] = [:]
         // A reminder the server would not share, told once on the home screen.
         var refused: String?
+        // The people I blocked, so a block made by mistake can be taken back.
+        var blocked: [SharedPerson] = []
 
         init() {}
 
@@ -93,6 +95,7 @@ final class SharedService {
             myName = try? container.decodeIfPresent(String.self, forKey: .myName)
             acknowledged = (try? container.decodeIfPresent([String: Int64].self, forKey: .acknowledged)) ?? [:]
             refused = try? container.decodeIfPresent(String.self, forKey: .refused)
+            blocked = (try? container.decodeIfPresent([SharedPerson].self, forKey: .blocked)) ?? []
         }
     }
 
@@ -505,11 +508,45 @@ final class SharedService {
         forget(friendID)
     }
 
-    func block(_ userID: String) async throws {
+    func block(_ userID: String, name: String = "") async throws {
         guard let session = Account.shared.session else { throw Backend.Failure.unauthorized }
         struct Body: Encodable { let user: String }
+        let known = state.friends.first { $0.id == userID }?.name ?? name
         try await Backend.send("POST", "/api/rema/blocks", body: Body(user: userID), token: session.token)
+        if !state.blocked.contains(where: { $0.id == userID }) {
+            state.blocked.insert(SharedPerson(id: userID, name: known), at: 0)
+        }
         forget(userID)
+    }
+
+    // The person can invite me again; being friends takes a new invitation.
+    func unblock(_ userID: String) async throws {
+        guard let session = Account.shared.session else { throw Backend.Failure.unauthorized }
+        try await Backend.send("DELETE", "/api/rema/blocks/\(userID)", token: session.token)
+        state.blocked.removeAll { $0.id == userID }
+        save()
+    }
+
+    // The one who made a reminder adds friends to it or takes them out, and can ask again the ones who said no.
+    func changeMembers(of id: UUID, to people: [SharedPerson]) {
+        guard var local = Store.shared.reminder(id), var shared = local.shared, shared.isMine else { return }
+        let wanted = Set(people.map(\.id))
+        var members: [SharedMember] = shared.members.compactMap { member in
+            guard wanted.contains(member.id) else { return nil }
+            var kept = member
+            if kept.status != SharedStatus.invited && kept.status != SharedStatus.accepted {
+                kept.status = SharedStatus.invited
+            }
+            return kept
+        }
+        for person in people where !members.contains(where: { $0.id == person.id }) {
+            members.append(SharedMember(id: person.id, name: person.name, status: SharedStatus.invited))
+        }
+        shared.members = members
+        local.shared = shared
+        Store.shared.save(local)
+        enqueue(.update(id: local.id.uuidString, data: local.sharedData, members: members.map(\.id), stamp: Self.stamp()))
+        kick()
     }
 
     // Without the friendship nothing is shared any more, here as on the server.
@@ -557,8 +594,13 @@ final class SharedService {
             let friends: [Entry]?
             let invites: [Sent]?
         }
+        struct Blocks: Decodable { let blocked: [SharedPerson]? }
         let answer = try await Backend.request("GET", "/api/rema/friends", token: token, as: Answer.self)
+        let blocks = try? await Backend.request("GET", "/api/rema/blocks", token: token, as: Blocks.self)
         guard state.account == account, Account.shared.session?.userID == account else { return }
+        if let blocks {
+            state.blocked = blocks.blocked ?? []
+        }
         state.friends = (answer.friends ?? []).map { Friend(id: $0.id, name: $0.name ?? "", since: Date(timeIntervalSince1970: Double($0.since ?? 0) / 1000)) }
         state.invites = (answer.invites ?? []).map { SentInvite(code: $0.code, state: $0.state, expires: Date(timeIntervalSince1970: Double($0.expires) / 1000), friendID: $0.friend?.id) }
         // The name typed when inviting goes to the friend who took the invitation.

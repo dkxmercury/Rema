@@ -127,7 +127,7 @@ struct FriendScreen: View {
             case .remove:
                 Button("Remove from friends", role: .destructive) { act { try await service.remove(friendID) } }
             case .block:
-                Button(String(localized: "Block \(shown)", bundle: .app, locale: .app), role: .destructive) { act { try await service.block(friendID) } }
+                Button(String(localized: "Block \(shown)", bundle: .app, locale: .app), role: .destructive) { act { try await service.block(friendID, name: ownName) } }
             case .report:
                 Button("Report", role: .destructive) { report() }
             case nil:

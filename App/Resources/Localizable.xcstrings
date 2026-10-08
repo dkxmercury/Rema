@@ -2905,6 +2905,52 @@
         }
       }
     },
+    "Add friends": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إضافة أصدقاء"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Freunde hinzufügen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouter des amis"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Добавить друзей"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Додати друзів"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дўстларни қўшиш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Do‘stlarni qo‘shish"
+          }
+        }
+      }
+    },
     "Add item": {
       "localizations": {
         "ar": {
@@ -4101,6 +4147,52 @@
         }
       }
     },
+    "Birthdays and the calendar": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أعياد الميلاد والتقويم"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geburtstage und Kalender"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anniversaires et calendrier"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дни рождения и календарь"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дні народження й календар"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Туғилган кунлар ва тақвим"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tug‘ilgan kunlar va taqvim"
+          }
+        }
+      }
+    },
     "Birthdays from Contacts": {
       "localizations": {
         "ar": {
@@ -4143,6 +4235,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Kontaktlardan tug‘ilgan kunlar"
+          }
+        }
+      }
+    },
+    "Birthdays from contacts become yearly reminders. Meetings from the iPhone calendar show on the home screen next to reminders.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تصبح أعياد الميلاد من جهات الاتصال تذكيرات سنوية. وتظهر مواعيد تقويم iPhone في الشاشة الرئيسية بجانب التذكيرات."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geburtstage aus den Kontakten werden zu jährlichen Erinnerungen. Termine aus dem iPhone-Kalender stehen auf dem Startbildschirm neben den Erinnerungen."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les anniversaires de vos contacts deviennent des rappels annuels. Les rendez-vous du calendrier de l’iPhone s’affichent sur l’écran d’accueil à côté des rappels."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дни рождения из контактов становятся ежегодными напоминаниями. Встречи из календаря iPhone видны на главном экране рядом с напоминаниями."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дні народження з контактів стають щорічними нагадуваннями. Зустрічі з календаря iPhone видно на головному екрані поруч із нагадуваннями."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Контактлардаги туғилган кунлар ҳар йилги эслатмага айланади. iPhone тақвимидаги учрашувлар бош экранда эслатмалар ёнида кўринади."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kontaktlardagi tug‘ilgan kunlar har yilgi eslatmaga aylanadi. iPhone taqvimidagi uchrashuvlar bosh ekranda eslatmalar yonida ko‘rinadi."
           }
         }
       }
@@ -4281,6 +4419,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@ni bloklaysizmi? U sizni boshqa taklif qila olmaydi."
+          }
+        }
+      }
+    },
+    "Blocked": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المحظورون"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blockiert"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bloqués"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Заблокированные"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Заблоковані"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Блокланганлар"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bloklanganlar"
           }
         }
       }
@@ -8701,6 +8885,98 @@
         }
       }
     },
+    "Everybody gets it at the same moment. Each ticks it alone, or one “done” counts for everybody.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يصل للجميع في اللحظة نفسها. كل شخص يؤشّر بنفسه، أو علامة «تم» واحدة للجميع."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle bekommen sie im selben Moment. Jeder hakt selbst ab, oder ein „Erledigt“ gilt für alle."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tout le monde le reçoit au même moment. Chacun coche pour soi, ou un seul « fait » compte pour tous."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "У всех оно придёт в один и тот же момент. Каждый отмечает сам, или одно «сделано» на всех."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "У всіх воно прийде в той самий момент. Кожен позначає сам, або одне «зроблено» на всіх."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ҳаммага бир вақтда келади. Ҳар ким ўзи белгилайди ёки битта «бажарилди» ҳамма учун."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hammaga bir vaqtda keladi. Har kim o‘zi belgilaydi yoki bitta «bajarildi» hamma uchun."
+          }
+        }
+      }
+    },
+    "Everybody you can invite is already here.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كل من يمكنك دعوته موجود هنا بالفعل."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle, die du einladen kannst, sind schon dabei."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tous ceux que vous pouvez inviter sont déjà là."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Все, кого можно позвать, уже здесь."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Усі, кого можна покликати, вже тут."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Чақириш мумкин бўлганларнинг ҳаммаси шу ерда."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chaqirish mumkin bo‘lganlarning hammasi shu yerda."
+          }
+        }
+      }
+    },
     "Everything bought": {
       "localizations": {
         "ar": {
@@ -10743,6 +11019,52 @@
         }
       }
     },
+    "How shared reminders work": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كيف تعمل التذكيرات المشتركة"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "So funktionieren gemeinsame Erinnerungen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comment fonctionnent les rappels partagés"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Как работают общие напоминания"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Як працюють спільні нагадування"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Умумий эслатмалар қандай ишлайди"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Umumiy eslatmalar qanday ishlaydi"
+          }
+        }
+      }
+    },
     "I have an invitation code": {
       "localizations": {
         "ar": {
@@ -11907,6 +12229,98 @@
           "stringUnit": {
             "state": "translated",
             "value": "Avval do‘stni taklif qiling, bu Sozlamalar, «Umumiy eslatmalar»da."
+          }
+        }
+      }
+    },
+    "Invite a friend with a link or a QR code, then tap “With friends” when you make a reminder. It comes to everybody at the same moment.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ادعُ صديقًا برابط أو رمز QR، ثم اضغط «مع الأصدقاء» عند إنشاء تذكير. يصل للجميع في اللحظة نفسها."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lade einen Freund per Link oder QR-Code ein und tippe beim Erstellen einer Erinnerung auf „Mit Freunden“. Sie kommt bei allen im selben Moment."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invitez un ami par lien ou code QR, puis touchez « Avec des amis » en créant un rappel. Il arrive chez tout le monde au même moment."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пригласите друга ссылкой или QR-кодом, а при создании напоминания нажмите «С друзьями». У всех оно придёт в один момент."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Запросіть друга посиланням або QR-кодом, а під час створення нагадування натисніть «З друзями». У всіх воно прийде в один момент."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дўстингизни ҳавола ёки QR-код орқали таклиф қилинг, эслатма яратаётганда «Дўстлар билан»ни босинг. Ҳаммага бир вақтда келади."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Do‘stingizni havola yoki QR-kod orqali taklif qiling, eslatma yaratayotganda «Do‘stlar bilan»ni bosing. Hammaga bir vaqtda keladi."
+          }
+        }
+      }
+    },
+    "Invite a friend with a link or a QR code. Rema does not look people up by email or phone number.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ادعُ صديقًا برابط أو رمز QR. لا يبحث Rema عن الأشخاص بالبريد أو برقم الهاتف."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lade einen Freund per Link oder QR-Code ein. Rema sucht niemanden über E-Mail oder Telefonnummer."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invitez un ami par lien ou par code QR. Rema ne recherche personne par e-mail ou numéro de téléphone."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пригласите друга ссылкой или QR-кодом. Rema не ищет людей по почте или номеру."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Запросіть друга посиланням або QR-кодом. Rema не шукає людей за поштою чи номером."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дўстингизни ҳавола ёки QR-код орқали таклиф қилинг. Rema одамларни почта ёки рақам бўйича қидирмайди."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Do‘stingizni havola yoki QR-kod orqali taklif qiling. Rema odamlarni pochta yoki raqam bo‘yicha qidirmaydi."
           }
         }
       }
@@ -13121,6 +13535,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ro‘yxat tuzasizmi?"
+          }
+        }
+      }
+    },
+    "Make a reminder and tap “With friends”. The friend gets an invitation and decides.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أنشئ تذكيرًا واضغط «مع الأصدقاء». تصل إلى صديقك دعوة ويقرر بنفسه."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erstelle eine Erinnerung und tippe auf „Mit Freunden“. Dein Freund bekommt eine Einladung und entscheidet selbst."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Créez un rappel et touchez « Avec des amis ». Votre ami reçoit une invitation et décide."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Создайте напоминание и нажмите «С друзьями». Другу придёт приглашение, и он решит сам."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Створіть нагадування і натисніть «З друзями». Другу прийде запрошення, і він вирішить сам."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Эслатма яратинг ва «Дўстлар билан»ни босинг. Дўстингизга таклиф келади, у ўзи ҳал қилади."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eslatma yarating va «Do‘stlar bilan»ni bosing. Do‘stingizga taklif keladi, u o‘zi hal qiladi."
           }
         }
       }
@@ -16599,6 +17059,52 @@
         }
       }
     },
+    "One phrase can hold several reminders: “tomorrow at 9 call mom, at 12 lunch with Ilya”.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يمكن لجملة واحدة أن تضم عدة تذكيرات: «غدًا الساعة 9 اتصل بأمي، والساعة 12 غداء مع إيليا»."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ein Satz kann mehrere Erinnerungen enthalten: „morgen um 9 Mama anrufen, um 12 Mittagessen mit Ilja“."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Une phrase peut contenir plusieurs rappels : « demain à 9 h appeler maman, à 12 h déjeuner avec Ilya »."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "В одной фразе может быть несколько напоминаний, например «завтра в 9 позвонить маме, в 12 обед с Ильёй»."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "В одній фразі може бути кілька нагадувань, наприклад «завтра о 9 подзвонити мамі, о 12 обід з Іллею»."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Битта гапда бир нечта эслатма бўлиши мумкин, масалан «эртага соат 9 да онамга қўнғироқ, 12 да Илья билан тушлик»."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bitta gapda bir nechta eslatma bo‘lishi mumkin, masalan «ertaga soat 9 da onamga qo‘ng‘iroq, 12 da Ilya bilan tushlik»."
+          }
+        }
+      }
+    },
     "One “done” counts for everybody.": {
       "localizations": {
         "ar": {
@@ -19635,6 +20141,52 @@
         }
       }
     },
+    "Reminders with friends": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تذكيرات مع الأصدقاء"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erinnerungen mit Freunden"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Des rappels avec vos amis"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напоминания с друзьями"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нагадування з друзями"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дўстлар билан эслатмалар"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Do‘stlar bilan eslatmalar"
+          }
+        }
+      }
+    },
     "Reminding for the 10th time": {
       "localizations": {
         "ar": {
@@ -20279,6 +20831,52 @@
         }
       }
     },
+    "Remove %@ from this reminder?": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إزالة %@ من هذا التذكير؟"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ aus dieser Erinnerung entfernen?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retirer %@ de ce rappel ?"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Убрать из напоминания: %@?"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Прибрати з нагадування: %@?"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ни бу эслатмадан олиб ташлайсизми?"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ni bu eslatmadan olib tashlaysizmi?"
+          }
+        }
+      }
+    },
     "Remove contact": {
       "localizations": {
         "ar": {
@@ -20367,6 +20965,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Do‘stlardan olib tashlash"
+          }
+        }
+      }
+    },
+    "Remove from the reminder": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إزالة من التذكير"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aus der Erinnerung entfernen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retirer du rappel"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Убрать из напоминания"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Прибрати з нагадування"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Эслатмадан олиб ташлаш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eslatmadan olib tashlash"
           }
         }
       }
@@ -21953,6 +22597,98 @@
         }
       }
     },
+    "Several at once": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عدة تذكيرات معًا"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mehrere auf einmal"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plusieurs à la fois"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Несколько сразу"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Кілька одразу"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бир нечтаси бирданига"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bir nechtasi birdaniga"
+          }
+        }
+      }
+    },
+    "Share a reminder with a friend, and it comes to both of you at the same moment.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شارك تذكيرًا مع صديق، فيصل إليكما في اللحظة نفسها."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Teile eine Erinnerung mit einem Freund, dann kommt sie bei euch beiden im selben Moment."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Partagez un rappel avec un ami, et il arrive chez vous deux au même moment."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Поделитесь напоминанием с другом, и оно придёт вам обоим в один момент."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Поділіться нагадуванням із другом, і воно прийде вам обом в один момент."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Эслатмани дўстингиз билан улашинг, у иккалангизга бир вақтда келади."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eslatmani do‘stingiz bilan ulashing, u ikkalangizga bir vaqtda keladi."
+          }
+        }
+      }
+    },
     "Share the link": {
       "localizations": {
         "ar": {
@@ -22133,6 +22869,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Do‘kon"
+          }
+        }
+      }
+    },
+    "Show": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عرض"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeigen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Voir"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Показать"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Показати"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Кўрсатиш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ko‘rsatish"
           }
         }
       }
@@ -26657,6 +27439,98 @@
         }
       }
     },
+    "Unblock": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إلغاء الحظر"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Entsperren"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Débloquer"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Разблокировать"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Розблокувати"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Блокдан чиқариш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blokdan chiqarish"
+          }
+        }
+      }
+    },
+    "Unblock %@? They will be able to invite you again.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إلغاء حظر %@؟ سيتمكن من دعوتك مجددًا."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ entsperren? Diese Person kann dich dann wieder einladen."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Débloquer %@ ? Cette personne pourra de nouveau vous inviter."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Разблокировать: %@? Этот человек снова сможет вас пригласить."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Розблокувати: %@? Ця людина знову зможе вас запросити."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ни блокдан чиқарасизми? У сизни яна таклиф қила олади."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ni blokdan chiqarasizmi? U sizni yana taklif qila oladi."
+          }
+        }
+      }
+    },
     "Undo": {
       "localizations": {
         "ar": {
@@ -28907,6 +29781,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Qo‘llab-quvvatlashga yozish"
+          }
+        }
+      }
+    },
+    "Write “buy milk, bread and eggs”, and Rema offers a list. Items are ticked one by one.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اكتب «اشترِ حليبًا وخبزًا وبيضًا» فيقترح Rema قائمة. تؤشّر على البنود واحدًا تلو الآخر."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schreib „Milch, Brot und Eier kaufen“, und Rema schlägt eine Liste vor. Die Punkte hakst du einzeln ab."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Écrivez « acheter du lait, du pain et des œufs », et Rema propose une liste. Les articles se cochent un par un."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напишите «купить молоко, хлеб и яйца», и Rema предложит список. Пункты отмечаются по одному."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напишіть «купити молоко, хліб і яйця», і Rema запропонує список. Пункти позначаються по одному."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«Сут, нон ва тухум сотиб олиш» деб ёзинг, Rema рўйхат таклиф қилади. Бандлар бирма-бир белгиланади."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«Sut, non va tuxum sotib olish» deb yozing, Rema ro‘yxat taklif qiladi. Bandlar birma-bir belgilanadi."
           }
         }
       }

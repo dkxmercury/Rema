@@ -254,7 +254,12 @@ struct RootView: View {
         case .friend(let id):
             FriendScreen(store: store, friendID: id, onOpen: { viewingShared = SharedTarget(id: $0) }, onBack: { navigation.path.removeLast() })
         case .features:
-            FeaturesScreen(onPlaces: { navigation.path.append(.places) }, onBack: { navigation.path.removeLast() })
+            FeaturesScreen(
+                onPlaces: { navigation.path.append(.places) },
+                onFriends: { navigation.path.append(.friends) },
+                onBirthdays: { navigation.path.append(.birthdays) },
+                onBack: { navigation.path.removeLast() }
+            )
         case .scheduled:
             ScheduledScreen(
                 content: ScheduledContent.make(reminders: store.reminders, places: store.places, now: Date(), calendar: .current, locale: AppLanguage.current.locale, withPlaces: remote.isOn(.places), events: calendarFeed.entries(from: Date(), to: Date().addingTimeInterval(14 * 86_400))),
@@ -559,6 +564,9 @@ struct RootView: View {
         tips.dismiss(tip)
         if tip == .weather, accepted {
             Task { await WeatherAdvisor.shared.setEnabled(true) }
+        }
+        if tip == .friends, accepted {
+            navigation.path.append(.friends)
         }
     }
 

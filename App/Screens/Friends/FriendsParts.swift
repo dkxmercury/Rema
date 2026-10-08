@@ -92,6 +92,109 @@ struct ActionRow: View {
     }
 }
 
+// The first visit of the friends screen tells in three steps how sharing works.
+struct FriendsTour: View {
+    let onDone: () -> Void
+
+    var body: some View {
+        ZStack {
+            Palette.background.ignoresSafeArea()
+            VStack(alignment: .leading, spacing: 0) {
+                Glyph(paths: Icons.people, size: 34, lineWidth: 1.8, color: Palette.accentText)
+                    .padding(.top, 34)
+                Text("How shared reminders work")
+                    .font(.app(.golos, 24, weight: 600))
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.top, 14)
+                VStack(alignment: .leading, spacing: 18) {
+                    step(1, "Invite a friend with a link or a QR code. Rema does not look people up by email or phone number.")
+                    step(2, "Make a reminder and tap “With friends”. The friend gets an invitation and decides.")
+                    step(3, "Everybody gets it at the same moment. Each ticks it alone, or one “done” counts for everybody.")
+                }
+                .padding(.top, 22)
+                Spacer(minLength: 16)
+                Button(action: onDone) {
+                    Text("Got it")
+                }
+                .buttonStyle(PrimaryButtonStyle())
+            }
+            .padding(.horizontal, 24)
+            .padding(.bottom, 24)
+        }
+        .foregroundStyle(Palette.text)
+    }
+
+    private func step(_ number: Int, _ text: LocalizedStringKey) -> some View {
+        HStack(alignment: .top, spacing: 14) {
+            Text(verbatim: "\(number)")
+                .font(.app(.jost, 17, weight: 600))
+                .foregroundStyle(Palette.onAccent)
+                .frame(width: 30, height: 30)
+                .background(Circle().fill(Palette.accent))
+                .accessibilityHidden(true)
+            Text(text)
+                .font(.app(.golos, 16))
+                .lineSpacing(2)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+}
+
+// Friends the one who made a reminder can still add to it.
+struct MemberPicker: View {
+    let candidates: [SharedPerson]
+    let onAdd: ([SharedPerson]) -> Void
+    let onClose: () -> Void
+
+    @State private var chosen: Set<String> = []
+
+    var body: some View {
+        ZStack {
+            Palette.background.ignoresSafeArea()
+            VStack(alignment: .leading, spacing: 0) {
+                HStack {
+                    Text("Add friends")
+                        .font(.app(.golos, 22, weight: 600))
+                    Spacer()
+                    RoundIconButton(icon: Icons.close, label: "Close", action: onClose)
+                        .frame(width: 40, height: 40)
+                }
+                .padding(.top, 18)
+                if candidates.isEmpty {
+                    Note("Everybody you can invite is already here.")
+                        .padding(.top, 14)
+                } else {
+                    FlowLayout(spacing: 8) {
+                        ForEach(candidates, id: \.id) { person in
+                            Chip(title: "\(person.name)", selected: chosen.contains(person.id)) {
+                                Feedback.play(chosen.contains(person.id) ? .uncheck : .check)
+                                if chosen.contains(person.id) {
+                                    chosen.remove(person.id)
+                                } else {
+                                    chosen.insert(person.id)
+                                }
+                            }
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.top, 16)
+                }
+                Spacer(minLength: 16)
+                Button {
+                    onAdd(candidates.filter { chosen.contains($0.id) })
+                } label: {
+                    Text("Add")
+                }
+                .buttonStyle(PrimaryButtonStyle())
+                .disabled(chosen.isEmpty)
+            }
+            .padding(.horizontal, 18)
+            .padding(.bottom, 24)
+        }
+        .foregroundStyle(Palette.text)
+    }
+}
+
 extension Backend.Failure {
     // The texts of `message` are written for the sign-in form and say the wrong thing here.
     var friendsMessage: String {
