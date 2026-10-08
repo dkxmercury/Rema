@@ -146,12 +146,12 @@ extension PhraseParser {
             s.rule = .weekly(s.weekdays)
             return true
         }
-        take("(har hafta|haftalik)", text, &state) { _, s in s.rule = .weekly([]); return true }
-        take("(har oy|har oyning|oylik)( (\\d{1,2})-?(kuni|sanasi)?)?", text, &state) { m, s in
+        take("(har hafta|haftalik(?! \\p{L}))", text, &state) { _, s in s.rule = .weekly([]); return true }
+        take("(har oy|har oyning|oylik(?! \\p{L}))( (\\d{1,2})-?(kuni|sanasi)?)?", text, &state) { m, s in
             s.rule = .monthlyOnDay(group(m, 3, text).flatMap(Int.init) ?? 0)
             return true
         }
-        take("(har yili|har yil|yillik)( (\\d{1,2})[ -]\(PhraseParser.uzMonths))?", text, &state) { m, s in
+        take("(har yili|har yil|yillik(?! \\p{L}))( (\\d{1,2})[ -]\(PhraseParser.uzMonths))?", text, &state) { m, s in
             if let day = group(m, 3, text).flatMap(Int.init), let month = group(m, 4, text).flatMap(self.uzMonth), (1...31).contains(day) {
                 s.rule = .yearly(month: month, day: day)
                 s.date = nextDate(month: month, day: day, year: nil)

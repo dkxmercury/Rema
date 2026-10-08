@@ -159,6 +159,39 @@ enum CorpusData {
         ok("раз в квартал сдать отчётность", "Сдать отчётность | 06.10 09:00 | every 3m | -"),
         ok("по чётным числам в 8 полить цветы", "Полить цветы | 06.10 08:00 | even days | -"),
         ok("каждые 2 месяца менять фильтр", "Менять фильтр | 06.10 09:00 | every 2m | -"),
+        ok("завтра купить подарки на Новый год", "Купить подарки на Новый год | 06.10 09:00 | - | -"),
+        ok("подписать новый годовой контракт в пятницу", "Подписать новый годовой контракт | 09.10 09:00 | - | -"),
+        ok("прочитать новости года", "Прочитать новости года | - | - | -"),
+        ok("перед Новым годом купить ёлку", "Купить ёлку | 31.12 09:00 | - | -"),
+        ok("каждый день с 25 октября по 5 ноября таблетки", "Таблетки | 25.10 09:00 | daily until 05.11.2026 | -"),
+        ok("с 1 ноября по 10 ноября каждый день зарядка", "Зарядка | 01.11 09:00 | daily until 10.11.2026 | -"),
+        ok("каждый день в 9 таблетки 2 недели подряд", "Таблетки | 06.10 09:00 | daily until 19.10.2026 | -"),
+        ok("по будням в 9 таблетки 2 недели подряд", "Таблетки | 06.10 09:00 | weekdays until 19.10.2026 | -"),
+        ok("каждый день в течение дня пить воду", "В течение дня пить воду | 06.10 09:00 | daily | -"),
+        ok("каждый день в течение двух недель пить витамины", "Пить витамины | 06.10 09:00 | daily until 19.10.2026 | -"),
+        ok("до 20.10 оплатить налог", "Оплатить налог | 20.10 09:00 | - | early 840"),
+        ok("к 25.10 сдать отчёт", "Сдать отчёт | 25.10 09:00 | - | early 840"),
+        ok("за 2 дня до 20.12 купить подарки", "Купить подарки | 18.12 09:00 | - | -"),
+        ok("каждый день до 20.10 таблетки", "Таблетки | 06.10 09:00 | daily until 20.10.2026 | -"),
+        ok("каждый день с 1 по 15 октября пить витамины", "Пить витамины | 06.10 09:00 | daily until 15.10.2026 | -"),
+        ok("отпуск с 10 по 20 декабря", "Отпуск | 10.12 09:00 | - | -"),
+        ok("в субботу помочь маме с закатками", "Помочь маме с закатками | 10.10 09:00 | - | -"),
+        ok("в субботу на закатку огурцов", "На закатку огурцов | 10.10 09:00 | - | -"),
+        ok("в субботу съездить на Рассветную улицу", "Съездить на Рассветную улицу | 10.10 09:00 | - | -"),
+        ok("напомнить о 3 платежах завтра в 10", "О 3 платежах | 06.10 10:00 | - | -"),
+        ok("завтра в 9 позвонить Віталію", "Позвонить Віталію | 06.10 09:00 | - | -"),
+        ok("завтра в 9 позвонить Ҳасану", "Позвонить Ҳасану | 06.10 09:00 | - | -"),
+        ok("завтра в 3 забрать детей", "Забрать детей | 06.10 15:00 | - | alt 06.10 03:00"),
+        ok("в пятницу в 5 забрать детей", "Забрать детей | 09.10 17:00 | - | alt 09.10 05:00"),
+        ok("с понедельника до пятницы в 8 зарядка", "Зарядка | 06.10 08:00 | weekdays | -"),
+        ok("с понедельника по пятницу в 8 зарядка", "Зарядка | 06.10 08:00 | weekdays | -"),
+        ok("каждый день до пятницы в 9 таблетки", "Таблетки | 06.10 09:00 | daily until 09.10.2026 | -"),
+        ok("до конца недели сдать отчёт", "Сдать отчёт | 10.10 09:00 | - | early 840"),
+        ok("до конца месяца оплатить счёт", "Оплатить счёт | 31.10 09:00 | - | early 840"),
+        ok("в пятницу развернуть в тестовой среде", "Развернуть в тестовой среде | 09.10 09:00 | - | -"),
+        ok("сегодня купить хлеб", "Купить хлеб | 05.10 19:00 | - | -"),
+        ok("5 октября оплатить", "Оплатить | 05.10 19:00 | - | -"),
+        ok("раз в квартал 10 числа отчёт", "Отчёт | 10.10 09:00 | every 3m | -"),
     ]
 
     static let ukrainian: [CorpusCase] = [
@@ -215,6 +248,10 @@ enum CorpusData {
         ok("на Новий рік привітати батьків", "Привітати батьків | 01.01 09:00 | - | -"),
         ok("до п'ятниці здати звіт", "Здати звіт | 09.10 09:00 | - | early 840"),
         ok("раз на квартал звіт", "Звіт | 06.10 09:00 | every 3m | -"),
+        ok("у суботу піти на різдвяний ярмарок", "Піти на різдвяний ярмарок | 10.10 09:00 | - | -"),
+        ok("забронювати переговорку на 2 години завтра", "Забронювати переговорку на 2 години | 06.10 09:00 | - | -"),
+        ok("орендувати авто на 2 дні", "Орендувати авто на 2 дні | - | - | -"),
+        ok("забронювати готель на 3 ночі", "Забронювати готель на 3 ночі | - | - | -"),
     ]
 
     static let english: [CorpusCase] = [
@@ -324,6 +361,24 @@ enum CorpusData {
         ok("every quarter pay the taxes", "Pay the taxes | 06.10 09:00 | every 3m | -"),
         ok("3 days after the 15th renew the subscription", "Renew the subscription | 18.10 09:00 | - | -"),
         ok("tomorrow at sunrise go for a run", "Go for a run | 06.10 06:23 | - | -"),
+        ok("christmas shopping on Saturday", "Christmas shopping | 10.10 09:00 | - | -"),
+        ok("buy halloween candy on Friday at 5", "Buy halloween candy | 09.10 17:00 | - | alt 09.10 05:00"),
+        ok("every day except the weekend at 7 gym", "Gym | 06.10 07:00 | weekdays | -"),
+        ok("every day except on weekends at 7 gym", "Gym | 06.10 07:00 | weekdays | -"),
+        ok("every day from November 1 to November 10 pills", "Pills | 01.11 09:00 | daily until 10.11.2026 | -"),
+        ok("every day at 9 pills 2 weeks in a row", "Pills | 06.10 09:00 | daily until 19.10.2026 | -"),
+        ok("every Sunday cook meals for a week", "Cook meals for a week | 11.10 09:00 | weekly sun | -"),
+        ok("meet at Dawn's house tomorrow", "Meet at Dawn's house | 06.10 09:00 | - | -"),
+        ok("prepare the quarterly report on Friday at 10", "Prepare the quarterly report | 09.10 10:00 | - | -"),
+        ok("submit the weekly report on Friday", "Submit the weekly report | 09.10 09:00 | - | -"),
+        ok("send the monthly invoice tomorrow", "Send the monthly invoice | 06.10 09:00 | - | -"),
+        ok("tomorrow at 5 pick up the kids", "Pick up the kids | 06.10 17:00 | - | alt 06.10 05:00"),
+        ok("every day until Friday at 9 pills", "Pills | 06.10 09:00 | daily until 09.10.2026 | -"),
+        ok("every day to the end of the month at 9 pills", "Pills | 06.10 09:00 | daily until 31.10.2026 | -"),
+        ok("by next Friday send the report", "Send the report | 16.10 09:00 | - | early 840; alt 09.10 09:00"),
+        ok("today buy bread", "Buy bread | 05.10 19:00 | - | -"),
+        ok("every 2 months on the 15th pay the bill", "Pay the bill | 15.10 09:00 | every 2m | -"),
+        ok("call Jan 5 minutes before", "Call Jan | - | - | early 5"),
     ]
 
     static let german: [CorpusCase] = [
@@ -385,6 +440,13 @@ enum CorpusData {
         ok("an Silvester Sekt kaufen", "Sekt kaufen | 31.12 09:00 | - | -"),
         ok("2 Tage vor dem 20. Dezember Geschenke kaufen", "Geschenke kaufen | 18.12 09:00 | - | -"),
         ok("bis Freitag den Bericht abgeben", "Bericht abgeben | 09.10 09:00 | - | early 840"),
+        ok("jeden Tag außer am Wochenende um 7 Sport", "Sport | 06.10 07:00 | weekdays | -"),
+        ok("jeden Tag außer an Wochenenden um 7 Sport", "Sport | 06.10 07:00 | weekdays | -"),
+        ok("jeden Tag um 9 Tabletten 2 Wochen hintereinander", "Tabletten | 06.10 09:00 | daily until 19.10.2026 | -"),
+        ok("jeden Sonntag Essen für eine Woche vorkochen", "Essen für eine Woche vorkochen | 11.10 09:00 | weekly sun | -"),
+        ok("von Montag bis Freitag um 8 Sport", "Sport | 06.10 08:00 | weekdays | -"),
+        ok("bis Ende des Monats die Rechnung bezahlen", "Rechnung bezahlen | 31.10 09:00 | - | early 840"),
+        ok("jeden Tag bis zum Monatsende um 9 Tabletten", "Tabletten | 06.10 09:00 | daily until 31.10.2026 | -"),
     ]
 
     static let french: [CorpusCase] = [
@@ -445,6 +507,12 @@ enum CorpusData {
         ok("à Noël appeler mamie", "Appeler mamie | 25.12 09:00 | - | -"),
         ok("2 jours avant le 20 décembre acheter les cadeaux", "Acheter les cadeaux | 18.12 09:00 | - | -"),
         ok("rendre le rapport d'ici vendredi", "Rendre le rapport | 09.10 09:00 | - | early 840"),
+        ok("demain acheter les cadeaux de Noël", "Acheter les cadeaux de Noël | 06.10 09:00 | - | -"),
+        ok("appeler Noël demain à 10h", "Appeler Noël | 06.10 10:00 | - | -"),
+        ok("tous les jours sauf le week-end à 7h sport", "Sport | 06.10 07:00 | weekdays | -"),
+        ok("tous les jours du 1er au 10 novembre comprimés", "Comprimés | 01.11 09:00 | daily until 10.11.2026 | -"),
+        ok("tous les jours jusqu'au 1er décembre comprimés", "Comprimés | 06.10 09:00 | daily until 01.12.2026 | -"),
+        ok("tous les jours à 9h comprimés 2 semaines de suite", "Comprimés | 06.10 09:00 | daily until 19.10.2026 | -"),
     ]
 
     static let uzbekLatin: [CorpusCase] = [
@@ -485,6 +553,11 @@ enum CorpusData {
         ok("oyning oxirgi ish kunida hisobot", "Hisobot | 30.10 09:00 | last workday | -"),
         ok("Navro‘zda sumalak tayyorlash", "Sumalak tayyorlash | 21.03 09:00 | - | -"),
         ok("jumagacha hisobotni topshirish", "Hisobotni topshirish | 09.10 09:00 | - | early 840"),
+        ok("ertaga yangi yilga sovg'a olish", "Yangi yilga sovg'a olish | 06.10 09:00 | - | -"),
+        ok("har kuni ikki hafta davomida vitamin ichish", "Vitamin ichish | 06.10 09:00 | daily until 19.10.2026 | -"),
+        ok("15-oktyabrgacha hisobotni topshirish", "Hisobotni topshirish | 15.10 09:00 | - | early 840"),
+        ok("ertaga oylik olish", "Oylik olish | 06.10 09:00 | - | -"),
+        ok("haftalik hisobotni juma kuni topshirish", "Haftalik hisobotni topshirish | 09.10 09:00 | - | -"),
     ]
 
     static let uzbekCyrillic: [CorpusCase] = [
@@ -553,6 +626,10 @@ enum CorpusData {
         ok("في اخر يوم عمل من الشهر تقرير", "تقرير | 30.10 09:00 | last workday | -"),
         ok("في راس السنة اتصل بأمي", "اتصل بأمي | 01.01 09:00 | - | -"),
         ok("قبل الجمعة سلم التقرير", "سلم التقرير | 09.10 09:00 | - | early 840"),
+        ok("كل يوم حتى نهاية الشهر الساعة 9 رياضة", "رياضة | 06.10 09:00 | daily until 31.10.2026 | -"),
+        ok("حتى الجمعة سلم التقرير", "سلم التقرير | 09.10 09:00 | - | early 840"),
+        ok("كل يوم ما عدا نهاية الاسبوع الساعة 7 رياضة", "رياضة | 06.10 07:00 | weekdays | -"),
+        ok("كل يوم لمدة اسبوعين فيتامين", "فيتامين | 06.10 09:00 | daily until 19.10.2026 | -"),
     ]
 
     static let mixed: [CorpusCase] = [
@@ -560,5 +637,10 @@ enum CorpusData {
         ok("о 7 вечеря", "Вечеря | 05.10 19:00 | - | alt 06.10 07:00"),
         ok("call Маша tomorrow at 9", "Call Маша | 06.10 09:00 | - | -"),
         ok("zavtra v 9 pozvonit mame", "Pozvonit mame | 06.10 09:00 | - | -"),
+        ok("v ponedelnik v 9 sozvon", "Sozvon | 12.10 09:00 | - | -"),
+        ok("kazhdiy den v 9 tabletki", "Tabletki | 06.10 09:00 | daily | -"),
+        ok("v voskresenye v 10 basseyn", "Basseyn | 11.10 10:00 | - | -"),
+        ok("nochyu v 2 vyklyuchit server", "Vyklyuchit server | 06.10 02:00 | - | -"),
+        ok("sevodnya v 18 trenirovka", "Trenirovka | 05.10 18:00 | - | -"),
     ]
 }

@@ -210,7 +210,7 @@ extension PhraseParser {
             return true
         }
         // «На 4 особи» is an amount, not a time.
-        take("(?:о|об|на) (\\d{1,2})(?: годин\\w*)?\(modifier)(?! \(PhraseParser.ukMonths))(?! (?:(?:кг|км|грн|шт|раз|рази|разів|люди|людей|рік|роки|років|місця|місць|місце|особи|осіб|особу|особа)(?![\\p{L}])|(?:чолов|відсот|гривен|хвилин|днів|тижн|місяц|друз|гост)\\w*))", text, &state) { m, s in
+        take("(?:о|об) (\\d{1,2})(?: годин\\w*)?\(modifier)(?! \(PhraseParser.ukMonths))(?! (?:(?:кг|км|грн|шт|раз|рази|разів|люди|людей|рік|роки|років|місця|місць|місце|особи|осіб|особу|особа)(?![\\p{L}])|(?:чолов|відсот|гривен|хвилин|днів|тижн|місяц|друз|гост)\\w*))", text, &state) { m, s in
             guard let hour = group(m, 1, text).flatMap(Int.init), hour < 24 else { return false }
             s.time = LocalTime(hour: ukHour(hour, group(m, 2, text)), minute: 0)
             s.meridiem = group(m, 2, text) != nil

@@ -206,7 +206,7 @@ extension PhraseParser {
         let hourWords = "الحادية عشرة|الحادية عشر|الثانية عشرة|الثانية عشر|الواحدة|الثانية|الثالثة|الرابعة|الخامسة|السادسة|السابعة|الثامنة|التاسعة|العاشرة"
         let hours = "(\\d{1,2}|\(hourWords))"
         let count = "(?:خمس وعشرين|عشرين|عشر|خمس)(?: دقائق| دقيقة)?"
-        let fraction = "(والنصف|والربع|والثلث|الا (?:ال)?ربعا?|الا (?:ال)?ثلثا?|و\(count)|الا \(count))"
+        let fraction = "(و ?النصف|و ?الربع|و ?الثلث|الا (?:ال)?ربعا?|الا (?:ال)?ثلثا?|و ?\(count)|الا \(count))"
         take("(?:حوالي|نحو|قرابة|تقريبا) (?:في )?(الساعة |الساعه )?\(hours)(?::(\\d{2}))?(?: \(fraction))?\(modifier)", text, &state) { m, s in
             // «حوالي 2 كيلو» is an amount, a bare number is an hour only with «الساعة».
             guard group(m, 2, text).flatMap(Int.init) == nil || group(m, 1, text) != nil || group(m, 3, text) != nil || group(m, 5, text) != nil else { return false }

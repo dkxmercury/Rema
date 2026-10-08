@@ -45,13 +45,20 @@ extension PhraseParser {
             s.rule = .everyDays(2)
             return true
         }
-        take(phrases.everyWeekend, text, &state) { _, s in
+        // «Every day except the weekend»: there the weekend is taken away, it is no day of its own.
+        func afterExcept(_ match: NSTextCheckingResult) -> Bool {
+            guard let range = Range(match.range, in: text) else { return false }
+            let before = text[..<range.lowerBound].split(separator: " ").suffix(2).joined(separator: " ")
+            return ["кроме", "крім", "except", "excluding", "but not", "apart from", "außer", "ausser", "ohne", "sauf", "عدا", "باستثناء"].contains { before.hasSuffix($0) }
+        }
+        take(phrases.everyWeekend, text, &state) { m, s in
+            guard !afterExcept(m) else { return false }
             s.weekdays = [.saturday, .sunday]
             s.rule = .weekly([.saturday, .sunday])
             return true
         }
-        take(phrases.weekend, text, &state) { _, s in
-            guard s.rule == nil else { return false }
+        take(phrases.weekend, text, &state) { m, s in
+            guard s.rule == nil, !afterExcept(m) else { return false }
             s.weekdays = [.saturday, .sunday]
             return true
         }
@@ -94,7 +101,7 @@ extension PhraseParser {
         towardEvening: "(?:(?:towards?|closer to|by) (?:the )?evening|late (?:in the )?afternoon|(?:by |at )?the end of the day)",
         weekend: "(?:on |at |this |over )?(?:the )?weekend",
         everyWeekend: "(every weekend|on weekends)",
-        monthEnd: "(at the end of the month|(?:on )?the last day of the month|(?<!until the |till the |through the |until |till |through )end of the month)",
+        monthEnd: "(at the end of the month|(?:on )?the last day of the month|(?<!until the |till the |through the |to the |until |till |through |to )end of the month)",
         everyMonthEnd: "(at the end of (?:every|each) month|(?:on )?the last day of (?:every|each) month)",
         everyOtherDay: "every (?:other|second) day",
         everyOtherWeekday: "every (?:other|second) \(PhraseParser.englishWeekdays)",
@@ -136,7 +143,7 @@ extension PhraseParser {
         towardEvening: "(?:في )?(?:قرب المساء|قبيل المساء|اخر النهار|نهاية اليوم)",
         weekend: "(?:في )?(?:عطلة )?نهاية الاسبوع",
         everyWeekend: "كل (?:عطلة )?نهاية (?:ال)?اسبوع",
-        monthEnd: "(?:في )?((?<!حتى )نهاية الشهر|اخر يوم من الشهر|اخر يوم في الشهر)",
+        monthEnd: "(?:في )?((?<!حتي )نهاية الشهر|اخر يوم من الشهر|اخر يوم في الشهر)",
         everyMonthEnd: "(?:في )?(نهاية كل شهر|اخر يوم من كل شهر|اخر يوم في كل شهر)",
         everyOtherDay: "(كل يومين|يوم بعد يوم|يوما بعد يوم)",
         everyOtherWeekday: "كل اسبوعين (?:في )?\(PhraseParser.arWeekday)",

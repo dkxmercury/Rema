@@ -28,7 +28,7 @@ final class PatternCache: @unchecked Sendable {
         if let regex = compiled[pattern] {
             return regex
         }
-        let regex = try? NSRegularExpression(pattern: "(?<![\\p{L}\\d])" + pattern + "(?![\\p{L}\\d])", options: [.caseInsensitive])
+        let regex = try? NSRegularExpression(pattern: "(?<![\\p{L}\\d])(?:" + pattern + ")(?![\\p{L}\\d])", options: [.caseInsensitive])
         compiled[pattern] = regex
         return regex
     }
@@ -58,6 +58,10 @@ public struct PhraseParser {
     static let weekdayPattern = "(понедельник\\w*|пн|вторник\\w*|(?<!\\d )вт|сред(?:а|у|ы|ой|е|ам|ами|ах)|ср|четверг\\w*|чт|пятниц\\w*|пт|суббот\\w*|сб|воскресень\\w*|вс)"
     private static let fillers: Set<String> = ["напомни", "напомните", "напомнить", "мне", "пожалуйста", "надо", "нужно"]
     private static let dangling: Set<String> = ["и", "а", "в", "во", "на", "с", "со", "к", "по"]
+    // A number before a noun is an amount, «около 5 км», «в 2 раза», «в 5 подъезде», and so is a list of them, «в 5 и 6 классах».
+    static let ruCountedNouns = "(?:(?:км|кг|г|м|л|см|мм|мл|сум|лет|пик|ряд|ряду|ряда|раз|раза|людей|люди|места|мест|место|год|года|гостей|гостя|гости)(?![\\p{L}])|(?:человек|штук|процент|рубл|доллар|евро|подъезд|числ|этаж|класс|кабинет|квартир|корпус|вагон|автобус|маршрут|школ|групп|палат|минут|секунд|недел|месяц|друз)\\w*)"
+    static let ruCounted = "(?!(?:(?:,| и) \\d{1,2})* \(ruCountedNouns))"
+    static let ruNoMonth = "(?!(?:(?:,| и) \\d{1,2})* \(monthPattern))"
     static let conjunctions: Set<String> = ["и", "а", "і", "й", "та", "and", "und", "et", "va", "ва", "و"]
 
     struct State {
@@ -83,6 +87,8 @@ public struct PhraseParser {
         var span: Int?
         var deadline = false
         var sun: SunEvent?
+        var holiday: LocalDate?
+        var holidayRange: Range<Int>?
     }
 
     struct Mark {
@@ -148,6 +154,9 @@ public struct PhraseParser {
         }
         if PhraseParser.mostlyLatin(input) {
             if let (cyrillic, origin) = PhraseParser.transliterated(input) {
+                if let (fixed, back) = PhraseParser.rewrite(cyrillic, PhraseParser.translitFixes) {
+                    return parseRussian(fixed, typed: input, origin: back.map { origin[$0] })
+                }
                 return parseRussian(cyrillic, typed: input, origin: origin)
             }
             switch PhraseParser.latinLanguage(input, preferred: preferred) {
@@ -158,13 +167,28 @@ public struct PhraseParser {
             }
         }
         if PhraseParser.looksUzbekCyrillic(input, preferred: preferred) {
-            return parseUzbek(input)
+            return better(parseUzbek(input), than: parseRussian(input))
         }
         if PhraseParser.looksUkrainian(input, preferred: preferred) {
-            return parseUkrainian(input)
+            return better(parseUkrainian(input), than: parseRussian(input))
         }
         return parseRussian(input)
     }
+
+    // One Ukrainian or Uzbek letter in a name does not make the phrase Ukrainian or Uzbek: the reading that understands more wins.
+    private func better(_ detected: ParsedPhrase, than russian: ParsedPhrase) -> ParsedPhrase {
+        func score(_ parsed: ParsedPhrase) -> Int {
+            (parsed.schedule != nil ? 1000 : 0) + parsed.highlights.reduce(0) { $0 + $1.count }
+        }
+        return score(russian) > score(detected) ? russian : detected
+    }
+
+    // Typed in Latin letters, Russian comes back with spellings the rules do not know.
+    static let translitFixes: [String: String] = [
+        "понеделник": "понедельник", "понеделника": "понедельника", "каждий": "каждый", "каждыи": "каждый", "каждии": "каждый",
+        "воскресеные": "воскресенье", "воскресение": "воскресенье", "воскресене": "воскресенье", "ночю": "ночью",
+        "севодня": "сегодня", "сиводня": "сегодня", "сегодна": "сегодня", "ден": "день",
+    ]
 
     func parseRussian(_ input: String, typed: String? = nil, origin: [Int]? = nil) -> ParsedPhrase {
         let text = input.lowercased().replacingOccurrences(of: "ё", with: "е")
@@ -182,10 +206,12 @@ public struct PhraseParser {
         var state = corrected(text, PhraseParser.russianCorrection, pass)
 
         let schedule = resolve(&state)
+        // A Latin pair like «yu» gives one Cyrillic letter, so a range ends where the next letter begins.
         let used = origin.map { origin in
             state.used.compactMap { range -> Range<Int>? in
                 guard !range.isEmpty, range.upperBound - 1 < origin.count else { return nil }
-                return origin[range.lowerBound]..<(origin[range.upperBound - 1] + 1)
+                let next = range.upperBound < origin.count ? origin[range.upperBound] : (typed ?? input).count
+                return origin[range.lowerBound]..<max(origin[range.upperBound - 1] + 1, next)
             }
         } ?? state.used
         return ParsedPhrase(
@@ -245,6 +271,27 @@ public struct PhraseParser {
         }
     }
 
+    // «В тестовой среде», «окружающая среда»: the word is a weekday only in the forms and with the words a day takes.
+    private func wednesday(_ word: String, _ match: NSTextCheckingResult, _ text: String) -> Bool {
+        guard word.hasPrefix("сред"), let range = Range(match.range, in: text) else { return true }
+        let whole = String(text[range])
+        let before = text[..<range.lowerBound].split(separator: " ").last.map(String.init) ?? ""
+        switch word {
+        case "среду":
+            return whole.hasPrefix("в ") || whole.hasPrefix("во ") || whole != word || ["на", "через", "за", "каждую", "эту", "следующую", "ближайшую", "прошлую", "про"].contains(before) || before.isEmpty
+        case "среды":
+            return ["до", "с", "со", "после", "от", "для", "каждой", "кроме", "к"].contains(before)
+        case "среде":
+            return !whole.hasPrefix("в") && ["к", "по"].contains(before)
+        case "среда":
+            return whole != word || before.isEmpty || ["эта", "следующая", "каждая", "ближайшая"].contains(before)
+        case "средам":
+            return before == "по"
+        default:
+            return false
+        }
+    }
+
     private func weekday(_ word: String) -> Weekday? {
         if word.hasPrefix("пн") || word.hasPrefix("понед") { return .monday }
         if word.hasPrefix("вт") { return .tuesday }
@@ -297,7 +344,7 @@ public struct PhraseParser {
             return true
         }
         let list = "\(PhraseParser.weekdayPattern)((\\s*(,|и)\\s*)\(PhraseParser.weekdayPattern))*"
-        take("(каждый|каждую|каждое|по) \(list)", text, &state) { m, s in
+        take("(?<!(?:понедельника|вторника|среды|четверга|пятницы|субботы|воскресенья) )(каждый|каждую|каждое|по) \(list)", text, &state) { m, s in
             guard let whole = Range(m.range, in: text) else { return false }
             let words = text[whole].split { !$0.isLetter }.map(String.init)
             let days = words.compactMap(self.weekday)
@@ -363,6 +410,12 @@ public struct PhraseParser {
         take("(сегодня|седня|сення)", text, &state) { _, s in s.dayOffset = 0; return true }
         take("(послезавтра)", text, &state) { _, s in s.dayOffset = 2; return true }
         take("(завтра|завтро|зовтра|завтр)", text, &state) { _, s in s.dayOffset = 1; return true }
+        // «В 10 и 11 ноября» starts on the first day.
+        take("(?:в |с )?(\\d{1,2})(?:(?:,| и) \\d{1,2})+ \(PhraseParser.monthPattern)", text, &state) { m, s in
+            guard let day = group(m, 1, text).flatMap(Int.init), let month = group(m, 2, text).flatMap(self.month), (1...31).contains(day) else { return false }
+            s.date = nextDate(month: month, day: day, year: nil)
+            return true
+        }
         take("(\\d{1,2}) \(PhraseParser.monthPattern)( (\\d{4}))?", text, &state) { m, s in
             guard let day = group(m, 1, text).flatMap(Int.init), let month = group(m, 2, text).flatMap(self.month), (1...31).contains(day) else { return false }
             let year = group(m, 4, text).flatMap(Int.init)
@@ -390,7 +443,7 @@ public struct PhraseParser {
             return true
         }
         take("(?:в |во )?(следующ\\w+ |эт\\w+ )?\(PhraseParser.weekdayPattern)", text, &state) { m, s in
-            guard s.rule == nil || s.rule == .weekly([]), let word = group(m, 2, text), let day = self.weekday(word) else { return false }
+            guard s.rule == nil || s.rule == .weekly([]), let word = group(m, 2, text), let day = self.weekday(word), wednesday(word, m, text) else { return false }
             s.weekdays = [day]
             s.nextWeek = saysNext(m, text)
             if s.rule == .weekly([]) {
@@ -405,12 +458,12 @@ public struct PhraseParser {
         let hourWord = "(час|один|два|три|четыре|пять|шесть|семь|восемь|девять|десять|одиннадцать|двенадцать)"
         let ordinal = "(первого|второго|третьего|четвертого|пятого|шестого|седьмого|восьмого|девятого|десятого|одиннадцатого|двенадцатого)"
         let around = "(одного|одному|двух|двум|трех|трем|четырех|четырем|пяти|шести|семи|восьми|девяти|десяти|одиннадцати|двенадцати)"
-        // A number before a noun is an amount, «около 5 км», «в 2 раза», «в 5 подъезде».
-        let counted = "(?! (?:(?:км|кг|г|м|л|см|мм|мл|сум|лет|пик|ряд|ряду|ряда|раз|раза|людей|люди|места|мест|место|год|года|гостей|гостя|гости)(?![\\p{L}])|(?:человек|штук|процент|рубл|доллар|евро|подъезд|числ|этаж|класс|кабинет|квартир|корпус|вагон|автобус|маршрут|школ|групп|палат|минут|секунд|недел|месяц|друз)\\w*))"
-        take("(?:около|в районе|ближе к|примерно к|часам к|часикам к) (?:(\\d{1,2})(?:[:.](\\d{2}))?|\(around))(?: час\\w*)?\(modifier)(?! \(PhraseParser.monthPattern))\(counted)", text, &state) { m, s in
+        let counted = PhraseParser.ruCounted
+        let noMonth = PhraseParser.ruNoMonth
+        take("(?:около|в районе|ближе к|примерно к|часам к|часикам к) (?:(\\d{1,2})(?:[:.](\\d{2}))?|\(around))(?: час\\w*)?\(modifier)\(noMonth)\(counted)", text, &state) { m, s in
             russianClock(group(m, 1, text).flatMap(Int.init) ?? group(m, 3, text).flatMap(PhraseParser.ruHourCase), minute: group(m, 2, text), group(m, 4, text), &s)
         }
-        take("(?:примерно|приблизительно|где-то|где то|часов|часиков) (?:в|к) (?:(\\d{1,2})(?:[:.](\\d{2}))?|\(hourWord))(?: час\\w*)?\(modifier)(?! \(PhraseParser.monthPattern))\(counted)", text, &state) { m, s in
+        take("(?:примерно|приблизительно|где-то|где то|часов|часиков) (?:в|к) (?:(\\d{1,2})(?:[:.](\\d{2}))?|\(hourWord))(?: час\\w*)?\(modifier)\(noMonth)\(counted)", text, &state) { m, s in
             russianClock(group(m, 1, text).flatMap(Int.init) ?? group(m, 3, text).flatMap(PhraseParser.ruHour), minute: group(m, 2, text), group(m, 4, text), &s)
         }
         take("(?:между|с) (\\d{1,2})(?:[:.](\\d{2}))? (?:и|до) \\d{1,2}(?:[:.]\\d{2})?(?: час\\w*)?\(modifier)(?! \(PhraseParser.monthPattern))", text, &state) { m, s in
@@ -428,7 +481,7 @@ public struct PhraseParser {
         take("(?:в |к )?(\\d{1,2})-(00|15|30|45)\(modifier)", text, &state) { m, s in
             russianClock(group(m, 1, text).flatMap(Int.init), minute: group(m, 2, text), group(m, 3, text), &s)
         }
-        take("(?:в|к) (\\d{1,2})(?: час\\w*)?\(modifier)(?! \(PhraseParser.monthPattern))\(counted)", text, &state) { m, s in
+        take("(?:в|к) (\\d{1,2})(?: час\\w*)?\(modifier)\(noMonth)\(counted)", text, &state) { m, s in
             guard let hour = group(m, 1, text).flatMap(Int.init), hour < 24 else { return false }
             s.time = LocalTime(hour: adjust(hour, group(m, 2, text)), minute: 0)
             s.meridiem = group(m, 2, text) != nil
@@ -610,6 +663,14 @@ public struct PhraseParser {
 
     func resolve(_ state: inout State) -> Schedule? {
         let today = LocalDate(now, in: calendar)
+        // A holiday is the day only when nothing else names one; otherwise it stays in the title, «завтра купить подарки на Новый год».
+        if let holiday = state.holiday {
+            if state.date == nil, state.dayOffset == nil, state.weekdays.isEmpty, state.exact == nil {
+                state.date = holiday
+            } else if let range = state.holidayRange {
+                state.used.removeAll { $0 == range }
+            }
+        }
         if let exact = state.exact {
             let parts = calendar.dateComponents([.hour, .minute], from: exact)
             return Schedule(start: LocalDate(exact, in: calendar), time: LocalTime(hour: parts.hour ?? 0, minute: parts.minute ?? 0), rule: state.rule)
@@ -658,10 +719,16 @@ public struct PhraseParser {
                 state.alternative = Schedule(start: today.adding(days: 1), time: later)
             }
         }
+        // «Завтра в 3 забрать детей» is the afternoon, the night is offered beside it.
+        var night: LocalTime?
+        if let explicit = state.time, time == explicit, state.dayPart == nil, !state.meridiem, hasDate, !isToday, state.rule == nil, (1...5).contains(explicit.hour) {
+            time = LocalTime(hour: explicit.hour + 12, minute: explicit.minute)
+            night = explicit
+        }
         guard hasDate || time != nil || state.rule != nil else {
             return nil
         }
-        let clock = time ?? morning
+        var clock = time ?? morning
 
         func moment(_ date: LocalDate) -> Date {
             calendar.date(from: DateComponents(year: date.year, month: date.month, day: date.day, hour: clock.hour, minute: clock.minute)) ?? now
@@ -696,6 +763,22 @@ public struct PhraseParser {
             }
         } else {
             start = moment(today) > now ? today : today.adding(days: 1)
+        }
+        if let night, state.alternative == nil {
+            state.alternative = Schedule(start: start, time: night)
+        }
+        // «Сегодня купить хлеб» after the morning: the evening, or an hour from now late in the day.
+        if time == nil, state.rule == nil, start == today, moment(today) <= now {
+            let evenings = calendar.date(from: DateComponents(year: today.year, month: today.month, day: today.day, hour: evening.hour, minute: evening.minute)) ?? now
+            if evenings > now {
+                clock = evening
+            } else {
+                let soon = now.addingTimeInterval(3600)
+                let parts = calendar.dateComponents([.hour, .minute], from: soon)
+                let minute = min(((parts.minute ?? 0) + 4) / 5 * 5, 55)
+                clock = LocalTime(hour: parts.hour ?? 0, minute: minute)
+                start = LocalDate(soon, in: calendar)
+            }
         }
 
         var rule = state.rule

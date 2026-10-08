@@ -32,7 +32,7 @@ extension PhraseParser {
         let lower = text.lowercased()
         let words = lower.split(whereSeparator: { !$0.isLetter && $0 != "'" }).map(String.init)
         guard lower.count == text.count, words.contains(where: { translitMarkers.contains($0) }),
-              !words.contains(where: { $0.count >= 3 && (englishWords.contains($0) || germanWords.contains($0) || frenchWords.contains($0)) }) else { return nil }
+              !words.contains(where: { $0.count >= 3 && $0 != "den" && (englishWords.contains($0) || germanWords.contains($0) || frenchWords.contains($0)) }) else { return nil }
         let pairs: [(String, String)] = [("shch", "щ"), ("sch", "щ"), ("yo", "ё"), ("yu", "ю"), ("ya", "я"), ("zh", "ж"), ("kh", "х"), ("ts", "ц"), ("ch", "ч"), ("sh", "ш")]
         let single: [Character: String] = [
             "a": "а", "b": "б", "c": "ц", "d": "д", "e": "е", "f": "ф", "g": "г", "h": "х", "i": "и", "j": "й", "k": "к", "l": "л", "m": "м",

@@ -3,7 +3,11 @@ import Foundation
 public enum Checklist {
     private static let shopping = "(?<![\\p{L}])(?:купи|закуп|докуп|продукт|магазин|покупк|купу|buy|shopping|grocer|kauf|einkauf|lebensmittel|achet|achèt|faire les courses|des courses|les courses|épicerie|sotib ol|xarid|bozor|oziq|сотиб ол|харид|бозор|озиқ|شراء|اشتر|تسوق|بقال|مقاضي)"
     private static let verbs = "(?<![\\p{L}])(?:купить|купи|закупить|докупить|купити|buy|kaufen|acheter|achète|sotib olish|sotib ol|сотиб олиш|сотиб ол|اشتري|اشتر|شراء)(?![\\p{L}])"
-    private static let joints = "\\s*(?:,|،|;|\\s(?:и|і|й|та|and|und|et|va|ва|و)\\s)\\s*"
+    private static let commas = "\\s*(?:,|،|;)\\s*"
+    private static let conjunctions = "\\s(?:и|і|й|та|and|und|et|va|ва|و)\\s"
+    // «Корм для кошки и собаки» is one thing: after «для», «for» or «für» the «и» joins what the item is for.
+    private static let prepositions = "(?<![\\p{L}])(?:для|с|со|из|без|от|з|із|for|with|of|für|mit|pour|avec|uchun|учун|مع)(?![\\p{L}])"
+    private static let idioms = ["mac and cheese", "half and half", "fish and chips", "salt and pepper", "bread and butter"]
     private static let amount = "\\s+(?:\\d+(?:[.,]\\d+)?\\s?(?:л|мл|кг|г|шт|уп|пач\\p{L}*|бут\\p{L}*|l|ml|kg|g|pcs|pc|lb|lbs|oz|st|stk|dona|ta|دانه)?|[x×]\\s?\\d+)$"
 
     // A shopping phrase gets the offer to make a list right away.
@@ -70,8 +74,13 @@ public enum Checklist {
     }
 
     private static func pieces(_ text: String) -> [String] {
-        let marked = text.replacingOccurrences(of: joints, with: "\u{1F}", options: .regularExpression)
-        return marked.split(separator: "\u{1F}")
+        let segments = text.replacingOccurrences(of: commas, with: "\u{1F}", options: .regularExpression).split(separator: "\u{1F}").map(String.init)
+        let parts = segments.flatMap { segment -> [String] in
+            let lower = segment.lowercased()
+            guard !idioms.contains(where: { lower.contains($0) }), segment.range(of: prepositions, options: [.regularExpression, .caseInsensitive]) == nil else { return [segment] }
+            return segment.replacingOccurrences(of: conjunctions, with: "\u{1F}", options: .regularExpression).split(separator: "\u{1F}").map(String.init)
+        }
+        return parts
             .map { $0.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines.union(.punctuationCharacters)) }
             .filter { !$0.isEmpty }
             .map { $0.prefix(1).uppercased() + $0.dropFirst() }

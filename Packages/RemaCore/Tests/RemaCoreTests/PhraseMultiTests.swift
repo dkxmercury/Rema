@@ -69,6 +69,54 @@ struct PhraseMultiTests {
         #expect(result.highlights.first == 0..<8)
     }
 
+    @Test func oneTimeWithAJointInsideStaysWhole() {
+        #expect(parser.pieces("между 14:00 и 15:00 позвонить в банк") == nil)
+        #expect(Corpus.parser("en").pieces("between 2 pm and 3 pm call the bank") == nil)
+        #expect(Corpus.parser("de").pieces("zwischen 14 Uhr und 15 Uhr die Bank anrufen") == nil)
+        #expect(Corpus.parser("fr").pieces("à huit heures et demie du soir appeler mon frère") == nil)
+        #expect(Corpus.parser("uk").pieces("між 14:00 і 15:00 подзвонити в банк") == nil)
+        #expect(parser.pieces("завтра вечером, в 8, ужин с Машей") == nil)
+        #expect(parser.pieces("в 5 и 6 классах провести контрольную") == nil)
+        #expect(parser.pieces("в 10 и 11 ноября командировка") == nil)
+        #expect(Corpus.parser("de").pieces("Preise um 10 und 20 Prozent erhöhen") == nil)
+    }
+
+    @Test func hoursOfAListFollowTheWordsAroundThem() throws {
+        let evening = try #require(parser.pieces("сегодня вечером в 8 и 10 принять лекарство"))
+        #expect(evening.map(when) == ["05.10 20:00", "05.10 22:00"])
+        let pm = try #require(Corpus.parser("en").pieces("at 9 and 10 pm take pills"))
+        #expect(pm.map(when) == ["05.10 21:00", "05.10 22:00"])
+    }
+
+    @Test func aListInsideOnePart() throws {
+        let pieces = try #require(parser.pieces("в 8 зарядка, в 13 и 19 таблетки"))
+        #expect(pieces.map(\.parsed.title) == ["Зарядка", "Таблетки", "Таблетки"])
+        #expect(pieces.map(when) == ["05.10 20:00", "06.10 13:00", "05.10 19:00"])
+        let lunch = try #require(parser.pieces("завтра в 9 позвонить маме, в 12 и 15 обед"))
+        #expect(lunch.map(when) == ["06.10 09:00", "06.10 12:00", "06.10 15:00"])
+    }
+
+    @Test func timesADayKeepTheRepeatAlreadySaid() throws {
+        let weekends = try #require(parser.pieces("по выходным 2 раза в день гулять с собакой"))
+        #expect(weekends.allSatisfy { $0.parsed.schedule?.rule == .weekly([.saturday, .sunday]) })
+        #expect(try #require(Corpus.parser("en").pieces("take pills 3 times a day")).count == 3)
+        #expect(try #require(Corpus.parser("uk").pieces("п'ять разів на день пити воду")).count == 5)
+    }
+
+    @Test func aCarriedRepeatKeepsItsEndAndFirstDay() throws {
+        let month = try #require(parser.pieces("каждый день до конца месяца в 9 таблетки и в 21 витамины"))
+        #expect(month.allSatisfy { $0.parsed.schedule?.end == .until(LocalDate(year: 2026, month: 10, day: 31)) })
+        let other = try #require(parser.pieces("через день в 9 пить таблетку, в 21 витамины"))
+        #expect(other.map(when) == ["06.10 09:00", "06.10 21:00"])
+    }
+
+    @Test func daysWithoutTimesAndOtherJoints() throws {
+        let days = try #require(parser.pieces("завтра позвонить маме, в пятницу купить торт"))
+        #expect(days.map(when) == ["06.10 09:00", "09.10 09:00"])
+        #expect(try #require(Corpus.parser("uz-Latn").pieces("ertaga soat 9 da onamga qo'ng'iroq, 2 soatdan keyin dori ichish")).count == 2)
+        #expect(try #require(Corpus.parser("ar").pieces("غدا الساعة 9 اتصل بأمي، الساعة 12 الغداء")).map(when) == ["06.10 09:00", "06.10 12:00"])
+    }
+
     @Test func rangesPointIntoTheWholePhrase() throws {
         let text = "в 10 планёрка; в 15 звонок клиенту"
         let pieces = try #require(parser.pieces(text))

@@ -209,7 +209,7 @@ extension PhraseParser {
         let clock = "(\\d{1,2}|eins|zwei|drei|vier|fünf|sechs|sieben|acht|neun|zehn|elf|zwölf)"
         let hourWords = "dreiundzwanzig|zweiundzwanzig|einundzwanzig|zwanzig|dreizehn|vierzehn|fünfzehn|sechzehn|siebzehn|achtzehn|neunzehn|eins|zwei|drei|vier|fünf|sechs|sieben|acht|neun|zehn|elf|zwölf"
         let minutes = "((?:ein|zwei|drei|vier|fünf|sechs|sieben|acht|neun)und(?:zwanzig|dreißig|dreissig|vierzig|fünfzig)|fünfzehn|dreißig|dreissig|zwanzig|vierzig|fünfzig|zehn|fünf|elf|zwölf|dreizehn|vierzehn|sechzehn|siebzehn|achtzehn|neunzehn)"
-        let counted = "(?! (?:(?:kg|km|g|l|m|mal|tag|tage|tagen|tages)(?![\\p{L}])|(?:stück|personen|leute|prozent|euro|minute|stunde|woche|liter|meter|gramm|jahr)\\w*))"
+        let counted = "(?!(?:(?:,| und) \\d{1,2})* (?:(?:kg|km|g|l|m|mal|tag|tage|tagen|tages)(?![\\p{L}])|(?:stück|personen|leute|prozent|euro|minute|stunde|woche|liter|meter|gramm|jahr)\\w*))"
         take("(?:(?:ungefähr|etwa|circa|ca\\.|zirka) (?:um |gegen )?|so (?:um|gegen) )\(clock)(?:[:.](\\d{2}))?(?: uhr)?\(counted)", text, &state) { m, s in
             germanClock(group(m, 1, text), minute: group(m, 2, text).flatMap(Int.init) ?? 0, before: false, &s)
         }

@@ -34,6 +34,8 @@ struct ChecklistTests {
         #expect(Checklist.items(in: "اشتري خبز، حليب، بيض") == ["خبز", "حليب", "بيض"])
         #expect(Checklist.items(in: "Купить хлеб").isEmpty)
         #expect(Checklist.items(in: "Позвонить маме и папе").isEmpty)
+        #expect(Checklist.items(in: "Купить корм для кошки и собаки, хлеб") == ["Корм для кошки и собаки", "Хлеб"])
+        #expect(Checklist.items(in: "buy mac and cheese, milk") == ["Mac and cheese", "Milk"])
     }
 
     @Test func suggestionsFollowWhatGoesTogether() {

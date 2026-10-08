@@ -119,17 +119,17 @@ extension PhraseParser {
             s.rule = .weekly(s.weekdays)
             return true
         }
-        take("(every week|weekly)", text, &state) { _, s in s.rule = .weekly([]); return true }
+        take("(every week|weekly\(PhraseParser.enAdverb))", text, &state) { _, s in s.rule = .weekly([]); return true }
         take("(?:on )?the (\\d{1,2})(?:st|nd|rd|th)? (?:of )?every month", text, &state) { m, s in
             guard let day = group(m, 1, text).flatMap(Int.init), (1...31).contains(day) else { return false }
             s.rule = .monthlyOnDay(day)
             return true
         }
-        take("(every month|monthly)( on the (\\d{1,2})(?:st|nd|rd|th)?)?", text, &state) { m, s in
+        take("(every month|monthly\(PhraseParser.enAdverb))( on the (\\d{1,2})(?:st|nd|rd|th)?)?", text, &state) { m, s in
             s.rule = .monthlyOnDay(group(m, 3, text).flatMap(Int.init) ?? 0)
             return true
         }
-        take("(every year|yearly|annually)(?: on)?( \(PhraseParser.englishMonths) (\\d{1,2})(?:st|nd|rd|th)?| (\\d{1,2})(?:st|nd|rd|th)? (?:of )?\(PhraseParser.englishMonths))?", text, &state) { m, s in
+        take("(every year|yearly\(PhraseParser.enAdverb)|annually\(PhraseParser.enAdverb))(?: on)?( \(PhraseParser.englishMonths) (\\d{1,2})(?:st|nd|rd|th)?| (\\d{1,2})(?:st|nd|rd|th)? (?:of )?\(PhraseParser.englishMonths))?", text, &state) { m, s in
             let month = (group(m, 3, text) ?? group(m, 6, text)).flatMap(self.englishMonth)
             let day = (group(m, 4, text) ?? group(m, 5, text)).flatMap(Int.init)
             if let month, let day, (1...31).contains(day) {
@@ -176,7 +176,7 @@ extension PhraseParser {
             s.dayPart = evening
             return true
         }
-        take("(?:on )?\(PhraseParser.englishMonths) (\\d{1,2})(?:st|nd|rd|th)?(?:,? (\\d{4}))?", text, &state) { m, s in
+        take("(?:on )?\(PhraseParser.englishMonths) (\\d{1,2})(?:st|nd|rd|th)?(?:,? (\\d{4}))?(?! (?:minutes?|mins?|hours?|days?|weeks?|months?|years?|times|jokes|people|things|items|pages|percent|dollars?|euros?)(?![\\p{L}]))", text, &state) { m, s in
             guard let month = group(m, 1, text).flatMap(self.englishMonth), let day = group(m, 2, text).flatMap(Int.init), (1...31).contains(day) else { return false }
             s.date = nextDate(month: month, day: day, year: group(m, 3, text).flatMap(Int.init))
             if case .yearly = s.rule {
