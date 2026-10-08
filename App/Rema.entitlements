@@ -14,5 +14,9 @@
 	</array>
 	<key>com.apple.developer.weatherkit</key>
 	<true/>
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:remaapp.cc</string>
+	</array>
 </dict>
 </plist>
