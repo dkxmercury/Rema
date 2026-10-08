@@ -50,7 +50,7 @@ final class Scenes: XCTestCase {
     func testList() {
         let app = launch("list")
         compose(app)
-        type(english ? "buy bread, milk and eggs tonight" : "вечером купить хлеб, молоко и яйца", into: app)
+        type(english ? "buy bread, milk and eggs in an hour" : "через час купить хлеб, молоко и яйца", into: app)
         pause(1)
         let card = app.staticTexts[english ? "Make a list?" : "Составить список?"].firstMatch
         if card.waitForExistence(timeout: 3) {
@@ -121,7 +121,7 @@ final class Scenes: XCTestCase {
             tree(app, "invitation")
         }
         compose(app)
-        type(english ? "movie at 10 pm" : "в 22 кино", into: app)
+        type(english ? "movie in 2 hours" : "через 2 часа кино", into: app)
         pause(1)
         let share = app.buttons[english ? "With friends" : "С друзьями"].firstMatch
         if share.waitForExistence(timeout: 5) {
@@ -138,15 +138,23 @@ final class Scenes: XCTestCase {
                 }
             }
             pause(1)
+            // While the keyboard is up the field keeps the focus, and its return key sends to the chosen friends.
             let send = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", english ? "Send to" : "Отправить")).firstMatch
-            if send.waitForExistence(timeout: 3), send.isHittable {
+            if send.waitForExistence(timeout: 2), send.isHittable {
                 mark("SAVE")
                 tap(send, "SEND")
             } else {
-                app.textViews.firstMatch.tap()
                 save(app)
             }
-            pause(1)
+            pause(1.5)
+            if app.staticTexts[english ? "New reminder" : "Новое напоминание"].exists {
+                app.scrollViews.firstMatch.swipeDown()
+                pause(1)
+                if send.waitForExistence(timeout: 2), send.isHittable {
+                    tap(send, "SEND")
+                    pause(1)
+                }
+            }
             reveal(app, english ? "Movie" : "Кино")
         } else {
             tree(app, "with friends")
