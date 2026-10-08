@@ -84,9 +84,10 @@ struct BirthdaysScreen: View {
             .pinnedHeader {
                 ScreenHeader(title: "Birthdays", leading: .back, action: onBack)
             }
-            if !chosen.isEmpty {
-                PrimaryBar(action: add) {
-                    Text(verbatim: String(localized: "Add \(chosen.count)", bundle: .app, locale: .app))
+            // The button stays while someone is left to add: first «tick all», then «add» for what is ticked.
+            if !loading, !remaining.isEmpty {
+                PrimaryBar(action: chosen.isEmpty ? tickAll : add) {
+                    Text(verbatim: chosen.isEmpty ? String(localized: "Tick all (\(remaining.count))", bundle: .app, locale: .app) : String(localized: "Add \(chosen.count)", bundle: .app, locale: .app))
                         .contentTransition(.numericText())
                 }
                 .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -94,6 +95,7 @@ struct BirthdaysScreen: View {
         }
         .foregroundStyle(Palette.text)
         .animation(Motion.standard, value: chosen)
+        .animation(Motion.standard, value: remaining.count)
         .task {
             if !ContactsFeed.authorized {
                 denied = !(await ContactsFeed.requestAccess())
@@ -102,6 +104,15 @@ struct BirthdaysScreen: View {
             contacts = found.sorted { next($0) < next($1) }
             loading = false
         }
+    }
+
+    private var remaining: [BirthdayContact] {
+        contacts.filter { !added($0) }
+    }
+
+    private func tickAll() {
+        Feedback.play(.check)
+        chosen = Set(remaining.map(\.id))
     }
 
     private func next(_ contact: BirthdayContact) -> LocalDate {
@@ -175,7 +186,7 @@ struct BirthdaysScreen: View {
         }
         Feedback.play(.save)
         Notifier.shared.requestPermissionIfNeeded()
+        // The screen stays, the added ones turn into «already in Rema» and the rest can be added later.
         chosen = []
-        onBack()
     }
 }
