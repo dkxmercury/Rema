@@ -74,7 +74,8 @@ enum AppFonts {
 
 extension Locale {
     static var app: Locale {
-        Locale(identifier: AppFonts.languageCode)
+        let code = AppFonts.languageCode
+        return Locale(identifier: code == "ar" ? "ar@numbers=latn" : code)
     }
 }
 
@@ -128,5 +129,18 @@ extension View {
 extension UIFont {
     static func app(_ face: Typeface, _ size: CGFloat, weight: Int = 400) -> UIFont {
         AppFonts.ctFont(face, size, weight: weight) as UIFont
+    }
+}
+
+extension View {
+    // As wide as «00:00» in the time font, so a larger text size or wider digits never break a time in two.
+    func timeColumn(size: CGFloat = 18) -> some View {
+        ZStack(alignment: .leading) {
+            Text(verbatim: "00:00")
+                .font(.app(.jost, size, weight: 600))
+                .monospacedDigit()
+                .hidden()
+            lineLimit(1)
+        }
     }
 }

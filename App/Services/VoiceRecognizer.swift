@@ -68,6 +68,12 @@ final class VoiceRecognizer {
         try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
     }
 
+    // Refused once, iOS asks no more, only Settings can give the microphone or speech back.
+    static var blocked: Bool {
+        let speech = SFSpeechRecognizer.authorizationStatus()
+        return speech == .denied || speech == .restricted || AVAudioApplication.shared.recordPermission == .denied
+    }
+
     @MainActor
     static var available: Bool {
         Remote.shared.isOn(.voice) && supports(AppLanguage.current.locale)
@@ -135,6 +141,10 @@ final class VoiceRecognizer {
                     self.task = nil
                     if self.listening {
                         self.stop()
+                        // Silence or a lost connection ends the listening; with nothing heard the screen offers another try.
+                        if self.transcript.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                            self.failure = String(localized: "Something went wrong. Try again.", bundle: .app, locale: .app)
+                        }
                     }
                 }
             }

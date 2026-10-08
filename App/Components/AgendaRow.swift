@@ -67,7 +67,7 @@ struct AgendaRow: View {
                 .font(.app(.jost, 18, weight: row.highlighted || row.missed ? 600 : 500))
                 .monospacedDigit()
                 .foregroundStyle(timeColor)
-                .frame(width: 50, alignment: .leading)
+                .timeColumn()
             VStack(alignment: .leading, spacing: 2) {
                 Text(verbatim: row.title)
                     .font(.app(.golos, 16, weight: row.highlighted || row.missed ? 600 : 400))

@@ -179,7 +179,7 @@ struct ShareScreen: View {
             Text(verbatim: date.map(describer.time) ?? "")
                 .font(.app(.jost, 22, weight: 500))
                 .monospacedDigit()
-                .frame(width: 62, alignment: .leading)
+                .timeColumn(size: 22)
             VStack(alignment: .leading, spacing: 2) {
                 Text(verbatim: piece.parsed.title)
                     .font(.app(.golos, 16, weight: 600))
@@ -197,6 +197,9 @@ struct ShareScreen: View {
                         removed = []
                     }
                     removed.insert(index)
+                    if pieces?.isEmpty == true {
+                        keptWhole = text
+                    }
                 }
             } label: {
                 Glyph(paths: Icons.close, size: 16, lineWidth: 2, color: Palette.secondary)
@@ -282,16 +285,9 @@ struct ShareScreen: View {
         .animation(Motion.standard, value: reminder.placeIDs)
     }
 
+    // The name stays in the middle whatever the length of «Cancel» in the language.
     private var header: some View {
-        HStack {
-            Button(action: onCancel) {
-                Text(verbatim: String(localized: "Cancel", bundle: .app, locale: .app))
-                    .font(.app(.golos, 16))
-                    .foregroundStyle(Palette.secondary)
-                    .frame(width: 76, height: 44, alignment: .leading)
-            }
-            .buttonStyle(RowPressStyle())
-            Spacer(minLength: 8)
+        ZStack {
             HStack(spacing: 8) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 7, style: .circular)
@@ -302,9 +298,17 @@ struct ShareScreen: View {
                 Text(verbatim: "Rema")
                     .font(.app(.jost, 18, weight: 500))
             }
-            Spacer(minLength: 8)
-            Color.clear
-                .frame(width: 76, height: 44)
+            HStack {
+                Button(action: onCancel) {
+                    Text(verbatim: String(localized: "Cancel", bundle: .app, locale: .app))
+                        .font(.app(.golos, 16))
+                        .foregroundStyle(Palette.secondary)
+                        .lineLimit(1)
+                        .frame(height: 44, alignment: .leading)
+                }
+                .buttonStyle(RowPressStyle())
+                Spacer(minLength: 8)
+            }
         }
     }
 

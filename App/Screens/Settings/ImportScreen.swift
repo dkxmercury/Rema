@@ -99,7 +99,7 @@ struct ImportScreen: View {
             }
             .scrollIndicators(.hidden)
             .pinnedHeader {
-                ScreenHeader(title: "Move from Reminders", leading: .back, action: onBack)
+                ScreenHeader(title: "From Reminders", leading: .back, action: onBack)
             }
             if moved != nil {
                 PrimaryBar(action: onBack) {
@@ -147,6 +147,7 @@ struct ImportScreen: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(RowPressStyle())
+        .accessibilityAddTraits(on ? .isSelected : [])
     }
 
     private func load() async {

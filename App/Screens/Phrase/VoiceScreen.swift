@@ -122,6 +122,12 @@ struct VoiceScreen: View {
         finishing = true
         Feedback.play(.select)
         let spoken = await recognizer.finish()
+        // Nothing heard is no reason to close the whole screen, it can be said again.
+        guard !(spoken ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            recognizer.failure = String(localized: "Something went wrong. Try again.", bundle: .app, locale: .app)
+            finishing = false
+            return
+        }
         onFinish(spoken)
     }
 
@@ -199,10 +205,11 @@ struct VoiceScreen: View {
         }
     }
 
+    // Without a permission the big button would only repeat «Settings», so it hands over to the keyboard.
     private var micButton: some View {
         Button {
-            if recognizer.needsSettings, let url = URL(string: UIApplication.openSettingsURLString) {
-                openURL(url)
+            if recognizer.needsSettings {
+                onFinish(nil)
             } else if recognizer.failure != nil {
                 Feedback.play(.select)
                 listen()
@@ -214,11 +221,12 @@ struct VoiceScreen: View {
                 Circle()
                     .fill(Palette.accent.shadow(.drop(color: Palette.accent.opacity(0.35), radius: 12, x: 0, y: 10)))
                     .insetShadow(Circle(), .black.opacity(0.15), y: -3)
-                Glyph(paths: Icons.microphone, size: 34, lineWidth: 2.1, color: Palette.onAccent)
+                Glyph(paths: recognizer.needsSettings ? Icons.keyboard : Icons.microphone, size: 34, lineWidth: 2.1, color: Palette.onAccent)
             }
             .frame(width: 88, height: 88)
+            .opacity(recognizer.needsSettings ? 0.55 : 1)
         }
         .buttonStyle(PressableStyle())
-        .accessibilityLabel(recognizer.failure == nil ? Text("Finish") : recognizer.needsSettings ? Text("Settings") : Text("Try again"))
+        .accessibilityLabel(recognizer.failure == nil ? Text("Finish") : recognizer.needsSettings ? Text("Type instead") : Text("Try again"))
     }
 }

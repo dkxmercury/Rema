@@ -75,6 +75,7 @@ enum Icons {
     static let watch = [rect(7, 6, 10, 12, 3), "M9.5 6l.5-3h4l.5 3M9.5 18l.5 3h4l.5-3"]
     static let faceID = ["M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2", "M9 9.5v1M15 9.5v1M12 9.5v3.5h-1M9.5 15.5c1.4 1 3.6 1 5 0"]
     static let message = ["M4.5 6.5A2.5 2.5 0 0 1 7 4h10a2.5 2.5 0 0 1 2.5 2.5v7A2.5 2.5 0 0 1 17 16h-6l-4.5 4v-4h0A2.5 2.5 0 0 1 4.5 13.5z"]
+    static let keyboard = [rect(3, 6.5, 18, 11, 2.5), "M7 10h.01M10.5 10h.01M14 10h.01M17.5 10h.01M8 14h8"]
     static let external = ["M10 5H5.5v13.5H19V14", "M13.5 4.5H19.5V10.5", "M19 5l-8 8"]
 
     static func circle(_ cx: Double, _ cy: Double, _ r: Double) -> String {
@@ -107,7 +108,7 @@ struct Glyph: View {
             }
         }
         .frame(width: size, height: size)
-        .flipsForRightToLeftLayoutDirection(paths == Icons.back || paths == Icons.chevron)
+        .flipsForRightToLeftLayoutDirection([Icons.back, Icons.chevron, Icons.insert, Icons.list, Icons.external].contains(paths))
         .accessibilityHidden(true)
     }
 }

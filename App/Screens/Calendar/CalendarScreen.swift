@@ -294,7 +294,7 @@ struct CalendarScreen: View {
                             }
                         }
                         .foregroundStyle(match.done ? Palette.secondary : Palette.text)
-                        .frame(width: 50, alignment: .leading)
+                        .timeColumn()
                         VStack(alignment: .leading, spacing: 2) {
                             Text(highlighted(match.reminder.title, done: match.done))
                                 .font(.app(.golos, 16))

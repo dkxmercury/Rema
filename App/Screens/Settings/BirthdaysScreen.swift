@@ -18,12 +18,14 @@ struct BirthdaysScreen: View {
             Palette.background.ignoresSafeArea()
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
-                    Text(denied ? LocalizedStringKey("Allow access to contacts in Settings to find birthdays.") : LocalizedStringKey("Rema found birthdays in your contacts. Tick the ones to be reminded of every year."))
-                        .font(.app(.golos, 15))
-                        .foregroundStyle(Palette.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .padding(.horizontal, 4)
-                        .padding(.top, 14)
+                    if denied || (!loading && !contacts.isEmpty) {
+                        Text(denied ? LocalizedStringKey("Allow access to contacts in Settings to find birthdays.") : LocalizedStringKey("Rema found birthdays in your contacts. Tick the ones to be reminded of every year."))
+                            .font(.app(.golos, 15))
+                            .foregroundStyle(Palette.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .padding(.horizontal, 4)
+                            .padding(.top, 14)
+                    }
                     if loading {
                         ProgressView()
                             .frame(maxWidth: .infinity)
@@ -139,6 +141,7 @@ struct BirthdaysScreen: View {
                     .foregroundStyle(Palette.accentText)
                     .frame(width: 38, height: 38)
                     .background(Circle().fill(Palette.accent.opacity(0.16)))
+                    .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(verbatim: contact.name)
                         .font(.app(.golos, 16, weight: 500))
@@ -155,6 +158,7 @@ struct BirthdaysScreen: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(RowPressStyle())
+        .accessibilityAddTraits(on ? .isSelected : [])
         .disabled(done)
     }
 

@@ -73,7 +73,7 @@ struct Describer {
     func placeText(_ reminder: Reminder, places: [Place]) -> String {
         let names = reminder.placeIDs.compactMap { id in places.first { $0.id == id }?.name.lowercased(with: locale) }
         let trigger = reminder.placeTrigger == .leave ? String(localized: "leaving", bundle: .app, locale: .app) : String(localized: "arriving", bundle: .app, locale: .app)
-        return "\(trigger): \(names.joined(separator: ", "))"
+        return String(localized: "\(trigger): \(names.joined(separator: ", "))", bundle: .app, locale: .app)
     }
 
     func countdown(from now: Date, to date: Date) -> String {
@@ -132,6 +132,8 @@ struct Describer {
             return String(localized: "Every year, \(date)", bundle: .app, locale: .app)
         case .monthlyOnDay(let day):
             return String(localized: "Every month, day \(day)", bundle: .app, locale: .app)
+        case .lastWorkday:
+            return String(localized: "Last working day", bundle: .app, locale: .app)
         default:
             return repeatText(rule).capitalizedFirst(locale)
         }

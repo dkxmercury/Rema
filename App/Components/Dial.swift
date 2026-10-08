@@ -104,7 +104,10 @@ struct Dial: View {
             }
         }
         .frame(width: size, height: size)
-        .accessibilityHidden(true)
+        .environment(\.layoutDirection, .leftToRight)
+        // The marks are drawn, so VoiceOver gets the window: the next time, how soon, and the missed count.
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(verbatim: [windowTime, windowTitleOnly ? nil : windowCaption, badge].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: ", ")))
     }
 
     private var window: some View {
@@ -127,6 +130,9 @@ struct Dial: View {
                         Text(verbatim: windowCaption)
                             .font(.appFixed(.golos, 10, weight: 600))
                             .foregroundStyle(Palette.accentOnDark)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.6)
+                            .padding(.horizontal, 4)
                             .contentTransition(.numericText())
                     }
                 }

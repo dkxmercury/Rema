@@ -41,7 +41,7 @@ struct ScheduledScreen: View {
     @ViewBuilder
     private var history: some View {
         if done.isEmpty {
-            Text("Nothing done yet")
+            Text(loading ? LocalizedStringKey("Loading from your account…") : LocalizedStringKey("Nothing done yet"))
                 .font(.app(.golos, 16, weight: 600))
                 .foregroundStyle(Palette.secondary)
                 .frame(maxWidth: .infinity)
@@ -74,7 +74,7 @@ struct ScheduledScreen: View {
                             .font(.app(.jost, 18, weight: 500))
                             .monospacedDigit()
                             .foregroundStyle(Palette.secondary)
-                            .frame(width: 50, alignment: .leading)
+                            .timeColumn()
                         Text(verbatim: row.title)
                             .font(.app(.golos, 16))
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -171,14 +171,17 @@ struct ScheduledScreen: View {
 
     private func rows(_ items: [ScheduledContent.Item], soonest: Bool) -> some View {
         ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
-            Button {
-                if let id = item.reminderID {
+            // A calendar event opens nothing, so it is not a button.
+            if let id = item.reminderID {
+                Button {
                     onOpen(id)
+                } label: {
+                    row(item, highlighted: soonest && index == 0)
                 }
-            } label: {
+                .buttonStyle(RowPressStyle())
+            } else {
                 row(item, highlighted: soonest && index == 0)
             }
-            .buttonStyle(RowPressStyle())
             if index < items.count - 1 {
                 Hairline()
             }
@@ -199,16 +202,16 @@ struct ScheduledScreen: View {
                         .minimumScaleFactor(0.8)
                         .foregroundStyle(Palette.secondary)
                 }
-                .frame(width: 50, alignment: .leading)
+                .timeColumn()
             } else if let lead = item.lead {
                 Text(verbatim: lead)
                     .font(.app(.jost, 18, weight: highlighted ? 600 : 500))
                     .monospacedDigit()
                     .foregroundStyle(highlighted ? Palette.accentText : Palette.text)
-                    .frame(width: 50, alignment: .leading)
+                    .timeColumn()
             } else {
                 Glyph(paths: Icons.pin, size: 20, lineWidth: 2, color: Palette.secondary)
-                    .frame(width: 50, alignment: .leading)
+                    .timeColumn()
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text(verbatim: item.title)

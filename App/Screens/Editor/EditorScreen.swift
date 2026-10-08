@@ -231,7 +231,7 @@ struct EditorScreen: View {
                     .font(.app(.golos, 14))
                     .foregroundStyle(Palette.secondary)
                     .lineLimit(1)
-                    .fixedSize()
+                    .minimumScaleFactor(0.85)
             }
             Hairline()
             NavigationRow(icon: Icons.early, iconColor: Palette.text, title: "In advance", action: { path.append(.early) }) {
@@ -518,7 +518,7 @@ struct NavigationRow<Value: View>: View {
                 Glyph(paths: icon, size: 20, lineWidth: 2, color: iconColor)
                 Text(title)
                     .font(.app(.golos, 16, weight: 500))
-                    .lineLimit(1)
+                    .lineLimit(2)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 value()
                     .layoutPriority(1)
@@ -553,6 +553,8 @@ struct ToggleRow: View {
             LeverToggle(isOn: $isOn)
         }
         .frame(minHeight: minHeight)
+        // VoiceOver reads the title and the state as one switch instead of a nameless one.
+        .accessibilityElement(children: .combine)
         .onChange(of: isOn) { _, _ in
             Feedback.play(.toggle)
         }

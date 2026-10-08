@@ -323,6 +323,52 @@
         }
       }
     },
+    "%@: %@": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@: %2$@"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@: %2$@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ : %2$@"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@: %2$@"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@: %2$@"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@: %2$@"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@: %2$@"
+          }
+        }
+      }
+    },
     "%lld days before": {
       "localizations": {
         "ar": {
@@ -1347,13 +1393,13 @@
               "one": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "%lld та ўтказилди"
+                  "value": "%lld та ўтказиб юборилди"
                 }
               },
               "other": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "%lld та ўтказилди"
+                  "value": "%lld та ўтказиб юборилди"
                 }
               }
             }
@@ -1365,13 +1411,13 @@
               "one": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "%lld ta o‘tkazildi"
+                  "value": "%lld ta o‘tkazib yuborildi"
                 }
               },
               "other": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "%lld ta o‘tkazildi"
+                  "value": "%lld ta o‘tkazib yuborildi"
                 }
               }
             }
@@ -8471,6 +8517,52 @@
         }
       }
     },
+    "From Reminders": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "من التذكيرات"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aus „Erinnerungen“"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Depuis Rappels"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Из «Напоминаний»"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "З «Нагадувань»"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«Эслатмалар»дан"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«Eslatmalar»dan"
+          }
+        }
+      }
+    },
     "Frost today": {
       "localizations": {
         "ar": {
@@ -10191,6 +10283,52 @@
         }
       }
     },
+    "Last working day": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "آخر يوم عمل"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Letzter Arbeitstag"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dernier jour ouvré"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Последний рабочий день"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Останній робочий день"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Охирги иш куни"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oxirgi ish kuni"
+          }
+        }
+      }
+    },
     "Leaving: %@": {
       "localizations": {
         "ar": {
@@ -10812,43 +10950,43 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "هل تجعل %@ مساءك؟"
+            "value": "هل أذكّرك «مساءً» الساعة %@؟"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ zu Ihrem Abend machen?"
+            "value": "„Abends“ künftig um %@?"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Faire de %@ votre soirée ?"
+            "value": "Rappeler « le soir » à %@ ?"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Сделать %@ вашим вечером?"
+            "value": "Напоминать «вечером» в %@?"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Зробити %@ вашим вечором?"
+            "value": "Нагадувати «ввечері» о %@?"
           }
         },
         "uz-Cyrl": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ ни кечқурун вақти қиласизми?"
+            "value": "«Кечқурун» деганда соат %@ да эслатайми?"
           }
         },
         "uz-Latn": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ ni kechqurun vaqti qilasizmi?"
+            "value": "«Kechqurun» deganda soat %@ da eslataymi?"
           }
         }
       }
@@ -10858,43 +10996,43 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "هل تجعل %@ صباحك؟"
+            "value": "هل أذكّرك «صباحًا» الساعة %@؟"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ zu Ihrem Morgen machen?"
+            "value": "„Morgens“ künftig um %@?"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Faire de %@ votre matinée ?"
+            "value": "Rappeler « le matin » à %@ ?"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Сделать %@ вашим утром?"
+            "value": "Напоминать «утром» в %@?"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Зробити %@ вашим ранком?"
+            "value": "Нагадувати «вранці» о %@?"
           }
         },
         "uz-Cyrl": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ ни эрталаб вақти қиласизми?"
+            "value": "«Эрталаб» деганда соат %@ да эслатайми?"
           }
         },
         "uz-Latn": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ ni ertalab vaqti qilasizmi?"
+            "value": "«Ertalab» deganda soat %@ da eslataymi?"
           }
         }
       }
@@ -11658,7 +11796,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Le déplacer à un autre moment ?"
+            "value": "Le déplacer à un autre moment ?"
           }
         },
         "ru": {
@@ -18530,7 +18668,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "À venir"
+            "value": "Prévus"
           }
         },
         "ru": {
@@ -22711,6 +22849,52 @@
         }
       }
     },
+    "Type instead": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الكتابة بدلًا من ذلك"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lieber tippen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saisir au clavier"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Набрать текстом"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Набрати текстом"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Матн билан ёзиш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Matn bilan yozish"
+          }
+        }
+      }
+    },
     "Ukrainian": {
       "localizations": {
         "ar": {
@@ -24551,6 +24735,52 @@
         }
       }
     },
+    "Without a list": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بدون قائمة"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ohne Liste"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sans liste"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Без списка"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Без списку"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Рўйхатсиз"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ro‘yxatsiz"
+          }
+        }
+      }
+    },
     "Work": {
       "localizations": {
         "ar": {
@@ -25114,7 +25344,7 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kaufen Sie oft"
+            "value": "Du kaufst oft"
           }
         },
         "fr": {
@@ -25160,7 +25390,7 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sie verschieben oft auf diese Zeit"
+            "value": "Du verschiebst oft auf diese Uhrzeit"
           }
         },
         "fr": {
@@ -26452,13 +26682,13 @@
         "uz-Cyrl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Rema да бор"
+            "value": "Rema’да бор"
           }
         },
         "uz-Latn": {
           "stringUnit": {
             "state": "translated",
-            "value": "Rema da bor"
+            "value": "Rema’da bor"
           }
         }
       }
@@ -27112,7 +27342,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "المواعيد في الشاشة الرئيسية وفي المجدول"
+            "value": "المواعيد في الشاشة الرئيسية وفي «المجدولة»"
           }
         },
         "de": {
@@ -27124,7 +27354,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "les événements sur l’accueil et dans Planifié"
+            "value": "les événements sur l’accueil et dans Prévus"
           }
         },
         "ru": {
@@ -31492,7 +31722,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "« %@ » est sans cesse reporté."
+            "value": "« %@ » est sans cesse reporté."
           }
         },
         "ru": {

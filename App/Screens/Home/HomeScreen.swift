@@ -213,6 +213,8 @@ struct HomeScreen: View {
             }
         }
         .frame(width: 236, height: 236)
+        // A dial is not mirrored in Arabic, and the drawn marks would not follow mirrored handles.
+        .environment(\.layoutDirection, .leftToRight)
         .accessibilityHidden(true)
     }
 
@@ -419,7 +421,7 @@ struct HomeScreen: View {
                 .font(.app(.jost, 18, weight: 500))
                 .monospacedDigit()
                 .foregroundStyle(Palette.secondary)
-                .frame(width: 50, alignment: .leading)
+                .timeColumn()
             VStack(alignment: .leading, spacing: 2) {
                 Text(verbatim: event.title)
                     .font(.app(.golos, 16))
@@ -613,7 +615,7 @@ private struct HomeTile: View {
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 12)
-        .frame(maxWidth: .infinity, minHeight: 80, maxHeight: 80, alignment: .topLeading)
+        .frame(maxWidth: .infinity, minHeight: 80, alignment: .topLeading)
         .panel(radius: 18)
         .contentShape(Rectangle())
     }

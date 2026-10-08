@@ -36,8 +36,9 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         return allCases.first { $0.rawValue == base }
     }
 
+    // Times are written with Latin digits everywhere, so Arabic dates and counts use them too instead of mixing two kinds.
     var locale: Locale {
-        Locale(identifier: rawValue)
+        Locale(identifier: self == .arabic ? "ar@numbers=latn" : rawValue)
     }
 
     // Xcode builds Uzbek Latin into uz.lproj, the Cyrillic one keeps its script in the name.

@@ -34,6 +34,7 @@ struct PhraseScreen: View {
     @State private var keptWhole: String?
     @State private var shiftAnswered = false
     @State private var removed = Removed()
+    @State private var listDeclined = false
 
     // Body reads the parse result a dozen times per keystroke; parsing once per text keeps typing smooth.
     final class Memo {
@@ -221,7 +222,7 @@ struct PhraseScreen: View {
     }
 
     private var showsListOffer: Bool {
-        !parsed.title.isEmpty && (Checklist.isShopping(parsed.title) || !listItems.isEmpty)
+        !listDeclined && !parsed.title.isEmpty && (Checklist.isShopping(parsed.title) || !listItems.isEmpty)
     }
 
     private var listOffer: some View {
@@ -244,6 +245,19 @@ struct PhraseScreen: View {
                             .foregroundStyle(Palette.secondary)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    // «No» to the question: the reminder stays without a list.
+                    Button {
+                        Feedback.play(.select)
+                        withAnimation(Motion.standard) {
+                            overrides.items = []
+                            listDeclined = true
+                        }
+                    } label: {
+                        Glyph(paths: Icons.close, size: 14, lineWidth: 2, color: Palette.secondary)
+                            .frame(width: 36, height: 36)
+                    }
+                    .buttonStyle(PressableStyle())
+                    .accessibilityLabel(Text("Without a list"))
                 }
                 ChecklistRows(items: items, framed: false, onToggle: { item in
                     var updated = items
@@ -369,12 +383,13 @@ struct PhraseScreen: View {
         }
     }
 
+    // The cross on the voice screen started from the plus closes everything; the keyboard button keeps the phrase screen.
     private func heard(_ spoken: String?) {
         let phrase = String((spoken?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "").prefix(Reminder.maximumTitleLength))
         if !phrase.isEmpty {
             text = phrase
             listening = false
-        } else if text.isEmpty, startWithVoice {
+        } else if text.isEmpty, startWithVoice, !VoiceRecognizer.blocked {
             onClose()
         } else {
             listening = false
@@ -541,7 +556,7 @@ struct PhraseScreen: View {
             Text(verbatim: date.map(describer.time) ?? "")
                 .font(.app(.jost, 24, weight: 500))
                 .monospacedDigit()
-                .frame(width: 66, alignment: .leading)
+                .timeColumn(size: 24)
             VStack(alignment: .leading, spacing: 2) {
                 Text(verbatim: piece.parsed.title)
                     .font(.app(.golos, 16, weight: 600))
@@ -558,6 +573,10 @@ struct PhraseScreen: View {
                         removed = Removed(text: text)
                     }
                     removed.indexes.insert(index)
+                    // With every part crossed out the phrase goes back to being one reminder.
+                    if multi?.isEmpty == true {
+                        keptWhole = text
+                    }
                 }
             } label: {
                 Glyph(paths: Icons.close, size: 16, lineWidth: 2, color: Palette.secondary)

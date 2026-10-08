@@ -42,7 +42,12 @@ struct ScheduledContent {
             let id = "\(reminder.id.uuidString)-\(Int(item.occurrence.timeIntervalSince1970))"
             switch reminder.schedule?.rule {
             case .yearly, .monthlyOnDay, .monthlyOnWeekday, .lastWorkday, .everyMonths:
-                let details = [describer.time(item.occurrence), describer.subtitle(for: reminder, places: places, withRepeat: false)].compactMap { $0 }
+                // «Every 3 months» sits among the monthly ones, so it says how often it really comes.
+                let rare: Bool = {
+                    if case .everyMonths = reminder.schedule?.rule { return true }
+                    return false
+                }()
+                let details = [describer.time(item.occurrence), describer.subtitle(for: reminder, places: places, withRepeat: rare)].compactMap { $0 }
                 let entry = Item(id: id, reminderID: reminder.id, lead: String(calendar.component(.day, from: item.occurrence)), month: describer.shortMonth(item.occurrence), title: reminder.title, subtitle: details.joined(separator: " · "))
                 if case .yearly = reminder.schedule?.rule {
                     yearly.append(entry)
