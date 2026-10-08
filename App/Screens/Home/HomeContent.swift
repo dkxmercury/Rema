@@ -76,7 +76,7 @@ extension HomeContent {
 
     static func make(reminders: [Reminder], places: [Place], now: Date, calendar: Calendar, locale: Locale, missed showsMissed: Bool = false, events entries: [CalendarEntry] = []) -> HomeContent {
         let describer = Describer(calendar: calendar, locale: locale)
-        let active = reminders.filter { $0.deletedAt == nil }
+        let active = reminders.filter(\.isLive)
         let byID = Dictionary(active.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
         let today = Agenda.day(now, reminders: active, calendar: calendar)
         let missed = showsMissed ? Agenda.missed(now, reminders: active, calendar: calendar) : []
@@ -183,7 +183,7 @@ extension HomeContent {
 extension HomeContent {
     static func rows(on day: Date, reminders: [Reminder], places: [Place], now: Date, calendar: Calendar, locale: Locale, missed showsMissed: Bool = false) -> [Row] {
         let describer = Describer(calendar: calendar, locale: locale)
-        let active = reminders.filter { $0.deletedAt == nil }
+        let active = reminders.filter(\.isLive)
         let byID = Dictionary(active.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
         let next = Agenda.upcoming(after: now, reminders: active, calendar: calendar).first
         let missed = showsMissed && calendar.isDate(day, inSameDayAs: now) ? Agenda.missed(now, reminders: active, calendar: calendar) : []

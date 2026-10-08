@@ -25,6 +25,12 @@ enum RootRoute: Hashable {
     case snooze
     case birthdays
     case importReminders
+    case friends
+    case friend(String)
+}
+
+struct SharedTarget: Identifiable {
+    let id: UUID
 }
 
 // Lives outside the views, so the screen stack survives when a language change rebuilds them.
@@ -85,6 +91,9 @@ struct RootView: View {
     @State private var tips = TipCenter.shared
     @State private var dismissedHabits = Set(UserDefaults.standard.stringArray(forKey: "dismissedHabits") ?? [])
     @State private var announcement: RemoteConfig.Announcement?
+    @State private var inviting = false
+    @State private var answering: InviteTarget?
+    @State private var viewingShared: SharedTarget?
     @Environment(\.openURL) private var openURL
     @Namespace private var zoom
 
@@ -110,6 +119,28 @@ struct RootView: View {
         .fullScreenCover(item: $composing) { target in
             PhraseScreen(store: store, startWithVoice: target.voice, onClose: { composing = nil })
         }
+        .fullScreenCover(isPresented: $inviting) {
+            InviteScreen(onClose: { inviting = false })
+        }
+        .sheet(item: $answering) { target in
+            InviteAnswerSheet(code: target.code, onSignIn: { navigation.showingSignIn = true }, onClose: { answering = nil })
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(30)
+                .presentationBackground(Palette.background)
+        }
+        .sheet(item: $viewingShared) { target in
+            SharedDetailScreen(store: store, reminderID: target.id, onEdit: {
+                viewingShared = nil
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) { edit(target.id) }
+            }, onClose: { viewingShared = nil })
+            .presentationDetents([.large])
+            .presentationDragIndicator(.visible)
+            .presentationCornerRadius(30)
+            .presentationBackground(Palette.background)
+        }
+        .onOpenURL { url in openInvite(url) }
+        .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in openInvite(activity.webpageURL) }
         .fullScreenCover(isPresented: $showingCalendar) {
             CalendarScreen(store: store, onClose: { showingCalendar = false })
                 .zoomDestination("calendar", in: zoom)
@@ -150,7 +181,7 @@ struct RootView: View {
         }
         .onChange(of: remote.config) { _, _ in showAnnouncementIfNew() }
         .onChange(of: navigation.composeRequest?.id) { _, _ in openRequestedCompose() }
-        .onChange(of: editing != nil || checking != nil || composing != nil) { _, open in navigation.editingOpen = open }
+        .onChange(of: editing != nil || checking != nil || composing != nil || inviting) { _, open in navigation.editingOpen = open }
         .onChange(of: navigation.openRequest) { _, _ in openRequestedReminder() }
         .onChange(of: account.isSignedIn) { _, signedIn in
             // A session that ran out leaves no account to show, so its screens close.
@@ -184,6 +215,7 @@ struct RootView: View {
                 onSnooze: { navigation.path.append(.snooze) },
                 onBirthdays: { navigation.path.append(.birthdays) },
                 onImport: { navigation.path.append(.importReminders) },
+                onFriends: { navigation.path.append(.friends) },
                 onBack: { navigation.path.removeLast() }
             )
         case .defaultSound:
@@ -200,6 +232,17 @@ struct RootView: View {
             BirthdaysScreen(store: store) { navigation.path.removeLast() }
         case .importReminders:
             ImportScreen(store: store) { navigation.path.removeLast() }
+        case .friends:
+            FriendsScreen(
+                store: store,
+                onFriend: { navigation.path.append(.friend($0)) },
+                onInvite: { inviting = true },
+                onCode: { answering = InviteTarget(code: $0) },
+                onSignIn: { navigation.showingSignIn = true },
+                onBack: { navigation.path.removeLast() }
+            )
+        case .friend(let id):
+            FriendScreen(store: store, friendID: id, onOpen: { viewingShared = SharedTarget(id: $0) }, onBack: { navigation.path.removeLast() })
         case .features:
             FeaturesScreen(onPlaces: { navigation.path.append(.places) }, onBack: { navigation.path.removeLast() })
         case .scheduled:
@@ -442,7 +485,22 @@ struct RootView: View {
         if store.writeFailed { return .storageFull }
         if NotificationAccess.shared.denied { return .notificationsOff }
         if account.expired, !account.isSignedIn { return .signInExpired }
+        // A friend's invitation waits on the main screen until it is answered.
+        if let invited = store.reminders.first(where: { $0.deletedAt == nil && $0.shared?.isInvitation == true }), let shared = invited.shared {
+            let name = SharedService.shared.name(of: shared.owner.id, fallback: shared.owner.name)
+            return .invitation(invited.id, String(localized: "\(name) shares a reminder with you: \(invited.title)", bundle: .app, locale: .app))
+        }
         return nil
+    }
+
+    // https://remaapp.cc/i/CODE opens the answer to a friend's invitation.
+    private func openInvite(_ url: URL?) {
+        guard let url, url.host?.hasSuffix("remaapp.cc") == true else { return }
+        let parts = url.pathComponents
+        guard parts.count >= 3, parts[parts.count - 2] == "i" else { return }
+        let code = parts[parts.count - 1].uppercased()
+        guard code.count == 8, code.allSatisfy({ $0.isLetter || $0.isNumber }) else { return }
+        answering = InviteTarget(code: code)
     }
 
     private func answerAlert(_ alert: HomeAlert) {
@@ -453,6 +511,8 @@ struct RootView: View {
             }
         case .signInExpired:
             navigation.showingSignIn = true
+        case .invitation(let id, _):
+            viewingShared = SharedTarget(id: id)
         }
     }
 
@@ -503,7 +563,9 @@ struct RootView: View {
     // A reminder with a list opens the list to tick, the editor is one tap further.
     private func open(_ id: UUID) {
         guard let reminder = store.reminder(id) else { return }
-        if reminder.items.isEmpty {
+        if reminder.shared != nil {
+            viewingShared = SharedTarget(id: id)
+        } else if reminder.items.isEmpty {
             editing = EditingTarget(reminder: reminder, isNew: false)
         } else {
             checking = ChecklistTarget(id: id)

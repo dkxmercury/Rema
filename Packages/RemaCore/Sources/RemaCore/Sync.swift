@@ -204,8 +204,9 @@ public enum SyncPlan {
         for sound in snapshot.sounds ?? [] {
             add(.sounds, sound.id.uuidString, sound, stamp: SyncStamp.of(sound), deleted: sound.deletedAt != nil)
         }
-        for reminder in snapshot.reminders {
-            add(.reminders, reminder.id.uuidString, reminder.shared, stamp: SyncStamp.of(reminder), deleted: reminder.deletedAt != nil)
+        // Shared reminders travel through their own sync and never become anyone's personal records.
+        for reminder in snapshot.reminders where reminder.shared == nil {
+            add(.reminders, reminder.id.uuidString, reminder.personal, stamp: SyncStamp.of(reminder), deleted: reminder.deletedAt != nil)
         }
         return changes
     }
@@ -436,7 +437,7 @@ extension Reminder {
     }
 
     // Someone else's phone number stays on this phone and never goes to the server.
-    var shared: Reminder {
+    var personal: Reminder {
         var copy = self
         copy.contact = nil
         return copy

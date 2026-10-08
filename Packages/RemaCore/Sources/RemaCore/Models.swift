@@ -65,12 +65,15 @@ public struct Schedule: Codable, Hashable, Sendable {
     public var time: LocalTime
     public var rule: RepeatRule?
     public var end: RepeatEnd
+    // Set on a shared reminder: one moment for everybody, counted in the zone of the one who made it.
+    public var timeZone: String?
 
-    public init(start: LocalDate, time: LocalTime, rule: RepeatRule? = nil, end: RepeatEnd = .never) {
+    public init(start: LocalDate, time: LocalTime, rule: RepeatRule? = nil, end: RepeatEnd = .never, timeZone: String? = nil) {
         self.start = start
         self.time = time
         self.rule = rule
         self.end = end
+        self.timeZone = timeZone
     }
 }
 
@@ -156,6 +159,7 @@ public struct Reminder: Codable, Identifiable, Hashable, Sendable {
     public var doneWhenChecked: Bool
     public var history: [DoneMark]
     public var contact: ContactLink?
+    public var shared: SharedInfo?
     public var completedThrough: Date?
     public var snoozedUntil: Date?
     public var createdAt: Date
@@ -177,6 +181,7 @@ public struct Reminder: Codable, Identifiable, Hashable, Sendable {
         doneWhenChecked: Bool = true,
         history: [DoneMark] = [],
         contact: ContactLink? = nil,
+        shared: SharedInfo? = nil,
         completedThrough: Date? = nil,
         snoozedUntil: Date? = nil,
         createdAt: Date,
@@ -197,6 +202,7 @@ public struct Reminder: Codable, Identifiable, Hashable, Sendable {
         self.doneWhenChecked = doneWhenChecked
         self.history = history
         self.contact = contact
+        self.shared = shared
         self.completedThrough = completedThrough
         self.snoozedUntil = snoozedUntil
         self.createdAt = createdAt
@@ -221,6 +227,7 @@ public struct Reminder: Codable, Identifiable, Hashable, Sendable {
         doneWhenChecked = try container.decodeIfPresent(Bool.self, forKey: .doneWhenChecked) ?? true
         history = try container.decodeIfPresent([DoneMark].self, forKey: .history) ?? []
         contact = try container.decodeIfPresent(ContactLink.self, forKey: .contact)
+        shared = try? container.decodeIfPresent(SharedInfo.self, forKey: .shared)
         completedThrough = try container.decodeIfPresent(Date.self, forKey: .completedThrough)
         snoozedUntil = try container.decodeIfPresent(Date.self, forKey: .snoozedUntil)
         createdAt = try container.decode(Date.self, forKey: .createdAt)

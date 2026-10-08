@@ -31,7 +31,7 @@ final class Store {
     }
 
     var activeReminders: [Reminder] {
-        reminders.filter { $0.deletedAt == nil }
+        reminders.filter(\.isLive)
     }
 
     var activePlaces: [Place] {
@@ -51,6 +51,14 @@ final class Store {
         var updated = reminder
         updated.fit()
         updated.updatedAt = Date()
+        let before = self.reminder(reminder.id)
+        // A shared reminder leaves this phone at once; the friends learn it from the server.
+        if updated.shared != nil, updated.deletedAt != nil {
+            reminders.removeAll { $0.id == reminder.id }
+            persist()
+            Task { @MainActor in SharedService.shared.removed(updated) }
+            return
+        }
         var previous: [UUID] = []
         if let index = reminders.firstIndex(where: { $0.id == reminder.id }) {
             previous = reminders[index].placeIDs
@@ -61,6 +69,49 @@ final class Store {
         let kept = updated.deletedAt == nil ? Set(updated.placeIDs) : []
         dropUnusedPlaces(Set(previous + updated.placeIDs).subtracting(kept))
         persist()
+        if let before, let shared = updated.shared {
+            let ticked = before.completedThrough != updated.completedThrough
+            let changed = shared.isMine && before.sharedData != updated.sharedData
+            Task { @MainActor in
+                if ticked {
+                    SharedService.shared.ticked(updated)
+                }
+                if changed {
+                    SharedService.shared.changed(updated)
+                }
+            }
+        }
+    }
+
+    // What the server says about shared reminders, merged around the changes still waiting to be sent.
+    func applyShared(_ items: [SharedItem], waiting: Set<UUID>) {
+        guard !items.isEmpty else { return }
+        fresh()
+        let merged = SharedMerge.apply(items, to: reminders, waiting: waiting, now: Date())
+        guard merged != reminders else { return }
+        reminders = merged
+        persist(edit: false)
+    }
+
+    func answerInvitation(_ id: UUID, accept: Bool) {
+        fresh()
+        guard let index = reminders.firstIndex(where: { $0.id == id }), reminders[index].shared != nil else { return }
+        if accept {
+            reminders[index].shared?.status = SharedStatus.accepted
+        } else {
+            reminders.remove(at: index)
+        }
+        persist(edit: false)
+    }
+
+    // Someone removed from friends or blocked: their reminders go, and they leave mine.
+    func dropShared(with userID: String) {
+        fresh()
+        reminders.removeAll { $0.shared != nil && $0.shared?.isMine == false && $0.shared?.owner.id == userID }
+        for index in reminders.indices where reminders[index].shared?.isMine == true {
+            reminders[index].shared?.members.removeAll { $0.id == userID }
+        }
+        persist(edit: false)
     }
 
     // One-off places live only while a reminder uses them; a day-old orphan comes from an abandoned draft.
@@ -169,7 +220,9 @@ final class Store {
     }
 
     // Undo saves the copies taken before the deletion again; a synced deletion has already removed the tombstone.
+    // A shared one is gone for the friends already, so it is not brought back.
     func restore(_ reminder: Reminder, places released: [Place]) {
+        guard reminder.shared == nil else { return }
         fresh()
         for place in released {
             var revived = place

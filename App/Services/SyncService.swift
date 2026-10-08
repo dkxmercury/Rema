@@ -111,6 +111,7 @@ final class SyncService {
     private func forgetAccount() {
         realtime.stop()
         scheduled?.cancel()
+        SharedService.shared.reset()
         Self.clearLocal()
         state = SyncState()
         saveState()
@@ -131,9 +132,10 @@ final class SyncService {
         func unsynced(_ kind: SyncKind, _ id: UUID) -> Bool {
             known[SyncState.key(kind, id.uuidString)] == nil
         }
-        let reminders = snapshot.reminders.filter { $0.deletedAt == nil && unsynced(.reminders, $0.id) }
+        let reminders = snapshot.reminders.filter { $0.deletedAt == nil && $0.shared == nil && unsynced(.reminders, $0.id) }
         let used = Set(reminders.flatMap(\.placeIDs))
         let places = snapshot.places.filter { $0.deletedAt == nil && (unsynced(.places, $0.id) || used.contains($0.id)) }
+        SharedService.shared.reset()
         Self.clearLocal()
         if !reminders.isEmpty || !places.isEmpty {
             Store.shared.seed(reminders: reminders, places: places, sounds: [])
@@ -205,6 +207,7 @@ final class SyncService {
             if finished {
                 savedAt = Date()
                 status = .saved
+                await SharedService.shared.refresh()
             } else {
                 // Forty pages did not reach the end of a big account; the next pass goes on from the saved cursor.
                 schedule(after: .seconds(1))

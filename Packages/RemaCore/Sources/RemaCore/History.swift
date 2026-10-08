@@ -21,7 +21,7 @@ public enum History {
     // Ticks of the last days, newest first.
     public static func entries(_ reminders: [Reminder], since start: Date) -> [HistoryEntry] {
         reminders
-            .filter { $0.deletedAt == nil }
+            .filter(\.isLive)
             .flatMap { reminder in
                 reminder.history.filter { $0.at >= start }.map { HistoryEntry(reminderID: reminder.id, title: reminder.title, occurrence: $0.occurrence, at: $0.at) }
             }

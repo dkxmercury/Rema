@@ -31,7 +31,7 @@ struct ScheduledContent {
 
     static func make(reminders: [Reminder], places: [Place], now: Date, calendar: Calendar, locale: Locale, withPlaces: Bool = true, events: [CalendarEntry] = []) -> ScheduledContent {
         let describer = Describer(calendar: calendar, locale: locale)
-        let active = reminders.filter { $0.deletedAt == nil }
+        let active = reminders.filter(\.isLive)
         let byID = Dictionary(active.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
         var days: [Day] = []
         var monthly: [Item] = []
@@ -85,7 +85,7 @@ struct ScheduledContent {
     }
 
     static func count(reminders: [Reminder], now: Date, calendar: Calendar, withPlaces: Bool = true) -> Int {
-        let active = reminders.filter { $0.deletedAt == nil }
+        let active = reminders.filter(\.isLive)
         return upcoming(active, now: now, calendar: calendar).count + (withPlaces ? byPlace(active).count : 0)
     }
 

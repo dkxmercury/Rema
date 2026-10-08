@@ -17,6 +17,7 @@ struct SettingsScreen: View {
     var onSnooze: () -> Void = {}
     var onBirthdays: () -> Void = {}
     var onImport: () -> Void = {}
+    var onFriends: () -> Void = {}
     let onBack: () -> Void
 
     @AppStorage(Feedback.hapticsKey) private var haptics = true
@@ -68,6 +69,13 @@ struct SettingsScreen: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     section("Account", top: 14) { accountPanel }
+                    section("Friends") {
+                        PanelList {
+                            NavigationRow(icon: Icons.people, iconColor: Palette.text, title: "Shared reminders", minHeight: 52, action: onFriends) {
+                                value(String(localized: "\(SharedService.shared.state.friends.count) of 40", bundle: .app, locale: .app))
+                            }
+                        }
+                    }
                     section("Language") {
                         PanelList {
                             NavigationRow(icon: Icons.globe, iconColor: Palette.text, title: "App language", minHeight: 52, action: onLanguage) {

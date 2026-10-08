@@ -35,6 +35,10 @@ struct PhraseScreen: View {
     @State private var shiftAnswered = false
     @State private var removed = Removed()
     @State private var listDeclined = false
+    @State private var sharing = false
+    @State private var sharedWith: [String] = []
+    @State private var oneDone = false
+    @State private var friendsService = SharedService.shared
 
     // Body reads the parse result a dozen times per keystroke; parsing once per text keeps typing smooth.
     final class Memo {
@@ -450,7 +454,7 @@ struct PhraseScreen: View {
                 }
             }
             PrimaryBar(action: confirm) {
-                Text(verbatim: multi.map { String(localized: "Save \($0.count)", bundle: .app, locale: .app) } ?? confirmTitle)
+                Text(verbatim: multi.map { String(localized: "Save \($0.count)", bundle: .app, locale: .app) } ?? (sharing && multi == nil ? String(localized: "Send to \(sharedWith.count)", bundle: .app, locale: .app) : confirmTitle))
                     .contentTransition(.numericText())
             }
             .disabled(multi.map(\.isEmpty) ?? parsed.title.isEmpty)
@@ -500,6 +504,11 @@ struct PhraseScreen: View {
         }
         addOns
             .padding(.top, 12)
+        if sharing {
+            sharingSection
+                .padding(.top, 18)
+                .transition(.opacity.combined(with: .move(edge: .top)))
+        }
         suggestions
             .padding(.top, 14)
     }
@@ -666,8 +675,50 @@ struct PhraseScreen: View {
                 Feedback.play(.toggle)
             }
             Chip(title: "Sound", selected: overrides.sound != nil, icon: Icons.plus) { path.append(.sound) }
+            if Account.shared.isSignedIn {
+                Chip(title: "With friends", selected: sharing, icon: sharing ? Icons.people : Icons.plus) {
+                    Feedback.play(.toggle)
+                    withAnimation(Motion.standard) { sharing.toggle() }
+                }
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    // The friends who get the reminder and whether one «done» counts for everybody; the time is one moment for all.
+    private var sharingSection: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            SectionLabel(text: "With whom")
+                .padding(.horizontal, 4)
+                .padding(.bottom, 8)
+            if friendsService.friends.isEmpty {
+                Note("Invite a friend first: Settings, Shared reminders.")
+            } else {
+                FlowLayout(spacing: 8) {
+                    ForEach(friendsService.friends) { friend in
+                        let chosen = sharedWith.contains(friend.id)
+                        Chip(title: LocalizedStringKey(friendsService.name(of: friend.id, fallback: friend.name)), selected: chosen) {
+                            Feedback.play(chosen ? .uncheck : .check)
+                            if chosen {
+                                sharedWith.removeAll { $0 == friend.id }
+                            } else {
+                                sharedWith.append(friend.id)
+                            }
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            PanelList {
+                ToggleRow(icon: Icons.check, iconColor: Palette.text, title: "Each ticks it alone", subtitle: String(localized: "or one «done» for everybody", bundle: .app, locale: .app), isOn: Binding(get: { !oneDone }, set: { oneDone = !$0 }))
+            }
+            .padding(.top, 12)
+            if let when {
+                let city = TimeZone.current.identifier.split(separator: "/").last.map { $0.replacingOccurrences(of: "_", with: " ") } ?? TimeZone.current.identifier
+                Note(verbatim: String(localized: "Everybody gets it at the same moment, \(describer.time(when)) by \(city) time. Only you can change it.", bundle: .app, locale: .app))
+                    .padding(.top, 10)
+            }
+        }
     }
 
     private var exampleSamples: [String] {
@@ -903,8 +954,21 @@ struct PhraseScreen: View {
             return
         }
         guard !parsed.title.isEmpty else { return }
-        guard when != nil || !reminder.placeIDs.isEmpty else {
+        guard when != nil || (!reminder.placeIDs.isEmpty && !sharing) else {
             pickingDate = true
+            return
+        }
+        if sharing {
+            guard !sharedWith.isEmpty else {
+                Feedback.play(.error)
+                return
+            }
+            Feedback.play(.save)
+            let people = sharedWith.compactMap { id in friendsService.state.friends.first { $0.id == id } }.map { SharedPerson(id: $0.id, name: $0.name) }
+            friendsService.create(reminder, with: people, doneMode: oneDone ? .one : .each)
+            RecentPhrases.remember(text)
+            Notifier.shared.requestPermissionIfNeeded()
+            onClose()
             return
         }
         Feedback.play(.save)

@@ -43,7 +43,7 @@ public enum Scheduler {
         followUp: Int? = nil
     ) -> [PlannedNotification] {
         var planned: [PlannedNotification] = []
-        for reminder in reminders where reminder.deletedAt == nil {
+        for reminder in reminders where reminder.isLive {
             planned.append(contentsOf: plan(reminder, settings: settings, now: now, calendar: calendar, followUp: followUp))
         }
         let sorted = planned.sorted { lhs, rhs in

@@ -74,6 +74,7 @@ targets:
       - path: Shared
       - path: App/Theme
       - path: App/Services/Describer.swift
+      - path: App/Services/SharedNames.swift
       - path: App/Components/Glyph.swift
       - path: App/Components/CheckBox.swift
       - path: App/Components/Dial.swift
@@ -113,6 +114,7 @@ targets:
           - Info.plist
       - path: App/Theme
       - path: App/Services/Describer.swift
+      - path: App/Services/SharedNames.swift
       - path: App/Components/ButtonStyles.swift
       - path: App/Components/Glyph.swift
       - path: App/Components/Layout.swift

@@ -30,7 +30,7 @@ public struct WatchPayload: Codable, Hashable, Sendable {
     }
 
     public static func make(reminders: [Reminder], now: Date, calendar: Calendar, days: Int = 2) -> WatchPayload {
-        let active = reminders.filter { $0.deletedAt == nil }
+        let active = reminders.filter(\.isLive)
         let byID = Dictionary(active.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
         var items: [WatchItem] = []
         let start = calendar.startOfDay(for: now)

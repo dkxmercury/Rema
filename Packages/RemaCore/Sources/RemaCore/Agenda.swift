@@ -11,7 +11,7 @@ public enum Agenda {
         let start = calendar.startOfDay(for: date)
         guard let end = calendar.date(byAdding: .day, value: 1, to: start) else { return [] }
         var items: [AgendaItem] = []
-        for reminder in reminders where reminder.deletedAt == nil {
+        for reminder in reminders where reminder.isLive {
             guard let schedule = reminder.schedule else { continue }
             for occurrence in Recurrence.next(schedule, after: start.addingTimeInterval(-1), limit: 48, calendar: calendar) where occurrence < end {
                 items.append(AgendaItem(reminderID: reminder.id, occurrence: occurrence, done: isDone(reminder, occurrence)))
@@ -43,7 +43,7 @@ public enum Agenda {
 
     public static func upcoming(after now: Date, reminders: [Reminder], calendar: Calendar, limit: Int = 20) -> [AgendaItem] {
         var items: [AgendaItem] = []
-        for reminder in reminders where reminder.deletedAt == nil {
+        for reminder in reminders where reminder.isLive {
             guard let schedule = reminder.schedule else { continue }
             let from = max(now, reminder.completedThrough ?? now)
             var next = Recurrence.next(schedule, after: from, limit: 1, calendar: calendar).first

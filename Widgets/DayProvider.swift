@@ -40,7 +40,7 @@ struct DayEntry: TimelineEntry {
         let reminders = snapshot?.reminders ?? []
         let places = snapshot?.places ?? []
         let content = HomeContent.make(reminders: reminders, places: places, now: date, calendar: .current, locale: .app)
-        let active = reminders.filter { $0.deletedAt == nil }
+        let active = reminders.filter(\.isLive)
         let next = Agenda.upcoming(after: date, reminders: active, calendar: .current, limit: 1).first
         return DayEntry(date: date, content: content, nextOccurrence: next?.occurrence)
     }
@@ -76,7 +76,7 @@ struct DayProvider: TimelineProvider {
             moments.insert(step)
             step = step.addingTimeInterval(300)
         }
-        for reminder in snapshot?.reminders ?? [] where reminder.deletedAt == nil {
+        for reminder in snapshot?.reminders ?? [] where reminder.isLive {
             if let snoozed = reminder.snoozedUntil, snoozed > now, snoozed < end {
                 moments.insert(Self.minute(snoozed))
             }

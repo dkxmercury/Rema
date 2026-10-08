@@ -4,6 +4,7 @@ enum HomeAlert: Equatable {
     case storageFull
     case notificationsOff
     case signInExpired
+    case invitation(UUID, String)
 }
 
 struct HomeNotice: View {
@@ -12,9 +13,9 @@ struct HomeNotice: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Text(text)
+            text
                 .font(.app(.golos, 14, weight: 500))
-                .foregroundStyle(Palette.urgentText)
+                .foregroundStyle(alertColor)
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
             Button(action: onAction) {
@@ -26,11 +27,19 @@ struct HomeNotice: View {
         .panel()
     }
 
-    private var text: LocalizedStringKey {
+    private var alertColor: Color {
+        if case .invitation = alert {
+            return Palette.text
+        }
+        return Palette.urgentText
+    }
+
+    private var text: Text {
         switch alert {
-        case .storageFull: "Could not save on this phone, there is not enough space."
-        case .notificationsOff: "Notifications are off, reminders will not come."
-        case .signInExpired: "The sign-in has expired. Sign in again."
+        case .storageFull: Text("Could not save on this phone, there is not enough space.")
+        case .notificationsOff: Text("Notifications are off, reminders will not come.")
+        case .signInExpired: Text("The sign-in has expired. Sign in again.")
+        case .invitation(_, let line): Text(verbatim: line)
         }
     }
 
@@ -38,6 +47,7 @@ struct HomeNotice: View {
         switch alert {
         case .storageFull, .notificationsOff: "Settings"
         case .signInExpired: "Sign in"
+        case .invitation: "Open"
         }
     }
 }

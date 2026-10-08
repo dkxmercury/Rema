@@ -4,6 +4,10 @@ public enum Recurrence {
     private static let maximumSteps = 200_000
 
     public static func next(_ schedule: Schedule, after date: Date, limit: Int, calendar: Calendar) -> [Date] {
+        var calendar = calendar
+        if let zone = schedule.timeZone.flatMap(TimeZone.init(identifier:)) {
+            calendar.timeZone = zone
+        }
         var result: [Date] = []
         var ordinal = 0
         let floor = LocalDate(date, in: calendar).adding(days: -1)
