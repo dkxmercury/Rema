@@ -204,7 +204,8 @@ struct RootView: View {
             status: sync.status,
             savedAt: sync.savedAt,
             reminders: store.activeReminders.count,
-            places: store.activePlaces.count
+            places: store.activePlaces.count,
+            refused: sync.hasRefusedChanges
         )
     }
 
@@ -309,6 +310,7 @@ struct RootView: View {
                 zoom: zoom,
                 onDelete: { id in
                     withAnimation(Motion.standard) { store.delete(id) }
+                    return { withAnimation(Motion.standard) { store.restore(id) } }
                 },
                 onMove: move,
                 habit: remote.isOn(.suggestions) ? Suggestions.habit(in: store.reminders, now: timeline.date, calendar: .current, dismissed: dismissedHabits) : nil,

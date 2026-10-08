@@ -177,12 +177,7 @@ struct RepeatScreen: View {
         case .monthly:
             detailText(String(localized: "on day \(schedule.start.day)", bundle: .app, locale: .app), selected: selected)
         case .yearly:
-            HStack(spacing: 12) {
-                detailText(longDate(month: schedule.start.month, day: schedule.start.day), selected: selected)
-                if selected {
-                    Glyph(paths: Icons.chevron, size: 16, lineWidth: 2, color: Palette.secondary)
-                }
-            }
+            detailText(longDate(month: schedule.start.month, day: schedule.start.day), selected: selected)
         }
     }
 

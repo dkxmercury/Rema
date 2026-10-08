@@ -8,6 +8,7 @@ struct AccountScreen: View {
         var savedAt: Date?
         var reminders: Int
         var places: Int
+        var refused = false
     }
 
     let summary: Summary
@@ -158,17 +159,28 @@ struct AccountScreen: View {
         .frame(minHeight: 52)
     }
 
+    // The server turned some changes down, for example over the limit, so «everything is saved» would not be true.
+    private var refusedNow: Bool {
+        summary.refused && (summary.status == .saved || summary.status == .idle)
+    }
+
     private var statusColor: Color {
+        if refusedNow {
+            return Palette.urgent
+        }
         switch summary.status {
-        case .saved, .idle: Palette.yearly
-        case .syncing: Palette.accent
-        case .offline: Palette.faint
-        case .failed: Palette.urgent
+        case .saved, .idle: return Palette.yearly
+        case .syncing: return Palette.accent
+        case .offline: return Palette.faint
+        case .failed: return Palette.urgent
         }
     }
 
     private var statusText: String {
-        switch summary.status {
+        if refusedNow {
+            return String(localized: "Some changes are not in the account yet", bundle: .app, locale: .app)
+        }
+        return switch summary.status {
         case .saved, .idle: String(localized: "Everything is saved in the account", bundle: .app, locale: .app)
         case .syncing: String(localized: "Saving…", bundle: .app, locale: .app)
         case .offline: String(localized: "No connection, changes will be saved later", bundle: .app, locale: .app)
@@ -177,7 +189,7 @@ struct AccountScreen: View {
     }
 
     private var statusTime: String? {
-        guard summary.status == .saved || summary.status == .idle, let savedAt = summary.savedAt else { return nil }
+        guard summary.status == .saved || summary.status == .idle, !refusedNow, let savedAt = summary.savedAt else { return nil }
         if Date().timeIntervalSince(savedAt) < 60 {
             return String(localized: "just now", bundle: .app, locale: .app)
         }

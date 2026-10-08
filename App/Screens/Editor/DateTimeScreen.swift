@@ -6,6 +6,7 @@ struct DateTimeScreen: View {
     let settings: Settings
     var calendar: Calendar = .current
     var locale: Locale = AppLanguage.current.locale
+    var repeats = false
     let onDone: (Date) -> Void
     let onClose: () -> Void
 
@@ -14,11 +15,12 @@ struct DateTimeScreen: View {
     @State private var minute: Int
     @State private var weekStart: Date
 
-    init(initial: Date, now: Date, settings: Settings, calendar: Calendar = .current, locale: Locale = AppLanguage.current.locale, onDone: @escaping (Date) -> Void, onClose: @escaping () -> Void) {
+    init(initial: Date, now: Date, settings: Settings, calendar: Calendar = .current, locale: Locale = AppLanguage.current.locale, repeats: Bool = false, onDone: @escaping (Date) -> Void, onClose: @escaping () -> Void) {
         self.now = now
         self.settings = settings
         self.calendar = calendar
         self.locale = locale
+        self.repeats = repeats
         self.onDone = onDone
         self.onClose = onClose
         let parts = calendar.dateComponents([.hour, .minute], from: initial)
@@ -26,7 +28,7 @@ struct DateTimeScreen: View {
         _day = State(initialValue: start)
         _hour = State(initialValue: parts.hour ?? 9)
         _minute = State(initialValue: parts.minute ?? 0)
-        _weekStart = State(initialValue: DateTimeScreen.monday(of: start, calendar: calendar))
+        _weekStart = State(initialValue: DateTimeScreen.weekStart(of: start, calendar: calendar))
     }
 
     private var selected: Date {
@@ -35,6 +37,11 @@ struct DateTimeScreen: View {
 
     private var describer: Describer {
         Describer(calendar: calendar, locale: locale)
+    }
+
+    // A one-off reminder set to a minute that is already gone would never come.
+    private var passed: Bool {
+        !repeats && selected <= now
     }
 
     var body: some View {
@@ -57,38 +64,46 @@ struct DateTimeScreen: View {
             PrimaryBar(action: { onDone(selected) }) {
                 Text("Done")
             }
+            .disabled(passed)
         }
         .foregroundStyle(Palette.text)
     }
 
-    private var presets: [(LocalizedStringKey, Date)] {
-        let inHour = roundedUp(now.addingTimeInterval(3600))
+    private enum Preset {
+        case hour, evening, morning, saturday
+    }
+
+    private struct Choice: Identifiable {
+        let id: Preset
+        let title: LocalizedStringKey
+        let date: Date
+    }
+
+    private var presets: [Choice] {
         let evening = at(settings.evening, on: now)
-        let tonight = evening > now ? evening : calendar.date(byAdding: .day, value: 1, to: evening) ?? evening
         let tomorrow = calendar.date(byAdding: .day, value: 1, to: now) ?? now
-        let morning = at(settings.morning, on: tomorrow)
-        let saturday = nextSaturday()
-        return [
-            ("In an hour", inHour),
-            ("This evening", tonight),
-            ("Tomorrow morning", morning),
-            ("On Saturday", saturday),
-        ]
+        var list = [Choice(id: .hour, title: "In an hour", date: roundedUp(now.addingTimeInterval(3600)))]
+        if evening > now {
+            list.append(Choice(id: .evening, title: "This evening", date: evening))
+        }
+        list.append(Choice(id: .morning, title: "Tomorrow morning", date: at(settings.morning, on: tomorrow)))
+        list.append(Choice(id: .saturday, title: "On Saturday", date: nextSaturday()))
+        return list
     }
 
     private var chips: some View {
         FlowLayout(spacing: 8) {
-            ForEach(Array(presets.enumerated()), id: \.offset) { index, preset in
-                Chip(title: preset.0, selected: isPresetSelected(index, preset.1)) {
-                    apply(preset.1)
+            ForEach(presets) { preset in
+                Chip(title: preset.title, selected: isPresetSelected(preset.id, preset.date)) {
+                    apply(preset.date)
                 }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private func isPresetSelected(_ index: Int, _ date: Date) -> Bool {
-        if index == 2 {
+    private func isPresetSelected(_ kind: Preset, _ date: Date) -> Bool {
+        if kind == .morning {
             let tomorrow = calendar.date(byAdding: .day, value: 1, to: now) ?? now
             return calendar.isDate(day, inSameDayAs: tomorrow) && (5..<12).contains(hour)
         }
@@ -175,9 +190,9 @@ struct DateTimeScreen: View {
             Text(verbatim: describer.fullDate(selected))
                 .font(.app(.golos, 15, weight: 600))
                 .contentTransition(.numericText())
-            Text(verbatim: describer.countdown(from: now, to: selected))
+            Text(verbatim: passed ? String(localized: "This time has already passed", bundle: .app, locale: .app) : describer.countdown(from: now, to: selected))
                 .font(.app(.golos, 13))
-                .foregroundStyle(Palette.secondary)
+                .foregroundStyle(passed ? Palette.urgentText : Palette.secondary)
                 .contentTransition(.numericText())
         }
         .multilineTextAlignment(.center)
@@ -193,13 +208,13 @@ struct DateTimeScreen: View {
         var local = calendar
         local.locale = locale
         let symbols = local.shortStandaloneWeekdaySymbols
-        return symbols[(offset + 1) % 7].capitalizedFirst(locale)
+        return symbols[(calendar.firstWeekday - 1 + offset) % 7].capitalizedFirst(locale)
     }
 
     private func apply(_ date: Date) {
         withAnimation(Motion.standard) {
             day = calendar.startOfDay(for: date)
-            weekStart = DateTimeScreen.monday(of: day, calendar: calendar)
+            weekStart = DateTimeScreen.weekStart(of: day, calendar: calendar)
             let parts = calendar.dateComponents([.hour, .minute], from: date)
             hour = parts.hour ?? hour
             minute = parts.minute ?? minute
@@ -227,9 +242,9 @@ struct DateTimeScreen: View {
         return at(settings.morning, on: date)
     }
 
-    static func monday(of date: Date, calendar: Calendar) -> Date {
+    static func weekStart(of date: Date, calendar: Calendar) -> Date {
         let weekday = calendar.component(.weekday, from: date)
-        let shift = (weekday + 5) % 7
+        let shift = (weekday - calendar.firstWeekday + 7) % 7
         return calendar.date(byAdding: .day, value: -shift, to: calendar.startOfDay(for: date)) ?? date
     }
 }

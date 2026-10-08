@@ -11,7 +11,7 @@ enum PhraseRoute: Hashable {
 
 struct PhraseScreen: View {
     let store: Store
-    var now: Date = Date()
+    private let fixedNow: Date?
     var calendar: Calendar = .current
     var locale: Locale = AppLanguage.current.locale
     var startWithVoice = false
@@ -39,6 +39,7 @@ struct PhraseScreen: View {
             var places: [String]
             var morning: LocalTime
             var evening: LocalTime
+            var minute: Int
         }
 
         var key: Key?
@@ -55,17 +56,22 @@ struct PhraseScreen: View {
         var placeTrigger: PlaceTrigger?
     }
 
-    init(store: Store, text: String = "", now: Date = Date(), calendar: Calendar = .current, locale: Locale = AppLanguage.current.locale, startWithVoice: Bool = false, autofocus: Bool = true, onClose: @escaping () -> Void) {
+    init(store: Store, text: String = "", now: Date? = nil, calendar: Calendar = .current, locale: Locale = AppLanguage.current.locale, startWithVoice: Bool = false, autofocus: Bool = true, onClose: @escaping () -> Void) {
         self.store = store
-        self.now = now
+        self.fixedNow = now
         self.calendar = calendar
         self.locale = locale
         self.startWithVoice = startWithVoice
         self.autofocus = autofocus
         self.onClose = onClose
         _text = State(initialValue: text)
-        _draft = State(initialValue: Reminder(title: "", schedule: nil, createdAt: now))
+        _draft = State(initialValue: Reminder(title: "", schedule: nil, createdAt: now ?? Date()))
         _listening = State(initialValue: startWithVoice && VoiceRecognizer.available)
+    }
+
+    // A screen left open for a while still reads «in 5 minutes» from the real current minute.
+    private var now: Date {
+        fixedNow ?? Date()
     }
 
     private var parser: PhraseParser {
@@ -73,9 +79,12 @@ struct PhraseScreen: View {
     }
 
     private var parsed: ParsedPhrase {
-        let key = Memo.Key(text: text, places: store.activePlaces.map(\.name), morning: store.settings.morning, evening: store.settings.evening)
+        let key = Memo.Key(text: text, places: store.activePlaces.map(\.name), morning: store.settings.morning, evening: store.settings.evening, minute: Int(now.timeIntervalSince1970 / 60))
         if memo.key == key, let parsed = memo.parsed {
             return parsed
+        }
+        if memo.key?.minute != key.minute {
+            memo.examples = [:]
         }
         let parsed = parser.parse(text)
         memo.key = key
@@ -141,7 +150,9 @@ struct PhraseScreen: View {
     var body: some View {
         ZStack {
             PushStack(path: $path) {
-                content
+                TimelineView(.everyMinute) { _ in
+                    content
+                }
             } destination: { route in
                 switch route {
                 case .repeating:
@@ -167,7 +178,7 @@ struct PhraseScreen: View {
         }
         .animation(Motion.standard, value: listening)
         .fullScreenCover(isPresented: $pickingDate) {
-            DateTimeScreen(initial: when ?? now.addingTimeInterval(3600), now: now, settings: store.settings, calendar: calendar, locale: locale, onDone: { date in
+            DateTimeScreen(initial: when ?? now.addingTimeInterval(3600), now: now, settings: store.settings, calendar: calendar, locale: locale, repeats: reminder.schedule?.rule != nil, onDone: { date in
                 let parts = calendar.dateComponents([.hour, .minute], from: date)
                 var schedule = reminder.schedule ?? Schedule(start: LocalDate(date, in: calendar), time: LocalTime(hour: 9, minute: 0))
                 schedule.start = LocalDate(date, in: calendar)

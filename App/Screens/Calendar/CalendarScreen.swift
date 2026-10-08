@@ -20,6 +20,8 @@ struct CalendarScreen: View {
     @State private var rowTransition: AnyTransition = .opacity
     @State private var editing: EditingTarget?
     @State private var query = ""
+    @State private var resultLimit = CalendarScreen.shownResults
+    @State private var deleted: Deleted?
     @FocusState private var searchFocused: Bool
     @Namespace private var selection
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -77,10 +79,28 @@ struct CalendarScreen: View {
                 }
                 .animation(Motion.standard, value: searching)
             }
+            if let deleted {
+                UndoToast(text: String(localized: "Reminder deleted", bundle: .app, locale: .app)) {
+                    withAnimation(Motion.standard) {
+                        store.restore(deleted.id)
+                        self.deleted = nil
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.bottom, 24)
+                .frame(maxHeight: .infinity, alignment: .bottom)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+                .task(id: deleted.token) {
+                    try? await Task.sleep(for: .seconds(4))
+                    guard !Task.isCancelled else { return }
+                    withAnimation(Motion.standard) { self.deleted = nil }
+                }
+            }
         }
         .foregroundStyle(Palette.text)
         .animation(Motion.standard, value: selected)
         .animation(Motion.standard, value: store.reminders)
+        .onChange(of: query) { _, _ in resultLimit = Self.shownResults }
         .fullScreenCover(item: $editing) { target in
             EditorScreen(draft: target.reminder, isNew: target.isNew, store: store, onClose: { editing = nil })
         }
@@ -174,6 +194,11 @@ struct CalendarScreen: View {
         }
     }
 
+    private struct Deleted: Equatable {
+        let id: UUID
+        let token = UUID()
+    }
+
     private struct Match: Identifiable {
         let reminder: Reminder
         let date: Date?
@@ -212,14 +237,24 @@ struct CalendarScreen: View {
             if !found.upcoming.isEmpty {
                 SectionLabel(text: "Upcoming")
                     .padding(.top, 20)
-                resultList(Array(found.upcoming.prefix(Self.shownResults)))
+                resultList(Array(found.upcoming.prefix(resultLimit)))
                     .padding(.top, 8)
             }
             if !found.earlier.isEmpty {
                 SectionLabel(text: found.earlier.allSatisfy(\.done) ? "Completed" : "Earlier")
                     .padding(.top, 18)
-                resultList(Array(found.earlier.prefix(Self.shownResults)))
+                resultList(Array(found.earlier.prefix(resultLimit)))
                     .padding(.top, 8)
+            }
+            if found.upcoming.count > resultLimit || found.earlier.count > resultLimit {
+                Button {
+                    resultLimit += Self.shownResults
+                } label: {
+                    Text("Show more")
+                }
+                .buttonStyle(SmallButtonStyle(prominent: false))
+                .frame(maxWidth: .infinity)
+                .padding(.top, 14)
             }
             if !query.trimmingCharacters(in: .whitespaces).isEmpty {
                 Group {
@@ -546,7 +581,10 @@ struct CalendarScreen: View {
     }
 
     private func delete(_ id: UUID) {
-        withAnimation(Motion.standard) { store.delete(id) }
+        withAnimation(Motion.standard) {
+            store.delete(id)
+            deleted = Deleted(id: id)
+        }
     }
 
     private func open(_ id: UUID) {

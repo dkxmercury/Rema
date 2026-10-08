@@ -103,6 +103,18 @@ final class Store {
         save(reminder)
     }
 
+    func restore(_ id: UUID) {
+        fresh()
+        guard var reminder = reminder(id), let deletedAt = reminder.deletedAt else { return }
+        reminder.deletedAt = nil
+        // Deleting released the reminder's one-off places, they come back together with it.
+        for index in places.indices where reminder.placeIDs.contains(places[index].id) && (places[index].deletedAt ?? .distantPast) >= deletedAt.addingTimeInterval(-1) {
+            places[index].deletedAt = nil
+            places[index].updatedAt = Date()
+        }
+        save(reminder)
+    }
+
     func save(_ place: Place) {
         fresh()
         var updated = place

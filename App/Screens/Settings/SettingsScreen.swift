@@ -291,7 +291,7 @@ struct SettingsScreen: View {
                             .font(.app(.golos, 16, weight: 600))
                             .lineLimit(1)
                             .truncationMode(.middle)
-                        Text(account.status == .offline ? LocalizedStringKey("No connection, changes will be saved later") : LocalizedStringKey("Reminders are saved in the account"))
+                        Text(accountLine(account))
                             .font(.app(.golos, 13))
                             .foregroundStyle(Palette.secondary)
                             .lineLimit(1)
@@ -306,6 +306,14 @@ struct SettingsScreen: View {
             .panel()
         } else {
             invite
+        }
+    }
+
+    private func accountLine(_ account: AccountScreen.Summary) -> LocalizedStringKey {
+        switch account.status {
+        case .offline: return "No connection, changes will be saved later"
+        case .failed: return "Not saved yet, trying again"
+        default: return account.refused ? "Some changes are not in the account yet" : "Reminders are saved in the account"
         }
     }
 

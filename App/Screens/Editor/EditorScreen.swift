@@ -59,7 +59,7 @@ struct EditorScreen: View {
             }
         }
         .fullScreenCover(isPresented: $pickingDate) {
-            DateTimeScreen(initial: when, now: now, settings: store.settings, calendar: calendar, locale: locale, onDone: { date in
+            DateTimeScreen(initial: when, now: now, settings: store.settings, calendar: calendar, locale: locale, repeats: draft.schedule?.rule != nil, onDone: { date in
                 setDate(date)
                 pickingDate = false
             }, onClose: { pickingDate = false })
@@ -152,23 +152,37 @@ struct EditorScreen: View {
         Button {
             pickingDate = true
         } label: {
-            HStack(spacing: 12) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(verbatim: describer.time(when))
-                        .font(.app(.jost, 50, weight: 500))
-                        .tracking(-0.5)
-                        .frame(height: 54)
-                        .contentTransition(.numericText())
-                    Text(verbatim: describer.dayTitle(when))
-                        .font(.app(.golos, 15, weight: 600))
-                    Text(verbatim: describer.countdown(from: now, to: when))
-                        .font(.app(.golos, 13))
-                        .foregroundStyle(Palette.secondary)
+            Group {
+                if draft.schedule == nil {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Add a time")
+                            .font(.app(.golos, 20, weight: 600))
+                        if !draft.placeIDs.isEmpty {
+                            Text(verbatim: describer.placeText(draft, places: store.places))
+                                .font(.app(.golos, 13))
+                                .foregroundStyle(Palette.secondary)
+                        }
+                    }
+                } else {
+                    HStack(spacing: 12) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(verbatim: describer.time(when))
+                                .font(.app(.jost, 50, weight: 500))
+                                .tracking(-0.5)
+                                .frame(height: 54)
+                                .contentTransition(.numericText())
+                            Text(verbatim: describer.dayTitle(when))
+                                .font(.app(.golos, 15, weight: 600))
+                            Text(verbatim: draft.schedule?.rule == nil && when < now ? String(localized: "This time has already passed", bundle: .app, locale: .app) : describer.countdown(from: now, to: when))
+                                .font(.app(.golos, 13))
+                                .foregroundStyle(draft.schedule?.rule == nil && when < now ? Palette.urgentText : Palette.secondary)
+                        }
+                        Spacer(minLength: 0)
+                        let parts = calendar.dateComponents([.hour, .minute], from: when)
+                        MiniDial(hour: parts.hour ?? 0, minute: parts.minute ?? 0)
+                            .animation(Motion.hand, value: when)
+                    }
                 }
-                Spacer(minLength: 0)
-                let parts = calendar.dateComponents([.hour, .minute], from: when)
-                MiniDial(hour: parts.hour ?? 0, minute: parts.minute ?? 0)
-                    .animation(Motion.hand, value: when)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
@@ -177,7 +191,7 @@ struct EditorScreen: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(PressableStyle())
-        .accessibilityLabel(Text(verbatim: describer.fullDate(when)))
+        .accessibilityLabel(draft.schedule == nil ? Text("Add a time") : Text(verbatim: describer.fullDate(when)))
     }
 
     private var settingsPanel: some View {
@@ -204,11 +218,13 @@ struct EditorScreen: View {
                     .fixedSize()
                 }
             }
-            Hairline()
-            NavigationRow(icon: Icons.pin, iconColor: Palette.text, title: "By place", action: { path.append(.places) }) {
-                Text(verbatim: placeValue)
-                    .font(.app(.golos, 14))
-                    .foregroundStyle(Palette.secondary)
+            if Remote.shared.isOn(.places) || !draft.placeIDs.isEmpty {
+                Hairline()
+                NavigationRow(icon: Icons.pin, iconColor: Palette.text, title: "By place", action: { path.append(.places) }) {
+                    Text(verbatim: placeValue)
+                        .font(.app(.golos, 14))
+                        .foregroundStyle(Palette.secondary)
+                }
             }
             Hairline()
             ToggleRow(icon: Icons.bell, iconColor: Palette.text, title: "Persistent", subtitle: nagSubtitle, isOn: $draft.nag)
@@ -296,6 +312,12 @@ struct EditorScreen: View {
             titleShake += 1
             titleFocused = true
             Feedback.play(.error)
+            return
+        }
+        // Without a time and a place the reminder would never come and would show up nowhere.
+        guard draft.schedule != nil || !draft.placeIDs.isEmpty else {
+            Feedback.play(.error)
+            pickingDate = true
             return
         }
         draft.title = draft.title.trimmingCharacters(in: .whitespacesAndNewlines)

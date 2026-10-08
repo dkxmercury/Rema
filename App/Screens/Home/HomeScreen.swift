@@ -18,7 +18,7 @@ struct HomeScreen: View {
     var scheduledCount = 0
     var onScheduled: () -> Void = {}
     var zoom: Namespace.ID?
-    var onDelete: (UUID) -> Void = { _ in }
+    var onDelete: (UUID) -> (() -> Void)? = { _ in nil }
     var onMove: (UUID, Date) -> (() -> Void)? = { _, _ in nil }
     var habit: HabitSuggestion?
     var onHabit: (HabitSuggestion, Bool) -> Void = { _, _ in }
@@ -29,7 +29,7 @@ struct HomeScreen: View {
     @State private var addPressed = false
     @State private var intro = false
     @State private var lift: DialLift?
-    @State private var moved: Moved?
+    @State private var toast: Toast?
     @State private var postponing: HomeContent.Row?
     @GestureState private var holding = false
     @Environment(\.introAnimations) private var introAnimations
@@ -71,23 +71,25 @@ struct HomeScreen: View {
                     .padding(.top, 12)
                     .transition(.opacity.combined(with: .move(edge: .top)))
                 }
-                if content.rows.isEmpty {
-                    emptyDay
-                        .padding(.top, 12)
-                } else {
-                    list
-                        .padding(.top, 12)
+                // A long day scrolls on its own while the dial and its handles stay in place.
+                ViewThatFits(in: .vertical) {
+                    day
+                    ScrollView {
+                        day
+                            .padding(.horizontal, 18)
+                            .padding(.vertical, 4)
+                    }
+                    .scrollIndicators(.hidden)
+                    .padding(.horizontal, -18)
                 }
-                if !content.tiles.isEmpty, scheduledCount == 0 {
-                    tiles
-                        .padding(.top, 12)
-                }
+                .padding(.top, 12)
                 Spacer(minLength: 0)
             }
             .padding(.horizontal, 18)
             .padding(.top, 15)
+            .padding(.bottom, 92)
 
-            if let tip, moved == nil, lift == nil {
+            if let tip, toast == nil, lift == nil {
                 if tip == .voice {
                     PlusHighlight()
                         .padding(.trailing, 16)
@@ -108,20 +110,20 @@ struct HomeScreen: View {
                 .zIndex(1)
             }
 
-            if let moved {
-                MovedToast(text: String(localized: "Moved to \(moved.time)", bundle: .app, locale: .app)) {
-                    moved.undo()
-                    withAnimation(Motion.standard) { self.moved = nil }
+            if let toast {
+                UndoToast(text: toast.text) {
+                    toast.undo()
+                    withAnimation(Motion.standard) { self.toast = nil }
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 98)
                 .frame(maxHeight: .infinity, alignment: .bottom)
                 .ignoresSafeArea(.container, edges: .bottom)
                 .transition(.move(edge: .bottom).combined(with: .opacity))
-                .task(id: moved.id) {
+                .task(id: toast.id) {
                     try? await Task.sleep(for: .seconds(4))
                     guard !Task.isCancelled else { return }
-                    withAnimation(Motion.standard) { self.moved = nil }
+                    withAnimation(Motion.standard) { self.toast = nil }
                 }
             }
 
@@ -161,9 +163,9 @@ struct HomeScreen: View {
         }
     }
 
-    private struct Moved: Identifiable {
+    private struct Toast: Identifiable {
         let id = UUID()
-        let time: String
+        let text: String
         let undo: () -> Void
     }
 
@@ -263,7 +265,7 @@ struct HomeScreen: View {
         else { return }
         Feedback.play(.save)
         withAnimation(Motion.standard) {
-            moved = Moved(time: clockText(result.minutes), undo: undo)
+            toast = Toast(text: String(localized: "Moved to \(clockText(result.minutes))", bundle: .app, locale: .app), undo: undo)
         }
     }
 
@@ -271,6 +273,7 @@ struct HomeScreen: View {
         VStack(spacing: 4) {
             Text(verbatim: title)
                 .font(.app(.golos, 17, weight: 600))
+                .lineLimit(2)
             Text("move around the dial in 5-minute steps · let go to reschedule")
                 .font(.app(.golos, 13))
                 .foregroundStyle(Palette.secondary)
@@ -334,6 +337,7 @@ struct HomeScreen: View {
         VStack(spacing: 4) {
             Text(verbatim: next.title)
                 .font(.app(.golos, 17, weight: 600))
+                .lineLimit(2)
             if next.urgent || next.note != nil {
                 HStack(spacing: 8) {
                     if next.urgent {
@@ -372,7 +376,7 @@ struct HomeScreen: View {
                 AgendaRow(
                     row: lift.map { moving ? movingRow(row, $0) : row } ?? row,
                     onToggle: { onToggle(row) },
-                    onDelete: { onDelete(row.reminderID) },
+                    onDelete: { remove(row.reminderID) },
                     onPostpone: row.missed ? { postponing = row } : nil
                 )
                     .background {
@@ -394,6 +398,26 @@ struct HomeScreen: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 4)
         .panel()
+    }
+
+    private var day: some View {
+        VStack(spacing: 12) {
+            if content.rows.isEmpty {
+                emptyDay
+            } else {
+                list
+            }
+            if !content.tiles.isEmpty, scheduledCount == 0 {
+                tiles
+            }
+        }
+    }
+
+    private func remove(_ id: UUID) {
+        guard let undo = onDelete(id) else { return }
+        withAnimation(Motion.standard) {
+            toast = Toast(text: String(localized: "Reminder deleted", bundle: .app, locale: .app), undo: undo)
+        }
     }
 
     private var emptyDay: some View {
@@ -460,42 +484,6 @@ struct HomeScreen: View {
         .padding(.trailing, 7)
         .frame(height: 58)
         .inputBar()
-    }
-}
-
-private struct MovedToast: View {
-    let text: String
-    let onUndo: () -> Void
-
-    var body: some View {
-        HStack(spacing: 10) {
-            Glyph(paths: Icons.check, size: 18, lineWidth: 2.2, color: Palette.accentOnDark)
-            Text(verbatim: text)
-                .font(.app(.golos, 15, weight: 500))
-                .foregroundStyle(Palette.dialWindowText)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            Button(action: onUndo) {
-                Text("Undo")
-                    .font(.app(.golos, 15, weight: 600))
-                    .foregroundStyle(Palette.accentOnDark)
-                    .padding(.horizontal, 12)
-                    .frame(height: 44)
-                    .contentShape(Rectangle())
-            }
-            .buttonStyle(RowPressStyle())
-        }
-        .padding(.leading, 16)
-        .padding(.trailing, 4)
-        .frame(height: 50)
-        .background {
-            RoundedRectangle(cornerRadius: 14, style: .circular)
-                .fill(Palette.dialWindow.shadow(.drop(color: .black.opacity(0.22), radius: 12, y: 10)))
-        }
-        .overlay {
-            RoundedRectangle(cornerRadius: 14, style: .circular)
-                .strokeBorder(Palette.dialWindowBorder, lineWidth: 1)
-        }
-        .accessibilityElement(children: .contain)
     }
 }
 

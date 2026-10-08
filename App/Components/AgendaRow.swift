@@ -71,6 +71,7 @@ struct AgendaRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(verbatim: row.title)
                     .font(.app(.golos, 16, weight: row.highlighted || row.missed ? 600 : 400))
+                    .lineLimit(3)
                     .foregroundStyle(row.done ? Palette.secondary : Palette.text)
                     .overlay(alignment: .leading) {
                         Rectangle()
