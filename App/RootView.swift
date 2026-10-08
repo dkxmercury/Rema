@@ -49,13 +49,16 @@ final class RootNavigation {
 struct LocalizedRoot<Content: View>: View {
     @ViewBuilder var content: () -> Content
     @State private var navigation = RootNavigation.shared
+    @Environment(\.dynamicTypeSize) private var typeSize
 
+    // The fonts read the size once per build, so a new text size in iOS rebuilds the screens like a new language does.
     var body: some View {
         let language = AppLanguage(rawValue: navigation.languageCode) ?? .english
+        let _ = AppFonts.apply(typeSize)
         content()
             .environment(\.locale, language.locale)
             .environment(\.layoutDirection, language.layoutDirection)
-            .id(navigation.languageCode)
+            .id("\(navigation.languageCode)-\(typeSize)")
     }
 }
 

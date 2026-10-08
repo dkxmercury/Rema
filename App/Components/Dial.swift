@@ -92,7 +92,7 @@ struct Dial: View {
 
             if let badge {
                 Text(verbatim: badge)
-                    .font(.app(.golos, 11, weight: 600))
+                    .font(.appFixed(.golos, 11, weight: 600))
                     .foregroundStyle(.white)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
@@ -118,14 +118,14 @@ struct Dial: View {
             .overlay {
                 VStack(spacing: 0) {
                     Text(verbatim: windowTime)
-                        .font(.app(.jost, windowFontSize, weight: 500))
+                        .font(.appFixed(.jost, windowFontSize, weight: 500))
                         .tracking(windowTitleOnly ? windowFontSize * 0.02 : 0)
                         .foregroundStyle(Palette.dialWindowText)
                         .frame(height: max(19, windowFontSize + 2))
                         .contentTransition(.numericText())
                     if !windowTitleOnly {
                         Text(verbatim: windowCaption)
-                            .font(.app(.golos, 10, weight: 600))
+                            .font(.appFixed(.golos, 10, weight: 600))
                             .foregroundStyle(Palette.accentOnDark)
                             .contentTransition(.numericText())
                     }
@@ -163,7 +163,7 @@ struct Dial: View {
 
         for index in 0..<8 {
             let label = Text(verbatim: "\(index * 3)")
-                .font(.app(.jost, 13 * scale, weight: 500))
+                .font(.appFixed(.jost, 13 * scale, weight: 500))
                 .foregroundColor(Palette.dialNumeral)
             context.draw(label, at: place(geometry.point(angle: Double(index) * 45, radius: 90)), anchor: .center)
         }
@@ -236,7 +236,7 @@ private struct DialMarkersLayer: View, Animatable {
                     dot(10, Palette.dialFace)
                     dot(8, Palette.urgent)
                     let mark = Text(verbatim: "!")
-                        .font(.app(.golos, 12 * scale, weight: 700))
+                        .font(.appFixed(.golos, 12 * scale, weight: 700))
                         .foregroundColor(.white.opacity(share))
                     context.draw(mark, at: CGPoint(x: point.x, y: point.y + 0.5 * scale), anchor: .center)
                 }

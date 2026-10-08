@@ -32,7 +32,35 @@ enum AppFonts {
         !(languageCode.hasPrefix("uk") || languageCode.hasPrefix("uz") || languageCode.hasPrefix("ar"))
     }
 
-    static func ctFont(_ face: Typeface, _ size: CGFloat, weight: Int) -> CTFont {
+    // The text size chosen in iOS, capped so the screens built around the dial keep their shape. Widgets stay at 1.
+    nonisolated(unsafe) static var scale: CGFloat = 1
+
+    static func scale(for size: DynamicTypeSize) -> CGFloat {
+        switch size {
+        case .xSmall: 0.86
+        case .small: 0.91
+        case .medium: 0.96
+        case .large: 1
+        case .xLarge: 1.07
+        case .xxLarge: 1.14
+        case .xxxLarge: 1.2
+        default: 1.26
+        }
+    }
+
+    @discardableResult
+    static func apply(_ size: DynamicTypeSize) -> Bool {
+        scale = scale(for: size)
+        return true
+    }
+
+    // Headlines and big numbers grow half as much as body text, they are large already.
+    static func scaled(_ size: CGFloat) -> CGFloat {
+        size * (size <= 20 ? scale : 1 + (scale - 1) / 2)
+    }
+
+    static func ctFont(_ face: Typeface, _ size: CGFloat, weight: Int, fixed: Bool = false) -> CTFont {
+        let size = fixed ? size : scaled(size)
         let weightAxis = NSNumber(value: 0x7767_6874)
         let family = face == .jost && !jostCoversLanguage ? Typeface.golos.rawValue : face.rawValue
         let attributes: [String: Any] = [
@@ -78,6 +106,11 @@ enum Typeface: String {
 extension Font {
     static func app(_ face: Typeface, _ size: CGFloat, weight: Int = 400) -> Font {
         Font(AppFonts.ctFont(face, size, weight: weight))
+    }
+
+    // Text drawn inside the dial keeps its size whatever the iOS setting, the dial itself does not grow.
+    static func appFixed(_ face: Typeface, _ size: CGFloat, weight: Int = 400) -> Font {
+        Font(AppFonts.ctFont(face, size, weight: weight, fixed: true))
     }
 }
 

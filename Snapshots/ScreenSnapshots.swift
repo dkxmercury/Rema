@@ -129,6 +129,25 @@ final class ScreenSnapshots: XCTestCase {
         try render(RepeatScreen(draft: .constant(SampleData.monthlyReport), now: SampleData.now, calendar: SampleData.calendar, locale: russian, onBack: {}), name: "D-Repeat-Monthly", style: .light, height: 1000)
     }
 
+    func testLargeText() throws {
+        AppFonts.scale = AppFonts.scale(for: .accessibility1)
+        defer { AppFonts.scale = 1 }
+        let store = sampleStore()
+        try render(HomeScreen(content: SampleData.home), name: "Large-Home", style: .light)
+        try render(EditorScreen(draft: SampleData.server, isNew: false, store: store, now: SampleData.now, calendar: SampleData.calendar, locale: russian, onClose: {}), name: "Large-Editor", style: .light, height: 1300)
+        try render(PhraseScreen(store: store, text: "завтра в 9 позвонить маме", now: SampleData.now, calendar: SampleData.calendar, locale: russian, autofocus: false, onClose: {}), name: "Large-Phrase", style: .light)
+        try render(SettingsScreen(store: store, locale: russian, onBack: {}), name: "Large-Settings", style: .light, height: 1900)
+    }
+
+    func testSmallPhone() throws {
+        let store = sampleStore()
+        store.save(SampleData.groceries)
+        try render(HomeScreen(content: SampleData.home), name: "SE-Home", style: .light, width: 375, height: 667)
+        try render(PhraseScreen(store: store, text: "завтра в 9 позвонить маме", now: SampleData.now, calendar: SampleData.calendar, locale: russian, autofocus: false, onClose: {}), name: "SE-Phrase", style: .light, width: 375, height: 667)
+        try render(EditorScreen(draft: SampleData.groceries, isNew: false, store: store, now: SampleData.now, calendar: SampleData.calendar, locale: russian, onClose: {}), name: "SE-Editor", style: .dark, width: 375, height: 667)
+        try render(ChecklistSheet(store: store, reminderID: SampleData.groceries.id, now: SampleData.now, calendar: SampleData.calendar, locale: russian, onEdit: {}, onClose: {}), name: "SE-Sheet", style: .light, width: 375, height: 500)
+    }
+
     func testEmptyAndRightToLeft() throws {
         let empty = HomeContent.make(reminders: [], places: [], now: SampleData.now, calendar: SampleData.calendar, locale: russian)
         try render(HomeScreen(content: empty), name: "Home-Empty", style: .light)
@@ -172,7 +191,7 @@ private struct SafeAreaProbe: View {
 }
 
 private extension ScreenSnapshots {
-    func render<Screen: View>(_ screen: Screen, name: String, style: UIUserInterfaceStyle, height: CGFloat = 844) throws {
+    func render<Screen: View>(_ screen: Screen, name: String, style: UIUserInterfaceStyle, width: CGFloat = 390, height: CGFloat = 844) throws {
         guard let directory = ProcessInfo.processInfo.environment["SNAPSHOT_DIR"] else {
             throw XCTSkip("SNAPSHOT_DIR не задан")
         }
@@ -183,8 +202,8 @@ private extension ScreenSnapshots {
                 .environment(\.mapsEnabled, false)
                 .environment(\.introAnimations, false)
         )
-        let device = ViewImageConfig.iPhone13
-        let config = ViewImageConfig(safeArea: device.safeArea, size: CGSize(width: 390, height: height), traits: device.traits)
+        let device = width < 390 ? ViewImageConfig.iPhone8 : ViewImageConfig.iPhone13
+        let config = ViewImageConfig(safeArea: device.safeArea, size: CGSize(width: width, height: height), traits: device.traits)
         let strategy = Snapshotting<AnyView, UIImage>.image(
             layout: .device(config: config),
             traits: UITraitCollection(userInterfaceStyle: style)
