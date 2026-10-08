@@ -2,7 +2,10 @@ import Foundation
 
 extension PhraseParser {
     private static let arMonths = "(يناير|فبراير|مارس|ابريل|مايو|يونيو|يوليو|اغسطس|سبتمبر|اكتوبر|نوفمبر|ديسمبر|شباط|اذار|نيسان|ايار|حزيران|تموز|اب|ايلول)"
-    static let arWeekday = "(?:يوم )?(?:ال)?(اثنين|ثلاثاء|اربعاء|خميس|جمعة|جمعه|سبت|احد)"
+    // «اثنين» and «احد» are also «two» and «one», as a day they need «يوم» or the article.
+    static let arWeekday = "((?:يوم )?(?:ال)?(?:ثلاثاء|اربعاء|خميس|جمعة|جمعه|سبت)|(?:يوم (?:ال)?|ال)(?:اثنين|احد))"
+    private static let arCount = "(\\d{1,4}|خمس عشرة|خمسة عشر|عشرين|ثلاثين|اربعين|خمسين|واحدة|واحد|ثلاثة|ثلاث|اربعة|اربع|خمسة|خمس|ستة|ست|سبعة|سبع|ثمانية|ثماني|تسعة|تسع|عشرة|عشر)"
+    private static let arCounts = ["واحد": 1, "واحدة": 1, "ثلاث": 3, "ثلاثة": 3, "اربع": 4, "اربعة": 4, "خمس": 5, "خمسة": 5, "ست": 6, "ستة": 6, "سبع": 7, "سبعة": 7, "ثماني": 8, "ثمانية": 8, "تسع": 9, "تسعة": 9, "عشر": 10, "عشرة": 10, "خمس عشرة": 15, "خمسة عشر": 15, "عشرين": 20, "ثلاثين": 30, "اربعين": 40, "خمسين": 50]
     private static let arFillers: Set<String> = ["ذكرني", "ذكّرني", "فضلك", "رجاء", "رجاءً", "تقريبا", "تقريبًا"]
     private static let arLead: Set<String> = ["ان", "أن", "من", "يجب", "علي", "عليّ"]
     private static let arDangling: Set<String> = ["في", "عند", "و", "على", "من", "الى", "إلى", "ب", "ان", "أن"]
@@ -108,9 +111,9 @@ extension PhraseParser {
     private static let arUnits = "(دقيقة|دقيقه|دقائق|دقيقتين|دقيقتان|ساعة|ساعه|ساعات|ساعتين|ساعتان|يوم|ايام|يومين|يومان|اسبوع|اسابيع|اسبوعين|اسبوعان|شهر|اشهر|شهور|شهرين|شهران)"
 
     private func arRepeats(_ text: String, _ state: inout State) {
-        take("(كل يوم|يوميا)", text, &state) { _, s in s.rule = .daily; return true }
+        take("(كل يوم(?! (?:ال)?(?:اثنين|ثلاثاء|اربعاء|خميس|جمعة|جمعه|سبت|احد))|يوميا)", text, &state) { _, s in s.rule = .daily; return true }
         take("(ايام العمل|في ايام العمل)", text, &state) { _, s in s.rule = .weekdays; return true }
-        take("كل (\\d+) (?:ايام|يوم)", text, &state) { m, s in
+        take("كل (\\d{1,4}) (?:ايام|يوم)", text, &state) { m, s in
             guard let count = group(m, 1, text).flatMap(Int.init), count > 0 else { return false }
             s.rule = count == 1 ? .daily : .everyDays(count)
             return true
@@ -146,9 +149,13 @@ extension PhraseParser {
             s.exact = now.addingTimeInterval(1_800)
             return true
         }
-        take("بعد (?:(\\d+) )?\(PhraseParser.arUnits)", text, &state) { m, s in
+        take("بعد ربع ساعة", text, &state) { _, s in
+            s.exact = now.addingTimeInterval(900)
+            return true
+        }
+        take("بعد (?:\(PhraseParser.arCount) )?\(PhraseParser.arUnits)", text, &state) { m, s in
             guard let word = group(m, 2, text), let unit = self.arUnit(word) else { return false }
-            let count = group(m, 1, text).flatMap(Int.init) ?? unit.count
+            let count = group(m, 1, text).flatMap { Int($0) ?? PhraseParser.arCounts[$0] } ?? unit.count
             switch unit.unit {
             case "minute": s.exact = now.addingTimeInterval(Double(count) * 60)
             case "hour": s.exact = now.addingTimeInterval(Double(count) * 3600)
@@ -164,8 +171,13 @@ extension PhraseParser {
     }
 
     private func arDates(_ text: String, _ state: inout State) {
-        take("(بعد غد)", text, &state) { _, s in s.dayOffset = 2; return true }
-        take("(غدا|بكرة|بكره)", text, &state) { _, s in s.dayOffset = 1; return true }
+        take("(بعد (?:ال)?غد)", text, &state) { _, s in s.dayOffset = 2; return true }
+        take("(غدا|بكرة|بكره|(?:يوم )?الغد)", text, &state) { _, s in s.dayOffset = 1; return true }
+        take("(هذا المساء|هذه الليلة|الليلة)", text, &state) { _, s in
+            s.dayOffset = 0
+            s.dayPart = evening
+            return true
+        }
         take("(اليوم)", text, &state) { _, s in s.dayOffset = 0; return true }
         take("(?:في )?(\\d{1,2}) \(PhraseParser.arMonths)(?: (\\d{4}))?", text, &state) { m, s in
             guard let day = group(m, 1, text).flatMap(Int.init), let month = group(m, 2, text).flatMap(self.arMonth), (1...31).contains(day) else { return false }
@@ -176,8 +188,11 @@ extension PhraseParser {
             return true
         }
         take("(?:في )?\(PhraseParser.arWeekday)(?: القادم)?", text, &state) { m, s in
-            guard s.rule == nil, let word = group(m, 1, text), let day = self.arWeekdayValue(word) else { return false }
+            guard s.rule == nil || s.rule == .weekly([]), let word = group(m, 1, text), let day = self.arWeekdayValue(word) else { return false }
             s.weekdays = [day]
+            if s.rule == .weekly([]) {
+                s.rule = .weekly([day])
+            }
             return true
         }
     }
@@ -188,9 +203,11 @@ extension PhraseParser {
         let hours = "(\\d{1,2}|\(hourWords))"
         let count = "(?:خمس وعشرين|عشرين|عشر|خمس)(?: دقائق| دقيقة)?"
         let fraction = "(والنصف|والربع|والثلث|الا (?:ال)?ربعا?|الا (?:ال)?ثلثا?|و\(count)|الا \(count))"
-        take("(?:حوالي|نحو|قرابة|تقريبا) (?:في )?(?:الساعة |الساعه )?\(hours)(?::(\\d{2}))?(?: \(fraction))?\(modifier)", text, &state) { m, s in
-            let part = arFraction(group(m, 3, text))
-            return arClock(group(m, 1, text), minute: group(m, 2, text).flatMap(Int.init) ?? part.minute, before: part.before, group(m, 4, text), &s)
+        take("(?:حوالي|نحو|قرابة|تقريبا) (?:في )?(الساعة |الساعه )?\(hours)(?::(\\d{2}))?(?: \(fraction))?\(modifier)", text, &state) { m, s in
+            // «حوالي 2 كيلو» is an amount, a bare number is an hour only with «الساعة».
+            guard group(m, 2, text).flatMap(Int.init) == nil || group(m, 1, text) != nil || group(m, 3, text) != nil || group(m, 5, text) != nil else { return false }
+            let part = arFraction(group(m, 4, text))
+            return arClock(group(m, 2, text), minute: group(m, 3, text).flatMap(Int.init) ?? part.minute, before: part.before, group(m, 5, text), &s)
         }
         take("بين (?:الساعة |الساعه )?\(hours) و ?(?:الساعة |الساعه )?(?:\\d{1,2}|\(hourWords))\(modifier)", text, &state) { m, s in
             arClock(group(m, 1, text), minute: 0, before: false, group(m, 2, text), &s)
@@ -211,10 +228,10 @@ extension PhraseParser {
             s.meridiem = group(m, 2, text) != nil
             return true
         }
+        take("(بعد الظهر|بعد الظهيرة|ظهرا)", text, &state) { _, s in s.dayPart = LocalTime(hour: 14, minute: 0); return true }
         take("(?:عند )?(الظهر|الظهيرة)", text, &state) { _, s in s.time = LocalTime(hour: 12, minute: 0); return true }
         take("(?:عند )?منتصف الليل", text, &state) { _, s in s.time = LocalTime(hour: 0, minute: 0); return true }
-        take("(صباحا|في الصباح)", text, &state) { _, s in s.dayPart = morning; return true }
-        take("(بعد الظهر|ظهرا)", text, &state) { _, s in s.dayPart = LocalTime(hour: 14, minute: 0); return true }
+        take("(صباحا|في الصباح|صباح(?= (?:الغد|اليوم|غدا|يوم|ال(?:اثنين|ثلاثاء|اربعاء|خميس|جمعة|جمعه|سبت|احد))))", text, &state) { _, s in s.dayPart = morning; return true }
         take("(مساء|في المساء)", text, &state) { _, s in s.dayPart = evening; return true }
         take("(ليلا|في الليل)", text, &state) { _, s in s.dayPart = LocalTime(hour: 23, minute: 0); return true }
     }
@@ -238,8 +255,11 @@ extension PhraseParser {
         switch modifier {
         case "مساء", "ظهرا":
             return hour < 12 ? hour + 12 : hour
-        case "صباحا", "ليلا":
+        case "صباحا":
             return hour == 12 ? 0 : hour
+        case "ليلا":
+            if hour == 12 { return 0 }
+            return (6...11).contains(hour) ? hour + 12 : hour
         default:
             return hour
         }
@@ -247,9 +267,10 @@ extension PhraseParser {
 
     private func arAlerts(_ text: String, _ state: inout State) {
         take("قبل نصف ساعة", text, &state) { _, s in s.preAlerts.append(30); return true }
-        take("قبل (?:(\\d+) )?\(PhraseParser.arUnits)", text, &state) { m, s in
+        take("قبل ربع ساعة", text, &state) { _, s in s.preAlerts.append(15); return true }
+        take("قبل (?:\(PhraseParser.arCount) )?\(PhraseParser.arUnits)", text, &state) { m, s in
             guard let word = group(m, 2, text), let unit = self.arUnit(word), unit.unit != "month" else { return false }
-            let count = group(m, 1, text).flatMap(Int.init) ?? unit.count
+            let count = group(m, 1, text).flatMap { Int($0) ?? PhraseParser.arCounts[$0] } ?? unit.count
             switch unit.unit {
             case "minute": s.preAlerts.append(count)
             case "hour": s.preAlerts.append(count * 60)

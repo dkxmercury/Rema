@@ -20,6 +20,14 @@ extension PhraseParser {
         "weekend", "weekends", "lunch", "work", "other", "last", "end", "o'clock", "half", "past", "quarter",
     ]
 
+    // «Call Маша tomorrow at 9», a Cyrillic name inside a Latin phrase.
+    static func mostlyLatin(_ text: String) -> Bool {
+        let words = text.split(whereSeparator: { !$0.isLetter }).map(String.init)
+        let cyrillic = words.filter { $0.unicodeScalars.contains { (0x0400...0x04FF).contains($0.value) } }.count
+        let latin = words.count - cyrillic
+        return latin > cyrillic || (latin > 0 && latin == cyrillic && words.contains { englishWords.contains($0.lowercased()) })
+    }
+
     static func latinLanguage(_ text: String, preferred: String?) -> String {
         let lower = text.lowercased().replacingOccurrences(of: "’", with: "'")
         let words = lower.split(whereSeparator: { !$0.isLetter && $0 != "'" && $0 != "-" }).map(String.init)
@@ -30,8 +38,9 @@ extension PhraseParser {
         var uzbek = uzbekText.split(whereSeparator: { !$0.isLetter && $0 != "'" }).map(String.init).filter { uzbekWords.contains($0) }.count
         if lower.contains(where: { "äöüß".contains($0) }) { german += 2 }
         if lower.contains(where: { "éèêàçœù".contains($0) }) { french += 2 }
-        let apostrophes = uzbekText.replacingOccurrences(of: "o'clock", with: "")
-        if apostrophes.contains("o'") || apostrophes.contains("g'") { uzbek += 2 }
+        // «Greg's», «don't» and «O'Brien» are English, in Uzbek a small letter follows «o'» and «g'».
+        let marked = uzbekLatin(text.replacingOccurrences(of: "’", with: "'")).0.replacingOccurrences(of: "o'clock", with: "", options: .caseInsensitive)
+        if marked.range(of: "[oOgG]'(?!(?:s|t|d|m|ll|re|ve)(?![\\p{L}]))[a-z]", options: .regularExpression) != nil { uzbek += 2 }
         let best = max(german, french, english, uzbek)
         if best == 0 {
             let code = preferred.map { String($0.prefix(2)) } ?? "en"

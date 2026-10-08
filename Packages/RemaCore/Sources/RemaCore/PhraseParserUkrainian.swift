@@ -2,7 +2,7 @@ import Foundation
 
 extension PhraseParser {
     private static let ukMonths = "(січня|лютого|березня|квітня|травня|червня|липня|серпня|вересня|жовтня|листопада|грудня)"
-    static let ukWeekdays = "(понеділ\\w*|пн|вівтор\\w*|вт|серед\\w*|ср|четвер\\w*|чт|п'ятниц\\w*|пятниц\\w*|пт|субот\\w*|сб|неділ\\w*|нд)"
+    static let ukWeekdays = "(понеділ\\w*|пн|вівтор\\w*|(?<!\\d )вт|серед(?:а|у|и|ою|і)|ср|четвер(?:г\\w*)?|чт|п'ятниц\\w*|пятниц\\w*|пт|субот\\w*|сб|неділ\\w*|нд)"
     private static let ukFillers: Set<String> = ["нагадай", "нагадайте", "нагадати", "мені", "будь", "ласка", "треба", "потрібно"]
     private static let ukDangling: Set<String> = ["і", "й", "та", "а", "в", "у", "на", "з", "із", "до", "о", "об", "по"]
 
@@ -10,6 +10,8 @@ extension PhraseParser {
         let lower = text.lowercased()
         if lower.contains(where: { "іїєґ".contains($0) }) { return true }
         if lower.contains(where: { "ыэъё".contains($0) }) { return false }
+        // Russian has no apostrophe inside a word and says «в 7», not «о 7».
+        if lower.range(of: "\\p{Cyrillic}['’ʼ]\\p{Cyrillic}|(?:^|\\s)о \\d", options: .regularExpression) != nil { return true }
         return preferred?.hasPrefix("uk") == true
     }
 
@@ -73,7 +75,7 @@ extension PhraseParser {
     private func ukRepeats(_ text: String, _ state: inout State) {
         take("(щодня|щоденно|кожен день|кожного дня)", text, &state) { _, s in s.rule = .daily; return true }
         take("(по буднях|у будні|в будні|щобудня|по робочих днях)", text, &state) { _, s in s.rule = .weekdays; return true }
-        take("кожні (\\d+) (дні|днів)", text, &state) { m, s in
+        take("кожні (\\d{1,4}) (дні|днів)", text, &state) { m, s in
             guard let count = group(m, 1, text).flatMap(Int.init), count > 0 else { return false }
             s.rule = count == 1 ? .daily : .everyDays(count)
             return true
@@ -116,7 +118,7 @@ extension PhraseParser {
             s.exact = now.addingTimeInterval(Double(minutes) * 60)
             return true
         }
-        take("через (?:(\\d+|одну|один|пару|два|дві|три|чотири|п'ять) )?(хвилину|хвилини|хвилин|годину|години|годин|день|дні|днів|тиждень|тижні|тижнів|місяць|місяці|місяців)", text, &state) { m, s in
+        take("через (?:(\\d{1,4}|одну|один|пару|два|дві|три|чотири|п'ять) )?(хвилину|хвилини|хвилин|годину|години|годин|день|дні|днів|тиждень|тижні|тижнів|місяць|місяці|місяців)", text, &state) { m, s in
             let unit = group(m, 2, text) ?? ""
             let count = group(m, 1, text).flatMap(ukNumber) ?? 1
             if unit.hasPrefix("хвилин") {
@@ -146,9 +148,17 @@ extension PhraseParser {
             }
             return true
         }
+        take("(?<!(?:о|об|на|до|з|після|близько) )(\\d{1,2})\\.(\\d{1,2})(?:\\.(\\d{4}))?(?![.:]?\\d)", text, &state) { m, s in
+            guard let day = group(m, 1, text).flatMap(Int.init), let month = group(m, 2, text).flatMap(Int.init), (1...12).contains(month), (1...LocalDate.days(in: month, year: 2028)).contains(day) else { return false }
+            s.date = nextDate(month: month, day: day, year: group(m, 3, text).flatMap(Int.init))
+            return true
+        }
         take("(?:в |у |во )?(наступн\\w+ )?\(PhraseParser.ukWeekdays)", text, &state) { m, s in
-            guard s.rule == nil, let word = group(m, 2, text), let day = self.ukWeekday(word) else { return false }
+            guard s.rule == nil || s.rule == .weekly([]), let word = group(m, 2, text), let day = self.ukWeekday(word) else { return false }
             s.weekdays = [day]
+            if s.rule == .weekly([]) {
+                s.rule = .weekly([day])
+            }
             return true
         }
     }
@@ -160,7 +170,7 @@ extension PhraseParser {
         let locative = "(двадцять першій|двадцять другій|двадцять третій|двадцятій|першій|другій|третій|четвертій|п'ятій|шостій|сьомій|восьмій|дев'ятій|десятій|одинадцятій|дванадцятій|тринадцятій|чотирнадцятій|п'ятнадцятій|шістнадцятій|сімнадцятій|вісімнадцятій|дев'ятнадцятій)"
         let cardinal = "(одна|одну|дві|три|чотири|п'ять|шість|сім|вісім|дев'ять|десять|одинадцять|дванадцять)"
         let genitive = "(двадцять першої|двадцять другої|двадцять третьої|двадцятої|першої|другої|третьої|четвертої|п'ятої|шостої|сьомої|восьмої|дев'ятої|десятої|одинадцятої|дванадцятої|тринадцятої|чотирнадцятої|п'ятнадцятої|шістнадцятої|сімнадцятої|вісімнадцятої|дев'ятнадцятої)"
-        take("(?:близько|біля|ближче до|десь до) (?:(\\d{1,2})(?:[:.](\\d{2}))?|\(genitive))(?: години)?\(modifier)(?! \(PhraseParser.ukMonths))", text, &state) { m, s in
+        take("(?:близько|ближче до|десь до) (?:(\\d{1,2})(?:[:.](\\d{2}))?|\(genitive))(?: години)?\(modifier)(?! \(PhraseParser.ukMonths))", text, &state) { m, s in
             ukClock(group(m, 1, text).flatMap(Int.init) ?? group(m, 3, text).flatMap(PhraseParser.ukOrdinal), minute: group(m, 2, text).flatMap(Int.init) ?? 0, before: false, group(m, 4, text), &s)
         }
         take("(?:приблизно|десь|орієнтовно) (?:о|об) (?:(\\d{1,2})(?:[:.](\\d{2}))?|\(locative))(?: годині)?\(modifier)(?! \(PhraseParser.ukMonths))", text, &state) { m, s in
@@ -184,16 +194,18 @@ extension PhraseParser {
             let count = group(m, 1, text) ?? ""
             return ukClock(group(m, 2, text).flatMap { PhraseParser.ukCardinals[$0] }, minute: Int(count) ?? PhraseParser.ukMinutes[count] ?? 0, before: true, group(m, 3, text), &s)
         }
-        take("(?:о|об) \(locative)(?: (сорок п'ять|двадцять п'ять|п'ятнадцять|тридцять|двадцять|десять|сорок|п'ятдесят))?(?: годині)?\(modifier)", text, &state) { m, s in
-            ukClock(group(m, 1, text).flatMap(PhraseParser.ukOrdinal), minute: PhraseParser.ukMinutes[group(m, 2, text) ?? ""] ?? 0, before: false, group(m, 3, text), &s)
+        let minuteWords = "(десять|одинадцять|дванадцять|тринадцять|чотирнадцять|п'ятнадцять|шістнадцять|сімнадцять|вісімнадцять|дев'ятнадцять|(?:двадцять|тридцять|сорок|п'ятдесят)(?: (?:одна|одну|дві|три|чотири|п'ять|шість|сім|вісім|дев'ять))?)"
+        take("(?:о|об) \(locative)(?: \(minuteWords))?(?: годині)?\(modifier)", text, &state) { m, s in
+            ukClock(group(m, 1, text).flatMap(PhraseParser.ukOrdinal), minute: group(m, 2, text).map(PhraseParser.ukMinuteWords) ?? 0, before: false, group(m, 3, text), &s)
         }
         take("(?:о |об |на |до )?(\\d{1,2})[:.](\\d{2})\(modifier)", text, &state) { m, s in
             guard let hour = group(m, 1, text).flatMap(Int.init), let minute = group(m, 2, text).flatMap(Int.init), hour < 24, minute < 60 else { return false }
             s.time = LocalTime(hour: ukHour(hour, group(m, 3, text)), minute: minute)
-            s.meridiem = group(m, 3, text) != nil
+            s.meridiem = group(m, 3, text) != nil || PhraseParser.twentyFour(group(m, 1, text))
             return true
         }
-        take("(?:о|об|на) (\\d{1,2})(?: годин\\w*)?\(modifier)(?! \(PhraseParser.ukMonths))", text, &state) { m, s in
+        // «На 4 особи» is an amount, not a time.
+        take("(?:о|об|на) (\\d{1,2})(?: годин\\w*)?\(modifier)(?! \(PhraseParser.ukMonths))(?! (?:(?:кг|км|грн|шт|раз|рази|разів|люди|людей|рік|роки|років|місця|місць|місце|особи|осіб|особу|особа)(?![\\p{L}])|(?:чолов|відсот|гривен|хвилин|днів|тижн|місяц|друз|гост)\\w*))", text, &state) { m, s in
             guard let hour = group(m, 1, text).flatMap(Int.init), hour < 24 else { return false }
             s.time = LocalTime(hour: ukHour(hour, group(m, 2, text)), minute: 0)
             s.meridiem = group(m, 2, text) != nil
@@ -209,6 +221,11 @@ extension PhraseParser {
 
     private static let ukCardinals = ["одна": 1, "одну": 1, "дві": 2, "три": 3, "чотири": 4, "п'ять": 5, "шість": 6, "сім": 7, "вісім": 8, "дев'ять": 9, "десять": 10, "одинадцять": 11, "дванадцять": 12]
     private static let ukMinutes = ["п'ять": 5, "п'яти": 5, "десять": 10, "десяти": 10, "п'ятнадцять": 15, "п'ятнадцяти": 15, "чверть": 15, "чверті": 15, "двадцять": 20, "двадцяти": 20, "двадцять п'ять": 25, "двадцяти п'яти": 25, "тридцять": 30, "сорок": 40, "сорок п'ять": 45, "п'ятдесят": 50]
+
+    static func ukMinuteWords(_ words: String) -> Int {
+        let values = ["десять": 10, "одинадцять": 11, "дванадцять": 12, "тринадцять": 13, "чотирнадцять": 14, "п'ятнадцять": 15, "шістнадцять": 16, "сімнадцять": 17, "вісімнадцять": 18, "дев'ятнадцять": 19, "двадцять": 20, "тридцять": 30, "сорок": 40, "п'ятдесят": 50, "одна": 1, "одну": 1, "дві": 2, "три": 3, "чотири": 4, "п'ять": 5, "шість": 6, "сім": 7, "вісім": 8, "дев'ять": 9]
+        return words.split(separator: " ").reduce(0) { $0 + (values[String($1)] ?? 0) }
+    }
 
     static func ukOrdinal(_ word: String) -> Int? {
         let stem = word.hasSuffix("ьої") ? String(word.dropLast(3)) : word.hasSuffix("ої") || word.hasSuffix("ій") ? String(word.dropLast(2)) : String(word.dropLast())
@@ -226,7 +243,10 @@ extension PhraseParser {
         switch modifier?.trimmingCharacters(in: .whitespaces) {
         case "вечора", "дня":
             return hour < 12 ? hour + 12 : hour
-        case "ночі", "ранку":
+        case "ночі":
+            if hour == 12 { return 0 }
+            return (6...11).contains(hour) ? hour + 12 : hour
+        case "ранку":
             return hour == 12 ? 0 : hour
         default:
             return hour
@@ -235,7 +255,7 @@ extension PhraseParser {
 
     private func ukAlerts(_ text: String, _ state: inout State) {
         take("за (півгодини)", text, &state) { _, s in s.preAlerts.append(30); return true }
-        take("за (?:(\\d+|пару|два|дві|три) )?(хвилину|хвилини|хвилин|годину|години|годин|день|дні|днів|тиждень|тижні|тижнів)", text, &state) { m, s in
+        take("за (?:(\\d{1,4}|пару|два|дві|три) )?(хвилину|хвилини|хвилин|годину|години|годин|день|дні|днів|тиждень|тижні|тижнів)", text, &state) { m, s in
             let unit = group(m, 2, text) ?? ""
             let count = group(m, 1, text).flatMap(ukNumber) ?? 1
             if unit.hasPrefix("хвилин") {
@@ -266,7 +286,11 @@ extension PhraseParser {
             let words = [group(m, 5, text), group(m, 8, text)].compactMap { $0 }
             let found = words.compactMap(ukPlace)
             guard !found.isEmpty else { return false }
-            s.placeTrigger = ["піду", "вийду", "поїду"].contains(verb) ? .leave : .arrive
+            switch group(m, 4, text) {
+            case "з", "із", "зі", "від": s.placeTrigger = .leave
+            case "в", "у", "на", "до": s.placeTrigger = .arrive
+            default: s.placeTrigger = ["піду", "вийду", "поїду"].contains(verb) ? .leave : .arrive
+            }
             s.placeNames = found
             return true
         }

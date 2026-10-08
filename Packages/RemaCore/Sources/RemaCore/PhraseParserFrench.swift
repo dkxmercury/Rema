@@ -3,7 +3,7 @@ import Foundation
 extension PhraseParser {
     private static let frMonths = "(janvier|février|fevrier|mars|avril|mai|juin|juillet|août|aout|septembre|octobre|novembre|décembre|decembre|janv|févr|fevr|avr|juil|sept|oct|nov|déc|dec)\\.?"
     static let frWeekdays = "(lundis?|mardis?|mercredis?|jeudis?|vendredis?|samedis?|dimanches?)"
-    private static let frCount = "(\\d+|une|un|deux|trois|quatre|cinq|dix|quinze|vingt|trente)"
+    private static let frCount = "(\\d{1,4}|une|un|deux|trois|quatre|cinq|dix|quinze|vingt|trente)"
     private static let frFillers: Set<String> = ["svp", "stp"]
     private static let frLead: Set<String> = ["rappelle-moi", "rappelle", "rappelez-moi", "moi", "de", "d'", "il", "faut", "je", "dois", "penser", "à"]
     private static let frDangling: Set<String> = ["à", "a", "le", "la", "les", "l'", "de", "du", "des", "d'", "et", "au", "aux", "en", "pour", "dans", "sur"]
@@ -15,15 +15,15 @@ extension PhraseParser {
             frRepeats(text, &state)
             frOffsets(text, &state)
             frDates(text, &state)
-            frTimes(text, &state)
             frAlerts(text, &state)
+            frTimes(text, &state)
             frFlags(text, &state)
             frPlaces(text, &state)
         }
         var state = corrected(text, PhraseParser.frenchCorrection, pass)
 
         let schedule = resolve(&state)
-        var name = title(input, used: state.used, fillers: PhraseParser.frFillers, dangling: PhraseParser.frDangling, lead: PhraseParser.frLead)
+        var name = title(input, used: state.used + matches(",? ?(?:rappelle-moi|rappelez-moi|rappelle moi)", in: text).compactMap { span($0, text) }, fillers: PhraseParser.frFillers, dangling: PhraseParser.frDangling, lead: PhraseParser.frLead)
         for prefix in ["D'", "D’", "De "] where name.hasPrefix(prefix) {
             let rest = name.dropFirst(prefix.count)
             name = (rest.first.map { String($0).uppercased() } ?? "") + rest.dropFirst()
@@ -87,15 +87,17 @@ extension PhraseParser {
     }
 
     private func frRepeats(_ text: String, _ state: inout State) {
+        take("(tous les jours de semaine|tous les jours ouvrés|chaque jour ouvré|chaque jour de semaine|en semaine|les jours de semaine|les jours ouvrés)", text, &state) { _, s in s.rule = .weekdays; return true }
+        take("(chaque matin|tous les matins)", text, &state) { _, s in s.rule = .daily; s.dayPart = morning; return true }
+        take("(chaque soir|tous les soirs)", text, &state) { _, s in s.rule = .daily; s.dayPart = evening; return true }
         take("(tous les jours|chaque jour|quotidiennement)", text, &state) { _, s in s.rule = .daily; return true }
-        take("(en semaine|les jours de semaine|chaque jour ouvré|les jours ouvrés)", text, &state) { _, s in s.rule = .weekdays; return true }
-        take("tous les (\\d+) jours", text, &state) { m, s in
+        take("tous les (\\d{1,4}) jours", text, &state) { m, s in
             guard let count = group(m, 1, text).flatMap(Int.init), count > 0 else { return false }
             s.rule = count == 1 ? .daily : .everyDays(count)
             return true
         }
         let list = "\(PhraseParser.frWeekdays)((\\s*(,|et)\\s*)\(PhraseParser.frWeekdays))*"
-        take("(tous les|chaque|le) \(list)", text, &state) { m, s in
+        take("(tous les|chaque|les|le) \(list)", text, &state) { m, s in
             guard let whole = Range(m.range, in: text) else { return false }
             let matched = String(text[whole])
             let pieces: [String] = matched.split(whereSeparator: { !$0.isLetter }).map(String.init)
@@ -164,7 +166,7 @@ extension PhraseParser {
             return true
         }
         take("\(PhraseParser.frWeekdays)(?: prochain)?", text, &state) { m, s in
-            guard s.rule == nil, let word = group(m, 1, text), let day = self.frWeekday(word) else { return false }
+            guard s.rule == nil || s.rule == .weekly([]), let word = group(m, 1, text), let day = self.frWeekday(word) else { return false }
             s.weekdays = [day]
             return true
         }
@@ -196,27 +198,34 @@ extension PhraseParser {
         take("(?:à |a |vers )(\(words)) heures?(?: (cinq|dix|quinze|vingt-cinq|vingt|trente|quarante-cinq|quarante|cinquante))?\(part)", text, &state) { m, s in
             frenchClock(group(m, 1, text), minute: PhraseParser.frenchMinutes[group(m, 2, text) ?? ""] ?? 0, before: false, group(m, 3, text), &s)
         }
-        take("(?:à |a |vers )?(\\d{1,2}) ?(?:h|:) ?(\\d{2})\(part)", text, &state) { m, s in
-            guard let hour = group(m, 1, text).flatMap(Int.init), let minute = group(m, 2, text).flatMap(Int.init), hour < 24, minute < 60 else { return false }
-            s.time = LocalTime(hour: frHour(hour, group(m, 3, text)), minute: minute)
+        take("(?:à |de )?(\\d{1,2}) ?h(\\d{2})? ?[-–] ?\\d{1,2} ?h(?:\\d{2})?\(part)", text, &state) { m, s in
+            guard let hour = group(m, 1, text).flatMap(Int.init), hour < 24 else { return false }
+            s.time = LocalTime(hour: frHour(hour, group(m, 3, text)), minute: group(m, 2, text).flatMap(Int.init) ?? 0)
             s.meridiem = group(m, 3, text) != nil
             return true
         }
-        take("(?:à |a |vers )?(\\d{1,2}) ?(?:h|heures?)\(part)", text, &state) { m, s in
+        take("(?:à |a |vers )?(\\d{1,2}) ?(?:h|:) ?(\\d{2})\(part)", text, &state) { m, s in
+            guard let hour = group(m, 1, text).flatMap(Int.init), let minute = group(m, 2, text).flatMap(Int.init), hour < 24, minute < 60 else { return false }
+            s.time = LocalTime(hour: frHour(hour, group(m, 3, text)), minute: minute)
+            s.meridiem = group(m, 3, text) != nil || PhraseParser.twentyFour(group(m, 1, text))
+            return true
+        }
+        // «Pendant 2 heures» and «4h de route» are durations, not a time of day.
+        take("(?<!pendant |durant |en |dans |pour |de |il y a )(?:à |a |vers )?(\\d{1,2}) ?(?:h|heures?)\(part)(?! de | d')", text, &state) { m, s in
             guard let hour = group(m, 1, text).flatMap(Int.init), hour < 24 else { return false }
             s.time = LocalTime(hour: frHour(hour, group(m, 2, text)), minute: 0)
             s.meridiem = group(m, 2, text) != nil
             return true
         }
-        take("(?:à|vers) (\\d{1,2})", text, &state) { m, s in
+        take("(?:à|vers) (\\d{1,2})(?! (?:(?:euros?|km|kg|personnes|minutes?|heures?|jours?|pour cent|ans|fois)(?![\\p{L}])|%))", text, &state) { m, s in
             guard let hour = group(m, 1, text).flatMap(Int.init), hour < 24 else { return false }
             s.time = LocalTime(hour: hour, minute: 0)
             return true
         }
-        take("(?:à |a )?midi", text, &state) { _, s in s.time = LocalTime(hour: 12, minute: 0); return true }
+        take("(?<!après-|apres-|après |apres )(?:à |a )?midi", text, &state) { _, s in s.time = LocalTime(hour: 12, minute: 0); s.meridiem = true; return true }
         take("(?:à |a )?minuit", text, &state) { _, s in s.time = LocalTime(hour: 0, minute: 0); return true }
         take("(le matin|ce matin|au matin|matin)", text, &state) { _, s in s.dayPart = morning; return true }
-        take("(l'après-midi|l'apres-midi|cet après-midi|cet apres-midi)", text, &state) { _, s in s.dayPart = LocalTime(hour: 14, minute: 0); return true }
+        take("(l'après-midi|l'apres-midi|cet après-midi|cet apres-midi|après-midi|apres-midi|après midi|apres midi)", text, &state) { _, s in s.dayPart = LocalTime(hour: 14, minute: 0); return true }
         take("(le soir|au soir|soir)", text, &state) { _, s in s.dayPart = evening; return true }
         take("(la nuit|cette nuit)", text, &state) { _, s in s.dayPart = LocalTime(hour: 23, minute: 0); return true }
     }
@@ -235,7 +244,7 @@ extension PhraseParser {
     private func frenchClock(_ word: String?, minute: Int, before: Bool, _ part: String?, _ s: inout State) -> Bool {
         guard let word, let hour = word == "minuit" ? (before ? 24 : 0) : Int(word) ?? PhraseParser.frenchHours[word], let time = PhraseParser.clock(hour, minute: minute, before: before) else { return false }
         s.time = LocalTime(hour: frHour(time.hour, part), minute: time.minute)
-        s.meridiem = part != nil
+        s.meridiem = part != nil || word == "midi" || word == "minuit"
         return true
     }
 

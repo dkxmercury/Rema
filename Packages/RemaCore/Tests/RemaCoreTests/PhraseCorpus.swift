@@ -120,9 +120,10 @@ struct PhraseCorpusTests {
     @Test(arguments: CorpusData.uzbekLatin) func uzbekLatin(_ item: CorpusCase) { Corpus.check(item, "uz-Latn") }
     @Test(arguments: CorpusData.uzbekCyrillic) func uzbekCyrillic(_ item: CorpusCase) { Corpus.check(item, "uz-Cyrl") }
     @Test(arguments: CorpusData.arabic) func arabic(_ item: CorpusCase) { Corpus.check(item, "ar") }
+    @Test(arguments: CorpusData.mixed) func mixed(_ item: CorpusCase) { Corpus.check(item, "ru-mix") }
 
     @Test(.enabled(if: ProcessInfo.processInfo.environment["CORPUS_DUMP"] != nil)) func dump() {
-        let all: [(String, [CorpusCase])] = [("ru", CorpusData.russian), ("uk", CorpusData.ukrainian), ("en", CorpusData.english), ("de", CorpusData.german), ("fr", CorpusData.french), ("uz-Latn", CorpusData.uzbekLatin), ("uz-Cyrl", CorpusData.uzbekCyrillic), ("ar", CorpusData.arabic)]
+        let all: [(String, [CorpusCase])] = [("ru", CorpusData.russian), ("uk", CorpusData.ukrainian), ("en", CorpusData.english), ("de", CorpusData.german), ("fr", CorpusData.french), ("uz-Latn", CorpusData.uzbekLatin), ("uz-Cyrl", CorpusData.uzbekCyrillic), ("ar", CorpusData.arabic), ("ru-mix", CorpusData.mixed)]
         for (language, cases) in all {
             for item in cases {
                 print("CORPUS\t\(language)\t\(item.phrase)\t\(Corpus.summary(Corpus.parser(language).parse(item.phrase)))")

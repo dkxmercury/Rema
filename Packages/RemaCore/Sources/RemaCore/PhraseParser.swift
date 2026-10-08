@@ -50,7 +50,7 @@ public struct PhraseParser {
 
     private static let months = ["январ", "феврал", "март", "апрел", "ма", "июн", "июл", "август", "сентябр", "октябр", "ноябр", "декабр"]
     private static let monthPattern = "(января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря)"
-    static let weekdayPattern = "(понедельник\\w*|пн|вторник\\w*|вт|сред\\w*|ср|четверг\\w*|чт|пятниц\\w*|пт|суббот\\w*|сб|воскресень\\w*|вс)"
+    static let weekdayPattern = "(понедельник\\w*|пн|вторник\\w*|(?<!\\d )вт|сред(?:а|у|ы|ой|е|ам|ами|ах)|ср|четверг\\w*|чт|пятниц\\w*|пт|суббот\\w*|сб|воскресень\\w*|вс)"
     private static let fillers: Set<String> = ["напомни", "напомните", "напомнить", "мне", "пожалуйста", "надо", "нужно"]
     private static let dangling: Set<String> = ["и", "а", "в", "во", "на", "с", "со", "к", "по"]
     static let conjunctions: Set<String> = ["и", "а", "і", "й", "та", "and", "und", "et", "va", "ва", "و"]
@@ -78,13 +78,15 @@ public struct PhraseParser {
         var range: Range<Int>
         var time: Bool
         var day: Bool
+        var clock: LocalTime?
+        var meridiem = false
     }
 
     public func parse(_ input: String) -> ParsedPhrase {
         if PhraseParser.looksArabic(input) {
             return parseArabic(input)
         }
-        if !input.unicodeScalars.contains(where: { (0x0400...0x04FF).contains($0.value) }), input.contains(where: \.isLetter) {
+        if PhraseParser.mostlyLatin(input) {
             switch PhraseParser.latinLanguage(input, preferred: preferred) {
             case "de": return parseGerman(input)
             case "fr": return parseFrench(input)
@@ -155,7 +157,7 @@ public struct PhraseParser {
                 state.used.append(range)
                 let time = state.time != before.time || state.dayPart != before.dayPart || state.exact != before.exact
                 let day = state.date != before.date || state.dayOffset != before.dayOffset || state.weekdays != before.weekdays || state.rule != before.rule || state.exact != before.exact
-                state.marks.append(Mark(range: range, time: time, day: day))
+                state.marks.append(Mark(range: range, time: time, day: day, clock: time ? state.time : nil, meridiem: state.meridiem))
             }
         }
     }
@@ -182,6 +184,17 @@ public struct PhraseParser {
         switch word {
         case "одну", "один", "одна", "минуту", "час", "день", "неделю", "месяц": return 1
         case "пару", "два", "две": return 2
+        case "шесть": return 6
+        case "семь": return 7
+        case "восемь": return 8
+        case "девять": return 9
+        case "десять": return 10
+        case "пятнадцать": return 15
+        case "двадцать": return 20
+        case "тридцать": return 30
+        case "сорок": return 40
+        case "сорок пять": return 45
+        case "пятьдесят": return 50
         case "три": return 3
         case "четыре": return 4
         case "пять": return 5
@@ -190,9 +203,12 @@ public struct PhraseParser {
     }
 
     private func repeats(_ text: String, _ state: inout State) {
+        take("(каждое утро|по утрам)", text, &state) { _, s in s.rule = .daily; s.dayPart = morning; return true }
+        take("(каждый вечер|по вечерам)", text, &state) { _, s in s.rule = .daily; s.dayPart = evening; return true }
+        take("(каждую ночь)", text, &state) { _, s in s.rule = .daily; s.dayPart = LocalTime(hour: 23, minute: 0); return true }
         take("(каждый день|ежедневно)", text, &state) { _, s in s.rule = .daily; return true }
-        take("(по будням|каждый будний день|по рабочим дням)", text, &state) { _, s in s.rule = .weekdays; return true }
-        take("каждые (\\d+) (дня|дней)", text, &state) { m, s in
+        take("(по будним дням|по будням|каждый будний день|по рабочим дням)", text, &state) { _, s in s.rule = .weekdays; return true }
+        take("каждые (\\d{1,4}) (дня|дней)", text, &state) { m, s in
             guard let count = group(m, 1, text).flatMap(Int.init), count > 0 else { return false }
             s.rule = count == 1 ? .daily : .everyDays(count)
             return true
@@ -235,7 +251,12 @@ public struct PhraseParser {
             s.exact = now.addingTimeInterval(Double(minutes) * 60)
             return true
         }
-        take("через (?:(\\d+|одну|один|пару|два|две|три|четыре|пять) )?(минуту|минуты|минут|час|часа|часов|день|дня|дней|неделю|недели|недель|месяц|месяца|месяцев)", text, &state) { m, s in
+        take("через (\\d{1,2})[,.]5 час\\w*", text, &state) { m, s in
+            guard let hours = group(m, 1, text).flatMap(Int.init) else { return false }
+            s.exact = now.addingTimeInterval(Double(hours * 60 + 30) * 60)
+            return true
+        }
+        take("через (?:(\\d{1,4}|одну|один|пару|два|две|три|четыре|пять|шесть|семь|восемь|девять|десять|пятнадцать|двадцать|тридцать|сорок пять|сорок|пятьдесят) )?(минуту|минуты|минут|час|часа|часов|день|дня|дней|неделю|недели|недель|месяц|месяца|месяцев)", text, &state) { m, s in
             let unit = group(m, 2, text) ?? ""
             let count = group(m, 1, text).flatMap(number) ?? 1
             if unit.hasPrefix("минут") {
@@ -268,9 +289,29 @@ public struct PhraseParser {
             }
             return true
         }
+        // «15.10» without «в» before it is a date written with a dot.
+        take("(?<!(?:в|к|с|до|около|после) )(\\d{1,2})\\.(\\d{1,2})(?:\\.(\\d{4}))?(?![.:]?\\d)", text, &state) { m, s in
+            guard let day = group(m, 1, text).flatMap(Int.init), let month = group(m, 2, text).flatMap(Int.init), (1...12).contains(month), (1...LocalDate.days(in: month, year: 2028)).contains(day) else { return false }
+            s.date = nextDate(month: month, day: day, year: group(m, 3, text).flatMap(Int.init))
+            return true
+        }
+        take("(?:к|до|на) (\\d{1,2})(?:-?(?:му|е|го))? числ\\w*", text, &state) { m, s in
+            guard let day = group(m, 1, text).flatMap(Int.init), (1...31).contains(day) else { return false }
+            let today = LocalDate(now, in: calendar)
+            var candidate = LocalDate(year: today.year, month: today.month, day: min(day, LocalDate.days(in: today.month, year: today.year)))
+            if candidate < today {
+                let next = today.month == 12 ? (today.year + 1, 1) : (today.year, today.month + 1)
+                candidate = LocalDate(year: next.0, month: next.1, day: min(day, LocalDate.days(in: next.1, year: next.0)))
+            }
+            s.date = candidate
+            return true
+        }
         take("(?:в |во )?(следующ\\w+ |эт\\w+ )?\(PhraseParser.weekdayPattern)", text, &state) { m, s in
-            guard s.rule == nil, let word = group(m, 2, text), let day = self.weekday(word) else { return false }
+            guard s.rule == nil || s.rule == .weekly([]), let word = group(m, 2, text), let day = self.weekday(word) else { return false }
             s.weekdays = [day]
+            if s.rule == .weekly([]) {
+                s.rule = .weekly([day])
+            }
             return true
         }
     }
@@ -279,29 +320,37 @@ public struct PhraseParser {
         let modifier = "( утра| вечера| дня| ночи)?"
         let hourWord = "(час|один|два|три|четыре|пять|шесть|семь|восемь|девять|десять|одиннадцать|двенадцать)"
         let ordinal = "(первого|второго|третьего|четвертого|пятого|шестого|седьмого|восьмого|девятого|десятого|одиннадцатого|двенадцатого)"
-        let around = "(часа|часу|одного|одному|двух|двум|трех|трем|четырех|четырем|пяти|шести|семи|восьми|девяти|десяти|одиннадцати|двенадцати)"
-        take("(?:около|в районе|ближе к|примерно к|часам к|часикам к) (?:(\\d{1,2})(?:[:.](\\d{2}))?|\(around))(?: час\\w*)?\(modifier)(?! \(PhraseParser.monthPattern))", text, &state) { m, s in
+        let around = "(одного|одному|двух|двум|трех|трем|четырех|четырем|пяти|шести|семи|восьми|девяти|десяти|одиннадцати|двенадцати)"
+        // A number before a noun is an amount, «около 5 км», «в 2 раза», «в 5 подъезде».
+        let counted = "(?! (?:(?:км|кг|г|м|л|см|мм|мл|сум|лет|пик|ряд|ряду|ряда|раз|раза|людей|люди|места|мест|место|год|года|гостей|гостя|гости)(?![\\p{L}])|(?:человек|штук|процент|рубл|доллар|евро|подъезд|числ|этаж|класс|кабинет|квартир|корпус|вагон|автобус|маршрут|школ|групп|палат|минут|секунд|недел|месяц|друз)\\w*))"
+        take("(?:около|в районе|ближе к|примерно к|часам к|часикам к) (?:(\\d{1,2})(?:[:.](\\d{2}))?|\(around))(?: час\\w*)?\(modifier)(?! \(PhraseParser.monthPattern))\(counted)", text, &state) { m, s in
             russianClock(group(m, 1, text).flatMap(Int.init) ?? group(m, 3, text).flatMap(PhraseParser.ruHourCase), minute: group(m, 2, text), group(m, 4, text), &s)
         }
-        take("(?:примерно|приблизительно|где-то|где то|часов|часиков) (?:в|к) (?:(\\d{1,2})(?:[:.](\\d{2}))?|\(hourWord))(?: час\\w*)?\(modifier)(?! \(PhraseParser.monthPattern))", text, &state) { m, s in
+        take("(?:примерно|приблизительно|где-то|где то|часов|часиков) (?:в|к) (?:(\\d{1,2})(?:[:.](\\d{2}))?|\(hourWord))(?: час\\w*)?\(modifier)(?! \(PhraseParser.monthPattern))\(counted)", text, &state) { m, s in
             russianClock(group(m, 1, text).flatMap(Int.init) ?? group(m, 3, text).flatMap(PhraseParser.ruHour), minute: group(m, 2, text), group(m, 4, text), &s)
         }
         take("(?:между|с) (\\d{1,2})(?:[:.](\\d{2}))? (?:и|до) \\d{1,2}(?:[:.]\\d{2})?(?: час\\w*)?\(modifier)(?! \(PhraseParser.monthPattern))", text, &state) { m, s in
             russianClock(group(m, 1, text).flatMap(Int.init), minute: group(m, 2, text), group(m, 3, text), &s)
         }
+        take("(?:в |с )?(\\d{1,2})[:.](\\d{2}) ?[-–] ?\\d{1,2}[:.]\\d{2}\(modifier)", text, &state) { m, s in
+            russianClock(group(m, 1, text).flatMap(Int.init), minute: group(m, 2, text), group(m, 3, text), &s)
+        }
         take("(?:в |к )?(\\d{1,2})[:.](\\d{2})\(modifier)", text, &state) { m, s in
             guard let hour = group(m, 1, text).flatMap(Int.init), let minute = group(m, 2, text).flatMap(Int.init), hour < 24, minute < 60 else { return false }
             s.time = LocalTime(hour: adjust(hour, group(m, 3, text)), minute: minute)
-            s.meridiem = group(m, 3, text) != nil
+            s.meridiem = group(m, 3, text) != nil || PhraseParser.twentyFour(group(m, 1, text))
             return true
         }
-        take("(?:в|к) (\\d{1,2})(?: час\\w*)?\(modifier)(?! \(PhraseParser.monthPattern))", text, &state) { m, s in
+        take("(?:в |к )?(\\d{1,2})-(00|15|30|45)\(modifier)", text, &state) { m, s in
+            russianClock(group(m, 1, text).flatMap(Int.init), minute: group(m, 2, text), group(m, 3, text), &s)
+        }
+        take("(?:в|к) (\\d{1,2})(?: час\\w*)?\(modifier)(?! \(PhraseParser.monthPattern))\(counted)", text, &state) { m, s in
             guard let hour = group(m, 1, text).flatMap(Int.init), hour < 24 else { return false }
             s.time = LocalTime(hour: adjust(hour, group(m, 2, text)), minute: 0)
             s.meridiem = group(m, 2, text) != nil
             return true
         }
-        take("(?:в |к )?(?:пол|половин[аеуы] )\(ordinal)\(modifier)", text, &state) { m, s in
+        take("(?:в |к )?(?:пол[ -]?|половин[аеуы] )\(ordinal)\(modifier)", text, &state) { m, s in
             guard let next = group(m, 1, text).flatMap(PhraseParser.ruOrdinal) else { return false }
             s.time = LocalTime(hour: adjust(next == 1 ? 12 : next - 1, group(m, 2, text)), minute: 30)
             s.meridiem = group(m, 2, text) != nil
@@ -328,17 +377,24 @@ public struct PhraseParser {
             s.meridiem = group(m, 3, text) != nil
             return true
         }
-        take("(?:в|к) \(hourWord)(?: (десять|пятнадцать|двадцать|тридцать|сорок пять|сорок|пятьдесят))?(?: час\\w*)?\(modifier)", text, &state) { m, s in
+        let minutes = "(десять|одиннадцать|двенадцать|тринадцать|четырнадцать|пятнадцать|шестнадцать|семнадцать|восемнадцать|девятнадцать|(?:двадцать|тридцать|сорок|пятьдесят)(?: (?:одна|одну|две|три|четыре|пять|шесть|семь|восемь|девять))?)"
+        take("(?:в|к) \(hourWord)(?: \(minutes))?(?: час\\w*)?\(modifier)\(counted)", text, &state) { m, s in
             guard let hour = group(m, 1, text).flatMap(PhraseParser.ruHour) else { return false }
-            let minute = ["десять": 10, "пятнадцать": 15, "двадцать": 20, "тридцать": 30, "сорок": 40, "сорок пять": 45, "пятьдесят": 50][group(m, 2, text) ?? ""] ?? 0
+            let minute = group(m, 2, text).map(PhraseParser.ruMinutes) ?? 0
             s.time = LocalTime(hour: adjust(hour, group(m, 3, text)), minute: minute)
             s.meridiem = group(m, 3, text) != nil
             return true
         }
+        take("к (часу|двум|трем|четырем|пяти|шести|семи|восьми|девяти|десяти|одиннадцати|двенадцати)(?: час\\w*)?\(modifier)(?! \\p{L}+(?:ам|ям))", text, &state) { m, s in
+            russianClock(group(m, 1, text).flatMap(PhraseParser.ruHourCase), minute: nil, group(m, 2, text), &s)
+        }
+        take("(\\d{1,2}) (утра|вечера|ночи)", text, &state) { m, s in
+            russianClock(group(m, 1, text).flatMap(Int.init), minute: nil, " " + (group(m, 2, text) ?? ""), &s)
+        }
         take("в полдень", text, &state) { _, s in s.time = LocalTime(hour: 12, minute: 0); return true }
         take("в полночь", text, &state) { _, s in s.time = LocalTime(hour: 0, minute: 0); return true }
         take("(утром)", text, &state) { _, s in s.dayPart = morning; return true }
-        take("(днем)", text, &state) { _, s in s.dayPart = LocalTime(hour: 13, minute: 0); return true }
+        take("((?<!с )(?<!со )днем)", text, &state) { _, s in s.dayPart = LocalTime(hour: 13, minute: 0); return true }
         take("(вечером)", text, &state) { _, s in s.dayPart = evening; return true }
         take("(ночью)", text, &state) { _, s in s.dayPart = LocalTime(hour: 23, minute: 0); return true }
     }
@@ -353,6 +409,12 @@ public struct PhraseParser {
         return LocalTime(hour: hour, minute: minute)
     }
 
+    // «07:30» is written on a 24-hour clock, it never means the evening.
+    static func twentyFour(_ hour: String?) -> Bool {
+        guard let hour else { return false }
+        return hour.count == 2 && hour.hasPrefix("0")
+    }
+
     static func ruHour(_ word: String) -> Int? {
         ["час": 1, "один": 1, "два": 2, "три": 3, "четыре": 4, "пять": 5, "шесть": 6, "семь": 7, "восемь": 8, "девять": 9, "десять": 10, "одиннадцать": 11, "двенадцать": 12][word]
     }
@@ -363,6 +425,11 @@ public struct PhraseParser {
 
     static func ruHourCase(_ word: String) -> Int? {
         ["часа": 1, "часу": 1, "одного": 1, "одному": 1, "двух": 2, "двум": 2, "трех": 3, "трем": 3, "четырех": 4, "четырем": 4, "пяти": 5, "шести": 6, "семи": 7, "восьми": 8, "девяти": 9, "десяти": 10, "одиннадцати": 11, "двенадцати": 12][word]
+    }
+
+    static func ruMinutes(_ words: String) -> Int {
+        let values = ["десять": 10, "одиннадцать": 11, "двенадцать": 12, "тринадцать": 13, "четырнадцать": 14, "пятнадцать": 15, "шестнадцать": 16, "семнадцать": 17, "восемнадцать": 18, "девятнадцать": 19, "двадцать": 20, "тридцать": 30, "сорок": 40, "пятьдесят": 50, "одна": 1, "одну": 1, "две": 2, "три": 3, "четыре": 4, "пять": 5, "шесть": 6, "семь": 7, "восемь": 8, "девять": 9]
+        return words.split(separator: " ").reduce(0) { $0 + (values[String($1)] ?? 0) }
     }
 
     private func russianClock(_ hour: Int?, minute: String?, _ modifier: String?, _ s: inout State) -> Bool {
@@ -377,7 +444,9 @@ public struct PhraseParser {
         case "вечера", "дня":
             return hour < 12 ? hour + 12 : hour
         case "ночи":
-            return hour == 12 ? 0 : hour
+            // «В 11 ночи» is late in the evening, «в 2 ночи» the small hours.
+            if hour == 12 { return 0 }
+            return (6...11).contains(hour) ? hour + 12 : hour
         case "утра":
             return hour == 12 ? 0 : hour
         default:
@@ -387,7 +456,7 @@ public struct PhraseParser {
 
     private func alerts(_ text: String, _ state: inout State) {
         take("за (полчаса)", text, &state) { _, s in s.preAlerts.append(30); return true }
-        take("за (?:(\\d+|пару|два|две|три) )?(минуту|минуты|минут|час|часа|часов|день|дня|дней|неделю|недели|недель)", text, &state) { m, s in
+        take("за (?:(\\d{1,4}|пару|два|две|три) )?(минуту|минуты|минут|час|часа|часов|день|дня|дней|неделю|недели|недель)", text, &state) { m, s in
             let unit = group(m, 2, text) ?? ""
             let count = group(m, 1, text).flatMap(number) ?? 1
             if unit.hasPrefix("минут") {
@@ -418,7 +487,12 @@ public struct PhraseParser {
             let words = [group(m, 5, text), group(m, 8, text)].compactMap { $0 }
             let found = words.compactMap(matchPlace)
             guard !found.isEmpty else { return false }
-            s.placeTrigger = ["уйду", "выйду", "уеду"].contains(verb) ? .leave : .arrive
+            // «На работу» is where one goes and «с работы» where one leaves, whatever the verb.
+            switch group(m, 4, text) {
+            case "с", "со", "из", "от": s.placeTrigger = .leave
+            case "в", "во", "на", "к": s.placeTrigger = .arrive
+            default: s.placeTrigger = ["уйду", "выйду", "уеду"].contains(verb) ? .leave : .arrive
+            }
             s.placeNames = found
             return true
         }
@@ -458,8 +532,24 @@ public struct PhraseParser {
         }
         let hasDate = state.date != nil || state.dayOffset != nil || !state.weekdays.isEmpty
         var time = state.time ?? state.dayPart
-        if let explicit = state.time, let part = state.dayPart, part.hour >= 12, explicit.hour < 12 {
-            time = LocalTime(hour: explicit.hour + 12, minute: explicit.minute)
+        // «Ночью в 2», «днём в 11», «tonight at 12»: of h and h+12 the one closer to the part of the day counts.
+        if let explicit = state.time, let part = state.dayPart, !state.meridiem, explicit.hour <= 12 {
+            let target = part.hour * 60 + part.minute
+            func distance(_ hour: Int) -> Int {
+                let gap = abs(hour * 60 + explicit.minute - target)
+                return min(gap, 1440 - gap)
+            }
+            let base = explicit.hour % 12
+            let best = [base, base + 12].min { distance($0) < distance($1) } ?? explicit.hour
+            time = LocalTime(hour: best, minute: explicit.minute)
+        }
+        let isToday = state.date == nil && state.dayOffset == 0 && state.weekdays.isEmpty
+        // «Сегодня в 3» still means the three that is ahead today, there is just no other day to offer.
+        if isToday, let explicit = state.time, state.dayPart == nil, !state.meridiem, state.rule == nil, (1...11).contains(explicit.hour) {
+            let early = calendar.date(from: DateComponents(year: today.year, month: today.month, day: today.day, hour: explicit.hour, minute: explicit.minute)) ?? now
+            if early <= now {
+                time = LocalTime(hour: explicit.hour + 12, minute: explicit.minute)
+            }
         }
         // A bare «в 7» means the nearest seven to come; the other reading is offered beside it.
         if let explicit = state.time, state.dayPart == nil, !state.meridiem, !hasDate, state.rule == nil, (1...11).contains(explicit.hour) {
@@ -523,6 +613,13 @@ public struct PhraseParser {
         }
         if rule != nil, state.date == nil, state.dayOffset == nil, moment(start) <= now {
             if case .monthlyOnDay = rule {} else {
+                start = start.adding(days: 1)
+            }
+        }
+        // «Сегодня в полночь», «heute Nacht um 2»: the small hours of a named night belong to the next date.
+        if state.date != nil || state.dayOffset != nil || !state.weekdays.isEmpty, rule == nil {
+            let night = state.dayPart.map { $0.hour >= 21 } ?? false
+            if (clock.hour == 0 && clock.minute == 0 && state.dayOffset == 0) || (night && clock.hour < 6) {
                 start = start.adding(days: 1)
             }
         }

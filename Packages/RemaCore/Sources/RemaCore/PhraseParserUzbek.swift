@@ -3,7 +3,7 @@ import Foundation
 extension PhraseParser {
     private static let uzMonths = "(yanvar|fevral|mart|aprel|may|iyun|iyul|avgust|sentabr|sentyabr|oktabr|oktyabr|noyabr|dekabr)(?:ning|da|ga|dan)?"
     static let uzWeekdays = "(dushanba|seshanba|chorshanba|payshanba|juma|shanba|yakshanba)(?:da|lari|ga)?"
-    private static let uzCount = "(\\d+|bir|ikki|uch|to'rt|besh|o'n|o'n besh|yigirma|o'ttiz)"
+    private static let uzCount = "(\\d{1,4}|bir|ikki|uch|to'rt|besh|o'n|o'n besh|yigirma|o'ttiz)"
     private static let uzFillers: Set<String> = ["iltimos", "menga", "kerak"]
     private static let uzDangling: Set<String> = ["eslat", "eslating", "eslatib", "qo'y", "qo'ying", "va", "da", "ga", "ham", "esla"]
 
@@ -127,7 +127,7 @@ extension PhraseParser {
     private func uzRepeats(_ text: String, _ state: inout State) {
         take("(har kuni|kundalik|har kun)", text, &state) { _, s in s.rule = .daily; return true }
         take("(ish kunlari|ish kunlarida)", text, &state) { _, s in s.rule = .weekdays; return true }
-        take("har (\\d+) kunda", text, &state) { m, s in
+        take("har (\\d{1,4}) kunda", text, &state) { m, s in
             guard let count = group(m, 1, text).flatMap(Int.init), count > 0 else { return false }
             s.rule = count == 1 ? .daily : .everyDays(count)
             return true
@@ -192,9 +192,17 @@ extension PhraseParser {
             }
             return true
         }
+        take("(?<!soat )(\\d{1,2})\\.(\\d{1,2})(?:\\.(\\d{4}))?(?: ?-?kuni)?(?![.:]?\\d)(?! ?-?(?:da|dan|ga|gacha)(?![\\p{L}]))", text, &state) { m, s in
+            guard let day = group(m, 1, text).flatMap(Int.init), let month = group(m, 2, text).flatMap(Int.init), (1...31).contains(day), (1...12).contains(month) else { return false }
+            s.date = nextDate(month: month, day: day, year: group(m, 3, text).flatMap(Int.init))
+            return true
+        }
         take("(?:kelasi )?\(PhraseParser.uzWeekdays)(?: kuni)?", text, &state) { m, s in
-            guard s.rule == nil, let word = group(m, 1, text), let day = self.uzWeekday(word) else { return false }
+            guard s.rule == nil || s.rule == .weekly([]), let word = group(m, 1, text), let day = self.uzWeekday(word) else { return false }
             s.weekdays = [day]
+            if s.rule == .weekly([]) {
+                s.rule = .weekly([day])
+            }
             return true
         }
     }
@@ -280,7 +288,7 @@ extension PhraseParser {
         take("([\\p{L}']+)(dan|ga|da) (ketganimda|chiqqanimda|kelganimda|borganimda|qaytganimda|yetganimda|yetib kelganimda)", text, &state) { m, s in
             guard let stem = group(m, 1, text), let suffix = group(m, 2, text), let verb = group(m, 3, text) else { return false }
             guard let place = places.first(where: { PhraseParser.uzbekLatin($0).0.lowercased() == stem }) else { return false }
-            let leaving = verb.hasPrefix("ket") || verb.hasPrefix("chiq") || suffix == "dan"
+            let leaving = suffix == "dan" || (suffix == "da" && (verb.hasPrefix("ket") || verb.hasPrefix("chiq")))
             s.placeTrigger = leaving ? .leave : .arrive
             s.placeNames = [place]
             return true

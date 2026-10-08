@@ -4,7 +4,7 @@ extension PhraseParser {
     private static let deMonths = "(januar|jänner|februar|märz|april|mai|juni|juli|august|september|oktober|november|dezember|jan|feb|mär|apr|jun|jul|aug|sep|sept|okt|nov|dez)\\.?"
     private static let deWeekdays = "(montags?|mo|dienstags?|di|mittwochs?|mi|donnerstags?|do|freitags?|fr|samstags?|sa|sonnabends?|sonntags?|so)"
     static let deWeekdaysFull = "(montags?|dienstags?|mittwochs?|donnerstags?|freitags?|samstags?|sonnabends?|sonntags?)"
-    private static let deCount = "(\\d+|einer|einem|einen|eine|ein|zwei|drei|vier|fünf|zehn|fünfzehn|zwanzig|dreißig)"
+    private static let deCount = "(\\d{1,4}|einer|einem|einen|eine|ein|zwei|drei|vier|fünf|zehn|fünfzehn|zwanzig|dreißig)"
     private static let deFillers: Set<String> = ["bitte"]
     private static let deLead: Set<String> = ["erinnere", "erinner", "mich", "daran", "zu", "ich", "muss", "soll", "bitte", "der", "die", "das", "den", "dem"]
     private static let deDangling: Set<String> = ["am", "um", "an", "in", "im", "zu", "zum", "zur", "und", "der", "die", "das", "den", "dem", "von", "für", "ab"]
@@ -72,9 +72,11 @@ extension PhraseParser {
     }
 
     private func deRepeats(_ text: String, _ state: inout State) {
+        take("(jeden morgen)", text, &state) { _, s in s.rule = .daily; s.dayPart = morning; return true }
+        take("(jeden abend)", text, &state) { _, s in s.rule = .daily; s.dayPart = evening; return true }
         take("(jeden tag|täglich)", text, &state) { _, s in s.rule = .daily; return true }
         take("(werktags|an werktagen|jeden werktag)", text, &state) { _, s in s.rule = .weekdays; return true }
-        take("alle (\\d+) tage", text, &state) { m, s in
+        take("alle (\\d{1,4}) tage", text, &state) { m, s in
             guard let count = group(m, 1, text).flatMap(Int.init), count > 0 else { return false }
             s.rule = count == 1 ? .daily : .everyDays(count)
             return true
@@ -149,8 +151,24 @@ extension PhraseParser {
             s.dayPart = evening
             return true
         }
-        take("(morgen)", text, &state) { _, s in s.dayOffset = 1; return true }
+        take("(heute nacht)", text, &state) { _, s in
+            s.dayOffset = 0
+            s.dayPart = LocalTime(hour: 23, minute: 0)
+            return true
+        }
+        take("(morgen nacht)", text, &state) { _, s in
+            s.dayOffset = 1
+            s.dayPart = LocalTime(hour: 23, minute: 0)
+            return true
+        }
+        // After a weekday, «am» or «jeden», «Morgen» is the morning and not tomorrow.
+        take("((?<!montag |dienstag |mittwoch |donnerstag |freitag |samstag |sonntag |am |jeden |heute )morgen)", text, &state) { _, s in s.dayOffset = 1; return true }
         take("(heute)", text, &state) { _, s in s.dayOffset = 0; return true }
+        take("(?<!(?:um|gegen|ab|bis|von|zwischen) )(?:am )?(\\d{1,2})\\.(\\d{1,2})(?:\\.(\\d{4})|\\.)?(?! ?uhr)(?![.:]?\\d)", text, &state) { m, s in
+            guard let day = group(m, 1, text).flatMap(Int.init), let month = group(m, 2, text).flatMap(Int.init), (1...12).contains(month), (1...LocalDate.days(in: month, year: 2028)).contains(day) else { return false }
+            s.date = nextDate(month: month, day: day, year: group(m, 3, text).flatMap(Int.init))
+            return true
+        }
         take("(?:am )?(\\d{1,2})\\.? \(PhraseParser.deMonths)(?: (\\d{4}))?", text, &state) { m, s in
             guard let day = group(m, 1, text).flatMap(Int.init), let month = group(m, 2, text).flatMap(self.deMonth), (1...31).contains(day) else { return false }
             s.date = nextDate(month: month, day: day, year: group(m, 3, text).flatMap(Int.init))
@@ -160,7 +178,7 @@ extension PhraseParser {
             return true
         }
         // German writes the part of the day into the weekday, am Freitagabend.
-        take("(?:am |nächsten |kommenden )?(montag|dienstag|mittwoch|donnerstag|freitag|samstag|sonntag)(morgen|vormittag|mittag|nachmittag|abend|nacht)", text, &state) { m, s in
+        take("(?:am |nächsten |kommenden )?(montag|dienstag|mittwoch|donnerstag|freitag|samstag|sonntag)(?: am)? ?(morgen|vormittag|mittag|nachmittag|abend|nacht)", text, &state) { m, s in
             guard s.rule == nil, let word = group(m, 1, text), let day = self.deWeekday(word), let part = group(m, 2, text) else { return false }
             s.weekdays = [day]
             switch part {
@@ -173,8 +191,11 @@ extension PhraseParser {
             return true
         }
         take("(?:am |nächsten |kommenden )?\(PhraseParser.deWeekdaysFull)", text, &state) { m, s in
-            guard s.rule == nil, let word = group(m, 1, text), let day = self.deWeekday(word) else { return false }
+            guard s.rule == nil || s.rule == .weekly([]), let word = group(m, 1, text), let day = self.deWeekday(word) else { return false }
             s.weekdays = [day]
+            if s.rule == .weekly([]) {
+                s.rule = .weekly([day])
+            }
             return true
         }
     }
@@ -182,8 +203,9 @@ extension PhraseParser {
     private func deTimes(_ text: String, _ state: inout State) {
         let clock = "(\\d{1,2}|eins|zwei|drei|vier|fünf|sechs|sieben|acht|neun|zehn|elf|zwölf)"
         let hourWords = "dreiundzwanzig|zweiundzwanzig|einundzwanzig|zwanzig|dreizehn|vierzehn|fünfzehn|sechzehn|siebzehn|achtzehn|neunzehn|eins|zwei|drei|vier|fünf|sechs|sieben|acht|neun|zehn|elf|zwölf"
-        let minutes = "(fünfundvierzig|fünfzehn|dreißig|dreissig|zwanzig|vierzig|fünfzig|zehn|fünf)"
-        take("(?:(?:ungefähr|etwa|circa|ca\\.|zirka) (?:um |gegen )?|so (?:um|gegen) )\(clock)(?:[:.](\\d{2}))?(?: uhr)?(?! (?:minuten|stunden|tage|wochen))", text, &state) { m, s in
+        let minutes = "((?:ein|zwei|drei|vier|fünf|sechs|sieben|acht|neun)und(?:zwanzig|dreißig|dreissig|vierzig|fünfzig)|fünfzehn|dreißig|dreissig|zwanzig|vierzig|fünfzig|zehn|fünf|elf|zwölf|dreizehn|vierzehn|sechzehn|siebzehn|achtzehn|neunzehn)"
+        let counted = "(?! (?:(?:kg|km|g|l|m|mal|tag|tage|tagen|tages)(?![\\p{L}])|(?:stück|personen|leute|prozent|euro|minute|stunde|woche|liter|meter|gramm|jahr)\\w*))"
+        take("(?:(?:ungefähr|etwa|circa|ca\\.|zirka) (?:um |gegen )?|so (?:um|gegen) )\(clock)(?:[:.](\\d{2}))?(?: uhr)?\(counted)", text, &state) { m, s in
             germanClock(group(m, 1, text), minute: group(m, 2, text).flatMap(Int.init) ?? 0, before: false, &s)
         }
         take("(?:um|gegen) \(clock)(?:[:.](\\d{2}))?(?: uhr)? (?:herum|rum)", text, &state) { m, s in
@@ -211,22 +233,28 @@ extension PhraseParser {
             germanClock(group(m, 1, text), minute: 30, before: true, &s)
         }
         take("(?:um|gegen|ab) (\(hourWords))(?: uhr(?: \(minutes))?)?(?! (?:minuten|stunden|tage|wochen))", text, &state) { m, s in
-            germanClock(group(m, 1, text), minute: PhraseParser.germanMinutes[group(m, 2, text) ?? ""] ?? 0, before: false, &s)
+            germanClock(group(m, 1, text), minute: PhraseParser.germanMinute(group(m, 2, text)), before: false, &s)
         }
         take("(ein|\(hourWords)) uhr(?: \(minutes))?", text, &state) { m, s in
-            germanClock(group(m, 1, text), minute: PhraseParser.germanMinutes[group(m, 2, text) ?? ""] ?? 0, before: false, &s)
+            germanClock(group(m, 1, text), minute: PhraseParser.germanMinute(group(m, 2, text)), before: false, &s)
+        }
+        take("(?:um |von )?(\\d{1,2})(?:[:.](\\d{2}))? ?[-–] ?\\d{1,2}(?:[:.]\\d{2})? uhr", text, &state) { m, s in
+            guard let hour = group(m, 1, text).flatMap(Int.init), hour < 24 else { return false }
+            s.time = LocalTime(hour: hour, minute: group(m, 2, text).flatMap(Int.init) ?? 0)
+            return true
         }
         take("(?:um |gegen |ab )?(\\d{1,2})[:.](\\d{2})(?: uhr)?", text, &state) { m, s in
             guard let hour = group(m, 1, text).flatMap(Int.init), let minute = group(m, 2, text).flatMap(Int.init), hour < 24, minute < 60 else { return false }
             s.time = LocalTime(hour: hour, minute: minute)
+            s.meridiem = PhraseParser.twentyFour(group(m, 1, text))
             return true
         }
-        take("(?:(?:um |gegen )(\\d{1,2})(?: uhr)?|(\\d{1,2}) uhr)", text, &state) { m, s in
+        take("(?:(?:um |gegen )(\\d{1,2})(?: uhr)?|(\\d{1,2}) uhr)\(counted)", text, &state) { m, s in
             guard let hour = (group(m, 1, text) ?? group(m, 2, text)).flatMap(Int.init), hour < 24 else { return false }
             s.time = LocalTime(hour: hour, minute: 0)
             return true
         }
-        take("(?:um )?(mittag|mittags)", text, &state) { _, s in s.time = LocalTime(hour: 12, minute: 0); return true }
+        take("((?:um |zu |am )mittag|mittags)", text, &state) { _, s in s.time = LocalTime(hour: 12, minute: 0); return true }
         take("(?:um )?mitternacht", text, &state) { _, s in s.time = LocalTime(hour: 0, minute: 0); return true }
         take("(morgens|früh|am morgen|vormittags)", text, &state) { _, s in s.dayPart = morning; return true }
         take("(nachmittags|am nachmittag)", text, &state) { _, s in s.dayPart = LocalTime(hour: 14, minute: 0); return true }
@@ -236,6 +264,17 @@ extension PhraseParser {
 
     private static let germanHours = ["ein": 1, "eins": 1, "zwei": 2, "drei": 3, "vier": 4, "fünf": 5, "sechs": 6, "sieben": 7, "acht": 8, "neun": 9, "zehn": 10, "elf": 11, "zwölf": 12, "dreizehn": 13, "vierzehn": 14, "fünfzehn": 15, "sechzehn": 16, "siebzehn": 17, "achtzehn": 18, "neunzehn": 19, "zwanzig": 20, "einundzwanzig": 21, "zweiundzwanzig": 22, "dreiundzwanzig": 23]
     private static let germanMinutes = ["fünf": 5, "zehn": 10, "fünfzehn": 15, "zwanzig": 20, "dreißig": 30, "dreissig": 30, "vierzig": 40, "fünfundvierzig": 45, "fünfzig": 50]
+
+    static func germanMinute(_ word: String?) -> Int {
+        guard let word else { return 0 }
+        if let value = germanMinutes[word] {
+            return value
+        }
+        // «Fünfundzwanzig» names the units first and the tens after «und».
+        let parts = word.components(separatedBy: "und")
+        guard parts.count == 2, let unit = germanHours[parts[0] == "ein" ? "eins" : parts[0]], let tens = germanMinutes[parts[1]] else { return 0 }
+        return tens + unit
+    }
 
     private func germanClock(_ word: String?, minute: Int, before: Bool, _ s: inout State) -> Bool {
         guard let word, let hour = Int(word) ?? PhraseParser.germanHours[word], let time = PhraseParser.clock(hour, minute: minute, before: before) else { return false }
