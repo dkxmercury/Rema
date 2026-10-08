@@ -77,6 +77,19 @@ final class Store {
         }
     }
 
+    // Many new reminders at once, written to disk and to the widgets a single time.
+    func saveAll(_ added: [Reminder]) {
+        guard !added.isEmpty else { return }
+        fresh()
+        for reminder in added {
+            var updated = reminder
+            updated.fit()
+            updated.updatedAt = Date()
+            reminders.append(updated)
+        }
+        persist()
+    }
+
     func complete(_ id: UUID, through occurrence: Date) {
         fresh()
         guard var reminder = reminder(id) else { return }

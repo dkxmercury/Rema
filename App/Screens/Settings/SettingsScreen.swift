@@ -53,6 +53,11 @@ struct SettingsScreen: View {
 
     private var calendarBinding: Binding<Bool> {
         Binding(get: { calendarFeed.enabled }, set: { on in
+            // After a refusal iOS asks no more, only Settings can give the access.
+            if on, calendarFeed.denied {
+                openSystemSettings()
+                return
+            }
             Task { await calendarFeed.setEnabled(on) }
         })
     }

@@ -68,6 +68,12 @@ struct HomeContent {
 }
 
 extension HomeContent {
+    // A meeting becomes a reminder under its own name cut to what the server takes, or under a plain name when it has none.
+    static func reminderTitle(_ title: String) -> String {
+        let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? String(localized: "Event from the calendar", bundle: .app, locale: .app) : String(trimmed.prefix(Reminder.maximumTitleLength))
+    }
+
     static func make(reminders: [Reminder], places: [Place], now: Date, calendar: Calendar, locale: Locale, missed showsMissed: Bool = false, events entries: [CalendarEntry] = []) -> HomeContent {
         let describer = Describer(calendar: calendar, locale: locale)
         let active = reminders.filter { $0.deletedAt == nil }
@@ -107,8 +113,9 @@ extension HomeContent {
                 subtitle: String(localized: "calendar · until \(describer.time(entry.end))", bundle: .app, locale: .app),
                 upcoming: entry.start > now,
                 reminded: active.contains { reminder in
-                    guard reminder.title == entry.title, let schedule = reminder.schedule else { return false }
-                    return calendar.date(from: DateComponents(year: schedule.start.year, month: schedule.start.month, day: schedule.start.day, hour: schedule.time.hour, minute: schedule.time.minute)) == entry.start
+                    guard reminder.title == reminderTitle(entry.title), let schedule = reminder.schedule else { return false }
+                    let start = calendar.dateInterval(of: .minute, for: entry.start)?.start ?? entry.start
+                    return calendar.date(from: DateComponents(year: schedule.start.year, month: schedule.start.month, day: schedule.start.day, hour: schedule.time.hour, minute: schedule.time.minute)) == start
                 }
             )
         }

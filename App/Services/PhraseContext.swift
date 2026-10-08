@@ -7,7 +7,7 @@ extension Store {
     func phraseParser(now: Date, calendar: Calendar = .current) -> PhraseParser {
         var parser = PhraseParser(now: now, calendar: calendar, morning: settings.morning, evening: settings.evening, places: activePlaces.map(\.name), preferred: AppLanguage.current.rawValue)
         parser.coordinate = WeatherAdvisor.savedCoordinate ?? livePlaces.first.map { Coordinate(latitude: $0.latitude, longitude: $0.longitude) }
-        parser.synonyms = Remote.shared.words
+        parser.languageSynonyms = Remote.shared.words
         return parser
     }
 }
@@ -33,9 +33,12 @@ enum PartShift {
         UserDefaults.standard.removeObject(forKey: key(part))
     }
 
+    // Only a time the settings allow for that part is offered: the morning before noon, the evening after it.
     static func suggestion(_ part: Part, current: LocalTime) -> LocalTime? {
         let recent = UserDefaults.standard.array(forKey: key(part)) as? [Int] ?? []
         guard recent.count >= 3, let last = recent.last, recent.suffix(3).allSatisfy({ $0 == last }), last != current.hour * 60 + current.minute else { return nil }
-        return LocalTime(hour: last / 60, minute: last % 60)
+        let time = LocalTime(hour: last / 60, minute: last % 60)
+        guard part == .morning ? time.hour < 12 : time.hour >= 12 else { return nil }
+        return time
     }
 }

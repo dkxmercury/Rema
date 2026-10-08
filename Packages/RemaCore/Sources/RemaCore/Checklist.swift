@@ -10,6 +10,9 @@ public enum Checklist {
     private static let idioms = ["mac and cheese", "half and half", "fish and chips", "salt and pepper", "bread and butter"]
     private static let amount = "\\s+(?:\\d+(?:[.,]\\d+)?\\s?(?:л|мл|кг|г|шт|уп|пач\\p{L}*|бут\\p{L}*|l|ml|kg|g|pcs|pc|lb|lbs|oz|st|stk|dona|ta|دانه)?|[x×]\\s?\\d+)$"
 
+    // The suggestions read every item on each key press, the pattern is compiled once.
+    private static let amountPattern = try? NSRegularExpression(pattern: amount, options: [.caseInsensitive])
+
     // A shopping phrase gets the offer to make a list right away.
     public static func isShopping(_ title: String) -> Bool {
         let text = PhraseParser.arabicNormalized(title.lowercased()).0
@@ -30,7 +33,7 @@ public enum Checklist {
 
     // «Молоко 2 л» keeps the amount apart, the row shows it on the right.
     public static func split(_ text: String) -> (name: String, amount: String?) {
-        guard let range = text.range(of: amount, options: [.regularExpression, .caseInsensitive]) else { return (text, nil) }
+        guard let match = amountPattern?.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)), let range = Range(match.range, in: text) else { return (text, nil) }
         let name = text[..<range.lowerBound].trimmingCharacters(in: .whitespaces)
         guard !name.isEmpty else { return (text, nil) }
         return (name, text[range].trimmingCharacters(in: .whitespaces))
@@ -41,7 +44,7 @@ public enum Checklist {
         let current = Set(items.map { key($0.text) })
         var weight: [String: Int] = [:]
         var shown: [String: (text: String, at: Date)] = [:]
-        for reminder in reminders where reminder.id != id && !reminder.items.isEmpty {
+        for reminder in reminders where reminder.id != id && reminder.deletedAt == nil && !reminder.items.isEmpty {
             let keys = Set(reminder.items.map { key($0.text) })
             let shared = keys.intersection(current).count
             guard current.isEmpty || shared > 0 else { continue }
@@ -64,7 +67,7 @@ public enum Checklist {
         let name = title.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
         let buying = isShopping(title)
         let last = reminders
-            .filter { $0.id != id && !$0.items.isEmpty && ($0.title.lowercased() == name || (buying && isShopping($0.title))) }
+            .filter { $0.id != id && $0.deletedAt == nil && !$0.items.isEmpty && ($0.title.lowercased() == name || (buying && isShopping($0.title))) }
             .max { $0.updatedAt < $1.updatedAt }
         return last.map { $0.items.map { ChecklistItem(text: $0.text) } }
     }

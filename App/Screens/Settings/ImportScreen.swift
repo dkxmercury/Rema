@@ -21,9 +21,13 @@ struct ImportScreen: View {
     @State private var openOnly = true
     @State private var undatedTomorrow = true
     @State private var loading = true
+    @State private var loaded = false
     @State private var denied = false
     @State private var moving = false
-    @State private var source = EKEventStore()
+    @State private var moved: Int?
+
+    private static let source = EKEventStore()
+    private var source: EKEventStore { Self.source }
 
     private var count: Int {
         lists.filter { chosen.contains($0.id) }.reduce(0) { $0 + $1.dated + (undatedTomorrow ? $1.undated : 0) }
@@ -40,8 +44,19 @@ struct ImportScreen: View {
                         .fixedSize(horizontal: false, vertical: true)
                         .padding(.horizontal, 4)
                         .padding(.top, 14)
-                    if loading {
+                    if let moved {
+                        Text(verbatim: String(localized: "Moved \(moved) reminders", bundle: .app, locale: .app))
+                            .font(.app(.golos, 17, weight: 600))
+                            .frame(maxWidth: .infinity)
+                            .padding(.top, 30)
+                    } else if loading {
                         ProgressView()
+                            .frame(maxWidth: .infinity)
+                            .padding(.top, 30)
+                    } else if lists.isEmpty, !denied {
+                        Text("No reminders to move")
+                            .font(.app(.golos, 17, weight: 600))
+                            .foregroundStyle(Palette.secondary)
                             .frame(maxWidth: .infinity)
                             .padding(.top, 30)
                     } else if !lists.isEmpty {
@@ -86,7 +101,12 @@ struct ImportScreen: View {
             .pinnedHeader {
                 ScreenHeader(title: "Move from Reminders", leading: .back, action: onBack)
             }
-            if count > 0 {
+            if moved != nil {
+                PrimaryBar(action: onBack) {
+                    Text("Done")
+                }
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+            } else if count > 0 {
                 PrimaryBar(action: move) {
                     Text(verbatim: String(localized: "Move \(count)", bundle: .app, locale: .app))
                         .contentTransition(.numericText())
@@ -97,7 +117,8 @@ struct ImportScreen: View {
         }
         .foregroundStyle(Palette.text)
         .animation(Motion.standard, value: count)
-        .task { await load() }
+        .animation(Motion.standard, value: moved)
+        .task(id: openOnly) { await load() }
     }
 
     private func listRow(_ list: ReminderList) -> some View {
@@ -135,16 +156,24 @@ struct ImportScreen: View {
             loading = false
             return
         }
+        // What is already in Rema under the same name is not moved again, so it is not counted either.
+        let existing = Set(store.activeReminders.map(\.title))
         var found: [ReminderList] = []
         for list in source.calendars(for: .reminder) {
-            let items = await fetch([list])
+            let items = await fetch([list]).filter { item in
+                let title = (item.title ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+                return !title.isEmpty && !existing.contains(String(title.prefix(Reminder.maximumTitleLength)))
+            }
             let dated = items.filter { $0.dueDateComponents != nil }.count
             if !items.isEmpty {
                 found.append(ReminderList(id: list.calendarIdentifier, title: list.title, dated: dated, undated: items.count - dated))
             }
         }
         lists = found
-        chosen = Set(found.map(\.id))
+        if !loaded {
+            chosen = Set(found.map(\.id))
+            loaded = true
+        }
         loading = false
     }
 
@@ -162,45 +191,88 @@ struct ImportScreen: View {
         Task {
             let picked = source.calendars(for: .reminder).filter { chosen.contains($0.calendarIdentifier) }
             let items = await fetch(picked)
-            let existing = Set(store.activeReminders.map(\.title))
+            var existing = Set(store.activeReminders.map(\.title))
+            var added: [Reminder] = []
+            var spread = 0
             for item in items {
-                guard let reminder = converted(item), !existing.contains(reminder.title) else { continue }
-                store.save(reminder)
+                guard let reminder = converted(item, spread: &spread), !existing.contains(reminder.title) else { continue }
+                existing.insert(reminder.title)
+                added.append(reminder)
             }
+            store.saveAll(added)
             Feedback.play(.save)
             Notifier.shared.requestPermissionIfNeeded()
-            onBack()
+            moving = false
+            moved = added.count
         }
     }
 
-    // A date without a time takes the morning; a plain repeat keeps its kind, an unusual one is dropped rather than guessed.
-    private func converted(_ item: EKReminder) -> Reminder? {
+    private func moment(_ day: LocalDate, _ time: LocalTime) -> Date {
+        calendar.date(from: DateComponents(year: day.year, month: day.month, day: day.day, hour: time.hour, minute: time.minute)) ?? now
+    }
+
+    // A date without a time takes the morning; a repeat keeps its kind where Rema has one, an unusual one is dropped rather than guessed.
+    private func converted(_ item: EKReminder, spread: inout Int) -> Reminder? {
         let title = (item.title ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
         guard !title.isEmpty else { return nil }
+        let today = LocalDate(now, in: calendar)
         var schedule: Schedule?
         if let due = item.dueDateComponents, let year = due.year, let month = due.month, let day = due.day {
-            schedule = Schedule(start: LocalDate(year: year, month: month, day: day), time: LocalTime(hour: due.hour ?? store.settings.morning.hour, minute: due.hour == nil ? store.settings.morning.minute : due.minute ?? 0))
+            let time = LocalTime(hour: due.hour ?? store.settings.morning.hour, minute: due.hour == nil ? store.settings.morning.minute : due.minute ?? 0)
+            var start = LocalDate(year: year, month: month, day: day)
+            // An overdue single reminder would never ring, it moves to the same time ahead.
+            if item.recurrenceRules?.isEmpty ?? true, !item.isCompleted, moment(start, time) <= now {
+                start = moment(today, time) > now ? today : today.adding(days: 1)
+            }
+            schedule = Schedule(start: start, time: time)
         } else if undatedTomorrow {
-            schedule = Schedule(start: LocalDate(now, in: calendar).adding(days: 1), time: LocalTime(hour: 9, minute: 0))
+            // Undated ones go tomorrow ten minutes apart from the morning, not all into one minute.
+            let first = store.settings.morning.hour * 60 + store.settings.morning.minute
+            let minutes = min(first + 10 * spread, 22 * 60)
+            spread += 1
+            schedule = Schedule(start: today.adding(days: 1), time: LocalTime(hour: minutes / 60, minute: minutes % 60))
         } else {
             return nil
         }
-        if var plan = schedule, let rule = item.recurrenceRules?.first, rule.interval == 1 {
+        if var plan = schedule, let rule = item.recurrenceRules?.first {
+            let interval = max(rule.interval, 1)
+            let days = (rule.daysOfTheWeek ?? []).compactMap { Weekday(rawValue: ($0.dayOfTheWeek.rawValue + 5) % 7 + 1) }
             switch rule.frequency {
             case .daily:
-                plan.rule = .daily
-            case .weekly:
-                let days = (rule.daysOfTheWeek ?? []).compactMap { Weekday(rawValue: ($0.dayOfTheWeek.rawValue + 5) % 7 + 1) }
+                plan.rule = interval == 1 ? .daily : .everyDays(interval)
+            case .weekly where interval == 1:
                 plan.rule = .weekly(days.isEmpty ? [plan.start.weekday] : days)
+            case .weekly where days.count <= 1:
+                while let day = days.first, plan.start.weekday != day {
+                    plan.start = plan.start.adding(days: 1)
+                }
+                plan.rule = .everyDays(7 * interval)
             case .monthly:
-                plan.rule = .monthlyOnDay(plan.start.day)
-            case .yearly:
+                if let day = rule.daysOfTheWeek?.first, let weekday = days.first {
+                    let ordinal = day.weekNumber != 0 ? day.weekNumber : rule.setPositions?.first?.intValue ?? 1
+                    plan.rule = interval == 1 ? .monthlyOnWeekday(ordinal: ordinal, weekday: weekday) : nil
+                } else {
+                    plan.rule = interval == 1 ? .monthlyOnDay(plan.start.day) : .everyMonths(interval)
+                }
+            case .yearly where interval == 1:
                 plan.rule = .yearly(month: plan.start.month, day: plan.start.day)
-            @unknown default:
+            default:
                 break
+            }
+            if plan.rule != nil, let end = rule.recurrenceEnd {
+                if let date = end.endDate {
+                    plan.end = .until(LocalDate(date, in: calendar))
+                } else if end.occurrenceCount > 0 {
+                    plan.end = .count(end.occurrenceCount)
+                }
             }
             schedule = plan
         }
-        return Reminder(title: String(title.prefix(Reminder.maximumTitleLength)), schedule: schedule, urgent: (1...4).contains(item.priority), createdAt: Date())
+        var reminder = Reminder(title: String(title.prefix(Reminder.maximumTitleLength)), schedule: schedule, urgent: (1...4).contains(item.priority), createdAt: Date())
+        // A done one comes over done, without a tick in the history.
+        if item.isCompleted, let plan = schedule {
+            reminder.completedThrough = max(moment(plan.start, plan.time), item.completionDate ?? .distantPast)
+        }
+        return reminder
     }
 }

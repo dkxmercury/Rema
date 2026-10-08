@@ -60,8 +60,12 @@ struct ShareScreen: View {
             }
         }
         let dated = sentences.filter { parser.parse($0).schedule != nil }
+        // Sentences are joined only when each of them then becomes its own reminder; otherwise the first one with a date stays.
         if dated.count >= 2 {
-            return String(dated.prefix(10).joined(separator: "; ").prefix(1_000))
+            let joined = String(dated.prefix(10).joined(separator: "; ").prefix(1_000))
+            if let pieces = parser.pieces(joined), pieces.count >= 2 {
+                return joined
+            }
         }
         let flat = limited.replacingOccurrences(of: "\n", with: " ").trimmingCharacters(in: .whitespacesAndNewlines)
         let chosen = dated.first ?? flat
@@ -80,6 +84,10 @@ struct ShareScreen: View {
             preferred: AppFonts.languageCode
         )
         parser.coordinate = places(in: snapshot).first.map { Coordinate(latitude: $0.latitude, longitude: $0.longitude) }
+        if let data = try? Data(contentsOf: SharedStore.directory.appendingPathComponent("phrase-words.json")),
+           let words = try? JSONDecoder().decode([String: [String: String]].self, from: data) {
+            parser.languageSynonyms = words
+        }
         return parser
     }
 

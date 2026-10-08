@@ -69,6 +69,17 @@ struct PhraseMultiTests {
         #expect(result.highlights.first == 0..<8)
     }
 
+    @Test func serverWordsKeepTheTitleAsTypedAndStayInTheirLanguage() {
+        var local = parser
+        local.languageSynonyms = ["ru": ["мамке": "маме", "завтрева": "завтра"], "en": ["tmrw": "tomorrow"]]
+        let russian = local.parse("завтрева в 9 позвонить мамке")
+        #expect(russian.title == "Позвонить мамке")
+        #expect(russian.schedule?.start == LocalDate(year: 2026, month: 10, day: 6))
+        #expect(local.parse("call mom tmrw at 9").schedule?.start == LocalDate(year: 2026, month: 10, day: 6))
+        let pieces = local.pieces("завтрева в 9 позвонить маме, в 12 обед с мамкой")
+        #expect(pieces?.count == 2)
+    }
+
     @Test func oneTimeWithAJointInsideStaysWhole() {
         #expect(parser.pieces("между 14:00 и 15:00 позвонить в банк") == nil)
         #expect(Corpus.parser("en").pieces("between 2 pm and 3 pm call the bank") == nil)
@@ -108,6 +119,11 @@ struct PhraseMultiTests {
         #expect(month.allSatisfy { $0.parsed.schedule?.end == .until(LocalDate(year: 2026, month: 10, day: 31)) })
         let other = try #require(parser.pieces("через день в 9 пить таблетку, в 21 витамины"))
         #expect(other.map(when) == ["06.10 09:00", "06.10 21:00"])
+    }
+
+    @Test func aPartAlreadyPastMovesToTheNextDay() throws {
+        let pieces = try #require(parser.pieces("сегодня утром позвонить маме, вечером купить хлеб"))
+        #expect(pieces.map(when) == ["06.10 09:00", "05.10 19:00"])
     }
 
     @Test func daysWithoutTimesAndOtherJoints() throws {

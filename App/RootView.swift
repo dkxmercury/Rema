@@ -40,6 +40,7 @@ final class RootNavigation {
     var showingSignIn = !Account.shared.isSignedIn && !UserDefaults.standard.bool(forKey: RootNavigation.welcomeKey)
     var composeRequest: ComposeTarget?
     var openRequest: UUID?
+    var editingOpen = false
 
     func requestCompose(voice: Bool) {
         composeRequest = ComposeTarget(voice: voice)
@@ -50,15 +51,21 @@ struct LocalizedRoot<Content: View>: View {
     @ViewBuilder var content: () -> Content
     @State private var navigation = RootNavigation.shared
     @Environment(\.dynamicTypeSize) private var typeSize
+    @State private var appliedSize: DynamicTypeSize?
 
     // The fonts read the size once per build, so a new text size in iOS rebuilds the screens like a new language does.
+    // While a reminder, a list or a phrase is open the rebuild waits, it would throw away what was typed.
     var body: some View {
         let language = AppLanguage(rawValue: navigation.languageCode) ?? .english
-        let _ = AppFonts.apply(typeSize)
+        let size = navigation.editingOpen ? appliedSize ?? typeSize : typeSize
+        let _ = AppFonts.apply(size)
         content()
             .environment(\.locale, language.locale)
             .environment(\.layoutDirection, language.layoutDirection)
-            .id("\(navigation.languageCode)-\(typeSize)")
+            .id("\(navigation.languageCode)-\(size)")
+            .onChange(of: size, initial: true) { _, new in
+                appliedSize = new
+            }
     }
 }
 
@@ -143,6 +150,7 @@ struct RootView: View {
         }
         .onChange(of: remote.config) { _, _ in showAnnouncementIfNew() }
         .onChange(of: navigation.composeRequest?.id) { _, _ in openRequestedCompose() }
+        .onChange(of: editing != nil || checking != nil || composing != nil) { _, open in navigation.editingOpen = open }
         .onChange(of: navigation.openRequest) { _, _ in openRequestedReminder() }
         .onChange(of: account.isSignedIn) { _, signedIn in
             // A session that ran out leaves no account to show, so its screens close.
@@ -384,7 +392,7 @@ struct RootView: View {
     private func remindEvent(_ event: HomeContent.Event) {
         let calendar = Calendar.current
         let parts = calendar.dateComponents([.hour, .minute], from: event.start)
-        let reminder = Reminder(title: event.title, schedule: Schedule(start: LocalDate(event.start, in: calendar), time: LocalTime(hour: parts.hour ?? 9, minute: parts.minute ?? 0)), preAlerts: [15], createdAt: Date())
+        let reminder = Reminder(title: HomeContent.reminderTitle(event.title), schedule: Schedule(start: LocalDate(event.start, in: calendar), time: LocalTime(hour: parts.hour ?? 9, minute: parts.minute ?? 0)), preAlerts: [15], createdAt: Date())
         withAnimation(Motion.standard) { store.save(reminder) }
         Feedback.play(.save)
         Notifier.shared.requestPermissionIfNeeded()

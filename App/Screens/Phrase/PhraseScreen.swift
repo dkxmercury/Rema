@@ -889,11 +889,15 @@ struct PhraseScreen: View {
             return
         }
         Feedback.play(.save)
-        if let used = parsed.usedPart, let chosen = overrides.schedule?.time, chosen != used {
-            if used == store.settings.evening {
-                PartShift.record(.evening, chosen)
-            } else if used == store.settings.morning {
-                PartShift.record(.morning, chosen)
+        // Three moves in a row count; keeping the usual time once starts the count again.
+        if let used = parsed.usedPart {
+            let part: PartShift.Part? = used == store.settings.evening ? .evening : used == store.settings.morning ? .morning : nil
+            if let part {
+                if let chosen = overrides.schedule?.time, chosen != used {
+                    PartShift.record(part, chosen)
+                } else {
+                    PartShift.reset(part)
+                }
             }
         }
         store.save(reminder)

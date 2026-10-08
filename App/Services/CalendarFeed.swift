@@ -10,10 +10,10 @@ final class CalendarFeed {
     private static let enabledKey = "calendar.enabled"
 
     private(set) var enabled: Bool
-    private(set) var denied = false
     private(set) var revision = 0
     @ObservationIgnored private let store = EKEventStore()
     @ObservationIgnored private var observer: NSObjectProtocol?
+    @ObservationIgnored private var cache: (key: [Int], entries: [CalendarEntry])?
 
     private init() {
         enabled = UserDefaults.standard.bool(forKey: Self.enabledKey) && Self.authorized
@@ -26,10 +26,16 @@ final class CalendarFeed {
         EKEventStore.authorizationStatus(for: .event) == .fullAccess
     }
 
+    // Read from iOS each time, so a refusal is still known after a restart and a later permission in Settings shows up.
+    var denied: Bool {
+        _ = revision
+        let status = EKEventStore.authorizationStatus(for: .event)
+        return status == .denied || status == .restricted || status == .writeOnly
+    }
+
     func setEnabled(_ on: Bool) async {
         if on {
             let granted = (try? await store.requestFullAccessToEvents()) ?? false
-            denied = !granted
             enabled = granted
         } else {
             enabled = false
@@ -38,18 +44,25 @@ final class CalendarFeed {
         revision += 1
     }
 
+    // Screens ask on every redraw; the calendar is read again only for a new span or after it changed.
     func entries(from start: Date, to end: Date) -> [CalendarEntry] {
-        _ = revision
         guard enabled, Self.authorized, start < end else { return [] }
+        let key = [Int(start.timeIntervalSince1970 / 60), Int(end.timeIntervalSince1970 / 60), revision]
+        if let cache, cache.key == key {
+            return cache.entries
+        }
         let predicate = store.predicateForEvents(withStart: start, end: end, calendars: nil)
-        return store.events(matching: predicate)
+        let entries = store.events(matching: predicate)
             .filter { !$0.isAllDay }
             .map { CalendarEntry(id: "\($0.eventIdentifier ?? UUID().uuidString)-\(Int($0.startDate.timeIntervalSince1970))", title: $0.title ?? "", start: $0.startDate, end: $0.endDate) }
             .sorted { $0.start < $1.start }
+        cache = (key, entries)
+        return entries
     }
 
+    // A meeting that began yesterday evening is not one of today's.
     func day(_ date: Date, calendar: Calendar = .current) -> [CalendarEntry] {
         let start = calendar.startOfDay(for: date)
-        return entries(from: start, to: calendar.date(byAdding: .day, value: 1, to: start) ?? start)
+        return entries(from: start, to: calendar.date(byAdding: .day, value: 1, to: start) ?? start).filter { $0.start >= start }
     }
 }

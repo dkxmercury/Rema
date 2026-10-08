@@ -43,6 +43,7 @@ public struct PhraseParser {
     public let preferred: String?
     public var coordinate: Coordinate?
     public var synonyms: [String: String] = [:]
+    public var languageSynonyms: [String: [String: String]] = [:]
 
     public init(now: Date, calendar: Calendar, morning: LocalTime, evening: LocalTime, places: [String] = [], preferred: String? = nil) {
         self.now = now
@@ -100,7 +101,11 @@ public struct PhraseParser {
     }
 
     public func parse(_ input: String) -> ParsedPhrase {
-        guard !synonyms.isEmpty, let (rewritten, origin) = PhraseParser.rewrite(input, synonyms) else {
+        // The server's words of the language the phrase is in, so a word of one language never rewrites another.
+        let table = PhraseParser.synonymKeys(input).reduce(synonyms) { found, key in
+            found.merging(languageSynonyms[key] ?? [:]) { first, _ in first }
+        }
+        guard !table.isEmpty, let (rewritten, origin) = PhraseParser.rewrite(input, table) else {
             return parseDirect(input)
         }
         var parsed = parseDirect(rewritten)
@@ -108,7 +113,41 @@ public struct PhraseParser {
             guard !range.isEmpty, range.upperBound - 1 < origin.count else { return nil }
             return origin[range.lowerBound]..<(origin[range.upperBound - 1] + 1)
         }
+        // A word that stays in the title is kept as typed, «позвонить мамке» does not turn into «маме».
+        for (variant, meaning) in table {
+            parsed.title = PhraseParser.restore(parsed.title, meaning: meaning, typed: variant, in: input)
+        }
         return parsed
+    }
+
+    static func synonymKeys(_ input: String) -> [String] {
+        if looksArabic(input) {
+            return ["ar"]
+        }
+        if mostlyLatin(input) {
+            if transliterated(input) != nil {
+                return ["ru"]
+            }
+            let code = latinLanguage(input, preferred: nil)
+            return code == "uz" ? ["uz-Latn", "uz"] : [code]
+        }
+        if looksUzbekCyrillic(input, preferred: nil) {
+            return ["uz-Cyrl", "uz", "ru"]
+        }
+        if looksUkrainian(input, preferred: nil) {
+            return ["uk", "ru"]
+        }
+        return ["ru"]
+    }
+
+    static func restore(_ title: String, meaning: String, typed variant: String, in input: String) -> String {
+        guard let typed = input.range(of: "(?<![\\p{L}])" + NSRegularExpression.escapedPattern(for: variant) + "(?![\\p{L}])", options: [.regularExpression, .caseInsensitive]),
+              let found = title.range(of: "(?<![\\p{L}])" + NSRegularExpression.escapedPattern(for: meaning) + "(?![\\p{L}])", options: [.regularExpression, .caseInsensitive]) else { return title }
+        var word = String(input[typed])
+        if found.lowerBound == title.startIndex {
+            word = word.prefix(1).uppercased() + word.dropFirst()
+        }
+        return title.replacingCharacters(in: found, with: word)
     }
 
     // Whole words only; each new letter points back into the typed text, so highlights land on what was typed.

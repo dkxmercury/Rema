@@ -11,6 +11,22 @@ extension PhraseParser {
     // «Завтра в 9 позвонить маме, в 12 обед с Ильёй, вечером купить хлеб» is three reminders.
     // A part without its own time or day belongs to the one before it, «вечером купить хлеб и молоко» stays whole.
     public func pieces(_ input: String) -> [PhrasePiece]? {
+        split(input)?.map(ahead)
+    }
+
+    // A part whose time has passed, «сегодня утром …» said in the afternoon, moves to the next day instead of being saved in the past.
+    private func ahead(_ piece: PhrasePiece) -> PhrasePiece {
+        guard var schedule = piece.parsed.schedule, schedule.rule == nil else { return piece }
+        for _ in 0..<7 {
+            guard let date = calendar.date(from: DateComponents(year: schedule.start.year, month: schedule.start.month, day: schedule.start.day, hour: schedule.time.hour, minute: schedule.time.minute)), date <= now else { break }
+            schedule.start = schedule.start.adding(days: 1)
+        }
+        var moved = piece
+        moved.parsed.schedule = schedule
+        return moved
+    }
+
+    private func split(_ input: String) -> [PhrasePiece]? {
         let whole = parse(input)
         guard !whole.corrected, let regex = try? NSRegularExpression(pattern: Self.joints, options: [.caseInsensitive]) else { return nil }
         // A joint inside one time, «между 14 и 15» or «à huit heures et demie», or inside a list of times does not split.
@@ -239,6 +255,7 @@ extension PhraseParser {
         var inner = PhraseParser(now: max(now, dayStart), calendar: calendar, morning: morning, evening: evening, places: places, preferred: preferred)
         inner.coordinate = coordinate
         inner.synonyms = synonyms
+        inner.languageSynonyms = languageSynonyms
         return inner.parse(text)
     }
 }

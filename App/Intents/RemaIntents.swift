@@ -16,7 +16,7 @@ struct AddReminderIntent: AppIntent {
         let store = Store.shared
         store.reloadIfChanged()
         let now = Date()
-        let parsed = PhraseParser(now: now, calendar: .current, morning: store.settings.morning, evening: store.settings.evening, places: store.activePlaces.map(\.name), preferred: AppLanguage.current.rawValue).parse(phrase)
+        let parsed = store.phraseParser(now: now).parse(phrase)
         guard !parsed.title.isEmpty else {
             throw $phrase.needsValueError(IntentDialog("What should I remind about?"))
         }

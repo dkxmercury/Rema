@@ -118,6 +118,9 @@ final class Remote {
         fetchedAt = Date()
         try? FileManager.default.createDirectory(at: Self.cacheURL.deletingLastPathComponent(), withIntermediateDirectories: true)
         try? data.write(to: Self.cacheURL, options: .atomic)
+        if let words = try? JSONEncoder().encode(Self.checkedWords(fresh.words)) {
+            try? words.write(to: Self.wordsURL, options: .atomic)
+        }
         guard fresh != config else { return }
         config = fresh
         Localization.overrides = Self.checked(fresh.strings)
@@ -147,16 +150,25 @@ final class Remote {
         return table[AppLanguage.current.rawValue] ?? table["en"]
     }
 
-    // Words the server teaches the phrase reader, «сёдня» for «сегодня»; only plain words get through.
-    var words: [String: String] {
-        var merged: [String: String] = [:]
-        for table in (config.words ?? [:]).values {
+    // Words the server teaches the phrase reader, «сёдня» for «сегодня», by language; only plain words get through.
+    var words: [String: [String: String]] {
+        Self.checkedWords(config.words)
+    }
+
+    static func checkedWords(_ words: [String: [String: String]]?) -> [String: [String: String]] {
+        var checked: [String: [String: String]] = [:]
+        for (language, table) in words ?? [:] {
             for (variant, meaning) in table.prefix(500) where (1...30).contains(variant.count) && (1...40).contains(meaning.count)
                 && variant.allSatisfy({ $0.isLetter || $0 == "'" }) && meaning.allSatisfy({ $0.isLetter || $0 == " " || $0 == "'" }) {
-                merged[variant.lowercased()] = meaning.lowercased()
+                checked[language, default: [:]][variant.lowercased()] = meaning.lowercased()
             }
         }
-        return merged
+        return checked
+    }
+
+    // The share sheet reads the phrase too and cannot see the app's own files.
+    static var wordsURL: URL {
+        SharedStore.directory.appendingPathComponent("phrase-words.json")
     }
 
     var exampleOverride: [String]? {
