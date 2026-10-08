@@ -8,6 +8,7 @@ struct InviteScreen: View {
     @State private var service = SharedService.shared
     @State private var code: String?
     @State private var problem: String?
+    @State private var unconfirmed = false
     @State private var name = ""
     @State private var copied = false
     @FocusState private var nameFocused: Bool
@@ -69,7 +70,10 @@ struct InviteScreen: View {
                     .padding(.top, 12)
                     Note("Rema does not look people up by email or phone number.")
                         .padding(.top, 10)
-                    if let problem {
+                    if unconfirmed {
+                        ConfirmEmailNote()
+                            .padding(.top, 10)
+                    } else if let problem {
                         Note(verbatim: problem)
                             .padding(.top, 10)
                     }
@@ -86,6 +90,11 @@ struct InviteScreen: View {
                 ShareLink(item: link, message: Text("Let's share reminders in Rema")) {
                     Text("Share the link")
                 }
+                .simultaneousGesture(TapGesture().onEnded {
+                    if let code {
+                        service.handedOut(code)
+                    }
+                })
                 .buttonStyle(PrimaryButtonStyle())
                 .padding(.horizontal, 18)
                 .padding(.bottom, 28)
@@ -108,7 +117,7 @@ struct InviteScreen: View {
                     .scaledToFit()
                     .padding(18)
                     .accessibilityLabel(Text("Invitation code"))
-            } else if problem == nil {
+            } else if problem == nil && !unconfirmed {
                 ProgressView()
             }
         }
@@ -126,6 +135,7 @@ struct InviteScreen: View {
             }
             withAnimation(Motion.standard) { code = created.code }
         } catch let failure as Backend.Failure {
+            unconfirmed = failure.needsConfirmedEmail
             problem = failure == .conflict("invite_limit") ? String(localized: "Too many invitations, try again later.", bundle: .app, locale: .app) : failure.friendsMessage
         } catch {
             problem = Backend.Failure.server.message
@@ -133,7 +143,8 @@ struct InviteScreen: View {
     }
 
     private func copy() {
-        guard let link else { return }
+        guard let link, let code else { return }
+        service.handedOut(code)
         UIPasteboard.general.url = link
         Feedback.play(.select)
         withAnimation(Motion.standard) { copied = true }

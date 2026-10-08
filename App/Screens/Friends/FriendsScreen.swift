@@ -16,6 +16,7 @@ struct FriendsScreen: View {
     @State private var enteringCode = false
     @State private var loaded = false
     @State private var unblocking: SharedPerson?
+    @State private var problem: String?
     @State private var touring = false
     @AppStorage("friends.tourSeen") private var tourSeen = false
     @FocusState private var nameFocused: Bool
@@ -87,7 +88,16 @@ struct FriendsScreen: View {
             presenting: unblocking
         ) { person in
             Button("Unblock") {
-                Task { try? await service.unblock(person.id) }
+                Task {
+                    do {
+                        try await service.unblock(person.id)
+                        problem = nil
+                    } catch let failure as Backend.Failure {
+                        problem = failure.friendsMessage
+                    } catch {
+                        problem = Backend.Failure.server.friendsMessage
+                    }
+                }
             }
         }
         .onDisappear {
@@ -212,6 +222,10 @@ struct FriendsScreen: View {
                     }
                 }
             }
+            if let problem {
+                Note(verbatim: problem)
+                    .padding(.top, 10)
+            }
         }
     }
 
@@ -220,9 +234,9 @@ struct FriendsScreen: View {
 
     private func openCode() {
         let typed = code.trimmingCharacters(in: .whitespacesAndNewlines)
-        // A pasted link works as well as the code itself.
-        let last = URL(string: typed).flatMap { $0.host == nil ? nil : $0.pathComponents.last } ?? typed
-        let cleaned = String(last.uppercased().map { Self.lookalikes[$0] ?? $0 }.filter { "ABCDEFGHJKLMNPQRSTUVWXYZ23456789".contains($0) })
+        // A pasted link works as well as the code itself, with or without https and inside the message it came with.
+        let linked = typed.range(of: "/i/[A-Za-z0-9]{8}(?![A-Za-z0-9])", options: .regularExpression).map { String(typed[$0].suffix(8)) }
+        let cleaned = String((linked ?? typed).uppercased().map { Self.lookalikes[$0] ?? $0 }.filter { "ABCDEFGHJKLMNPQRSTUVWXYZ23456789".contains($0) })
         guard cleaned.count == 8 else {
             Feedback.play(.error)
             return

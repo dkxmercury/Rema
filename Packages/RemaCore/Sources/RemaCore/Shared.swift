@@ -128,7 +128,7 @@ public struct SharedData: Codable, Hashable, Sendable {
 }
 
 // One shared reminder as the server sends it. PocketBase sends empty fields as zero or null, so everything is read leniently.
-public struct SharedItem: Decodable, Sendable {
+public struct SharedItem: Codable, Sendable {
     public var id: String
     public var gone: Bool
     public var owner: SharedPerson?
@@ -175,8 +175,9 @@ public extension Reminder {
 
 public enum SharedMerge {
     // Items from the server become reminders here. What each person keeps for themselves stays: early alerts, persistence, the sound,
-    // a list, a snooze, the ticks of the history. Reminders with changes still waiting to be sent are left as they are.
-    public static func apply(_ items: [SharedItem], to reminders: [Reminder], waiting: Set<UUID>, now: Date) -> [Reminder] {
+    // a list, a snooze, the ticks of the history. Reminders with changes still waiting to be sent are left as they are,
+    // and a tick the server has not confirmed yet only moves forward.
+    public static func apply(_ items: [SharedItem], to reminders: [Reminder], waiting: Set<UUID>, unconfirmed: Set<UUID> = [], now: Date, onApply: (SharedItem) -> Void = { _ in }) -> [Reminder] {
         var result = reminders
         for item in items {
             guard let id = UUID(uuidString: item.id), !waiting.contains(id) else { continue }
@@ -185,6 +186,7 @@ public enum SharedMerge {
             if let index, let known = result[index].shared?.seq, item.seq > 0, item.seq < known {
                 continue
             }
+            onApply(item)
             if item.gone || item.data == nil || item.owner == nil {
                 if let index, result[index].shared != nil {
                     result.remove(at: index)
@@ -204,11 +206,13 @@ public enum SharedMerge {
             if !same {
                 if let done, done > (reminder.completedThrough ?? .distantPast) {
                     reminder.markDone(through: done, at: now)
-                } else if let done {
-                    reminder.reopen(before: done.addingTimeInterval(1))
-                } else {
-                    reminder.completedThrough = nil
-                    reminder.history = []
+                } else if !unconfirmed.contains(id) {
+                    if let done {
+                        reminder.reopen(before: done.addingTimeInterval(1))
+                    } else {
+                        reminder.completedThrough = nil
+                        reminder.history = []
+                    }
                 }
             }
             reminder.deletedAt = nil
@@ -219,5 +223,14 @@ public enum SharedMerge {
             }
         }
         return result
+    }
+
+    // Ticks made on this phone, in a widget or a notification as well, that the server has not confirmed yet.
+    public static func unconfirmed(_ reminders: [Reminder], acknowledged: [String: Int64]) -> Set<UUID> {
+        Set(reminders.compactMap { reminder in
+            guard let shared = reminder.shared, !shared.isInvitation, !shared.pending, let known = acknowledged[reminder.id.uuidString] else { return nil }
+            let through = reminder.completedThrough.map { Int64(($0.timeIntervalSince1970 * 1000).rounded()) } ?? 0
+            return through == known ? nil : reminder.id
+        })
     }
 }

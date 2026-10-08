@@ -359,16 +359,36 @@ final class Store {
 
     @discardableResult
     func reloadIfChanged(edit: Bool = true) -> Bool {
-        guard changedOnDisk else { return false }
-        load()
-        onChange?()
-        if edit {
-            onEdit?()
+        var reloaded = false
+        if changedOnDisk {
+            load()
+            onChange?()
+            if edit {
+                onEdit?()
+            }
+            // The share sheet and the watch write the file without asking the widgets to redraw.
+            if shared {
+                reloadWidgetsIfNeeded()
+            }
+            reloaded = true
         }
-        // The share sheet and the watch write the file without asking the widgets to redraw.
-        if shared {
-            reloadWidgetsIfNeeded()
-        }
+        return absorbInbox() || reloaded
+    }
+
+    // Shared reminders that came by push while the app was closed or in the background, merged around what waits to be sent.
+    @discardableResult
+    func absorbInbox() -> Bool {
+        guard shared else { return false }
+        let items = SharedInbox.take(from: directory)
+        guard !items.isEmpty else { return false }
+        fresh()
+        var taken: [SharedItem] = []
+        let unconfirmed = SharedMerge.unconfirmed(reminders, acknowledged: SharedLedger.acknowledged)
+        let merged = SharedMerge.apply(items, to: reminders, waiting: SharedLedger.waiting, unconfirmed: unconfirmed, now: Date()) { taken.append($0) }
+        SharedLedger.record(taken)
+        guard merged != reminders else { return false }
+        reminders = merged
+        persist(edit: false)
         return true
     }
 

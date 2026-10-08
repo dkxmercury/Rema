@@ -5711,6 +5711,52 @@
         }
       }
     },
+    "Confirm your email first. Open the link in the email from Rema.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أكّد بريدك الإلكتروني أولًا. افتح الرابط في الرسالة من Rema."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bestätige zuerst deine E-Mail-Adresse. Öffne den Link in der E-Mail von Rema."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Confirmez d’abord votre adresse e-mail. Ouvrez le lien dans l’e-mail de Rema."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сначала подтвердите почту. Откройте ссылку в письме от Rema."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Спершу підтвердьте пошту. Відкрийте посилання в листі від Rema."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Аввал почтангизни тасдиқланг. Rema юборган хатдаги ҳаволани очинг."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avval pochtangizni tasdiqlang. Rema yuborgan xatdagi havolani oching."
+          }
+        }
+      }
+    },
     "Continue": {
       "localizations": {
         "ar": {
@@ -20831,6 +20877,52 @@
         }
       }
     },
+    "Remove %@ from the reminder": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إزالة %@ من التذكير"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ aus der Erinnerung entfernen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retirer %@ du rappel"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Убрать из напоминания: %@"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Прибрати з нагадування: %@"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ни эслатмадан олиб ташлаш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ni eslatmadan olib tashlash"
+          }
+        }
+      }
+    },
     "Remove %@ from this reminder?": {
       "localizations": {
         "ar": {
@@ -22345,6 +22437,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Kodni qayta yuborish"
+          }
+        }
+      }
+    },
+    "Send the email again": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إعادة إرسال الرسالة"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "E-Mail erneut senden"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renvoyer l’e-mail"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отправить письмо ещё раз"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Надіслати лист ще раз"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Хатни қайта юбориш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xatni qayta yuborish"
           }
         }
       }
@@ -25415,6 +25553,52 @@
         }
       }
     },
+    "The change to “%@” did not reach the friends.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لم يصل تعديل «%@» إلى الأصدقاء."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Änderung an „%@“ hat die Freunde nicht erreicht."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La modification de « %@ » n’est pas parvenue aux amis."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Изменение «%@» не дошло до друзей."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Зміна «%@» не дійшла до друзів."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«%@» ўзгариши дўстларга етиб бормади."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«%@» o‘zgarishi do‘stlarga yetib bormadi."
+          }
+        }
+      }
+    },
     "The code has expired. Send a new one.": {
       "localizations": {
         "ar": {
@@ -27113,6 +27297,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Urinishlar juda ko‘p. Bir daqiqadan keyin urinib ko‘ring."
+          }
+        }
+      }
+    },
+    "Too many attempts. Try again later.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "محاولات كثيرة جدًا. حاول مرة أخرى لاحقًا."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zu viele Versuche. Versuch es später noch einmal."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trop de tentatives. Réessayez plus tard."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Слишком много попыток. Попробуйте позже."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Забагато спроб. Спробуйте пізніше."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Уринишлар жуда кўп. Кейинроқ уриниб кўринг."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Urinishlar juda ko‘p. Keyinroq urinib ko‘ring."
           }
         }
       }

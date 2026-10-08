@@ -112,12 +112,14 @@ struct SharedDetailScreen: View {
                     participant(id: shared.owner.id, name: shared.isMine ? String(localized: "You", bundle: .app, locale: .app) : ownerName, status: String(localized: "author", bundle: .app, locale: .app), done: true)
                     ForEach(shared.members.filter { $0.status != "removed" }, id: \.id) { member in
                         Hairline()
+                        // Who said no or left is out already; the one who made it can only ask them again.
+                        let inside = member.status == SharedStatus.invited || member.status == SharedStatus.accepted
                         participant(
                             id: member.id,
                             name: member.id == me ? String(localized: "You", bundle: .app, locale: .app) : service.name(of: member.id, fallback: member.name),
                             status: statusText(member.status),
                             done: member.status == SharedStatus.accepted,
-                            onRemove: shared.isMine ? { removing = member } : nil
+                            onRemove: shared.isMine && inside ? { removing = member } : nil
                         )
                     }
                     if shared.isMine {
@@ -240,7 +242,7 @@ struct SharedDetailScreen: View {
                             .contentShape(Rectangle())
                     }
                     .buttonStyle(RowPressStyle())
-                    .accessibilityLabel(Text("Remove from the reminder"))
+                    .accessibilityLabel(Text(verbatim: String(localized: "Remove \(name) from the reminder", bundle: .app, locale: .app)))
                 }
             }
         }

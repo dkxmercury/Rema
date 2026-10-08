@@ -60,13 +60,13 @@ struct DayProvider: TimelineProvider {
         if context.isPreview {
             completion(.sample)
         } else {
-            completion(.make(at: Date(), snapshot: SharedStore.load()))
+            completion(.make(at: Date(), snapshot: SharedInbox.overlaid(SharedStore.load())))
         }
     }
 
     // A frame every five minutes keeps the hand moving; the exact minutes of reminders keep the list honest.
     func getTimeline(in context: Context, completion: @escaping (Timeline<DayEntry>) -> Void) {
-        let snapshot = SharedStore.load()
+        let snapshot = SharedInbox.overlaid(SharedStore.load())
         let now = Date()
         let start = Date(timeIntervalSinceReferenceDate: floor(now.timeIntervalSinceReferenceDate / 60) * 60)
         let end = start.addingTimeInterval(6 * 3600)

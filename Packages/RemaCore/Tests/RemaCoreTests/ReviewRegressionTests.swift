@@ -21,6 +21,10 @@ struct ReviewRegressionTests {
         #expect(clock(doctor.schedule) == "10:00")
         #expect(!doctor.title.lowercased().contains("годину"))
         #expect(clock(parser.parse("у п'ятницю на 15 годину перукар").schedule) == "15:00")
+        #expect(clock(parser.parse("у суботу на 21 годину кіно").schedule) == "21:00")
+        let room = parser.parse("забронювати переговорку на 1 годину завтра")
+        #expect(clock(room.schedule) == "09:00")
+        #expect(room.title.contains("на 1 годину"))
     }
 
     @Test func ukrainianWeekdayRangeIsNotEveryFriday() {

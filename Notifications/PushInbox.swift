@@ -1,6 +1,7 @@
 import Foundation
 import RemaCore
 import UserNotifications
+import WidgetKit
 
 enum PushInbox {
     static func handle(_ userInfo: [AnyHashable: Any], content: UNMutableNotificationContent) async {
@@ -13,11 +14,17 @@ enum PushInbox {
             return
         }
         var reminder: Reminder?
-        if let item = push.item, let id = UUID(uuidString: item.id), var snapshot = SharedStore.load() {
-            snapshot.reminders = push.applied(to: snapshot.reminders, now: Date())
-            if (try? SharedStore.save(snapshot)) != nil {
+        if let item = push.item, let id = UUID(uuidString: item.id) {
+            // The store file stays the app's alone; the item waits in the inbox until the app takes it in.
+            if (try? SharedInbox.add(item)) != nil {
+                WidgetCenter.shared.reloadAllTimelines()
+            }
+            if let snapshot = SharedInbox.overlaid(SharedStore.load()) {
                 reminder = snapshot.reminders.first { $0.id == id }
-                await reschedule(id, reminder: reminder, settings: snapshot.settings)
+                // A change of mine still waiting to be sent wins; the alarms stay as the app set them.
+                if !SharedLedger.waiting.contains(id) {
+                    await reschedule(id, reminder: reminder, settings: snapshot.settings)
+                }
             }
             content.userInfo["reminder"] = item.id
         }

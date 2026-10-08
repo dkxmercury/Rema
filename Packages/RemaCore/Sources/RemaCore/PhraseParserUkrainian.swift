@@ -216,8 +216,8 @@ extension PhraseParser {
             s.meridiem = group(m, 2, text) != nil
             return true
         }
-        // «На 10 годину» is a time, while «на 2 години» stays a length of time.
-        take("на (\\d{1,2}) годину\(modifier)", text, &state) { m, s in
+        // «На 10 годину» is a time, while «на 2 години» and «на 1 годину» stay a length of time.
+        take("на (?!1 )(\\d{1,2}) годину\(modifier)", text, &state) { m, s in
             guard let hour = group(m, 1, text).flatMap(Int.init), hour < 24 else { return false }
             s.time = LocalTime(hour: ukHour(hour, group(m, 2, text)), minute: 0)
             s.meridiem = group(m, 2, text) != nil

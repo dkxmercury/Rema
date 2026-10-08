@@ -8,7 +8,9 @@ enum QuickNotifications {
         let center = UNUserNotificationCenter.current()
         let status = await center.notificationSettings().authorizationStatus
         guard status == .authorized || status == .provisional || status == .ephemeral else { return }
-        let plan = Scheduler.plan(reminders: [reminder], settings: settings, now: Date(), calendar: .current, capacity: 1 + Scheduler.nagRepeats + reminder.preAlerts.count)
+        // The next time with its repeats and the few times after it, so a phone that stays closed for days still rings.
+        let perTime = 1 + reminder.preAlerts.count
+        let plan = Scheduler.plan(reminders: [reminder], settings: settings, now: Date(), calendar: .current, capacity: perTime + Scheduler.nagRepeats + 3 * perTime)
         for item in plan {
             let content = UNMutableNotificationContent()
             content.title = item.title

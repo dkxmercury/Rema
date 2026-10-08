@@ -108,6 +108,15 @@ final class Account {
         begin(auth, method: .google)
     }
 
+    // The letter with the link that confirms the email, sent again on request.
+    func resendConfirmation() async throws {
+        guard let session else { throw Backend.Failure.unauthorized }
+        struct Body: Encodable {
+            let email: String
+        }
+        try await Backend.send("POST", "/api/collections/users/request-verification", body: Body(email: session.email))
+    }
+
     func requestReset(email: String) async throws {
         struct Body: Encodable {
             let email: String

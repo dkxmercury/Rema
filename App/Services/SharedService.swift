@@ -58,6 +58,7 @@ final class SharedService {
     struct Pending: Codable, Equatable {
         var key = UUID()
         var op: Op
+        var retried: Bool?
     }
 
     struct State: Codable {
@@ -69,10 +70,10 @@ final class SharedService {
         var pendingNames: [String: String] = [:]
         var outbox: [Pending] = []
         var myName: String?
-        // The tick the server last confirmed for each reminder, to notice ticks made where no hook runs.
-        var acknowledged: [String: Int64] = [:]
         // A reminder the server would not share, told once on the home screen.
         var refused: String?
+        // A change the server would not take; the friends keep the reminder as it was.
+        var refusedChange: String?
         // The people I blocked, so a block made by mistake can be taken back.
         var blocked: [SharedPerson] = []
 
@@ -93,8 +94,8 @@ final class SharedService {
             pendingNames = (try? container.decodeIfPresent([String: String].self, forKey: .pendingNames)) ?? [:]
             outbox = (try? container.decodeIfPresent([Pending].self, forKey: .outbox)) ?? []
             myName = try? container.decodeIfPresent(String.self, forKey: .myName)
-            acknowledged = (try? container.decodeIfPresent([String: Int64].self, forKey: .acknowledged)) ?? [:]
             refused = try? container.decodeIfPresent(String.self, forKey: .refused)
+            refusedChange = try? container.decodeIfPresent(String.self, forKey: .refusedChange)
             blocked = (try? container.decodeIfPresent([SharedPerson].self, forKey: .blocked)) ?? []
         }
     }
@@ -112,6 +113,8 @@ final class SharedService {
     @ObservationIgnored private var running: Task<Void, Never>?
     @ObservationIgnored private var again = false
     @ObservationIgnored private var sending: UUID?
+    // An invitation made on this run and not handed to anybody yet, shown again instead of a new one.
+    @ObservationIgnored private var spare: String?
 
     private static var stateURL: URL {
         SharedStore.localDirectory.appendingPathComponent("shared-state.json")
@@ -128,6 +131,7 @@ final class SharedService {
     private func save() {
         SharedNames.names = state.names
         SharedNames.me = state.account
+        SharedLedger.waiting = waiting
         guard let data = try? JSONEncoder().encode(state) else { return }
         try? FileManager.default.createDirectory(at: Self.stateURL.deletingLastPathComponent(), withIntermediateDirectories: true)
         try? data.write(to: Self.stateURL, options: .atomic)
@@ -166,11 +170,15 @@ final class SharedService {
         running = nil
         state = State()
         problem = nil
+        spare = nil
+        SharedLedger.clear()
+        SharedInbox.clear()
         save()
     }
 
     func clearRefused() {
         state.refused = nil
+        state.refusedChange = nil
         save()
     }
 
@@ -200,9 +208,13 @@ final class SharedService {
         guard Remote.shared.isOn(.sync), let session = Account.shared.session else { return }
         if state.account != session.userID {
             state = State(account: session.userID)
+            spare = nil
+            SharedLedger.clear()
+            SharedInbox.clear()
             save()
         }
         let account = session.userID
+        Store.shared.absorbInbox()
         reconcileTicks()
         var trouble: Backend.Failure?
         do {
@@ -227,9 +239,7 @@ final class SharedService {
                 guard state.account == account, Account.shared.session?.userID == account else { return }
                 let skipped = waiting
                 let items = answer.items ?? []
-                for item in items where !(UUID(uuidString: item.id).map(skipped.contains) ?? false) {
-                    remember(item)
-                }
+                SharedLedger.record(items.filter { !(UUID(uuidString: $0.id).map(skipped.contains) ?? false) })
                 Store.shared.applyShared(items, waiting: skipped)
                 state.cursor = answer.cursor
                 save()
@@ -251,34 +261,52 @@ final class SharedService {
     private func flush(token: String, account: String) async throws -> Backend.Failure? {
         var held = Set<String>()
         var trouble: Backend.Failure?
-        for entry in state.outbox {
-            guard !held.contains(entry.op.id), state.outbox.contains(where: { $0.key == entry.key }) else { continue }
+        for key in state.outbox.map(\.key) {
+            // A change rewritten while the ones before it were sent goes out as it is now.
+            guard let entry = state.outbox.first(where: { $0.key == key }), !held.contains(entry.op.id) else { continue }
             sending = entry.key
             defer { sending = nil }
             do {
                 let item = try await send(entry.op, token: token)
                 guard state.account == account else { return nil }
                 state.outbox.removeAll { $0.key == entry.key }
+                // The server had this reminder already from a send whose answer got lost, without the later change.
+                if case .create(let id, let data, let members, let stamp) = entry.op, let item, item.clientUpdatedAt < stamp {
+                    enqueue(.update(id: id, data: data, members: members, stamp: stamp))
+                    again = true
+                }
                 save()
                 guard let item else { continue }
                 let skipped = waiting
                 if !(UUID(uuidString: item.id).map(skipped.contains) ?? false) {
-                    remember(item)
+                    SharedLedger.record([item])
                 }
                 Store.shared.applyShared([item], waiting: skipped)
-                // The server had this reminder already from a send whose answer got lost, without the later change.
-                if case .create(let id, let data, let members, let stamp) = entry.op, item.clientUpdatedAt < stamp {
-                    enqueue(.update(id: id, data: data, members: members, stamp: stamp))
-                }
             } catch let failure as Backend.Failure where failure.isRefusal {
                 guard state.account == account else { return nil }
+                // Someone in it stopped being a friend since; with the friends read again it goes once more without them.
+                if failure == .invalid("not_friend"), entry.retried != true, entry.op.isCreate || entry.op.isUpdate {
+                    try? await loadFriends(token: token, account: account)
+                    if let index = state.outbox.firstIndex(where: { $0.key == entry.key }) {
+                        state.outbox[index].retried = true
+                        save()
+                    }
+                    held.insert(entry.op.id)
+                    again = true
+                    continue
+                }
                 state.outbox.removeAll { $0.key == entry.key }
-                if case .create(let id, let data, _, _) = entry.op {
+                switch entry.op {
+                case .create(let id, let data, _, _):
                     state.outbox.removeAll { $0.op.id == id }
                     if let uuid = UUID(uuidString: id) {
                         Store.shared.unshare(uuid)
                     }
                     state.refused = data.title
+                case .update(_, let data, _, _):
+                    state.refusedChange = data.title
+                default:
+                    break
                 }
                 // What the server has for this reminder is unknown here now, so the next pass reads everything again.
                 state.cursor = 0
@@ -329,22 +357,11 @@ final class SharedService {
         return members.filter(known.contains)
     }
 
-    private func remember(_ item: SharedItem) {
-        if item.gone || item.data == nil {
-            state.acknowledged[item.id] = nil
-        } else {
-            state.acknowledged[item.id] = item.data?.doneMode == .one ? item.doneThrough : item.myDone
-        }
-    }
-
     // A tick made in the widget, on the watch or from a notification while Rema was closed reaches no hook, so it is noticed here.
     private func reconcileTicks() {
-        for reminder in Store.shared.reminders {
-            let id = reminder.id.uuidString
-            guard let shared = reminder.shared, !shared.isInvitation, !shared.pending, let known = state.acknowledged[id] else { continue }
-            let through = Self.milliseconds(reminder.completedThrough)
-            guard through != known, !state.outbox.contains(where: { $0.op.id == id && $0.op.isDone }) else { continue }
-            enqueue(.done(id: id, through: through))
+        for id in SharedMerge.unconfirmed(Store.shared.reminders, acknowledged: SharedLedger.acknowledged) {
+            guard let reminder = Store.shared.reminder(id), !state.outbox.contains(where: { $0.op.id == id.uuidString && $0.op.isDone }) else { continue }
+            enqueue(.done(id: id.uuidString, through: Self.milliseconds(reminder.completedThrough)))
         }
     }
 
@@ -423,7 +440,7 @@ final class SharedService {
 
     func removed(_ reminder: Reminder) {
         guard let shared = reminder.shared else { return }
-        state.acknowledged[reminder.id.uuidString] = nil
+        SharedLedger.forget(reminder.id.uuidString)
         enqueue(shared.isMine ? .delete(id: reminder.id.uuidString) : .leave(id: reminder.id.uuidString))
         kick()
     }
@@ -434,15 +451,22 @@ final class SharedService {
         kick()
     }
 
-    // A fresh invitation still open is shown again instead of making a new one each time the screen opens.
+    // An invitation works for one person, so only one nobody got yet is shown again instead of making a new one.
     func createInvite(calling name: String) async throws -> (code: String, link: URL) {
         guard let session = Account.shared.session else { throw Backend.Failure.unauthorized }
         let trimmed = String(name.trimmingCharacters(in: .whitespacesAndNewlines).prefix(40))
-        if let open = state.invites.first(where: { $0.state == "open" && $0.expires > Date().addingTimeInterval(3600) }) {
-            if !trimmed.isEmpty {
-                setPendingName(open.code, trimmed)
+        if let code = spare {
+            spare = nil
+            // Someone may have scanned it from the screen meanwhile.
+            try? await loadFriends(token: session.token, account: session.userID)
+            if state.invites.contains(where: { $0.code == code && $0.state == "open" && $0.expires > Date().addingTimeInterval(3600) }) {
+                if trimmed.isEmpty {
+                    spare = code
+                } else {
+                    setPendingName(code, trimmed)
+                }
+                return (code, Self.link(code))
             }
-            return (open.code, Self.link(open.code))
         }
         struct Created: Decodable {
             let code: String
@@ -450,12 +474,21 @@ final class SharedService {
         }
         let created = try await Backend.request("POST", "/api/rema/invites", token: session.token, as: Created.self)
         guard state.account == nil || state.account == session.userID else { throw Backend.Failure.unauthorized }
-        if !trimmed.isEmpty {
+        if trimmed.isEmpty {
+            spare = created.code
+        } else {
             state.pendingNames[created.code] = trimmed
         }
         state.invites.insert(SentInvite(code: created.code, state: "open", expires: Date(timeIntervalSince1970: Double(created.expires) / 1000)), at: 0)
         save()
         return (created.code, Self.link(created.code))
+    }
+
+    // Shared, copied or named: from now on the invitation belongs to one person.
+    func handedOut(_ code: String) {
+        if spare == code {
+            spare = nil
+        }
     }
 
     static func link(_ code: String) -> URL {
@@ -465,6 +498,9 @@ final class SharedService {
     func setPendingName(_ code: String, _ name: String) {
         let trimmed = String(name.trimmingCharacters(in: .whitespacesAndNewlines).prefix(40))
         state.pendingNames[code] = trimmed.isEmpty ? nil : trimmed
+        if !trimmed.isEmpty {
+            handedOut(code)
+        }
         save()
     }
 
@@ -505,6 +541,7 @@ final class SharedService {
     func remove(_ friendID: String) async throws {
         guard let session = Account.shared.session else { throw Backend.Failure.unauthorized }
         try await Backend.send("DELETE", "/api/rema/friends/\(friendID)", token: session.token)
+        state.names[friendID] = nil
         forget(friendID)
     }
 
@@ -516,6 +553,7 @@ final class SharedService {
         if !state.blocked.contains(where: { $0.id == userID }) {
             state.blocked.insert(SharedPerson(id: userID, name: known), at: 0)
         }
+        // My name for the person stays, so the list of the blocked shows whom I meant.
         forget(userID)
     }
 
@@ -532,9 +570,13 @@ final class SharedService {
         guard var local = Store.shared.reminder(id), var shared = local.shared, shared.isMine else { return }
         let wanted = Set(people.map(\.id))
         var members: [SharedMember] = shared.members.compactMap { member in
-            guard wanted.contains(member.id) else { return nil }
+            let inside = member.status == SharedStatus.invited || member.status == SharedStatus.accepted
+            guard wanted.contains(member.id) else {
+                // Who said no or left stays listed as the server keeps them.
+                return inside ? nil : member
+            }
             var kept = member
-            if kept.status != SharedStatus.invited && kept.status != SharedStatus.accepted {
+            if !inside {
                 kept.status = SharedStatus.invited
             }
             return kept
@@ -545,14 +587,14 @@ final class SharedService {
         shared.members = members
         local.shared = shared
         Store.shared.save(local)
-        enqueue(.update(id: local.id.uuidString, data: local.sharedData, members: members.map(\.id), stamp: Self.stamp()))
+        let active = members.filter { $0.status == SharedStatus.invited || $0.status == SharedStatus.accepted }.map(\.id)
+        enqueue(.update(id: local.id.uuidString, data: local.sharedData, members: active, stamp: Self.stamp()))
         kick()
     }
 
     // Without the friendship nothing is shared any more, here as on the server.
     private func forget(_ userID: String) {
         state.friends.removeAll { $0.id == userID }
-        state.names[userID] = nil
         save()
         Store.shared.dropShared(with: userID)
         kick()
@@ -599,7 +641,11 @@ final class SharedService {
         let blocks = try? await Backend.request("GET", "/api/rema/blocks", token: token, as: Blocks.self)
         guard state.account == account, Account.shared.session?.userID == account else { return }
         if let blocks {
-            state.blocked = blocks.blocked ?? []
+            // The server keeps no name for someone blocked before ever being a friend; the one seen here stays.
+            let known = Dictionary(state.blocked.map { ($0.id, $0.name) }, uniquingKeysWith: { first, _ in first })
+            state.blocked = (blocks.blocked ?? []).map { person in
+                person.name.isEmpty ? SharedPerson(id: person.id, name: known[person.id] ?? "") : person
+            }
         }
         state.friends = (answer.friends ?? []).map { Friend(id: $0.id, name: $0.name ?? "", since: Date(timeIntervalSince1970: Double($0.since ?? 0) / 1000)) }
         state.invites = (answer.invites ?? []).map { SentInvite(code: $0.code, state: $0.state, expires: Date(timeIntervalSince1970: Double($0.expires) / 1000), friendID: $0.friend?.id) }

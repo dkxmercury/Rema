@@ -337,7 +337,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
     }
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        // The extension has already written the friend's change to the shared file; the open app picks it up and asks for the rest.
+        // The extension has left the friend's change in the inbox; the open app takes it in and asks for the rest.
         if notification.request.content.userInfo["rema"] != nil {
             Task { @MainActor in
                 store.reloadIfChanged()

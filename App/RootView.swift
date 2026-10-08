@@ -190,7 +190,8 @@ struct RootView: View {
         .onChange(of: editing != nil || checking != nil || composing != nil || inviting) { _, open in navigation.editingOpen = open }
         .onChange(of: navigation.openRequest) { _, _ in openRequestedReminder() }
         .onChange(of: account.isSignedIn) { _, signedIn in
-            if signedIn, let code = navigation.pendingInvite {
+            // Someone new first sees the intro; the invitation opens when it closes.
+            if signedIn, UserDefaults.standard.bool(forKey: RootNavigation.introKey), let code = navigation.pendingInvite {
                 navigation.pendingInvite = nil
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { answering = InviteTarget(code: code) }
             }
@@ -323,6 +324,10 @@ struct RootView: View {
     private func finishIntro() {
         UserDefaults.standard.set(true, forKey: RootNavigation.introKey)
         showingIntro = false
+        if account.isSignedIn, let code = navigation.pendingInvite {
+            navigation.pendingInvite = nil
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { answering = InviteTarget(code: code) }
+        }
     }
 
     private func closeLanguage() {
@@ -516,6 +521,9 @@ struct RootView: View {
         }
         if let title = SharedService.shared.state.refused {
             return .notShared(String(localized: "“\(title)” could not be shared and stays only on this phone.", bundle: .app, locale: .app))
+        }
+        if let title = SharedService.shared.state.refusedChange {
+            return .notShared(String(localized: "The change to “\(title)” did not reach the friends.", bundle: .app, locale: .app))
         }
         if NotificationAccess.shared.denied { return .notificationsOff }
         if account.expired, !account.isSignedIn { return .signInExpired }

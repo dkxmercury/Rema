@@ -102,12 +102,12 @@ struct SharedTests {
     @Test func aLatePushDoesNotUndoANewerState() throws {
         let fresh = movieJSON().replacingOccurrences(of: "\"seq\": 7", with: "\"seq\": 9").replacingOccurrences(of: "Кино «Дюна»", with: "Кино в 20:00")
         let merged = SharedMerge.apply([try item(fresh)], to: [], waiting: [], now: now)
-        let late = try #require(SharedPush(userInfo: ["rema": ["event": "changed", "to": "ilya", "actor": "anya", "item": try JSONSerialization.jsonObject(with: Data(movieJSON().utf8))]]))
-        #expect(late.applied(to: merged, now: now).first?.title == "Кино в 20:00")
-        let gone = try #require(SharedPush(userInfo: ["rema": ["event": "deleted", "to": "ilya", "actor": "anya", "item": ["id": movieID, "gone": true, "seq": 8]]]))
-        #expect(gone.applied(to: merged, now: now).count == 1)
-        let later = try #require(SharedPush(userInfo: ["rema": ["event": "deleted", "to": "ilya", "actor": "anya", "item": ["id": movieID, "gone": true, "seq": 10]]]))
-        #expect(later.applied(to: merged, now: now).isEmpty)
+        let late = try #require(SharedPush(userInfo: ["rema": ["event": "changed", "to": "ilya", "actor": "anya", "item": try JSONSerialization.jsonObject(with: Data(movieJSON().utf8))]])?.item)
+        #expect(SharedMerge.apply([late], to: merged, waiting: [], now: now).first?.title == "Кино в 20:00")
+        let gone = try #require(SharedPush(userInfo: ["rema": ["event": "deleted", "to": "ilya", "actor": "anya", "item": ["id": movieID, "gone": true, "seq": 8]]])?.item)
+        #expect(SharedMerge.apply([gone], to: merged, waiting: [], now: now).count == 1)
+        let later = try #require(SharedPush(userInfo: ["rema": ["event": "deleted", "to": "ilya", "actor": "anya", "item": ["id": movieID, "gone": true, "seq": 10]]])?.item)
+        #expect(SharedMerge.apply([later], to: merged, waiting: [], now: now).isEmpty)
     }
 
     @Test func aPushWithoutParticipantsKeepsTheKnownOnes() throws {
@@ -117,10 +117,58 @@ struct SharedTests {
         partial["partial"] = true
         let push = try #require(SharedPush(userInfo: ["rema": ["event": "changed", "to": "ilya", "actor": "anya", "item": partial]]))
         #expect(push.event == .changed && push.recipient == "ilya")
-        let after = try #require(push.applied(to: merged, now: now).first)
+        let pushed = try #require(push.item)
+        let after = try #require(SharedMerge.apply([pushed], to: merged, waiting: [], now: now).first)
         #expect(after.shared?.members.map(\.id) == ["ilya", "mama"])
         #expect(after.shared?.seq == 8)
         #expect(SharedPush(userInfo: ["aps": ["alert": "hi"]]) == nil)
+    }
+
+    @Test func aTickNotConfirmedYetOnlyMovesForward() throws {
+        let tick: Int64 = 1_791_400_000_000
+        var local = try #require(SharedMerge.apply([try item(movieJSON())], to: [], waiting: [], now: now).first)
+        local.markDone(through: Date(timeIntervalSince1970: Double(tick) / 1000), at: now)
+        let unconfirmed = SharedMerge.unconfirmed([local], acknowledged: [movieID: 0])
+        #expect(unconfirmed == [local.id])
+        #expect(SharedMerge.unconfirmed([local], acknowledged: [movieID: tick]).isEmpty)
+        #expect(SharedMerge.unconfirmed([local], acknowledged: [:]).isEmpty)
+        let renamed = movieJSON().replacingOccurrences(of: "Кино «Дюна»", with: "Кино в 20:00").replacingOccurrences(of: "\"seq\": 7", with: "\"seq\": 8")
+        let kept = try #require(SharedMerge.apply([try item(renamed)], to: [local], waiting: [], unconfirmed: unconfirmed, now: now).first)
+        #expect(kept.title == "Кино в 20:00")
+        #expect(kept.completedThrough == local.completedThrough)
+        let undone = try #require(SharedMerge.apply([try item(renamed)], to: [local], waiting: [], now: now).first)
+        #expect(undone.completedThrough == nil)
+        let later = try #require(SharedMerge.apply([try item(movieJSON(myDone: tick + 86_400_000).replacingOccurrences(of: "\"seq\": 7", with: "\"seq\": 9"))], to: [local], waiting: [], unconfirmed: unconfirmed, now: now).first)
+        #expect(later.completedThrough == Date(timeIntervalSince1970: Double(tick + 86_400_000) / 1000))
+    }
+
+    @Test func onlyItemsTakenInAreReported() throws {
+        let fresh = movieJSON().replacingOccurrences(of: "\"seq\": 7", with: "\"seq\": 9")
+        let merged = SharedMerge.apply([try item(fresh)], to: [], waiting: [], now: now)
+        var reported: [Int64] = []
+        _ = SharedMerge.apply([try item(movieJSON()), try item(fresh)], to: merged, waiting: [], now: now) { reported.append($0.seq) }
+        #expect(reported == [9])
+        let id = try #require(merged.first?.id)
+        _ = SharedMerge.apply([try item(fresh)], to: merged, waiting: [id], now: now) { reported.append($0.seq) }
+        #expect(reported == [9])
+    }
+
+    @Test func pushesWaitInTheInboxInTheOrderTheyCame() throws {
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("inbox-\(UUID().uuidString)", isDirectory: true)
+        defer { try? FileManager.default.removeItem(at: folder) }
+        #expect(SharedInbox.items(in: folder).isEmpty)
+        let renamed = movieJSON().replacingOccurrences(of: "Кино «Дюна»", with: "Кино в 20:00").replacingOccurrences(of: "\"seq\": 7", with: "\"seq\": 8")
+        try SharedInbox.add(try item(movieJSON()), in: folder, now: now)
+        try SharedInbox.add(try item(renamed), in: folder, now: now.addingTimeInterval(5))
+        #expect(SharedInbox.items(in: folder).map(\.seq) == [7, 8])
+        let taken = SharedInbox.take(from: folder)
+        #expect(taken.map(\.seq) == [7, 8])
+        #expect(taken.last?.data?.title == "Кино в 20:00")
+        #expect(SharedMerge.apply(taken, to: [], waiting: [], now: now).first?.title == "Кино в 20:00")
+        #expect(SharedInbox.take(from: folder).isEmpty)
+        try SharedInbox.add(try item(movieJSON()), in: folder, now: now)
+        SharedInbox.clear(in: folder)
+        #expect(SharedInbox.items(in: folder).isEmpty)
     }
 
     @Test func aReminderFromAnOlderBuildStaysShared() throws {

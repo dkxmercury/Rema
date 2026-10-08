@@ -17,6 +17,7 @@ struct InviteAnswerSheet: View {
     @State private var problem: String?
     @State private var busy = false
     @State private var friendsNow = false
+    @State private var unconfirmed = false
 
     var body: some View {
         ZStack {
@@ -47,7 +48,10 @@ struct InviteAnswerSheet: View {
                         .font(.app(.golos, 20, weight: 600))
                         .multilineTextAlignment(.center)
                         .padding(.top, 14)
-                    if let problem {
+                    if unconfirmed {
+                        ConfirmEmailNote(centered: true)
+                            .padding(.top, 10)
+                    } else if let problem {
                         Note(verbatim: problem)
                             .multilineTextAlignment(.center)
                             .padding(.top, 10)
@@ -63,7 +67,7 @@ struct InviteAnswerSheet: View {
                     ProgressView()
                 }
                 Spacer(minLength: 0)
-                if account.isSignedIn, let invite, invite.state == "open", !invite.own, !friendsNow, problem == nil {
+                if account.isSignedIn, let invite, invite.state == "open", !invite.own, !friendsNow, problem == nil, !unconfirmed {
                     Button(action: accept) {
                         Text("Accept")
                     }
@@ -140,6 +144,8 @@ struct InviteAnswerSheet: View {
                     problem = String(localized: "There are already 40 friends.", bundle: .app, locale: .app)
                 case .offline, .rateLimited, .unauthorized:
                     problem = failure.friendsMessage
+                case .invalid(let code) where code == "unverified":
+                    unconfirmed = true
                 default:
                     problem = String(localized: "This invitation can no longer be used.", bundle: .app, locale: .app)
                 }

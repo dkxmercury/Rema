@@ -203,13 +203,58 @@ extension Backend.Failure {
             return message
         case .unauthorized:
             return String(localized: "The sign-in has expired. Sign in again.", bundle: .app, locale: .app)
-        case .rateLimited, .conflict:
+        case .rateLimited:
+            return String(localized: "Too many attempts. Try again later.", bundle: .app, locale: .app)
+        case .conflict(let code) where code == "friend_limit":
+            return String(localized: "There are already 40 friends.", bundle: .app, locale: .app)
+        case .conflict:
             return String(localized: "Too many requests, try again tomorrow.", bundle: .app, locale: .app)
         case .invalid(let code) where code == "not_found":
             return String(localized: "This person or reminder is no longer here.", bundle: .app, locale: .app)
+        case .invalid(let code) where code == "unverified":
+            return String(localized: "Confirm your email first. Open the link in the email from Rema.", bundle: .app, locale: .app)
         default:
             return String(localized: "Something went wrong. Try again.", bundle: .app, locale: .app)
         }
+    }
+}
+
+// Friends wait for a confirmed email; the letter with the link can be sent again from here.
+struct ConfirmEmailNote: View {
+    var centered = false
+
+    @State private var sent = false
+    @State private var failed = false
+
+    var body: some View {
+        VStack(alignment: centered ? .center : .leading, spacing: 10) {
+            Note(verbatim: Backend.Failure.invalid("unverified").friendsMessage)
+            if sent {
+                Note("If it is not in your inbox, look in spam. You can send it again in a minute.")
+            } else {
+                Button("Send the email again") {
+                    Task {
+                        do {
+                            try await Account.shared.resendConfirmation()
+                            withAnimation(Motion.standard) { sent = true }
+                        } catch {
+                            failed = true
+                        }
+                    }
+                }
+                .buttonStyle(SmallButtonStyle(prominent: false))
+            }
+            if failed, !sent {
+                Note("Could not send the email. Try again.")
+            }
+        }
+        .multilineTextAlignment(centered ? .center : .leading)
+    }
+}
+
+extension Backend.Failure {
+    var needsConfirmedEmail: Bool {
+        self == .invalid("unverified")
     }
 }
 

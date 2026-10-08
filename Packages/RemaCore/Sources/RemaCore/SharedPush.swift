@@ -41,10 +41,4 @@ public struct SharedPush: Sendable {
             item = nil
         }
     }
-
-    // The reminders after the push. Nothing is waiting to be sent from here, the app sorts that out when it opens.
-    public func applied(to reminders: [Reminder], now: Date) -> [Reminder] {
-        guard let item else { return reminders }
-        return SharedMerge.apply([item], to: reminders, waiting: [], now: now)
-    }
 }
