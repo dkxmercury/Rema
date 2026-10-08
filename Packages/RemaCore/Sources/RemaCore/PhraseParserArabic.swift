@@ -262,7 +262,8 @@ extension PhraseParser {
     }
 
     private func arFlags(_ text: String, _ state: inout State) {
-        take("(عاجل|مهم|ضروري)", text, &state) { _, s in s.urgent = true; return true }
+        take("(مهم جدا|عاجل|مهم|ضروري|بالتاكيد)", text, &state) { _, s in s.urgent = true; return true }
+        take("(?:لا تنسوا|لا تنسي|لا تنس|تذكر(?: ان)?|لا بد(?: من| ان)?)", text, &state) { _, _ in true }
         take("(بالحاح|حتي انجزه|حتي اضع علامة)", text, &state) { _, s in s.nag = true; return true }
     }
 

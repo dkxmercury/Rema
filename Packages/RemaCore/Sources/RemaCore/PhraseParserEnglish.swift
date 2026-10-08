@@ -270,7 +270,8 @@ extension PhraseParser {
     }
 
     private func englishFlags(_ text: String, _ state: inout State) {
-        take("(urgent|urgently|important)", text, &state) { _, s in s.urgent = true; return true }
+        take("(very important|really important|super important|urgent|urgently|important|asap|without fail)", text, &state) { _, s in s.urgent = true; return true }
+        take("(?:make sure(?: to| you)?|remember to|do not forget to|don't forget to|dont forget to)", text, &state) { _, _ in true }
         take("(persistently|until (?:i do it|it's done|i mark it|done)|keep reminding me|nag me)", text, &state) { _, s in s.nag = true; return true }
     }
 

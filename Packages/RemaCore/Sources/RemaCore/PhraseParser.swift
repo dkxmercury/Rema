@@ -405,7 +405,8 @@ public struct PhraseParser {
     }
 
     private func flags(_ text: String, _ state: inout State) {
-        take("(срочно|важно)", text, &state) { _, s in s.urgent = true; return true }
+        take("(очень срочно|очень важно|срочно|важно|обязательно|непременно|в обязательном порядке)", text, &state) { _, s in s.urgent = true; return true }
+        take("(?:(?:мне )?(?:надо|нужно) )?не (?:забыть|забудь|забудьте|забывай)(?: бы)?", text, &state) { _, _ in true }
         take("(настойчиво|пока не (сделаю|отмечу))", text, &state) { _, s in s.nag = true; return true }
     }
 

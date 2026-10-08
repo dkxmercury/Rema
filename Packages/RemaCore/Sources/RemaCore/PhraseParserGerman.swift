@@ -263,7 +263,8 @@ extension PhraseParser {
     }
 
     private func deFlags(_ text: String, _ state: inout State) {
-        take("(dringend|wichtig)", text, &state) { _, s in s.urgent = true; return true }
+        take("(sehr wichtig|ganz wichtig|dringend|wichtig|unbedingt|auf jeden fall)", text, &state) { _, s in s.urgent = true; return true }
+        take("(?:nicht vergessen|vergiss nicht|vergessen sie nicht|nicht zu vergessen|denke? (?:daran|dran))", text, &state) { _, _ in true }
         take("(beharrlich|bis ich es (?:erledige|abhake))", text, &state) { _, s in s.nag = true; return true }
     }
 

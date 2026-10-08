@@ -253,7 +253,8 @@ extension PhraseParser {
     }
 
     private func ukFlags(_ text: String, _ state: inout State) {
-        take("(терміново|важливо)", text, &state) { _, s in s.urgent = true; return true }
+        take("(дуже терміново|дуже важливо|терміново|важливо|обов'язково|неодмінно)", text, &state) { _, s in s.urgent = true; return true }
+        take("(?:(?:мені )?(?:треба|потрібно) )?не (?:забути|забудь|забудьте|забувай)", text, &state) { _, _ in true }
         take("(наполегливо|поки не (зроблю|позначу))", text, &state) { _, s in s.nag = true; return true }
     }
 

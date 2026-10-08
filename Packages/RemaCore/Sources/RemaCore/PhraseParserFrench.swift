@@ -269,7 +269,8 @@ extension PhraseParser {
     }
 
     private func frFlags(_ text: String, _ state: inout State) {
-        take("(urgent|urgente|important|importante)", text, &state) { _, s in s.urgent = true; return true }
+        take("(très importante?|tres importante?|urgente?|importante?|absolument|sans faute|impérativement|imperativement)", text, &state) { _, s in s.urgent = true; return true }
+        take("(?:ne (?:surtout )?pas oublier|surtout ne pas oublier|n'oubliez? pas)", text, &state) { _, _ in true }
         take("(avec insistance|jusqu'à ce que je le fasse|jusqu'à ce que je coche)", text, &state) { _, s in s.nag = true; return true }
     }
 

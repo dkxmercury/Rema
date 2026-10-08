@@ -270,7 +270,8 @@ extension PhraseParser {
     }
 
     private func uzFlags(_ text: String, _ state: inout State) {
-        take("(shoshilinch|muhim|zudlik bilan)", text, &state) { _, s in s.urgent = true; return true }
+        take("(juda muhim|shoshilinch|muhim|zudlik bilan|albatta|majburiy)", text, &state) { _, s in s.urgent = true; return true }
+        take("(?:unutmaslik kerak|unutmaslik uchun|unutmang|unutma|esdan chiqarmang|esdan chiqarma)", text, &state) { _, _ in true }
         take("(takror-takror|belgilagunimcha|bajarmagunimcha)", text, &state) { _, s in s.nag = true; return true }
     }
 
