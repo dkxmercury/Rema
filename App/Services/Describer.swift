@@ -47,6 +47,12 @@ struct Describer {
             return String(localized: "every month", bundle: .app, locale: .app)
         case .lastWorkday:
             return String(localized: "monthly, on the last working day", bundle: .app, locale: .app)
+        case .everyMonths(let count):
+            return count == 3 ? String(localized: "every quarter", bundle: .app, locale: .app) : String(localized: "every \(count) months", bundle: .app, locale: .app)
+        case .evenDays:
+            return String(localized: "on even dates", bundle: .app, locale: .app)
+        case .oddDays:
+            return String(localized: "on odd dates", bundle: .app, locale: .app)
         case .yearly:
             return String(localized: "every year", bundle: .app, locale: .app)
         }

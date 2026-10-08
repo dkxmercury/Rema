@@ -71,7 +71,7 @@ struct ShareScreen: View {
 
     private static func parser(snapshot: StoreSnapshot?, now: Date) -> PhraseParser {
         let settings = snapshot?.settings ?? .standard(at: now)
-        return PhraseParser(
+        var parser = PhraseParser(
             now: now,
             calendar: .current,
             morning: settings.morning,
@@ -79,6 +79,8 @@ struct ShareScreen: View {
             places: places(in: snapshot).map(\.name),
             preferred: AppFonts.languageCode
         )
+        parser.coordinate = places(in: snapshot).first.map { Coordinate(latitude: $0.latitude, longitude: $0.longitude) }
+        return parser
     }
 
     private static func places(in snapshot: StoreSnapshot?) -> [Place] {

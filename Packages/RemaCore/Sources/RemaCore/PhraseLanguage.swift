@@ -21,6 +21,48 @@ extension PhraseParser {
         "weekend", "weekends", "lunch", "work", "other", "last", "end", "o'clock", "half", "past", "quarter",
     ]
 
+    private static let translitMarkers: Set<String> = [
+        "zavtra", "segodnya", "sevodnya", "poslezavtra", "utrom", "vecherom", "dnem", "nochyu", "nochju", "kazhdyj", "kazhdyi", "kazhdyy",
+        "kazhdiy", "kazhduyu", "kazhdoe", "cherez", "chasov", "chasa", "minut", "ponedelnik", "vtornik", "sredu", "chetverg", "pyatnicu",
+        "pyatnitsu", "subbotu", "voskresenye", "napomni", "pozvonit", "kupit", "zabrat", "utra", "vechera", "nedelyu",
+    ]
+
+    // «zavtra v 9 pozvonit mame» is Russian typed in Latin letters; the Russian rules read it and the title keeps the letters as typed.
+    static func transliterated(_ text: String) -> (String, [Int])? {
+        let lower = text.lowercased()
+        let words = lower.split(whereSeparator: { !$0.isLetter && $0 != "'" }).map(String.init)
+        guard lower.count == text.count, words.contains(where: { translitMarkers.contains($0) }),
+              !words.contains(where: { $0.count >= 3 && (englishWords.contains($0) || germanWords.contains($0) || frenchWords.contains($0)) }) else { return nil }
+        let pairs: [(String, String)] = [("shch", "щ"), ("sch", "щ"), ("yo", "ё"), ("yu", "ю"), ("ya", "я"), ("zh", "ж"), ("kh", "х"), ("ts", "ц"), ("ch", "ч"), ("sh", "ш")]
+        let single: [Character: String] = [
+            "a": "а", "b": "б", "c": "ц", "d": "д", "e": "е", "f": "ф", "g": "г", "h": "х", "i": "и", "j": "й", "k": "к", "l": "л", "m": "м",
+            "n": "н", "o": "о", "p": "п", "q": "к", "r": "р", "s": "с", "t": "т", "u": "у", "v": "в", "w": "в", "x": "кс", "z": "з", "'": "ь",
+        ]
+        let characters = Array(lower)
+        var output = ""
+        var origin: [Int] = []
+        var index = 0
+        while index < characters.count {
+            if let (latin, cyrillic) = pairs.first(where: { index + $0.0.count <= characters.count && String(characters[index..<(index + $0.0.count)]) == $0.0 }) {
+                for symbol in cyrillic {
+                    output.append(symbol)
+                    origin.append(index)
+                }
+                index += latin.count
+                continue
+            }
+            let character = characters[index]
+            // «y» after a vowel is «й», after a consonant «ы», «kazhdyj» is «каждый».
+            let mapped = character == "y" ? (output.last.map { "аеёиоуыэюя".contains($0) } == true ? "й" : "ы") : single[character] ?? String(character)
+            for symbol in mapped {
+                output.append(symbol)
+                origin.append(index)
+            }
+            index += 1
+        }
+        return (output, origin)
+    }
+
     // «Call Маша tomorrow at 9», a Cyrillic name inside a Latin phrase.
     static func mostlyLatin(_ text: String) -> Bool {
         let words = text.split(whereSeparator: { !$0.isLetter }).map(String.init)

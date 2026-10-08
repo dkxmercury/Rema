@@ -13,6 +13,7 @@ public struct ParsedPhrase: Equatable, Sendable {
     public var alternative: Schedule? = nil
     public var hasExplicitDay = false
     public var corrected = false
+    public var usedPart: LocalTime? = nil
 }
 
 // The field reparses the phrase on every keystroke, and compiling a pattern costs far more than matching it.
@@ -40,6 +41,8 @@ public struct PhraseParser {
     public let evening: LocalTime
     public let places: [String]
     public let preferred: String?
+    public var coordinate: Coordinate?
+    public var synonyms: [String: String] = [:]
 
     public init(now: Date, calendar: Calendar, morning: LocalTime, evening: LocalTime, places: [String] = [], preferred: String? = nil) {
         self.now = now
@@ -78,6 +81,8 @@ public struct PhraseParser {
         var corrected = false
         var end = RepeatEnd.never
         var span: Int?
+        var deadline = false
+        var sun: SunEvent?
     }
 
     struct Mark {
@@ -89,10 +94,62 @@ public struct PhraseParser {
     }
 
     public func parse(_ input: String) -> ParsedPhrase {
+        guard !synonyms.isEmpty, let (rewritten, origin) = PhraseParser.rewrite(input, synonyms) else {
+            return parseDirect(input)
+        }
+        var parsed = parseDirect(rewritten)
+        parsed.highlights = parsed.highlights.compactMap { range -> Range<Int>? in
+            guard !range.isEmpty, range.upperBound - 1 < origin.count else { return nil }
+            return origin[range.lowerBound]..<(origin[range.upperBound - 1] + 1)
+        }
+        return parsed
+    }
+
+    // Whole words only; each new letter points back into the typed text, so highlights land on what was typed.
+    static func rewrite(_ input: String, _ synonyms: [String: String]) -> (String, [Int])? {
+        let characters = Array(input)
+        var output = ""
+        var origin: [Int] = []
+        var changed = false
+        var index = 0
+        while index < characters.count {
+            guard characters[index].isLetter else {
+                output.append(characters[index])
+                origin.append(index)
+                index += 1
+                continue
+            }
+            var end = index
+            while end < characters.count, characters[end].isLetter || characters[end] == "'" {
+                end += 1
+            }
+            let word = String(characters[index..<end])
+            if let replacement = synonyms[word.lowercased()], !replacement.isEmpty {
+                let length = end - index
+                for (offset, symbol) in replacement.enumerated() {
+                    output.append(symbol)
+                    origin.append(index + (offset == replacement.count - 1 ? length - 1 : min(offset, length - 1)))
+                }
+                changed = true
+            } else {
+                for offset in index..<end {
+                    output.append(characters[offset])
+                    origin.append(offset)
+                }
+            }
+            index = end
+        }
+        return changed ? (output, origin) : nil
+    }
+
+    func parseDirect(_ input: String) -> ParsedPhrase {
         if PhraseParser.looksArabic(input) {
             return parseArabic(input)
         }
         if PhraseParser.mostlyLatin(input) {
+            if let (cyrillic, origin) = PhraseParser.transliterated(input) {
+                return parseRussian(cyrillic, typed: input, origin: origin)
+            }
             switch PhraseParser.latinLanguage(input, preferred: preferred) {
             case "de": return parseGerman(input)
             case "fr": return parseFrench(input)
@@ -106,6 +163,10 @@ public struct PhraseParser {
         if PhraseParser.looksUkrainian(input, preferred: preferred) {
             return parseUkrainian(input)
         }
+        return parseRussian(input)
+    }
+
+    func parseRussian(_ input: String, typed: String? = nil, origin: [Int]? = nil) -> ParsedPhrase {
         let text = input.lowercased().replacingOccurrences(of: "ё", with: "е")
         func pass(_ text: String, _ state: inout State) {
             extras(text, &state, PhraseParser.russianExtras, weekday: weekday)
@@ -121,19 +182,26 @@ public struct PhraseParser {
         var state = corrected(text, PhraseParser.russianCorrection, pass)
 
         let schedule = resolve(&state)
+        let used = origin.map { origin in
+            state.used.compactMap { range -> Range<Int>? in
+                guard !range.isEmpty, range.upperBound - 1 < origin.count else { return nil }
+                return origin[range.lowerBound]..<(origin[range.upperBound - 1] + 1)
+            }
+        } ?? state.used
         return ParsedPhrase(
-            title: title(input, used: state.used, fillers: PhraseParser.fillers, dangling: PhraseParser.dangling),
+            title: title(typed ?? input, used: used, fillers: PhraseParser.fillers, dangling: PhraseParser.dangling),
             schedule: schedule,
             preAlerts: Array(Set(state.preAlerts)).sorted(by: >),
             urgent: state.urgent,
             nag: state.nag,
             placeTrigger: state.placeTrigger,
             placeNames: state.placeNames,
-            highlights: merge(state.used),
+            highlights: merge(used),
             hasExplicitTime: state.time != nil || state.exact != nil || state.dayPart != nil,
             alternative: state.alternative,
             hasExplicitDay: state.date != nil || state.dayOffset != nil || !state.weekdays.isEmpty || state.rule != nil || state.exact != nil,
-            corrected: state.corrected
+            corrected: state.corrected,
+            usedPart: state.time == nil && state.exact == nil ? state.dayPart : nil
         )
     }
 
@@ -546,6 +614,14 @@ public struct PhraseParser {
             let parts = calendar.dateComponents([.hour, .minute], from: exact)
             return Schedule(start: LocalDate(exact, in: calendar), time: LocalTime(hour: parts.hour ?? 0, minute: parts.minute ?? 0), rule: state.rule)
         }
+        if let event = state.sun, state.time == nil {
+            var day = state.date ?? today.adding(days: state.dayOffset ?? 0)
+            while !state.weekdays.isEmpty, state.date == nil, !state.weekdays.contains(day.weekday) {
+                day = day.adding(days: 1)
+            }
+            state.time = Sun.time(event, on: day, at: coordinate ?? Sun.guess(for: calendar), calendar: calendar) ?? (event == .sunrise ? morning : evening)
+            state.meridiem = true
+        }
         let hasDate = state.date != nil || state.dayOffset != nil || !state.weekdays.isEmpty
         var time = state.time ?? state.dayPart
         // «Ночью в 2», «днём в 11», «tonight at 12»: of h and h+12 the one closer to the part of the day counts.
@@ -650,6 +726,13 @@ public struct PhraseParser {
             let night = state.dayPart.map { $0.hour >= 21 } ?? false
             if (clock.hour == 0 && clock.minute == 0 && state.dayOffset == 0) || (night && clock.hour < 6) {
                 start = start.adding(days: 1)
+            }
+        }
+        // «До пятницы»: a deadline also rings the evening before.
+        if state.deadline, rule == nil, let moment = calendar.date(from: DateComponents(year: start.year, month: start.month, day: start.day, hour: clock.hour, minute: clock.minute)) {
+            let eve = start.adding(days: -1)
+            if let before = calendar.date(from: DateComponents(year: eve.year, month: eve.month, day: eve.day, hour: evening.hour, minute: evening.minute)), before > now, moment > before {
+                state.preAlerts.append(Int(moment.timeIntervalSince(before) / 60))
             }
         }
         var end = rule == nil ? RepeatEnd.never : state.end

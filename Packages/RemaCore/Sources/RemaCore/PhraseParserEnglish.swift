@@ -38,7 +38,8 @@ extension PhraseParser {
             hasExplicitTime: state.time != nil || state.exact != nil || state.dayPart != nil,
             alternative: state.alternative,
             hasExplicitDay: state.date != nil || state.dayOffset != nil || !state.weekdays.isEmpty || state.rule != nil || state.exact != nil,
-            corrected: state.corrected
+            corrected: state.corrected,
+            usedPart: state.time == nil && state.exact == nil ? state.dayPart : nil
         )
     }
 

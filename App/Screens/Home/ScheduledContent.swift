@@ -40,7 +40,7 @@ struct ScheduledContent {
             guard let reminder = byID[item.reminderID] else { continue }
             let id = "\(reminder.id.uuidString)-\(Int(item.occurrence.timeIntervalSince1970))"
             switch reminder.schedule?.rule {
-            case .yearly, .monthlyOnDay, .monthlyOnWeekday, .lastWorkday:
+            case .yearly, .monthlyOnDay, .monthlyOnWeekday, .lastWorkday, .everyMonths:
                 let details = [describer.time(item.occurrence), describer.subtitle(for: reminder, places: places, withRepeat: false)].compactMap { $0 }
                 let entry = Item(id: id, reminderID: reminder.id, lead: String(calendar.component(.day, from: item.occurrence)), month: describer.shortMonth(item.occurrence), title: reminder.title, subtitle: details.joined(separator: " · "))
                 if case .yearly = reminder.schedule?.rule {

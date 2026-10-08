@@ -1,6 +1,15 @@
 import RemaCore
 import SwiftUI
 
+private extension RepeatRule {
+    var isMonthlyExtra: Bool {
+        switch self {
+        case .monthlyOnWeekday, .everyMonths: return true
+        default: return false
+        }
+    }
+}
+
 struct RepeatScreen: View {
     @Binding var draft: Reminder
     var now: Date
@@ -26,8 +35,8 @@ struct RepeatScreen: View {
         case .daily: return .daily
         case .weekdays: return .weekdays
         case .weekly: return .weekly
-        case .everyDays: return .everyDays
-        case .monthlyOnDay, .monthlyOnWeekday, .lastWorkday: return .monthly
+        case .everyDays, .evenDays, .oddDays: return .everyDays
+        case .monthlyOnDay, .monthlyOnWeekday, .lastWorkday, .everyMonths: return .monthly
         case .yearly: return .yearly
         }
     }
@@ -245,7 +254,9 @@ struct RepeatScreen: View {
                 detailText(String(localized: "choose", bundle: .app, locale: .app), selected: false)
             }
         case .everyDays:
-            if case .everyDays(let count) = schedule.rule {
+            if schedule.rule == .evenDays || schedule.rule == .oddDays, let rule = schedule.rule {
+                detailText(describer.repeatText(rule), selected: selected)
+            } else if case .everyDays(let count) = schedule.rule {
                 Stepper("", value: Binding(get: { count }, set: { setRule(.everyDays(max(2, $0))) }), in: 2...60)
                     .labelsHidden()
                     .fixedSize()
@@ -265,6 +276,7 @@ struct RepeatScreen: View {
         switch schedule.rule {
         case .monthlyOnWeekday: return String(localized: "by day of the week", bundle: .app, locale: .app)
         case .lastWorkday: return String(localized: "last working day", bundle: .app, locale: .app)
+        case .everyMonths(let count): return describer.repeatText(.everyMonths(count))
         default: return String(localized: "on day \(schedule.start.day)", bundle: .app, locale: .app)
         }
     }
@@ -275,9 +287,9 @@ struct RepeatScreen: View {
             monthlyRow(String(localized: "on day \(schedule.start.day)", bundle: .app, locale: .app), rule: .monthlyOnDay(schedule.start.day))
             Hairline()
             monthlyRow(String(localized: "last working day", bundle: .app, locale: .app), rule: .lastWorkday)
-            if case .monthlyOnWeekday = schedule.rule, let rule = schedule.rule {
+            if let rule = schedule.rule, rule.isMonthlyExtra {
                 Hairline()
-                monthlyRow(String(localized: "by day of the week", bundle: .app, locale: .app), rule: rule)
+                monthlyRow(monthlyText, rule: rule)
             }
         }
     }
@@ -285,7 +297,7 @@ struct RepeatScreen: View {
     private func monthlyRow(_ title: String, rule: RepeatRule) -> some View {
         let selected: Bool = {
             switch (schedule.rule, rule) {
-            case (.monthlyOnDay, .monthlyOnDay), (.lastWorkday, .lastWorkday), (.monthlyOnWeekday, .monthlyOnWeekday): return true
+            case (.monthlyOnDay, .monthlyOnDay), (.lastWorkday, .lastWorkday), (.monthlyOnWeekday, .monthlyOnWeekday), (.everyMonths, .everyMonths): return true
             default: return false
             }
         }()

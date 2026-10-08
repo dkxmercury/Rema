@@ -46,6 +46,29 @@ struct PhraseMultiTests {
         #expect(pieces.map(when) == ["06.10 09:00", "05.10 21:00"])
     }
 
+    @Test func severalTimesADay() throws {
+        let list = try #require(parser.pieces("каждый день в 9 и 21 пить таблетки"))
+        #expect(list.map(\.parsed.title) == ["Пить таблетки", "Пить таблетки"])
+        #expect(list.map(when) == ["06.10 09:00", "05.10 21:00"])
+        #expect(list.allSatisfy { $0.parsed.schedule?.rule == .daily })
+        let twice = try #require(parser.pieces("два раза в день пить воду"))
+        #expect(twice.map(when) == ["06.10 09:00", "05.10 19:00"])
+        #expect(try #require(parser.pieces("каждые 3 часа с 9 до 21 пить воду")).count == 5)
+        #expect(try #require(parser.pieces("twice a day take vitamins")).map(\.parsed.title) == ["Take vitamins", "Take vitamins"])
+        let titled = try #require(parser.pieces("в 9 и в 21 позвонить маме"))
+        #expect(titled.map(when) == ["06.10 09:00", "05.10 21:00"])
+        #expect(titled.allSatisfy { $0.parsed.schedule?.rule == nil })
+    }
+
+    @Test func serverWordsReadAsTheirMeaning() {
+        var local = parser
+        local.synonyms = ["завтрева": "завтра"]
+        let result = local.parse("завтрева в 9 позвонить маме")
+        #expect(result.title == "Позвонить маме")
+        #expect(result.schedule?.start == LocalDate(year: 2026, month: 10, day: 6))
+        #expect(result.highlights.first == 0..<8)
+    }
+
     @Test func rangesPointIntoTheWholePhrase() throws {
         let text = "в 10 планёрка; в 15 звонок клиенту"
         let pieces = try #require(parser.pieces(text))

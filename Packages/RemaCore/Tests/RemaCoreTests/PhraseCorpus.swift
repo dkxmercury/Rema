@@ -93,6 +93,9 @@ enum Corpus {
         case .monthlyOnWeekday(let ordinal, let weekday): return "monthly \(ordinal) \(code(weekday))"
         case .yearly(let month, let day): return String(format: "yearly %02d.%02d", day, month)
         case .lastWorkday: return "last workday"
+        case .everyMonths(let count): return "every \(count)m"
+        case .evenDays: return "even days"
+        case .oddDays: return "odd days"
         }
     }
 

@@ -47,7 +47,7 @@ struct DaySequence {
         }
         let start = schedule.start
         switch rule {
-        case .daily, .weekdays, .weekly:
+        case .daily, .weekdays, .weekly, .evenDays, .oddDays:
             cursor = floor.adding(days: -1)
         case .everyDays(let interval):
             let step = max(1, interval)
@@ -57,6 +57,8 @@ struct DaySequence {
             }
         case .monthlyOnDay, .monthlyOnWeekday, .lastWorkday:
             period = max(0, (floor.year - start.year) * 12 + floor.month - start.month - 1)
+        case .everyMonths(let interval):
+            period = max(0, ((floor.year - start.year) * 12 + floor.month - start.month) / max(1, interval) - 1)
         case .yearly:
             period = max(0, floor.year - start.year - 1)
         }
@@ -86,6 +88,22 @@ struct DaySequence {
         case .monthlyOnWeekday(let ordinal, let weekday):
             return nextMonth { year, month in
                 LocalDate.nth(ordinal, weekday, month: month, year: year)
+            }
+        case .evenDays:
+            return advance(by: 1) { $0.day % 2 == 0 }
+        case .oddDays:
+            return advance(by: 1) { $0.day % 2 == 1 }
+        case .everyMonths(let interval):
+            let step = max(1, interval)
+            while true {
+                let monthIndex = start.month - 1 + period * step
+                period += 1
+                let year = start.year + monthIndex / 12
+                let month = monthIndex % 12 + 1
+                let candidate = LocalDate(year: year, month: month, day: min(start.day, LocalDate.days(in: month, year: year)))
+                if candidate >= start {
+                    return candidate
+                }
             }
         case .lastWorkday:
             return nextMonth { year, month in

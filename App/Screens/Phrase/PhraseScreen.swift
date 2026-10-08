@@ -32,6 +32,7 @@ struct PhraseScreen: View {
     @State private var earlyDismissed = false
     @State private var flippedFor: String?
     @State private var keptWhole: String?
+    @State private var shiftAnswered = false
     @State private var removed = Removed()
 
     // Body reads the parse result a dozen times per keystroke; parsing once per text keeps typing smooth.
@@ -85,7 +86,66 @@ struct PhraseScreen: View {
     }
 
     private var parser: PhraseParser {
-        PhraseParser(now: now, calendar: calendar, morning: store.settings.morning, evening: store.settings.evening, places: store.activePlaces.map(\.name), preferred: AppLanguage.current.rawValue)
+        store.phraseParser(now: now, calendar: calendar)
+    }
+
+    // The part of the day the phrase leaned on, and the time the person keeps choosing for it instead.
+    private var partShift: (part: PartShift.Part, time: LocalTime)? {
+        guard !shiftAnswered, let used = parsed.usedPart, overrides.schedule == nil else { return nil }
+        let part: PartShift.Part
+        if used == store.settings.evening {
+            part = .evening
+        } else if used == store.settings.morning {
+            part = .morning
+        } else {
+            return nil
+        }
+        return PartShift.suggestion(part, current: used).map { (part, $0) }
+    }
+
+    private func partShiftCard(_ shift: (part: PartShift.Part, time: LocalTime)) -> some View {
+        let shape = RoundedRectangle(cornerRadius: 18, style: .circular)
+        let clock = String(format: "%02d:%02d", shift.time.hour, shift.time.minute)
+        return HStack(spacing: 10) {
+            Glyph(paths: shift.part == .evening ? Icons.moon : Icons.sun, size: 22, lineWidth: 2, color: Palette.accentText)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(verbatim: shift.part == .evening ? String(localized: "Make \(clock) your evening?", bundle: .app, locale: .app) : String(localized: "Make \(clock) your morning?", bundle: .app, locale: .app))
+                    .font(.app(.golos, 15, weight: 600))
+                Text("You often move it to this time")
+                    .font(.app(.golos, 13))
+                    .foregroundStyle(Palette.secondary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            Button {
+                Feedback.play(.select)
+                store.update { settings in
+                    if shift.part == .evening {
+                        settings.evening = shift.time
+                    } else {
+                        settings.morning = shift.time
+                    }
+                }
+                PartShift.reset(shift.part)
+            } label: {
+                Text("Yes")
+            }
+            .buttonStyle(SmallButtonStyle(prominent: false))
+            Button {
+                PartShift.reset(shift.part)
+                withAnimation(Motion.standard) { shiftAnswered = true }
+            } label: {
+                Glyph(paths: Icons.close, size: 16, lineWidth: 2.2, color: Palette.secondary)
+                    .frame(width: 36, height: 36)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(RowPressStyle())
+            .accessibilityLabel(Text("Dismiss"))
+        }
+        .padding(.leading, 14)
+        .padding(.trailing, 6)
+        .padding(.vertical, 10)
+        .background(shape.fill(Palette.accent.opacity(0.07)))
+        .overlay(shape.strokeBorder(Palette.accent.opacity(0.6), style: StrokeStyle(lineWidth: 1.5, dash: [5, 4])))
     }
 
     private var parsed: ParsedPhrase {
@@ -403,6 +463,11 @@ struct PhraseScreen: View {
             .onTapGesture { pickingDate = true }
             .padding(.top, 12)
         readingChip
+        if let shift = partShift {
+            partShiftCard(shift)
+                .padding(.top, 12)
+                .transition(.opacity.combined(with: .move(edge: .top)))
+        }
         if let suggestion = earlySuggestion {
             EarlySuggestionCard(suggestion: suggestion) {
                 overrides.preAlerts = (reminder.preAlerts + [suggestion.minutes]).sorted()
@@ -824,6 +889,13 @@ struct PhraseScreen: View {
             return
         }
         Feedback.play(.save)
+        if let used = parsed.usedPart, let chosen = overrides.schedule?.time, chosen != used {
+            if used == store.settings.evening {
+                PartShift.record(.evening, chosen)
+            } else if used == store.settings.morning {
+                PartShift.record(.morning, chosen)
+            }
+        }
         store.save(reminder)
         RecentPhrases.remember(text)
         Notifier.shared.requestPermissionIfNeeded()

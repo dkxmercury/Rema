@@ -49,6 +49,9 @@ public enum RepeatRule: Codable, Hashable, Sendable {
     case monthlyOnWeekday(ordinal: Int, weekday: Weekday)
     case yearly(month: Int, day: Int)
     case lastWorkday
+    case everyMonths(Int)
+    case evenDays
+    case oddDays
 }
 
 public enum RepeatEnd: Codable, Hashable, Sendable {

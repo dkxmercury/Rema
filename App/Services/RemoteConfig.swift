@@ -19,6 +19,7 @@ struct RemoteConfig: Codable, Equatable {
     var links: [String: String]?
     var phrases: [String: [String]]?
     var strings: [String: [String: String]]?
+    var words: [String: [String: String]]?
 
     static let empty = RemoteConfig()
 }
@@ -144,6 +145,18 @@ final class Remote {
     func text(_ table: [String: String]?) -> String? {
         guard let table else { return nil }
         return table[AppLanguage.current.rawValue] ?? table["en"]
+    }
+
+    // Words the server teaches the phrase reader, «сёдня» for «сегодня»; only plain words get through.
+    var words: [String: String] {
+        var merged: [String: String] = [:]
+        for table in (config.words ?? [:]).values {
+            for (variant, meaning) in table.prefix(500) where (1...30).contains(variant.count) && (1...40).contains(meaning.count)
+                && variant.allSatisfy({ $0.isLetter || $0 == "'" }) && meaning.allSatisfy({ $0.isLetter || $0 == " " || $0 == "'" }) {
+                merged[variant.lowercased()] = meaning.lowercased()
+            }
+        }
+        return merged
     }
 
     var exampleOverride: [String]? {

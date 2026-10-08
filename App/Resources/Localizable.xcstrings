@@ -10209,6 +10209,98 @@
         }
       }
     },
+    "Make %@ your evening?": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هل تجعل %@ مساءك؟"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ zu Ihrem Abend machen?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Faire de %@ votre soirée ?"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сделать %@ вашим вечером?"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Зробити %@ вашим вечором?"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ ни кечқурун вақти қиласизми?"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ ni kechqurun vaqti qilasizmi?"
+          }
+        }
+      }
+    },
+    "Make %@ your morning?": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هل تجعل %@ صباحك؟"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ zu Ihrem Morgen machen?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Faire de %@ votre matinée ?"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сделать %@ вашим утром?"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Зробити %@ вашим ранком?"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ ни эрталаб вақти қиласизми?"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ ni ertalab vaqti qilasizmi?"
+          }
+        }
+      }
+    },
     "Make a list?": {
       "localizations": {
         "ar": {
@@ -23521,6 +23613,52 @@
         }
       }
     },
+    "You often move it to this time": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "غالبًا ما تنقله إلى هذا الوقت"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sie verschieben oft auf diese Zeit"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vous le déplacez souvent à cette heure"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Вы часто переносите на это время"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ви часто переносите на цей час"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Кўпинча шу вақтга кўчирасиз"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ko‘pincha shu vaqtga ko‘chirasiz"
+          }
+        }
+      }
+    },
     "You wrote recently": {
       "localizations": {
         "ar": {
@@ -25855,6 +25993,208 @@
         }
       }
     },
+    "every %lld months": {
+      "localizations": {
+        "ar": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "كل %lld أشهر"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "كل %lld شهرًا"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "كل شهر"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "كل %lld شهر"
+                }
+              },
+              "two": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "كل شهرين"
+                }
+              },
+              "zero": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "كل %lld شهر"
+                }
+              }
+            }
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "jeden %lld. Monat"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "alle %lld Monate"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "every %lld month"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "every %lld months"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "tous les %lld mois"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "tous les %lld mois"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "tous les %lld mois"
+                }
+              }
+            }
+          }
+        },
+        "ru": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "каждые %lld месяца"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "каждые %lld месяцев"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "каждый %lld месяц"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "каждые %lld месяца"
+                }
+              }
+            }
+          }
+        },
+        "uk": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "кожні %lld місяці"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "кожні %lld місяців"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "кожен %lld місяць"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "кожні %lld місяця"
+                }
+              }
+            }
+          }
+        },
+        "uz-Cyrl": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "ҳар %lld ойда"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "ҳар %lld ойда"
+                }
+              }
+            }
+          }
+        },
+        "uz-Latn": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "har %lld oyda"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "har %lld oyda"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "every Tue and Thu at 8": {
       "localizations": {
         "ar": {
@@ -26081,6 +26421,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "har oy"
+          }
+        }
+      }
+    },
+    "every quarter": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كل ربع سنة"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "jedes Quartal"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "chaque trimestre"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "раз в квартал"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "раз на квартал"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ҳар чоракда"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "har chorakda"
           }
         }
       }
@@ -27985,6 +28371,98 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld-kuni"
+          }
+        }
+      }
+    },
+    "on even dates": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "في الأيام الزوجية"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "an geraden Tagen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "les jours pairs"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "по чётным числам"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "по парних числах"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "жуфт кунларда"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "juft kunlarda"
+          }
+        }
+      }
+    },
+    "on odd dates": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "في الأيام الفردية"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "an ungeraden Tagen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "les jours impairs"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "по нечётным числам"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "по непарних числах"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "тоқ кунларда"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "toq kunlarda"
           }
         }
       }

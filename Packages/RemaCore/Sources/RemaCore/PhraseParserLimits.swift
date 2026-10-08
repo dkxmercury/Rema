@@ -13,6 +13,12 @@ extension PhraseParser {
         var lastWorkday: String
         var daysBefore: String
         var holidays: [(pattern: String, month: Int, day: Int)]
+        var deadline: String
+        var tomorrow: [String]
+        var afterDay: String
+        var everyMonths: String
+        var rare: [(pattern: String, rule: RepeatRule)]
+        var sun: [(pattern: String, event: SunEvent)]
     }
 
     private static let countWords: [String: Int] = [
@@ -45,9 +51,45 @@ extension PhraseParser {
             phrases.units.first { word.hasPrefix($0.prefix) }?.days ?? 1
         }
 
+        for rare in phrases.rare {
+            take(rare.pattern, text, &state) { _, s in
+                s.rule = rare.rule
+                return true
+            }
+        }
+        take(phrases.everyMonths, text, &state) { m, s in
+            guard let count = group(m, 1, text).flatMap({ Int($0) }), (2...24).contains(count) else { return false }
+            s.rule = .everyMonths(count)
+            return true
+        }
         take(phrases.lastWorkday, text, &state) { _, s in
             s.rule = .lastWorkday
             return true
+        }
+        take(phrases.afterDay, text, &state) { m, s in
+            guard let unit = group(m, 2, text) else { return false }
+            let rest = (3..<m.numberOfRanges).compactMap { group(m, $0, text) }
+            guard let day = rest.compactMap({ Int($0) }).first(where: { (1...31).contains($0) }) else { return false }
+            let base: LocalDate
+            if let found = rest.lazy.filter({ Int($0) == nil }).compactMap(month).first {
+                base = nextDate(month: found, day: day, year: nil)
+            } else {
+                let today = LocalDate(now, in: calendar)
+                var candidate = LocalDate(year: today.year, month: today.month, day: min(day, LocalDate.days(in: today.month, year: today.year)))
+                if candidate < today {
+                    let next = today.month == 12 ? (today.year + 1, 1) : (today.year, today.month + 1)
+                    candidate = LocalDate(year: next.0, month: next.1, day: min(day, LocalDate.days(in: next.1, year: next.0)))
+                }
+                base = candidate
+            }
+            s.date = base.adding(days: (number(group(m, 1, text)) ?? 1) * unitDays(unit))
+            return true
+        }
+        for sun in phrases.sun {
+            take(sun.pattern, text, &state) { _, s in
+                s.sun = sun.event
+                return true
+            }
         }
         take(phrases.daysBefore, text, &state) { m, s in
             let rest = (3..<m.numberOfRanges).compactMap { group(m, $0, text) }
@@ -63,6 +105,22 @@ extension PhraseParser {
                 if case .yearly = s.rule {
                     s.rule = .yearly(month: holiday.month, day: holiday.day)
                 }
+                return true
+            }
+        }
+        if state.rule == nil {
+            take(phrases.deadline, text, &state) { m, s in
+                let words = groups(m)
+                if words.contains(where: { word in phrases.tomorrow.contains { word.hasPrefix($0) } }) {
+                    s.dayOffset = 1
+                } else if let target = dayAndMonth(words) {
+                    s.date = nextDate(month: target.month, day: target.day, year: nil)
+                } else if let day = words.lazy.compactMap(weekday).first {
+                    s.weekdays = [day]
+                } else {
+                    return false
+                }
+                s.deadline = true
                 return true
             }
         }
@@ -138,7 +196,13 @@ extension PhraseParser {
         range: "с (\\d{1,2}) (?:по|до) (\\d{1,2}) \(monthPattern)",
         lastWorkday: "(?:в |каждый )?последний рабочий день(?: каждого)? месяца",
         daysBefore: "за (?:(\\d{1,2}|один|одну|два|две|три) )?(дн\\w*|день|недел\\w*) до (\\d{1,2}) \(monthPattern)",
-        holidays: [("(?:в |на )?канун нового года", 12, 31), ("(?:на |в |к )?нов\\w* год\\w*", 1, 1), ("(?:в |на |к )?навруз\\w*", 3, 21)]
+        holidays: [("(?:в |на )?канун нового года|(?:перед|накануне) нов\\w* год\\w*", 12, 31), ("(?:на |в |к )?нов\\w* год\\w*", 1, 1), ("(?:в |на |к )?навруз\\w*", 3, 21)],
+        deadline: "(?:до|к) (завтра|понедельника|вторника|среды|четверга|пятницы|субботы|воскресенья|понедельнику|вторнику|среде|четвергу|пятнице|субботе|воскресенью|(\\d{1,2}) \(monthPattern))",
+        tomorrow: ["завтр"],
+        afterDay: "через (?:(\\d{1,2}|один|одну|два|две|три) )?(дн\\w*|день|недел\\w*) после (\\d{1,2})(?:-?го)?(?: \(monthPattern))?",
+        everyMonths: "каждые (\\d{1,2}) месяц\\w*",
+        rare: [("(?:раз в квартал|ежеквартально|каждый квартал)", .everyMonths(3)), ("(?:раз в пол ?года|каждые пол ?года|раз в полугодие)", .everyMonths(6)), ("по четным (?:числам|дням)", .evenDays), ("по нечетным (?:числам|дням)", .oddDays)],
+        sun: [("(?:на|с) закат\\w*|на заходе солнца|когда (?:зайдет|сядет) солнце", .sunset), ("(?:на|с) рассвет\\w*|на восходе(?: солнца)?|когда взойдет солнце", .sunrise)]
     )
     private static let russianDay = "понедельник\\w*|вторник\\w*|сред[аыуе]|четверг\\w*|пятниц\\w*|суббот\\w*|воскресень\\w*|пн|вт|ср|чт|пт|сб|вс|выходн\\w*"
 
@@ -153,7 +217,13 @@ extension PhraseParser {
         range: "з (\\d{1,2}) (?:по|до) (\\d{1,2}) \(ukMonths)",
         lastWorkday: "(?:в |у |кожен )?останній робочий день(?: кожного)? місяця",
         daysBefore: "за (?:(\\d{1,2}) )?(дн\\w*|день|тижд\\w*) до (\\d{1,2}) \(ukMonths)",
-        holidays: [("(?:на |в |у |до )?нов\\w* р(?:ік|оку|оком)", 1, 1), ("(?:на |в |у )?різдв\\w*", 12, 25), ("(?:на |в |у )?навруз\\w*", 3, 21)]
+        holidays: [("(?:на |в |у |до )?нов\\w* р(?:ік|оку|оком)", 1, 1), ("(?:на |в |у )?різдв\\w*", 12, 25), ("(?:на |в |у )?навруз\\w*", 3, 21)],
+        deadline: "до (завтра|понеділка|вівторка|середи|четверга|п'ятниці|суботи|неділі|(\\d{1,2}) \(ukMonths))",
+        tomorrow: ["завтр"],
+        afterDay: "через (?:(\\d{1,2}) )?(дн\\w*|день|тижд\\w*) після (\\d{1,2})(?:-?го)?(?: \(ukMonths))?",
+        everyMonths: "кожні (\\d{1,2}) місяц\\w*",
+        rare: [("(?:раз на квартал|щокварталу|щоквартально|кожен квартал)", .everyMonths(3)), ("(?:раз на пів ?року|кожні пів ?року)", .everyMonths(6)), ("по парних (?:числах|днях)", .evenDays), ("по непарних (?:числах|днях)", .oddDays)],
+        sun: [("на заході сонця|на захід сонця|із заходом сонця", .sunset), ("на світанку|на сході сонця|зі світанком", .sunrise)]
     )
     private static let ukrainianDay = "понеділ\\w*|вівтор\\w*|серед\\w*|четвер\\w*|п'ятниц\\w*|субот\\w*|неділ\\w*|пн|вт|ср|чт|пт|сб|нд|вихідн\\w*"
 
@@ -168,7 +238,13 @@ extension PhraseParser {
         range: "from (?:\(englishMonths) (\\d{1,2})(?:st|nd|rd|th)? (?:to|until|till|through|-) (\\d{1,2})(?:st|nd|rd|th)?|(?:the )?(\\d{1,2})(?:st|nd|rd|th)? (?:to|until|till|through|-) (?:the )?(\\d{1,2})(?:st|nd|rd|th)? (?:of )?\(englishMonths))",
         lastWorkday: "(?:on |every )?(?:the )?last (?:working|business|work) day of (?:the|every|each) month",
         daysBefore: "(?:(\\d{1,2}|a|one|two|three) )?(days?|weeks?) before (?:\(englishMonths) (\\d{1,2})(?:st|nd|rd|th)?|(?:the )?(\\d{1,2})(?:st|nd|rd|th)? (?:of )?\(englishMonths))",
-        holidays: [("(?:on )?new year's eve", 12, 31), ("(?:on |for )?new year(?:'s day|'s)?", 1, 1), ("(?:on )?christmas eve", 12, 24), ("(?:on |for |at )?christmas(?: day)?", 12, 25), ("(?:on |for )?valentine's day", 2, 14), ("(?:on |for |at )?halloween", 10, 31), ("(?:on |for )?navruz", 3, 21)]
+        holidays: [("(?:on )?new year's eve|before (?:the )?new year", 12, 31), ("(?:on |for )?new year(?:'s day|'s)?", 1, 1), ("(?:on )?christmas eve", 12, 24), ("(?:on |for |at )?christmas(?: day)?", 12, 25), ("(?:on |for )?valentine's day", 2, 14), ("(?:on |for |at )?halloween", 10, 31), ("(?:on |for )?navruz", 3, 21)],
+        deadline: "(?:by|before|no later than) (tomorrow|(?:this |next )?(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday)|\(englishMonths) (\\d{1,2})(?:st|nd|rd|th)?|(?:the )?(\\d{1,2})(?:st|nd|rd|th)? (?:of )?\(englishMonths))",
+        tomorrow: ["tomorrow"],
+        afterDay: "(?:(\\d{1,2}|a|one|two|three) )?(days?|weeks?) after (?:\(englishMonths) )?(?:the )?(\\d{1,2})(?:st|nd|rd|th)?(?: (?:of )?\(englishMonths))?",
+        everyMonths: "every (\\d{1,2}) months",
+        rare: [("(?:every quarter|quarterly|once a quarter|every three months)", .everyMonths(3)), ("(?:every six months|every half year|twice a year|semiannually|semi-annually)", .everyMonths(6)), ("on (?:even|even-numbered) (?:days|dates)", .evenDays), ("on (?:odd|odd-numbered) (?:days|dates)", .oddDays)],
+        sun: [("at (?:sunset|dusk)|when the sun (?:sets|goes down)", .sunset), ("at (?:sunrise|dawn)|when the sun (?:rises|comes up)", .sunrise)]
     )
     private static let englishDay = "mondays?|tuesdays?|wednesdays?|thursdays?|fridays?|saturdays?|sundays?|mon|tues?|wed|thu(?:rs?)?|fri|sat|sun|weekends?"
 
@@ -183,7 +259,13 @@ extension PhraseParser {
         range: "vom (\\d{1,2})\\.? bis (?:zum )?(\\d{1,2})\\.? \(deMonths)",
         lastWorkday: "(?:am |jeden )?letzten arbeitstag (?:des |im |jedes )?monats?",
         daysBefore: "(?:(\\d{1,2}|einen|eine|zwei|drei) )?(tage?|wochen?) vor dem (\\d{1,2})\\.? \(deMonths)",
-        holidays: [("(?:an |zu )?silvester", 12, 31), ("(?:an |zu )?neujahr", 1, 1), ("(?:an |zu )?heiligabend", 12, 24), ("(?:an |zu )?weihnachten", 12, 25), ("(?:am )?valentinstag", 2, 14)]
+        holidays: [("(?:an |zu )?silvester", 12, 31), ("(?:an |zu )?neujahr", 1, 1), ("(?:an |zu )?heiligabend", 12, 24), ("(?:an |zu )?weihnachten", 12, 25), ("(?:am )?valentinstag", 2, 14)],
+        deadline: "(?:bis spätestens|spätestens|bis) (?:zum |am )?(morgen|montag|dienstag|mittwoch|donnerstag|freitag|samstag|sonntag|(\\d{1,2})\\.? \(deMonths))",
+        tomorrow: ["morgen"],
+        afterDay: "(?:(\\d{1,2}|einen|eine|zwei|drei) )?(tage?|wochen?) nach dem (\\d{1,2})\\.?(?: \(deMonths))?",
+        everyMonths: "alle (\\d{1,2}) monate",
+        rare: [("(?:jedes quartal|vierteljährlich|quartalsweise|alle drei monate)", .everyMonths(3)), ("(?:halbjährlich|alle sechs monate|jedes halbjahr)", .everyMonths(6)), ("an geraden tagen", .evenDays), ("an ungeraden tagen", .oddDays)],
+        sun: [("bei sonnenuntergang|zum sonnenuntergang", .sunset), ("bei sonnenaufgang|zum sonnenaufgang|im morgengrauen", .sunrise)]
     )
     private static let germanDay = "montags?|dienstags?|mittwochs?|donnerstags?|freitags?|samstags?|sonntags?|wochenenden?"
 
@@ -198,7 +280,13 @@ extension PhraseParser {
         range: "du (\\d{1,2}) au (\\d{1,2}) \(frMonths)",
         lastWorkday: "(?:le |chaque )?dernier jour ouvr(?:é|e) (?:du|de chaque) mois",
         daysBefore: "(?:(\\d{1,2}|un|une|deux|trois) )?(jours?|semaines?) avant le (\\d{1,2}) \(frMonths)",
-        holidays: [("(?:le |au )?réveillon(?: du nouvel an)?", 12, 31), ("(?:le |au |pour le )?(?:jour de l'an|nouvel an)", 1, 1), ("(?:à |a |pour )?no(?:ë|e)l", 12, 25), ("(?:à |a |pour )?la saint-valentin", 2, 14)]
+        holidays: [("(?:le |au )?réveillon(?: du nouvel an)?", 12, 31), ("(?:le |au |pour le )?(?:jour de l'an|nouvel an)", 1, 1), ("(?:à |a |pour )?no(?:ë|e)l", 12, 25), ("(?:à |a |pour )?la saint-valentin", 2, 14)],
+        deadline: "(?:d'ici|avant|au plus tard) (?:le |à |a )?(demain|lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche|(\\d{1,2}) \(frMonths))",
+        tomorrow: ["demain"],
+        afterDay: "(?:(\\d{1,2}|un|une|deux|trois) )?(jours?|semaines?) après le (\\d{1,2})(?: \(frMonths))?",
+        everyMonths: "tous les (\\d{1,2}) mois",
+        rare: [("(?:chaque trimestre|tous les trimestres|tous les trois mois|trimestriellement)", .everyMonths(3)), ("(?:tous les six mois|chaque semestre|semestriellement)", .everyMonths(6)), ("les jours pairs", .evenDays), ("les jours impairs", .oddDays)],
+        sun: [("au coucher du soleil|au crépuscule|au crepuscule", .sunset), ("au lever du soleil|à l'aube|a l'aube", .sunrise)]
     )
     private static let frenchDay = "lundis?|mardis?|mercredis?|jeudis?|vendredis?|samedis?|dimanches?|week-ends?|weekends?"
 
@@ -213,7 +301,13 @@ extension PhraseParser {
         range: "(?!x)x",
         lastWorkday: "(?:har )?oyning oxirgi ish kuni(?:da)?",
         daysBefore: "(?!x)x",
-        holidays: [("(?:navro'z|navruz)\\w*", 3, 21), ("yangi yil\\w*", 1, 1)]
+        holidays: [("(?:navro'z|navruz)\\w*", 3, 21), ("yangi yil\\w*", 1, 1)],
+        deadline: "(ertagacha|dushanbagacha|seshanbagacha|chorshanbagacha|payshanbagacha|jumagacha|shanbagacha|yakshanbagacha)",
+        tomorrow: ["ertaga"],
+        afterDay: "(?!x)x",
+        everyMonths: "har (\\d{1,2}) oyda",
+        rare: [("har chorakda", .everyMonths(3)), ("(?:har yarim yilda|yarim yilda bir)", .everyMonths(6)), ("juft kunlar(?:da|i)", .evenDays), ("toq kunlar(?:da|i)", .oddDays)],
+        sun: [("quyosh bot(?:ganda|ishi bilan)|kun botganda", .sunset), ("quyosh chiq(?:qanda|ishi bilan)|tong otganda", .sunrise)]
     )
     private static let uzbekDay = "dushanba\\w*|seshanba\\w*|chorshanba\\w*|payshanba\\w*|juma\\w*|shanba\\w*|yakshanba\\w*|dam olish kunlari\\w*"
 
@@ -228,7 +322,13 @@ extension PhraseParser {
         range: "من (\\d{1,2}) (?:الى|حتى) (\\d{1,2}) \(arMonths)",
         lastWorkday: "(?:في )?اخر يوم عمل (?:من|في) (?:كل )?(?:ال)?شهر",
         daysBefore: "(?!x)x",
-        holidays: [("(?:في )?راس السنة", 1, 1), ("(?:في )?عيد الحب", 2, 14), ("(?:في )?(?:عيد )?النوروز", 3, 21)]
+        holidays: [("(?:في )?راس السنة", 1, 1), ("(?:في )?عيد الحب", 2, 14), ("(?:في )?(?:عيد )?النوروز", 3, 21)],
+        deadline: "(?:قبل|حتى) (غد|الغد|غدا|(?:يوم )?(?:ال)?(?:اثنين|ثلاثاء|اربعاء|خميس|جمعة|جمعه|سبت|احد))",
+        tomorrow: ["غد", "الغد"],
+        afterDay: "(?!x)x",
+        everyMonths: "كل (\\d{1,2}) (?:اشهر|شهور)",
+        rare: [("(?:كل ربع سنة|كل ثلاثة اشهر|كل ثلاثه اشهر)", .everyMonths(3)), ("(?:كل ستة اشهر|كل سته اشهر|كل نصف سنة)", .everyMonths(6)), ("في الايام الزوجية", .evenDays), ("في الايام الفردية", .oddDays)],
+        sun: [("عند الغروب|وقت الغروب|مع الغروب", .sunset), ("عند الشروق|وقت الشروق|مع الشروق", .sunrise)]
     )
     private static let arabicDay = "(?:يوم )?(?:ال)?(?:اثنين|ثلاثاء|اربعاء|خميس|جمعة|جمعه|سبت|احد)|عطلة نهاية الاسبوع|نهاية الاسبوع"
 }

@@ -38,6 +38,12 @@ final class WeatherAdvisor {
 
     private let defaults = UserDefaults.standard
 
+    static var savedCoordinate: Coordinate? {
+        let defaults = UserDefaults.standard
+        guard defaults.object(forKey: latitudeKey) != nil else { return nil }
+        return Coordinate(latitude: defaults.double(forKey: latitudeKey), longitude: defaults.double(forKey: longitudeKey))
+    }
+
     private init() {
         enabled = defaults.bool(forKey: Self.enabledKey)
         city = defaults.string(forKey: Self.cityKey)

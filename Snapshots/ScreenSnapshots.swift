@@ -122,6 +122,14 @@ final class ScreenSnapshots: XCTestCase {
 
     func testMulti() throws {
         try render(PhraseScreen(store: sampleStore(), text: "завтра в 9 позвонить маме, в 12 обед с Ильёй, вечером купить хлеб", now: SampleData.now, calendar: SampleData.calendar, locale: russian, autofocus: false, onClose: {}), name: "D-Multi", style: .dark)
+        try render(PhraseScreen(store: sampleStore(), text: "каждый день в 9 и 21 пить таблетки", now: SampleData.now, calendar: SampleData.calendar, locale: russian, autofocus: false, onClose: {}), name: "D-Multi-Times", style: .light)
+    }
+
+    func testRepeatMonthly() throws {
+        var report = SampleData.server
+        report.title = "Сдать отчёт"
+        report.schedule = Schedule(start: LocalDate(year: 2026, month: 10, day: 5), time: LocalTime(hour: 10, minute: 0), rule: .lastWorkday)
+        try render(RepeatScreen(draft: .constant(report), now: SampleData.now, calendar: SampleData.calendar, locale: russian, onBack: {}), name: "D-Repeat-Monthly", style: .light, height: 1000)
     }
 
     func testEmptyAndRightToLeft() throws {
