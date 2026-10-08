@@ -71,6 +71,13 @@ public struct PhraseParser {
         var placeNames: [String] = []
         var meridiem = false
         var alternative: Schedule?
+        var marks: [Mark] = []
+    }
+
+    struct Mark {
+        var range: Range<Int>
+        var time: Bool
+        var day: Bool
     }
 
     public func parse(_ input: String) -> ParsedPhrase {
@@ -92,16 +99,17 @@ public struct PhraseParser {
             return parseUkrainian(input)
         }
         let text = input.lowercased().replacingOccurrences(of: "ё", with: "е")
-        var state = State()
-
-        extras(text, &state, PhraseParser.russianExtras, weekday: weekday)
-        repeats(text, &state)
-        offsets(text, &state)
-        dates(text, &state)
-        times(text, &state)
-        alerts(text, &state)
-        flags(text, &state)
-        placeRules(text, &state)
+        func pass(_ text: String, _ state: inout State) {
+            extras(text, &state, PhraseParser.russianExtras, weekday: weekday)
+            repeats(text, &state)
+            offsets(text, &state)
+            dates(text, &state)
+            times(text, &state)
+            alerts(text, &state)
+            flags(text, &state)
+            placeRules(text, &state)
+        }
+        var state = corrected(text, PhraseParser.russianCorrection, pass)
 
         let schedule = resolve(&state)
         return ParsedPhrase(
@@ -142,8 +150,12 @@ public struct PhraseParser {
     func take(_ pattern: String, _ text: String, _ state: inout State, _ apply: (NSTextCheckingResult, inout State) -> Bool) {
         for match in matches(pattern, in: text) {
             guard let range = span(match, text), isFree(range, state) else { continue }
+            let before = state
             if apply(match, &state) {
                 state.used.append(range)
+                let time = state.time != before.time || state.dayPart != before.dayPart || state.exact != before.exact
+                let day = state.date != before.date || state.dayOffset != before.dayOffset || state.weekdays != before.weekdays || state.rule != before.rule || state.exact != before.exact
+                state.marks.append(Mark(range: range, time: time, day: day))
             }
         }
     }

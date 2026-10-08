@@ -39,16 +39,17 @@ extension PhraseParser {
 
     func parseArabic(_ input: String) -> ParsedPhrase {
         let (text, origin) = PhraseParser.arabicNormalized(input)
-        var state = State()
-
-        extras(text, &state, PhraseParser.arabicExtras, weekday: arWeekdayValue)
-        arRepeats(text, &state)
-        arOffsets(text, &state)
-        arDates(text, &state)
-        arTimes(text, &state)
-        arAlerts(text, &state)
-        arFlags(text, &state)
-        arPlaces(text, &state)
+        func pass(_ text: String, _ state: inout State) {
+            extras(text, &state, PhraseParser.arabicExtras, weekday: arWeekdayValue)
+            arRepeats(text, &state)
+            arOffsets(text, &state)
+            arDates(text, &state)
+            arTimes(text, &state)
+            arAlerts(text, &state)
+            arFlags(text, &state)
+            arPlaces(text, &state)
+        }
+        var state = corrected(text, PhraseParser.arabicCorrection, pass)
 
         let schedule = resolve(&state)
         let used = state.used.compactMap { range -> Range<Int>? in

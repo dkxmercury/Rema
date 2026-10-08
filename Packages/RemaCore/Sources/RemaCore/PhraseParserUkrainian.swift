@@ -15,16 +15,17 @@ extension PhraseParser {
 
     func parseUkrainian(_ input: String) -> ParsedPhrase {
         let text = input.lowercased().replacingOccurrences(of: "’", with: "'").replacingOccurrences(of: "ʼ", with: "'")
-        var state = State()
-
-        extras(text, &state, PhraseParser.ukrainianExtras, weekday: ukWeekday)
-        ukRepeats(text, &state)
-        ukOffsets(text, &state)
-        ukDates(text, &state)
-        ukTimes(text, &state)
-        ukAlerts(text, &state)
-        ukFlags(text, &state)
-        ukPlaces(text, &state)
+        func pass(_ text: String, _ state: inout State) {
+            extras(text, &state, PhraseParser.ukrainianExtras, weekday: ukWeekday)
+            ukRepeats(text, &state)
+            ukOffsets(text, &state)
+            ukDates(text, &state)
+            ukTimes(text, &state)
+            ukAlerts(text, &state)
+            ukFlags(text, &state)
+            ukPlaces(text, &state)
+        }
+        var state = corrected(text, PhraseParser.ukrainianCorrection, pass)
 
         let schedule = resolve(&state)
         return ParsedPhrase(

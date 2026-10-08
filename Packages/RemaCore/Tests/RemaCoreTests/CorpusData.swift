@@ -81,8 +81,11 @@ enum CorpusData {
         gap("каждый вечер 10 раз упражнения для спины", "Упражнения для спины | 05.10 19:00 | daily x10 | -"),
         gap("с 1 по 10 ноября каждый день в 9 таблетки", "Таблетки | 01.11 09:00 | daily until 10.11.2026 | -"),
         gap("каждый понедельник до 20 декабря в 10 отчёт", "Отчёт | 12.10 10:00 | weekly mon until 20.12.2026 | -"),
-        gap("завтра в 17, нет, в 18 позвонить маме", "Позвонить маме | 06.10 18:00 | - | -"),
-        gap("не в пятницу, а в субботу встреча с друзьями", "Встреча с друзьями | 10.10 09:00 | - | -"),
+        ok("завтра в 17, нет, в 18 позвонить маме", "Позвонить маме | 06.10 18:00 | - | -"),
+        ok("не в пятницу, а в субботу встреча с друзьями", "Встреча с друзьями | 10.10 09:00 | - | -"),
+        ok("в 18, нет, в 17:30 забрать ребёнка", "Забрать ребёнка | 05.10 17:30 | - | -"),
+        ok("в понедельник, вернее во вторник, сдать отчёт", "Сдать отчёт | 06.10 09:00 | - | -"),
+        ok("в пятницу, а не в субботу встреча с друзьями", "Встреча с друзьями | 09.10 09:00 | - | -"),
         gap("завтро в 9 позвонить врачу", "Позвонить врачу | 06.10 09:00 | - | -"),
         gap("сёдня в 8 вечера вебинар", "Вебинар | 05.10 20:00 | - | -"),
         gap("вечерком полить огород", "Полить огород | 05.10 19:00 | - | -"),
@@ -125,7 +128,8 @@ enum CorpusData {
         ok("ближче до вечора забрати замовлення", "Забрати замовлення | 05.10 18:00 | - | -"),
         ok("між 2 і 3 подзвонити сантехніку", "Подзвонити сантехніку | 05.10 14:00 | - | alt 06.10 02:00"),
         gap("по буднях крім п'ятниці о 8 планірка", "Планірка | 06.10 08:00 | weekly mon,tue,wed,thu | -"),
-        gap("завтра о 17, ні, о 18 подзвонити мамі", "Подзвонити мамі | 06.10 18:00 | - | -"),
+        ok("завтра о 17, ні, о 18 подзвонити мамі", "Подзвонити мамі | 06.10 18:00 | - | -"),
+        ok("не в п'ятницю, а в суботу зустріч з друзями", "Зустріч з друзями | 10.10 09:00 | - | -"),
         gap("треба не забути купити хліб завтра", "Купити хліб | 06.10 09:00 | - | -"),
     ]
 
@@ -185,7 +189,9 @@ enum CorpusData {
         gap("weekdays except Friday at 8 standup", "Standup | 06.10 08:00 | weekly mon,tue,wed,thu | -"),
         gap("every day until the end of the month at 9 stretching", "Stretching | 06.10 09:00 | daily until 31.10.2026 | -"),
         gap("every Monday until December 20 at 10 report", "Report | 12.10 10:00 | weekly mon until 20.12.2026 | -"),
-        gap("tomorrow at 5, no, at 6 pm call mom", "Call mom | 06.10 18:00 | - | -"),
+        ok("tomorrow at 5, no, at 6 pm call mom", "Call mom | 06.10 18:00 | - | -"),
+        ok("not on Friday but on Saturday meet friends", "Meet friends | 10.10 09:00 | - | -"),
+        ok("at 6 pm, no, at 5:30 pm pick up the kids", "Pick up the kids | 05.10 17:30 | - | -"),
         gap("tmrw at 9 call the doctor", "Call the doctor | 06.10 09:00 | - | -"),
         ok("don't forget to buy bread tomorrow", "Buy bread | 06.10 09:00 | - | -"),
         gap("very important call the doctor tomorrow at 10", "Call the doctor | 06.10 10:00 | - | urgent"),
@@ -223,7 +229,8 @@ enum CorpusData {
         ok("gegen Abend mit dem Hund rausgehen", "Mit dem Hund rausgehen | 05.10 18:00 | - | -"),
         ok("zwischen 2 und 3 den Klempner anrufen", "Klempner anrufen | 05.10 14:00 | - | alt 06.10 02:00"),
         gap("werktags außer freitags um 8 Besprechung", "Besprechung | 06.10 08:00 | weekly mon,tue,wed,thu | -"),
-        gap("morgen um 17, nein, um 18 Mama anrufen", "Mama anrufen | 06.10 18:00 | - | -"),
+        ok("morgen um 17, nein, um 18 Mama anrufen", "Mama anrufen | 06.10 18:00 | - | -"),
+        ok("nicht am Freitag, sondern am Samstag Freunde treffen", "Freunde treffen | 10.10 09:00 | - | -"),
         gap("nicht vergessen morgen Brot kaufen", "Brot kaufen | 06.10 09:00 | - | -"),
     ]
 
@@ -258,7 +265,8 @@ enum CorpusData {
         ok("en fin de journée promener le chien", "Promener le chien | 05.10 18:00 | - | -"),
         ok("entre 2 et 3 heures appeler le plombier", "Appeler le plombier | 05.10 14:00 | - | alt 06.10 02:00"),
         gap("en semaine sauf le vendredi à 8h réunion", "Réunion | 06.10 08:00 | weekly mon,tue,wed,thu | -"),
-        gap("demain à 17h, non, à 18h appeler maman", "Appeler maman | 06.10 18:00 | - | -"),
+        ok("demain à 17h, non, à 18h appeler maman", "Appeler maman | 06.10 18:00 | - | -"),
+        ok("pas vendredi mais samedi voir des amis", "Voir des amis | 10.10 09:00 | - | -"),
         gap("ne pas oublier d'acheter du pain demain", "Acheter du pain | 06.10 09:00 | - | -"),
     ]
 
@@ -288,7 +296,8 @@ enum CorpusData {
         ok("soat beshlarda bankka qo‘ng‘iroq qilish", "Bankka qo‘ng‘iroq qilish | 05.10 17:00 | - | alt 06.10 05:00"),
         ok("taxminan soat 4 da posilkani olish", "Posilkani olish | 05.10 16:00 | - | alt 06.10 04:00"),
         ok("kechga yaqin itni sayr qildirish", "Itni sayr qildirish | 05.10 18:00 | - | -"),
-        gap("ertaga soat 17 da, yo‘q, 18 da onamga qo‘ng‘iroq qilish", "Onamga qo‘ng‘iroq qilish | 06.10 18:00 | - | -"),
+        ok("ertaga soat 17 da, yo‘q, 18 da onamga qo‘ng‘iroq qilish", "Onamga qo‘ng‘iroq qilish | 06.10 18:00 | - | -"),
+        ok("jumada emas, shanbada do‘stlar bilan uchrashuv", "Do‘stlar bilan uchrashuv | 10.10 09:00 | - | -"),
         gap("unutmaslik kerak ertaga non sotib olish", "Non sotib olish | 06.10 09:00 | - | -"),
     ]
 
@@ -305,7 +314,7 @@ enum CorpusData {
         ok("ҳар куни соат 8 да витамин ичиш", "Витамин ичиш | 06.10 08:00 | daily | -"),
         ok("кечқурун соат саккиз яримда акамга қўнғироқ қилиш", "Акамга қўнғироқ қилиш | 05.10 20:30 | - | -"),
         ok("соат еттида кечки овқат", "Кечки овқат | 05.10 19:00 | - | alt 06.10 07:00"),
-        gap("эртага соат 17 да, йўқ, 18 да онамга қўнғироқ қилиш", "Онамга қўнғироқ қилиш | 06.10 18:00 | - | -"),
+        ok("эртага соат 17 да, йўқ, 18 да онамга қўнғироқ қилиш", "Онамга қўнғироқ қилиш | 06.10 18:00 | - | -"),
         ok("соат бешларда банкка қўнғироқ қилиш", "Банкка қўнғироқ қилиш | 05.10 17:00 | - | alt 06.10 05:00"),
     ]
 
@@ -331,7 +340,8 @@ enum CorpusData {
         ok("غدًا الساعة التاسعة إلا ربع اجتماع", "اجتماع | 06.10 08:45 | - | -"),
         ok("الساعة الثالثة والربع اتصال", "اتصال | 05.10 15:15 | - | alt 06.10 03:15"),
         ok("الساعة 8 والنصف صباحًا الجري", "الجري | 06.10 08:30 | - | -"),
-        gap("غدًا الساعة 17، لا، الساعة 18 اتصل بأمي", "اتصل بأمي | 06.10 18:00 | - | -"),
+        ok("غدًا الساعة 17، لا، الساعة 18 اتصل بأمي", "اتصل بأمي | 06.10 18:00 | - | -"),
+        ok("ليس يوم الجمعة بل يوم السبت لقاء الاصدقاء", "لقاء الاصدقاء | 10.10 09:00 | - | -"),
         ok("حوالي الساعة 5 اتصل بالبنك", "اتصل بالبنك | 05.10 17:00 | - | alt 06.10 05:00"),
         ok("قرب المساء تمشية الكلب", "تمشية الكلب | 05.10 18:00 | - | -"),
         ok("بين الساعة 2 و3 اتصل بالسباك", "اتصل بالسباك | 05.10 14:00 | - | alt 06.10 02:00"),

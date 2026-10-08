@@ -10,16 +10,17 @@ extension PhraseParser {
 
     func parseFrench(_ input: String) -> ParsedPhrase {
         let text = input.lowercased().replacingOccurrences(of: "’", with: "'")
-        var state = State()
-
-        extras(text, &state, PhraseParser.frenchExtras, weekday: frWeekday)
-        frRepeats(text, &state)
-        frOffsets(text, &state)
-        frDates(text, &state)
-        frTimes(text, &state)
-        frAlerts(text, &state)
-        frFlags(text, &state)
-        frPlaces(text, &state)
+        func pass(_ text: String, _ state: inout State) {
+            extras(text, &state, PhraseParser.frenchExtras, weekday: frWeekday)
+            frRepeats(text, &state)
+            frOffsets(text, &state)
+            frDates(text, &state)
+            frTimes(text, &state)
+            frAlerts(text, &state)
+            frFlags(text, &state)
+            frPlaces(text, &state)
+        }
+        var state = corrected(text, PhraseParser.frenchCorrection, pass)
 
         let schedule = resolve(&state)
         var name = title(input, used: state.used, fillers: PhraseParser.frFillers, dangling: PhraseParser.frDangling, lead: PhraseParser.frLead)

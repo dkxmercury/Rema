@@ -10,16 +10,17 @@ extension PhraseParser {
 
     func parseEnglish(_ input: String) -> ParsedPhrase {
         let text = input.lowercased().replacingOccurrences(of: "’", with: "'")
-        var state = State()
-
-        extras(text, &state, PhraseParser.englishExtras, weekday: englishWeekday)
-        englishRepeats(text, &state)
-        englishOffsets(text, &state)
-        englishDates(text, &state)
-        englishTimes(text, &state)
-        englishAlerts(text, &state)
-        englishFlags(text, &state)
-        englishPlaces(text, &state)
+        func pass(_ text: String, _ state: inout State) {
+            extras(text, &state, PhraseParser.englishExtras, weekday: englishWeekday)
+            englishRepeats(text, &state)
+            englishOffsets(text, &state)
+            englishDates(text, &state)
+            englishTimes(text, &state)
+            englishAlerts(text, &state)
+            englishFlags(text, &state)
+            englishPlaces(text, &state)
+        }
+        var state = corrected(text, PhraseParser.englishCorrection, pass)
 
         let schedule = resolve(&state)
         return ParsedPhrase(

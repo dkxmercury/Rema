@@ -29,16 +29,17 @@ extension PhraseParser {
     func parseUzbek(_ input: String) -> ParsedPhrase {
         let (latin, origin) = PhraseParser.uzbekLatin(input)
         let text = latin.lowercased()
-        var state = State()
-
-        extras(text, &state, PhraseParser.uzbekExtras, weekday: uzWeekday)
-        uzRepeats(text, &state)
-        uzOffsets(text, &state)
-        uzDates(text, &state)
-        uzTimes(text, &state)
-        uzAlerts(text, &state)
-        uzFlags(text, &state)
-        uzPlaces(text, &state)
+        func pass(_ text: String, _ state: inout State) {
+            extras(text, &state, PhraseParser.uzbekExtras, weekday: uzWeekday)
+            uzRepeats(text, &state)
+            uzOffsets(text, &state)
+            uzDates(text, &state)
+            uzTimes(text, &state)
+            uzAlerts(text, &state)
+            uzFlags(text, &state)
+            uzPlaces(text, &state)
+        }
+        var state = corrected(text, PhraseParser.uzbekCorrection, pass)
 
         let schedule = resolve(&state)
         let used = state.used.compactMap { range -> Range<Int>? in
@@ -238,6 +239,9 @@ extension PhraseParser {
         take("(kunduzi)", text, &state) { _, s in s.dayPart = LocalTime(hour: 13, minute: 0); return true }
         take("(kechqurun|kechki payt|kechda)", text, &state) { _, s in s.dayPart = evening; return true }
         take("(kechasi|tunda)", text, &state) { _, s in s.dayPart = LocalTime(hour: 23, minute: 0); return true }
+        take("(\\d{1,2})(?:[:.](\\d{2}))? ?da", text, &state) { m, s in
+            uzClock(group(m, 1, text), minute: group(m, 2, text).flatMap(Int.init) ?? 0, before: false, &s)
+        }
     }
 
     private static let uzHours = ["bir": 1, "ikki": 2, "uch": 3, "to'rt": 4, "besh": 5, "olti": 6, "yetti": 7, "etti": 7, "sakkiz": 8, "to'qqiz": 9, "o'n": 10, "o'n bir": 11, "o'n ikki": 12, "o'n uch": 13, "o'n to'rt": 14, "o'n besh": 15, "o'n olti": 16, "o'n yetti": 17, "o'n etti": 17, "o'n sakkiz": 18, "o'n to'qqiz": 19, "yigirma": 20, "yigirma bir": 21, "yigirma ikki": 22, "yigirma uch": 23]

@@ -11,16 +11,17 @@ extension PhraseParser {
 
     func parseGerman(_ input: String) -> ParsedPhrase {
         let text = input.lowercased().replacingOccurrences(of: "’", with: "'")
-        var state = State()
-
-        extras(text, &state, PhraseParser.germanExtras, weekday: deWeekday)
-        deRepeats(text, &state)
-        deOffsets(text, &state)
-        deDates(text, &state)
-        deTimes(text, &state)
-        deAlerts(text, &state)
-        deFlags(text, &state)
-        dePlaces(text, &state)
+        func pass(_ text: String, _ state: inout State) {
+            extras(text, &state, PhraseParser.germanExtras, weekday: deWeekday)
+            deRepeats(text, &state)
+            deOffsets(text, &state)
+            deDates(text, &state)
+            deTimes(text, &state)
+            deAlerts(text, &state)
+            deFlags(text, &state)
+            dePlaces(text, &state)
+        }
+        var state = corrected(text, PhraseParser.germanCorrection, pass)
 
         let schedule = resolve(&state)
         return ParsedPhrase(
