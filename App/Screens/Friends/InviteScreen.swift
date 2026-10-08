@@ -49,6 +49,8 @@ struct InviteScreen: View {
                             Text("What you will call them")
                                 .font(.app(.golos, 16, weight: 500))
                                 .lineLimit(1)
+                                .minimumScaleFactor(0.8)
+                                .layoutPriority(1)
                             TextField(text: $name, prompt: Text("Name").foregroundColor(Palette.secondary)) {
                                 Text("Name")
                             }
@@ -118,9 +120,13 @@ struct InviteScreen: View {
         guard code == nil else { return }
         do {
             let created = try await service.createInvite(calling: name)
+            // A name typed while the code was on its way would otherwise be lost.
+            if !name.isEmpty {
+                service.setPendingName(created.code, name)
+            }
             withAnimation(Motion.standard) { code = created.code }
         } catch let failure as Backend.Failure {
-            problem = failure == .rateLimited ? String(localized: "Too many invitations, try again later.", bundle: .app, locale: .app) : failure.message
+            problem = failure == .conflict("invite_limit") ? String(localized: "Too many invitations, try again later.", bundle: .app, locale: .app) : failure.friendsMessage
         } catch {
             problem = Backend.Failure.server.message
         }

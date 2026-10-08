@@ -141,6 +141,7 @@ struct Chip: View {
             }
         }
         .buttonStyle(PressableStyle())
+        .accessibilityAddTraits(selected ? .isSelected : [])
         .animation(Motion.small, value: selected)
     }
 }

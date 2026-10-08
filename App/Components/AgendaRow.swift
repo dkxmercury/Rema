@@ -56,8 +56,10 @@ struct AgendaRow: View {
         }
         .padding(.vertical, actionable ? 10 : 0)
         .background(Palette.panel.opacity(drag < 0 ? 1 : 0))
-        .accessibilityAction(named: Text("Delete")) {
-            onDelete?()
+        .accessibilityActions {
+            if let onDelete {
+                Button("Delete", action: onDelete)
+            }
         }
     }
 

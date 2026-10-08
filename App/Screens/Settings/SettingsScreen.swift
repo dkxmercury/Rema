@@ -69,9 +69,9 @@ struct SettingsScreen: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     section("Account", top: 14) { accountPanel }
-                    section("Friends") {
+                    section("Shared reminders") {
                         PanelList {
-                            NavigationRow(icon: Icons.people, iconColor: Palette.text, title: "Shared reminders", minHeight: 52, action: onFriends) {
+                            NavigationRow(icon: Icons.people, iconColor: Palette.text, title: "Friends", minHeight: 52, action: onFriends) {
                                 value(String(localized: "\(SharedService.shared.state.friends.count) of 40", bundle: .app, locale: .app))
                             }
                         }

@@ -457,7 +457,7 @@ struct PhraseScreen: View {
                 Text(verbatim: multi.map { String(localized: "Save \($0.count)", bundle: .app, locale: .app) } ?? (sharing && multi == nil ? String(localized: "Send to \(sharedWith.count)", bundle: .app, locale: .app) : confirmTitle))
                     .contentTransition(.numericText())
             }
-            .disabled(multi.map(\.isEmpty) ?? parsed.title.isEmpty)
+            .disabled(multi.map(\.isEmpty) ?? (parsed.title.isEmpty || (sharing && sharedWith.isEmpty)))
             if showsQuickTimes {
                 quickTimes
                     .frame(maxHeight: .infinity, alignment: .bottom)
@@ -710,7 +710,7 @@ struct PhraseScreen: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             PanelList {
-                ToggleRow(icon: Icons.check, iconColor: Palette.text, title: "Each ticks it alone", subtitle: String(localized: "or one «done» for everybody", bundle: .app, locale: .app), isOn: Binding(get: { !oneDone }, set: { oneDone = !$0 }))
+                ToggleRow(icon: Icons.check, iconColor: Palette.text, title: "Each ticks it alone", subtitle: String(localized: "or one “done” for everybody", bundle: .app, locale: .app), isOn: Binding(get: { !oneDone }, set: { oneDone = !$0 }))
             }
             .padding(.top, 12)
             if let when {
@@ -957,7 +957,8 @@ struct PhraseScreen: View {
             pickingDate = true
             return
         }
-        if sharing {
+        // Without a session the reminder is kept as an ordinary one rather than lost.
+        if sharing, Account.shared.isSignedIn {
             guard !sharedWith.isEmpty else {
                 Feedback.play(.error)
                 return

@@ -1485,13 +1485,13 @@
               "one": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "%lld та ўтказиб юборилди"
+                  "value": "%lld та кечиккан"
                 }
               },
               "other": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "%lld та ўтказиб юборилди"
+                  "value": "%lld та кечиккан"
                 }
               }
             }
@@ -1503,13 +1503,13 @@
               "one": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "%lld ta o‘tkazib yuborildi"
+                  "value": "%lld ta kechikkan"
                 }
               },
               "other": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "%lld ta o‘tkazib yuborildi"
+                  "value": "%lld ta kechikkan"
                 }
               }
             }
@@ -2625,6 +2625,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Qabul qilish"
+          }
+        }
+      }
+    },
+    "Accepted the invitation": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "قُبلت الدعوة"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einladung angenommen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invitation acceptée"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Приглашение принято"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Запрошення прийнято"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Таклиф қабул қилинди"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Taklif qabul qilindi"
           }
         }
       }
@@ -4837,6 +4883,98 @@
         }
       }
     },
+    "Changed": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تم التعديل"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geändert"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modifié"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Изменено"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Змінено"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ўзгартирилди"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O‘zgartirildi"
+          }
+        }
+      }
+    },
+    "Changed, now %@": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تم التعديل، الآن %@"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geändert, jetzt %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modifié, désormais %@"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Изменено, теперь %@"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Змінено, тепер %@"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ўзгартирилди, энди %@"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O‘zgartirildi, endi %@"
+          }
+        }
+      }
+    },
     "Check the email and password and try again.": {
       "localizations": {
         "ar": {
@@ -6355,6 +6493,52 @@
         }
       }
     },
+    "Declined the invitation": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "رُفضت الدعوة"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einladung abgelehnt"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invitation refusée"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Приглашение отклонено"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Запрошення відхилено"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Таклиф рад этилди"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Taklif rad etildi"
+          }
+        }
+      }
+    },
     "Default sound": {
       "localizations": {
         "ar": {
@@ -6815,6 +6999,52 @@
         }
       }
     },
+    "Deleted for everyone": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حُذف للجميع"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Für alle gelöscht"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supprimé pour tous"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Удалено у всех"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Видалено в усіх"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ҳамма учун ўчирилди"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hamma uchun o‘chirildi"
+          }
+        }
+      }
+    },
     "Dial": {
       "localizations": {
         "ar": {
@@ -7179,6 +7409,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tayyor, eslataman."
+          }
+        }
+      }
+    },
+    "Done, ticked for everybody": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تم، وأُشّر للجميع"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erledigt, für alle abgehakt"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fait, coché pour tous"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сделано, отмечено у всех"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Зроблено, позначено в усіх"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бажарилди, ҳамма учун белгиланди"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bajarildi, hamma uchun belgilandi"
           }
         }
       }
@@ -8396,7 +8672,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tout le monde le reçoit au même moment, à %@ chez vous. Vos amis le voient à leur heure. Vous seul pouvez le modifier."
+            "value": "Tout le monde le reçoit au même moment, à %@ chez vous. Vos amis le voient à leur heure. Personne d’autre ne peut le modifier."
           }
         },
         "ru": {
@@ -11451,12 +11727,104 @@
         }
       }
     },
+    "Invitation to a shared reminder": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دعوة إلى تذكير مشترك"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einladung zu einer gemeinsamen Erinnerung"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invitation à un rappel partagé"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Приглашение в общее напоминание"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Запрошення до спільного нагадування"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Умумий эслатмага таклиф"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Umumiy eslatmaga taklif"
+          }
+        }
+      }
+    },
+    "Invitation to a shared reminder, %@": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دعوة إلى تذكير مشترك، %@"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einladung zu einer gemeinsamen Erinnerung, %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invitation à un rappel partagé, %@"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Приглашение в общее напоминание, %@"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Запрошення до спільного нагадування, %@"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Умумий эслатмага таклиф, %@"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Umumiy eslatmaga taklif, %@"
+          }
+        }
+      }
+    },
     "Invite a friend": {
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "ادعُ صديقًا"
+            "value": "دعوة صديق"
           }
         },
         "de": {
@@ -11548,7 +11916,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "ادعُ إلى Rema"
+            "value": "دعوة إلى Rema"
           }
         },
         "de": {
@@ -14161,6 +14529,52 @@
         }
       }
     },
+    "News in shared reminders": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جديد في التذكيرات المشتركة"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neues bei gemeinsamen Erinnerungen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du nouveau dans les rappels partagés"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Новое в общих напоминаниях"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нове в спільних нагадуваннях"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Умумий эслатмаларда янгилик"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Umumiy eslatmalarda yangilik"
+          }
+        }
+      }
+    },
     "Next": {
       "localizations": {
         "ar": {
@@ -14667,6 +15081,52 @@
         }
       }
     },
+    "No longer in this reminder": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لم يعد مشاركًا"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicht mehr dabei"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ne participe plus"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Больше не участвует"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Більше не бере участі"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Энди иштирок этмайди"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Endi ishtirok etmaydi"
+          }
+        }
+      }
+    },
     "No places yet": {
       "localizations": {
         "ar": {
@@ -15092,7 +15552,7 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Noch nicht gesendet. Es geht an die Freunde, sobald eine Verbindung besteht."
+            "value": "Noch nicht gesendet. Sie geht an die Freunde, sobald eine Verbindung besteht."
           }
         },
         "fr": {
@@ -16139,7 +16599,7 @@
         }
       }
     },
-    "One «done» counts for everybody.": {
+    "One “done” counts for everybody.": {
       "localizations": {
         "ar": {
           "stringUnit": {
@@ -16248,7 +16708,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Vous seul voyez ce nom, il n’est jamais envoyé à votre ami."
+            "value": "Ce nom n’est visible que pour vous, il n’est jamais envoyé."
           }
         },
         "ru": {
@@ -16282,31 +16742,31 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "هذا الاسم تراه أنت فقط، ولا يصل إلى صديقك. هو يسمّي نفسه «%@»."
+            "value": "هذا الاسم تراه أنت فقط، ولا يصل إلى صديقك. الاسم الذي اختاره لنفسه «%@»."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Diesen Namen siehst nur du, er geht nie an deinen Freund. Selbst nennt er sich „%@“."
+            "value": "Diesen Namen siehst nur du, er geht nie an deinen Freund. Selbst nennt sich die Person „%@“."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Vous seul voyez ce nom, il n’est jamais envoyé à votre ami. Lui-même s’appelle « %@ »."
+            "value": "Ce nom n’est visible que pour vous, il n’est jamais envoyé. Son propre nom est « %@ »."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Это имя видите только вы, другу оно не уходит. Сам себя он называет «%@»."
+            "value": "Это имя видите только вы, другу оно не уходит. Себя этот человек называет «%@»."
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Це ім’я бачите тільки ви, другові воно не надсилається. Сам себе він називає «%@»."
+            "value": "Це ім’я бачите тільки ви, другові воно не надсилається. Себе ця людина називає «%@»."
           }
         },
         "uz-Cyrl": {
@@ -17812,7 +18272,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Rema a trouvé « %@ » dans vos contacts. Ajouter un bouton Appeler à la notification ?"
+            "value": "Rema a trouvé « %@ » dans vos contacts. Ajouter un bouton Appeler à la notification ?"
           }
         },
         "ru": {
@@ -20572,7 +21032,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Signaler %@ ? Rema examinera la demande sous un jour."
+            "value": "Signaler %@ ? Rema l’examinera dans la journée."
           }
         },
         "ru": {
@@ -20664,7 +21124,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Signaler ce rappel ? Rema examinera la demande sous un jour."
+            "value": "Signaler ce rappel ? Rema l’examinera dans la journée."
           }
         },
         "ru": {
@@ -22068,7 +22528,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Connectez-vous pour partager des rappels avec vos amis. Les rappels partagés vivent dans le compte."
+            "value": "Connectez-vous pour partager des rappels avec vos amis. Les rappels partagés sont enregistrés dans le compte."
           }
         },
         "ru": {
@@ -25139,6 +25599,52 @@
         }
       }
     },
+    "This person or reminder is no longer here.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لم يعد هذا الشخص أو التذكير موجودًا."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diese Person oder Erinnerung gibt es nicht mehr."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cette personne ou ce rappel n’existe plus."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Этого человека или напоминания уже нет."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Цієї людини або нагадування вже немає."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бу одам ёки эслатма энди йўқ."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu odam yoki eslatma endi yo‘q."
+          }
+        }
+      }
+    },
     "This time has already passed": {
       "localizations": {
         "ar": {
@@ -25871,6 +26377,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Takliflar juda ko‘p, keyinroq urinib ko‘ring."
+          }
+        }
+      }
+    },
+    "Too many requests, try again tomorrow.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "طلبات كثيرة، حاول غدًا."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zu viele Anfragen, versuch es morgen wieder."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trop de demandes, réessayez demain."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Слишком много запросов, попробуйте завтра."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Забагато запитів, спробуйте завтра."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сўровлар жуда кўп, эртага уриниб кўринг."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "So‘rovlar juda ko‘p, ertaga urinib ko‘ring."
           }
         }
       }
@@ -27490,31 +28042,31 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "كيف تسمّيه"
+            "value": "الاسم في قائمتك"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Wie du ihn nennst"
+            "value": "Name in deiner Liste"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Comment vous l’appelez"
+            "value": "Nom dans votre liste"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Как вы его зовёте"
+            "value": "Имя в вашем списке"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Як ви його звете"
+            "value": "Ім’я у вашому списку"
           }
         },
         "uz-Cyrl": {
@@ -27536,31 +28088,31 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "كيف ستسمّيه"
+            "value": "الاسم في قائمتك"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Wie du ihn nennen wirst"
+            "value": "Name in deiner Liste"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Comment vous l’appellerez"
+            "value": "Nom dans votre liste"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Как вы его назовёте"
+            "value": "Имя в вашем списке"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Як ви його назвете"
+            "value": "Ім’я у вашому списку"
           }
         },
         "uz-Cyrl": {
@@ -28612,13 +29164,13 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Теперь вы с %@ друзья"
+            "value": "%@ теперь в ваших друзьях"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Тепер ви з %@ друзі"
+            "value": "%@ тепер у ваших друзях"
           }
         },
         "uz-Cyrl": {
@@ -28631,6 +29183,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Endi siz va %@ do‘stsiz"
+          }
+        }
+      }
+    },
+    "You are friends in Rema now": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أصبحتما صديقين في Rema"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ihr seid jetzt in Rema befreundet"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vous êtes maintenant amis sur Rema"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Теперь вы друзья в Rema"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Тепер ви друзі в Rema"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Энди Rema’да дўстсиз"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Endi Rema’da do‘stsiz"
           }
         }
       }
@@ -29688,7 +30286,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "قبِل"
+            "value": "تم القبول"
           }
         },
         "de": {
@@ -29706,13 +30304,13 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "принял"
+            "value": "участвует"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "прийняв"
+            "value": "бере участь"
           }
         },
         "uz-Cyrl": {
@@ -30650,7 +31248,7 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "hat sie erstellt"
+            "value": "erstellt"
           }
         },
         "fr": {
@@ -30920,7 +31518,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "رفض"
+            "value": "تم الرفض"
           }
         },
         "de": {
@@ -30938,13 +31536,13 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "отказался"
+            "value": "отказ"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "відмовився"
+            "value": "відмова"
           }
         },
         "uz-Cyrl": {
@@ -33126,7 +33724,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "مدعو"
+            "value": "أُرسلت الدعوة"
           }
         },
         "de": {
@@ -33138,19 +33736,19 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "invité"
+            "value": "invitation envoyée"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "приглашён"
+            "value": "приглашение отправлено"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "запрошений"
+            "value": "запрошення надіслано"
           }
         },
         "uz-Cyrl": {
@@ -33356,7 +33954,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "غادر"
+            "value": "انسحاب"
           }
         },
         "de": {
@@ -33368,19 +33966,19 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "est parti"
+            "value": "a quitté"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "вышел"
+            "value": "больше не участвует"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "вийшов"
+            "value": "більше не бере участі"
           }
         },
         "uz-Cyrl": {
@@ -33402,7 +34000,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "أنشأه %@"
+            "value": "المنشئ %@"
           }
         },
         "de": {
@@ -33420,13 +34018,13 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "создал %@"
+            "value": "автор %@"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "створив %@"
+            "value": "автор %@"
           }
         },
         "uz-Cyrl": {
@@ -33448,7 +34046,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "أنشأه %@ · وحده يمكنه تعديله"
+            "value": "المنشئ %@ · يعدّله المنشئ فقط"
           }
         },
         "de": {
@@ -33460,19 +34058,19 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "créé par %@ · seule cette personne peut le modifier"
+            "value": "créé par %@ · seul l’auteur peut le modifier"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "создал %@ · менять может только он"
+            "value": "автор %@ · менять может только автор"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "створив %@ · змінювати може лише він"
+            "value": "автор %@ · змінювати може лише автор"
           }
         },
         "uz-Cyrl": {
@@ -33552,7 +34150,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "créé par vous · vous seul pouvez le modifier"
+            "value": "créé par vous · personne d’autre ne peut le modifier"
           }
         },
         "ru": {
@@ -34731,7 +35329,7 @@
         }
       }
     },
-    "or one «done» for everybody": {
+    "or one “done” for everybody": {
       "localizations": {
         "ar": {
           "stringUnit": {
@@ -35049,6 +35647,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "darhol"
+          }
+        }
+      }
+    },
+    "shared": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مشترك"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "gemeinsam"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "partagé"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "общее"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "спільне"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "умумий"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "umumiy"
           }
         }
       }
@@ -35605,48 +36249,48 @@
         }
       }
     },
-    "waiting for an answer to the invitation": {
+    "waiting for an answer": {
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "بانتظار الرد على الدعوة"
+            "value": "بانتظار الرد"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "wartet auf Antwort auf die Einladung"
+            "value": "wartet auf Antwort"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "attend une réponse à l’invitation"
+            "value": "en attente de réponse"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "ждёт ответа на приглашение"
+            "value": "ждёт ответа"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "чекає відповіді на запрошення"
+            "value": "чекає відповіді"
           }
         },
         "uz-Cyrl": {
           "stringUnit": {
             "state": "translated",
-            "value": "таклифга жавоб кутмоқда"
+            "value": "жавоб кутилмоқда"
           }
         },
         "uz-Latn": {
           "stringUnit": {
             "state": "translated",
-            "value": "taklifga javob kutmoqda"
+            "value": "javob kutilmoqda"
           }
         }
       }
@@ -35831,6 +36475,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "har yili, %@"
+          }
+        }
+      }
+    },
+    "“%@” could not be shared and stays only on this phone.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّرت مشاركة «%@»، وبقي على هذا الهاتف فقط."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "„%@“ ließ sich nicht teilen und bleibt nur auf diesem Telefon."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "« %@ » n’a pas pu être partagé et reste seulement sur ce téléphone."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«%@» не получилось сделать общим, оно осталось только на этом телефоне."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«%@» не вдалося зробити спільним, воно залишилося лише на цьому телефоні."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«%@» умумий қилинмади, фақат шу телефонда қолди."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«%@» umumiy qilinmadi, faqat shu telefonda qoldi."
           }
         }
       }

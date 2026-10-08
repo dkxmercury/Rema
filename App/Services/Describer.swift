@@ -8,7 +8,14 @@ struct Describer {
     func subtitle(for reminder: Reminder, places: [Place], withRepeat: Bool = true) -> String? {
         var parts: [String] = []
         if let shared = reminder.shared {
-            parts.append(shared.pending ? String(localized: "not sent yet", bundle: .app, locale: .app) : String(localized: "shared · \(SharedNames.line(shared))", bundle: .app, locale: .app))
+            let line = SharedNames.line(shared)
+            if shared.pending {
+                parts.append(String(localized: "not sent yet", bundle: .app, locale: .app))
+            } else if line.isEmpty {
+                parts.append(String(localized: "shared", bundle: .app, locale: .app))
+            } else {
+                parts.append(String(localized: "shared · \(line)", bundle: .app, locale: .app))
+            }
         }
         if !reminder.items.isEmpty {
             parts.append(String(localized: "\(reminder.checkedCount) of \(reminder.items.count)", bundle: .app, locale: .app))

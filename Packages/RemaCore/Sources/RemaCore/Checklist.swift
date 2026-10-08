@@ -12,6 +12,8 @@ public enum Checklist {
 
     // The suggestions read every item on each key press, the pattern is compiled once.
     private static let amountPattern = try? NSRegularExpression(pattern: amount, options: [.caseInsensitive])
+    private static let conjunctionPattern = try? NSRegularExpression(pattern: conjunctions, options: [.caseInsensitive])
+    private static let prepositionPattern = try? NSRegularExpression(pattern: prepositions, options: [.caseInsensitive])
 
     // A shopping phrase gets the offer to make a list right away.
     public static func isShopping(_ title: String) -> Bool {
@@ -76,12 +78,31 @@ public enum Checklist {
         split(text).name.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
+    // An «и» splits two items unless a preposition before it in the same item began a phrase: «хлеб с маслом» stays,
+    // «молоко и хлеб с маслом» gives two, «корм для кошки и собаки» one.
+    private static func splitAtConjunctions(_ segment: String) -> [String] {
+        guard let conjunctionPattern, let prepositionPattern else { return [segment] }
+        let text = segment as NSString
+        var result: [String] = []
+        var start = 0
+        for match in conjunctionPattern.matches(in: segment, range: NSRange(location: 0, length: text.length)) {
+            let item = NSRange(location: start, length: match.range.location - start)
+            if prepositionPattern.firstMatch(in: segment, range: item) != nil {
+                continue
+            }
+            result.append(text.substring(with: item))
+            start = match.range.location + match.range.length
+        }
+        result.append(text.substring(from: start))
+        return result
+    }
+
     private static func pieces(_ text: String) -> [String] {
         let segments = text.replacingOccurrences(of: commas, with: "\u{1F}", options: .regularExpression).split(separator: "\u{1F}").map(String.init)
         let parts = segments.flatMap { segment -> [String] in
             let lower = segment.lowercased()
-            guard !idioms.contains(where: { lower.contains($0) }), segment.range(of: prepositions, options: [.regularExpression, .caseInsensitive]) == nil else { return [segment] }
-            return segment.replacingOccurrences(of: conjunctions, with: "\u{1F}", options: .regularExpression).split(separator: "\u{1F}").map(String.init)
+            guard !idioms.contains(where: { lower.contains($0) }) else { return [segment] }
+            return splitAtConjunctions(segment)
         }
         return parts
             .map { $0.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines.union(.punctuationCharacters)) }

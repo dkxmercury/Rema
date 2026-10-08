@@ -161,8 +161,14 @@ final class Account {
 
     func signOut() {
         if let token = session?.token {
+            let device = PushRegistration.shared.forget()
             // Sign-out doesn't wait for the network, offline the token just runs out in a month.
-            Task { try? await Backend.send("POST", "/api/rema/auth/signout", token: token) }
+            Task {
+                if let device {
+                    try? await Backend.send("DELETE", "/api/rema/devices/\(device)", token: token)
+                }
+                try? await Backend.send("POST", "/api/rema/auth/signout", token: token)
+            }
         }
         end()
     }
@@ -187,6 +193,7 @@ final class Account {
         self.session = session
         Keychain.save(session)
         dismissExpired()
+        PushRegistration.shared.start()
     }
 
     private func end() {

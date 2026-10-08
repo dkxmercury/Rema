@@ -95,7 +95,8 @@ final class SyncService {
     }
 
     func signOut(discardingChanges: Bool) async -> Bool {
-        if !discardingChanges, Account.shared.isSignedIn, !(await flush()) || hasRefusedChanges {
+        // A shared reminder still waiting to be sent would go with the account just as a personal change would.
+        if !discardingChanges, Account.shared.isSignedIn, !(await flush()) || hasRefusedChanges || SharedService.shared.hasUnsent {
             return false
         }
         Account.shared.signOut()

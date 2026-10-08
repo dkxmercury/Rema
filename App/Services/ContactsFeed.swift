@@ -55,7 +55,7 @@ enum ContactsFeed {
         return Set(found.map(\.phone)).count == 1 ? found.first : nil
     }
 
-    private static let callWords = ["позвон", "звонок", "набрат", "напиш", "написат", "поздрав", "подзвон", "зателефон", "call", "ring ", "phone", "text ", "anruf", "ruf ", "appel", "téléphon", "telefon", "qo‘ng‘iroq", "qo'ng'iroq", "qongiroq", "қўнғироқ", "اتصل", "كلم"]
+    private static let callWords = ["позвон", "звонок", "звонит", "набрат", "напиш", "написат", "поздрав", "подзвон", "дзвон", "зателефон", "call", "ring ", "phone", "text ", "anruf", "ruf ", "appel", "téléphon", "telefon", "телефон", "qo‘ng‘iroq", "qoʻngʻiroq", "qo’ng’iroq", "qo`ng`iroq", "qo'ng'iroq", "qongiroq", "қўнғироқ", "اتصل", "كلم"]
 
     private static let dismissedKey = "contactsDismissed"
 

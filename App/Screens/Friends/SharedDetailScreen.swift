@@ -119,7 +119,7 @@ struct SharedDetailScreen: View {
                     }
                 }
                 if shared.doneMode == .one {
-                    Note("One «done» counts for everybody.")
+                    Note("One “done” counts for everybody.")
                         .padding(.top, 10)
                 }
                 PanelList {
@@ -213,7 +213,7 @@ struct SharedDetailScreen: View {
                 try await service.block(owner)
                 onClose()
             } catch let failure as Backend.Failure {
-                problem = failure.message
+                problem = failure.friendsMessage
             } catch {
                 problem = Backend.Failure.server.message
             }
@@ -227,7 +227,7 @@ struct SharedDetailScreen: View {
                 try await service.report(user: owner, shared: reminderID, reason: "reminder")
                 withAnimation(Motion.standard) { reported = true }
             } catch let failure as Backend.Failure {
-                problem = failure.message
+                problem = failure.friendsMessage
             } catch {
                 problem = Backend.Failure.server.message
             }

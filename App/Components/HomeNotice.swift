@@ -5,6 +5,7 @@ enum HomeAlert: Equatable {
     case notificationsOff
     case signInExpired
     case invitation(UUID, String)
+    case notShared(String)
 }
 
 struct HomeNotice: View {
@@ -28,8 +29,11 @@ struct HomeNotice: View {
     }
 
     private var alertColor: Color {
-        if case .invitation = alert {
+        switch alert {
+        case .invitation, .notShared:
             return Palette.text
+        default:
+            break
         }
         return Palette.urgentText
     }
@@ -39,7 +43,7 @@ struct HomeNotice: View {
         case .storageFull: Text("Could not save on this phone, there is not enough space.")
         case .notificationsOff: Text("Notifications are off, reminders will not come.")
         case .signInExpired: Text("The sign-in has expired. Sign in again.")
-        case .invitation(_, let line): Text(verbatim: line)
+        case .invitation(_, let line), .notShared(let line): Text(verbatim: line)
         }
     }
 
@@ -48,6 +52,7 @@ struct HomeNotice: View {
         case .storageFull, .notificationsOff: "Settings"
         case .signInExpired: "Sign in"
         case .invitation: "Open"
+        case .notShared: "OK"
         }
     }
 }

@@ -253,6 +253,7 @@ extension PhraseParser {
         }
         let dayStart = calendar.date(from: DateComponents(year: schedule.start.year, month: schedule.start.month, day: schedule.start.day)) ?? now
         var inner = PhraseParser(now: max(now, dayStart), calendar: calendar, morning: morning, evening: evening, places: places, preferred: preferred)
+        inner.dayNamedBefore = schedule.start != LocalDate(now, in: calendar)
         inner.coordinate = coordinate
         inner.synonyms = synonyms
         inner.languageSynonyms = languageSynonyms

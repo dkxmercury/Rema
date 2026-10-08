@@ -25,7 +25,12 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         BGTaskScheduler.shared.register(forTaskWithIdentifier: Self.refreshTask, using: nil) { task in
             Self.handleRefresh(task)
         }
+        Task { @MainActor in PushRegistration.shared.start() }
         return true
+    }
+
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        Task { @MainActor in PushRegistration.shared.received(deviceToken) }
     }
 
     static func scheduleRefresh() {
@@ -98,6 +103,7 @@ struct RemaApp: App {
             case .active:
                 AppLock.shared.becameActive()
                 Store.shared.reloadIfChanged()
+                PushRegistration.shared.start()
                 Notifier.shared.scheduleSoon()
                 LiveActivities.refresh(store: Store.shared)
                 WatchLink.shared.send(store: Store.shared)

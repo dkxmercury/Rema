@@ -119,7 +119,8 @@ extension PhraseParser {
             s.rule = .weekly(s.weekdays)
             return true
         }
-        take("(every week|weekly\(PhraseParser.enAdverb))", text, &state) { _, s in s.rule = .weekly([]); return true }
+        // «Weekly meeting on Monday» repeats although «weekly» stands before a noun; «the weekly report on Friday» is one report.
+        take("(every week|weekly\(PhraseParser.enAdverb)|(?<!(?:the|a|an|my|our|your|his|her|their|this|that) )weekly(?= (?:[^ ]+ ){1,2}on (?:monday|tuesday|wednesday|thursday|friday|saturday|sunday)))", text, &state) { _, s in s.rule = .weekly([]); return true }
         take("(?:on )?the (\\d{1,2})(?:st|nd|rd|th)? (?:of )?every month", text, &state) { m, s in
             guard let day = group(m, 1, text).flatMap(Int.init), (1...31).contains(day) else { return false }
             s.rule = .monthlyOnDay(day)

@@ -32,10 +32,15 @@ struct EditorScreen: View {
         Describer(calendar: calendar, locale: locale)
     }
 
+    // A shared reminder keeps the time in the zone of the one who made it; here it is shown in the zone of this phone.
     private var when: Date {
         guard let schedule = draft.schedule else { return now }
+        var zoned = calendar
+        if let zone = schedule.timeZone.flatMap(TimeZone.init(identifier:)) {
+            zoned.timeZone = zone
+        }
         let components = DateComponents(year: schedule.start.year, month: schedule.start.month, day: schedule.start.day, hour: schedule.time.hour, minute: schedule.time.minute)
-        let start = calendar.date(from: components) ?? now
+        let start = zoned.date(from: components) ?? now
         if schedule.rule == nil {
             return start
         }
@@ -453,6 +458,10 @@ struct EditorScreen: View {
             }
             if case .monthlyOnDay = schedule.rule {
                 schedule.rule = .monthlyOnDay(start.day)
+            }
+            // The time was read on this phone, so for the friends it is the time of this phone's zone now.
+            if draft.shared != nil {
+                schedule.timeZone = calendar.timeZone.identifier
             }
             draft.schedule = schedule
             draft.completedThrough = nil

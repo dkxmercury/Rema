@@ -337,6 +337,13 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
     }
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        // The extension has already written the friend's change to the shared file; the open app picks it up and asks for the rest.
+        if notification.request.content.userInfo["rema"] != nil {
+            Task { @MainActor in
+                store.reloadIfChanged()
+                SharedService.shared.kick()
+            }
+        }
         completionHandler([.banner, .sound, .list])
     }
 
@@ -351,6 +358,15 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
                 completionHandler()
                 return
             }
+            if info["rema"] != nil {
+                store.reloadIfChanged()
+                SharedService.shared.kick()
+                if action == UNNotificationDefaultActionIdentifier, let raw = info["reminder"] as? String, let id = UUID(uuidString: raw) {
+                    RootNavigation.shared.openRequest = id
+                }
+                completionHandler()
+                return
+            }
             if let raw = info["reminder"] as? String, let id = UUID(uuidString: raw) {
                 let occurrence = Date(timeIntervalSince1970: info["occurrence"] as? Double ?? Date().timeIntervalSince1970)
                 store.reloadIfChanged()
@@ -361,12 +377,22 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         }
     }
 
+    // A snooze is personal: for a shared reminder the tick covers the time that was put off, not the time it was put off to,
+    // which may already be the next one for everybody.
+    @MainActor
+    private func doneThrough(_ id: UUID, occurrence: Date, now: Date) -> Date {
+        guard let reminder = store.reminder(id), let snoozed = reminder.snoozedUntil else { return occurrence }
+        guard reminder.shared != nil, let schedule = reminder.schedule else { return max(occurrence, snoozed) }
+        let from = max(reminder.completedThrough ?? .distantPast, now.addingTimeInterval(-2 * 86_400))
+        return Recurrence.next(schedule, after: from, limit: 200, calendar: .current).last { $0 <= now } ?? occurrence
+    }
+
     @MainActor
     private func apply(_ action: String, to id: UUID, occurrence: Date) {
         let now = Date()
         switch action {
         case "done":
-            store.complete(id, through: max(occurrence, store.reminder(id)?.snoozedUntil ?? occurrence))
+            store.complete(id, through: doneThrough(id, occurrence: occurrence, now: now))
         case "skip":
             store.skip(id, through: max(occurrence, store.reminder(id)?.snoozedUntil ?? occurrence))
         case "evening":

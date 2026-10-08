@@ -114,7 +114,7 @@ struct Glyph: View {
             }
         }
         .frame(width: size, height: size)
-        .flipsForRightToLeftLayoutDirection([Icons.back, Icons.chevron, Icons.insert, Icons.list, Icons.external].contains(paths))
+        .flipsForRightToLeftLayoutDirection([Icons.back, Icons.chevron, Icons.insert, Icons.list, Icons.external, Icons.exit].contains(paths))
         .accessibilityHidden(true)
     }
 }

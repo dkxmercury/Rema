@@ -60,7 +60,7 @@ final class Store {
         if updated.shared != nil, updated.deletedAt != nil {
             reminders.removeAll { $0.id == reminder.id }
             persist()
-            Task { @MainActor [updated] in SharedService.shared.removed(updated) }
+            onMain { [updated] in SharedService.shared.removed(updated) }
             return
         }
         var previous: [UUID] = []
@@ -76,7 +76,7 @@ final class Store {
         if let before, let shared = updated.shared {
             let ticked = before.completedThrough != updated.completedThrough
             let changed = shared.isMine && before.sharedData != updated.sharedData
-            Task { @MainActor [updated] in
+            onMain { [updated] in
                 if ticked {
                     SharedService.shared.ticked(updated)
                 }
@@ -85,6 +85,25 @@ final class Store {
                 }
             }
         }
+    }
+
+    // Right away on the main thread, so the change is in the outbox before any answer of the server can land on it.
+    private func onMain(_ work: @escaping @MainActor () -> Void) {
+        if Thread.isMainThread {
+            MainActor.assumeIsolated(work)
+        } else {
+            Task { @MainActor in work() }
+        }
+    }
+
+    // The server would not share it, so it stays on this phone as an ordinary reminder.
+    func unshare(_ id: UUID) {
+        fresh()
+        guard let index = reminders.firstIndex(where: { $0.id == id }), reminders[index].shared != nil else { return }
+        reminders[index].shared = nil
+        reminders[index].schedule?.timeZone = nil
+        reminders[index].updatedAt = Date()
+        persist()
     }
 
     // What the server says about shared reminders, merged around the changes still waiting to be sent.
@@ -156,6 +175,13 @@ final class Store {
     func skip(_ id: UUID, through occurrence: Date) {
         fresh()
         guard var reminder = reminder(id) else { return }
+        // A skip of a shared reminder would tick it for the friends; here it only waits for the next time.
+        if reminder.shared != nil {
+            guard let schedule = reminder.schedule, let next = Recurrence.next(schedule, after: occurrence, limit: 1, calendar: .current).first else { return }
+            reminder.snoozedUntil = next
+            save(reminder)
+            return
+        }
         reminder.skip(through: occurrence)
         save(reminder)
     }

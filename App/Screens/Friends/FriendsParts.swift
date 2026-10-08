@@ -92,6 +92,24 @@ struct ActionRow: View {
     }
 }
 
+extension Backend.Failure {
+    // The texts of `message` are written for the sign-in form and say the wrong thing here.
+    var friendsMessage: String {
+        switch self {
+        case .offline:
+            return message
+        case .unauthorized:
+            return String(localized: "The sign-in has expired. Sign in again.", bundle: .app, locale: .app)
+        case .rateLimited, .conflict:
+            return String(localized: "Too many requests, try again tomorrow.", bundle: .app, locale: .app)
+        case .invalid(let code) where code == "not_found":
+            return String(localized: "This person or reminder is no longer here.", bundle: .app, locale: .app)
+        default:
+            return String(localized: "Something went wrong. Try again.", bundle: .app, locale: .app)
+        }
+    }
+}
+
 extension SharedService {
     // How many shared reminders I have with this friend, either side made them.
     func sharedCount(with friendID: String, in reminders: [Reminder]) -> Int {

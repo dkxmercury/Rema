@@ -196,7 +196,7 @@ struct FriendScreen: View {
                 Feedback.play(.delete)
                 onBack()
             } catch let failure as Backend.Failure {
-                problem = failure.message
+                problem = failure.friendsMessage
             } catch {
                 problem = Backend.Failure.server.message
             }
@@ -209,7 +209,7 @@ struct FriendScreen: View {
                 try await service.report(user: friendID, shared: nil, reason: "user")
                 withAnimation(Motion.standard) { reported = true }
             } catch let failure as Backend.Failure {
-                problem = failure.message
+                problem = failure.friendsMessage
             } catch {
                 problem = Backend.Failure.server.message
             }

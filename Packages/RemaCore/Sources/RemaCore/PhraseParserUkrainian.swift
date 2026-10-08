@@ -85,7 +85,7 @@ extension PhraseParser {
             return true
         }
         let list = "\(PhraseParser.ukWeekdays)((\\s*(,|і|й|та)\\s*)\(PhraseParser.ukWeekdays))*"
-        take("(кожен|кожного|кожну|кожної|по) \(list)", text, &state) { m, s in
+        take("(?<!(?:понеділка|вівторка|середи|четверга|п'ятниці|суботи|неділі) )(кожен|кожного|кожну|кожної|по) \(list)", text, &state) { m, s in
             guard let whole = Range(m.range, in: text) else { return false }
             let words: [String] = String(text[whole]).split(whereSeparator: { !$0.isLetter && $0 != "'" }).map(String.init)
             let days = words.compactMap(self.ukWeekday)
@@ -211,6 +211,13 @@ extension PhraseParser {
         }
         // «На 4 особи» is an amount, not a time.
         take("(?:о|об) (\\d{1,2})(?: годин\\w*)?\(modifier)(?! \(PhraseParser.ukMonths))(?! (?:(?:кг|км|грн|шт|раз|рази|разів|люди|людей|рік|роки|років|місця|місць|місце|особи|осіб|особу|особа)(?![\\p{L}])|(?:чолов|відсот|гривен|хвилин|днів|тижн|місяц|друз|гост)\\w*))", text, &state) { m, s in
+            guard let hour = group(m, 1, text).flatMap(Int.init), hour < 24 else { return false }
+            s.time = LocalTime(hour: ukHour(hour, group(m, 2, text)), minute: 0)
+            s.meridiem = group(m, 2, text) != nil
+            return true
+        }
+        // «На 10 годину» is a time, while «на 2 години» stays a length of time.
+        take("на (\\d{1,2}) годину\(modifier)", text, &state) { m, s in
             guard let hour = group(m, 1, text).flatMap(Int.init), hour < 24 else { return false }
             s.time = LocalTime(hour: ukHour(hour, group(m, 2, text)), minute: 0)
             s.meridiem = group(m, 2, text) != nil

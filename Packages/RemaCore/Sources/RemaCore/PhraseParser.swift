@@ -44,6 +44,8 @@ public struct PhraseParser {
     public var coordinate: Coordinate?
     public var synonyms: [String: String] = [:]
     public var languageSynonyms: [String: [String: String]] = [:]
+    // A later part of a phrase whose day was named in an earlier one, «завтра в 3 …, в 5 …».
+    var dayNamedBefore = false
 
     public init(now: Date, calendar: Calendar, morning: LocalTime, evening: LocalTime, places: [String] = [], preferred: String? = nil) {
         self.now = now
@@ -317,7 +319,7 @@ public struct PhraseParser {
         let before = text[..<range.lowerBound].split(separator: " ").last.map(String.init) ?? ""
         switch word {
         case "среду":
-            return whole.hasPrefix("в ") || whole.hasPrefix("во ") || whole != word || ["на", "через", "за", "каждую", "эту", "следующую", "ближайшую", "прошлую", "про"].contains(before) || before.isEmpty
+            return whole.hasPrefix("в ") || whole.hasPrefix("во ") || whole != word || ["на", "через", "за", "каждую", "эту", "следующую", "ближайшую", "прошлую", "про", "и", "или"].contains(before) || before.hasSuffix(",") || before.isEmpty
         case "среды":
             return ["до", "с", "со", "после", "от", "для", "каждой", "кроме", "к"].contains(before)
         case "среде":
@@ -744,7 +746,7 @@ public struct PhraseParser {
             }
         }
         // A bare «в 7» means the nearest seven to come; the other reading is offered beside it.
-        if let explicit = state.time, state.dayPart == nil, !state.meridiem, !hasDate, state.rule == nil, (1...11).contains(explicit.hour) {
+        if let explicit = state.time, state.dayPart == nil, !state.meridiem, !hasDate, !dayNamedBefore, state.rule == nil, (1...11).contains(explicit.hour) {
             let later = LocalTime(hour: explicit.hour + 12, minute: explicit.minute)
             func at(_ clock: LocalTime, _ day: LocalDate) -> Date {
                 calendar.date(from: DateComponents(year: day.year, month: day.month, day: day.day, hour: clock.hour, minute: clock.minute)) ?? now
@@ -760,7 +762,7 @@ public struct PhraseParser {
         }
         // «Завтра в 3 забрать детей» is the afternoon, the night is offered beside it.
         var night: LocalTime?
-        if let explicit = state.time, time == explicit, state.dayPart == nil, !state.meridiem, hasDate, !isToday, state.rule == nil, (1...5).contains(explicit.hour) {
+        if let explicit = state.time, time == explicit, state.dayPart == nil, !state.meridiem, (hasDate && !isToday) || dayNamedBefore, state.rule == nil, (1...5).contains(explicit.hour) {
             time = LocalTime(hour: explicit.hour + 12, minute: explicit.minute)
             night = explicit
         }

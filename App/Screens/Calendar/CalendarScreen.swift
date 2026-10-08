@@ -19,6 +19,7 @@ struct CalendarScreen: View {
     @State private var forward = true
     @State private var rowTransition: AnyTransition = .opacity
     @State private var editing: EditingTarget?
+    @State private var viewingShared: SharedTarget?
     @State private var query = ""
     @State private var resultLimit = CalendarScreen.shownResults
     @State private var deleted: Deleted?
@@ -101,6 +102,20 @@ struct CalendarScreen: View {
         .animation(Motion.standard, value: selected)
         .animation(Motion.standard, value: store.reminders)
         .onChange(of: query) { _, _ in resultLimit = Self.shownResults }
+        .sheet(item: $viewingShared) { target in
+            SharedDetailScreen(store: store, reminderID: target.id, onEdit: {
+                viewingShared = nil
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
+                    if let reminder = store.reminder(target.id) {
+                        editing = EditingTarget(reminder: reminder, isNew: false)
+                    }
+                }
+            }, onClose: { viewingShared = nil })
+            .presentationDetents([.large])
+            .presentationDragIndicator(.visible)
+            .presentationCornerRadius(30)
+            .presentationBackground(Palette.background)
+        }
         .fullScreenCover(item: $editing) { target in
             EditorScreen(draft: target.reminder, isNew: target.isNew, store: store, onClose: { editing = nil })
         }
@@ -281,7 +296,7 @@ struct CalendarScreen: View {
                     Hairline()
                 }
                 Button {
-                    editing = EditingTarget(reminder: match.reminder, isNew: false)
+                    open(match.reminder.id)
                 } label: {
                     HStack(spacing: 14) {
                         Group {
@@ -590,9 +605,14 @@ struct CalendarScreen: View {
         }
     }
 
+    // A shared reminder opens with its participants; only the one who made it goes on to the editor from there.
     private func open(_ id: UUID) {
         guard let reminder = store.reminder(id) else { return }
-        editing = EditingTarget(reminder: reminder, isNew: false)
+        if reminder.shared != nil {
+            viewingShared = SharedTarget(id: id)
+        } else {
+            editing = EditingTarget(reminder: reminder, isNew: false)
+        }
     }
 
     private var shownMonth: LocalDate {

@@ -107,7 +107,7 @@ struct FriendsScreen: View {
                 }
                 ForEach(Array(openInvites.enumerated()), id: \.element.id) { index, invite in
                     let name = service.pendingName(invite.code) ?? String(localized: "Invitation", bundle: .app, locale: .app)
-                    FriendRow(name: name, seed: invite.code, info: String(localized: "waiting for an answer to the invitation", bundle: .app, locale: .app)) {
+                    FriendRow(name: name, seed: invite.code, info: String(localized: "waiting for an answer", bundle: .app, locale: .app)) {
                         Button {
                             Feedback.play(.select)
                             Task { await service.revoke(invite.code) }
@@ -134,6 +134,7 @@ struct FriendsScreen: View {
                 openCode()
             }
             .textInputAutocapitalization(.characters)
+            .keyboardType(.asciiCapable)
             .onAppear { codeFocused = true }
         } else {
             Button {
@@ -150,9 +151,14 @@ struct FriendsScreen: View {
         }
     }
 
+    // Cyrillic letters that look like the Latin ones of a code, typed on a Russian keyboard.
+    private static let lookalikes: [Character: Character] = ["А": "A", "В": "B", "С": "C", "Е": "E", "Н": "H", "К": "K", "М": "M", "Р": "P", "Т": "T", "Х": "X", "У": "Y"]
+
     private func openCode() {
+        let typed = code.trimmingCharacters(in: .whitespacesAndNewlines)
         // A pasted link works as well as the code itself.
-        let cleaned = code.uppercased().components(separatedBy: "/").last?.filter { $0.isLetter || $0.isNumber } ?? ""
+        let last = URL(string: typed).flatMap { $0.host == nil ? nil : $0.pathComponents.last } ?? typed
+        let cleaned = String(last.uppercased().map { Self.lookalikes[$0] ?? $0 }.filter { "ABCDEFGHJKLMNPQRSTUVWXYZ23456789".contains($0) })
         guard cleaned.count == 8 else {
             Feedback.play(.error)
             return

@@ -38,6 +38,8 @@ struct SharedTarget: Identifiable {
 @Observable
 final class RootNavigation {
     static let shared = RootNavigation()
+    // A friend's invitation that waits for the person to sign in.
+    var pendingInvite: String?
     static let welcomeKey = "welcomeDone"
     static let introKey = "introDone"
 
@@ -123,8 +125,12 @@ struct RootView: View {
             InviteScreen(onClose: { inviting = false })
         }
         .sheet(item: $answering) { target in
-            InviteAnswerSheet(code: target.code, onSignIn: { navigation.showingSignIn = true }, onClose: { answering = nil })
-                .presentationDetents([.medium, .large])
+            InviteAnswerSheet(code: target.code, onSignIn: {
+                // The invitation opens again once the person has signed in.
+                navigation.pendingInvite = target.code
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) { navigation.showingSignIn = true }
+            }, onClose: { answering = nil })
+                .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
                 .presentationCornerRadius(30)
                 .presentationBackground(Palette.background)
@@ -184,6 +190,10 @@ struct RootView: View {
         .onChange(of: editing != nil || checking != nil || composing != nil || inviting) { _, open in navigation.editingOpen = open }
         .onChange(of: navigation.openRequest) { _, _ in openRequestedReminder() }
         .onChange(of: account.isSignedIn) { _, signedIn in
+            if signedIn, let code = navigation.pendingInvite {
+                navigation.pendingInvite = nil
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { answering = InviteTarget(code: code) }
+            }
             // A session that ran out leaves no account to show, so its screens close.
             if !signedIn {
                 navigation.path.removeAll { $0 == .account || $0 == .deleteAccount }
@@ -426,7 +436,7 @@ struct RootView: View {
                     return { withAnimation(Motion.standard) { store.restore(copy, places: places) } }
                 },
                 onMove: move,
-                habit: remote.isOn(.suggestions) ? Suggestions.habit(in: store.reminders, now: timeline.date, calendar: .current, dismissed: dismissedHabits) : nil,
+                habit: remote.isOn(.suggestions) ? Suggestions.habit(in: store.reminders.filter { $0.shared == nil }, now: timeline.date, calendar: .current, dismissed: dismissedHabits) : nil,
                 onHabit: answerHabit,
                 onPostpone: postpone,
                 tip: tips.next(store: store, now: timeline.date),
@@ -494,13 +504,16 @@ struct RootView: View {
 
     private var homeAlert: HomeAlert? {
         if store.writeFailed { return .storageFull }
-        if NotificationAccess.shared.denied { return .notificationsOff }
-        if account.expired, !account.isSignedIn { return .signInExpired }
-        // A friend's invitation waits on the main screen until it is answered.
+        // A friend's invitation waits on the main screen until it is answered; nothing else shows it.
         if let invited = store.reminders.first(where: { $0.deletedAt == nil && $0.shared?.isInvitation == true }), let shared = invited.shared {
             let name = SharedService.shared.name(of: shared.owner.id, fallback: shared.owner.name)
             return .invitation(invited.id, String(localized: "\(name) shares a reminder with you: \(invited.title)", bundle: .app, locale: .app))
         }
+        if let title = SharedService.shared.state.refused {
+            return .notShared(String(localized: "“\(title)” could not be shared and stays only on this phone.", bundle: .app, locale: .app))
+        }
+        if NotificationAccess.shared.denied { return .notificationsOff }
+        if account.expired, !account.isSignedIn { return .signInExpired }
         return nil
     }
 
@@ -511,7 +524,20 @@ struct RootView: View {
         guard parts.count >= 3, parts[parts.count - 2] == "i" else { return }
         let code = parts[parts.count - 1].uppercased()
         guard code.count == 8, code.allSatisfy({ $0.isLetter || $0.isNumber }) else { return }
-        answering = InviteTarget(code: code)
+        // Whatever is open closes first, a sheet cannot show over another one.
+        let root = UIApplication.shared.mainWindow?.rootViewController
+        if editing != nil || checking != nil || composing != nil || showingCalendar || inviting || viewingShared != nil || root?.presentedViewController != nil {
+            editing = nil
+            checking = nil
+            composing = nil
+            showingCalendar = false
+            inviting = false
+            viewingShared = nil
+            root?.dismiss(animated: true)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { answering = InviteTarget(code: code) }
+        } else {
+            answering = InviteTarget(code: code)
+        }
     }
 
     private func answerAlert(_ alert: HomeAlert) {
@@ -524,6 +550,8 @@ struct RootView: View {
             navigation.showingSignIn = true
         case .invitation(let id, _):
             viewingShared = SharedTarget(id: id)
+        case .notShared:
+            SharedService.shared.clearRefused()
         }
     }
 

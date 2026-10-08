@@ -146,7 +146,7 @@ extension PhraseParser {
             s.rule = .weekly(s.weekdays)
             return true
         }
-        take("(har hafta|haftalik(?! \\p{L}))", text, &state) { _, s in s.rule = .weekly([]); return true }
+        take("(har hafta|haftalik(?! \\p{L})|haftalik(?= (?:[^ ]+(?<!ni) ){1,2}(?:dushanba|seshanba|chorshanba|payshanba|juma|shanba|yakshanba|душанба|сешанба|чоршанба|пайшанба|жума|шанба|якшанба)))", text, &state) { _, s in s.rule = .weekly([]); return true }
         take("(har oy|har oyning|oylik(?! \\p{L}))( (\\d{1,2})-?(kuni|sanasi)?)?", text, &state) { m, s in
             s.rule = .monthlyOnDay(group(m, 3, text).flatMap(Int.init) ?? 0)
             return true

@@ -67,13 +67,31 @@ public struct SharedInfo: Codable, Hashable, Sendable {
     public var doneMode: DoneMode
     // Made without a connection, the friends do not have it yet.
     public var pending: Bool
+    // The server's number of the state this copy is in; an older one arriving late is not applied over it.
+    public var seq: Int64
 
-    public init(owner: SharedPerson, status: String, members: [SharedMember], doneMode: DoneMode, pending: Bool = false) {
+    public init(owner: SharedPerson, status: String, members: [SharedMember], doneMode: DoneMode, pending: Bool = false, seq: Int64 = 0) {
         self.owner = owner
         self.status = status
         self.members = members
         self.doneMode = doneMode
         self.pending = pending
+        self.seq = seq
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case owner, status, members, doneMode, pending, seq
+    }
+
+    // Read leniently, so a reminder saved by an earlier build stays shared and is not turned into a personal one.
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        owner = try container.decode(SharedPerson.self, forKey: .owner)
+        status = (try? container.decodeIfPresent(String.self, forKey: .status)) ?? SharedStatus.accepted
+        members = (try? container.decodeIfPresent([SharedMember].self, forKey: .members)) ?? []
+        doneMode = (try? container.decodeIfPresent(DoneMode.self, forKey: .doneMode)) ?? .each
+        pending = (try? container.decodeIfPresent(Bool.self, forKey: .pending)) ?? false
+        seq = (try? container.decodeIfPresent(Int64.self, forKey: .seq)) ?? 0
     }
 
     public var isMine: Bool {
@@ -121,9 +139,11 @@ public struct SharedItem: Decodable, Sendable {
     public var myStatus: String
     public var members: [SharedMember]
     public var seq: Int64
+    // A push carries the reminder without the participants; the ones already known stay.
+    public var partial: Bool
 
     enum CodingKeys: String, CodingKey {
-        case id, gone, owner, data, clientUpdatedAt, doneThrough, myDone, myStatus, members, seq
+        case id, gone, owner, data, clientUpdatedAt, doneThrough, myDone, myStatus, members, seq, partial
     }
 
     public init(from decoder: Decoder) throws {
@@ -138,6 +158,7 @@ public struct SharedItem: Decodable, Sendable {
         myStatus = (try? container.decodeIfPresent(String.self, forKey: .myStatus)) ?? SharedStatus.invited
         members = (try? container.decodeIfPresent([SharedMember].self, forKey: .members)) ?? []
         seq = (try? container.decodeIfPresent(Int64.self, forKey: .seq)) ?? 0
+        partial = (try? container.decodeIfPresent(Bool.self, forKey: .partial)) ?? false
     }
 }
 
@@ -160,6 +181,10 @@ public enum SharedMerge {
         for item in items {
             guard let id = UUID(uuidString: item.id), !waiting.contains(id) else { continue }
             let index = result.firstIndex { $0.id == id }
+            // A push may come later than the sync that already brought something newer.
+            if let index, let known = result[index].shared?.seq, item.seq > 0, item.seq < known {
+                continue
+            }
             if item.gone || item.data == nil || item.owner == nil {
                 if let index, result[index].shared != nil {
                     result.remove(at: index)
@@ -170,10 +195,13 @@ public enum SharedMerge {
             var reminder = index.map { result[$0] } ?? Reminder(id: id, title: data.title, schedule: data.schedule, createdAt: now)
             reminder.title = String(data.title.prefix(Reminder.maximumTitleLength))
             reminder.schedule = data.schedule
-            reminder.shared = SharedInfo(owner: owner, status: item.myStatus, members: item.members, doneMode: data.doneMode)
+            let members = item.partial ? reminder.shared?.members ?? [] : item.members
+            reminder.shared = SharedInfo(owner: owner, status: item.myStatus, members: members, doneMode: data.doneMode, seq: item.seq)
             let through = data.doneMode == .one ? item.doneThrough : item.myDone
             let done = through > 0 ? Date(timeIntervalSince1970: Double(through) / 1000) : nil
-            if done != reminder.completedThrough {
+            // The server keeps milliseconds, a tick made here may have more; under a second apart is the same tick.
+            let same = done.map { day in reminder.completedThrough.map { abs($0.timeIntervalSince(day)) < 1 } ?? false } ?? (reminder.completedThrough == nil)
+            if !same {
                 if let done, done > (reminder.completedThrough ?? .distantPast) {
                     reminder.markDone(through: done, at: now)
                 } else if let done {

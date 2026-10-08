@@ -33,6 +33,7 @@ targets:
       - package: RemaCore
       - target: RemaWidgets
       - target: RemaShare
+      - target: RemaNotifications
       - target: RemaWatch
     settings:
       base:
@@ -145,6 +146,40 @@ targets:
         PROVISIONING_PROFILE_SPECIFIER: $(REMA_PROFILE_SHARE)
         TARGETED_DEVICE_FAMILY: "1"
         CODE_SIGN_ENTITLEMENTS: Share/RemaShare.entitlements
+        LOCALIZATION_PREFERS_STRING_CATALOGS: YES
+        SWIFT_EMIT_LOC_STRINGS: YES
+        SKIP_INSTALL: YES
+  RemaNotifications:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: Notifications
+        excludes:
+          - "*.entitlements"
+          - Info.plist
+      - path: Shared/QuickNotifications.swift
+      - path: App/Theme/AppFonts.swift
+      - path: App/Services/Describer.swift
+      - path: App/Services/SharedNames.swift
+      - path: App/Resources/Localizable.xcstrings
+    dependencies:
+      - package: RemaCore
+    info:
+      path: Notifications/Info.plist
+      properties:
+        CFBundleDisplayName: Rema
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.usernotifications.service
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).NotificationService
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: uz.dkx.rema.notifications
+        PRODUCT_NAME: RemaNotifications
+        PROVISIONING_PROFILE_SPECIFIER: $(REMA_PROFILE_NOTIFICATIONS)
+        TARGETED_DEVICE_FAMILY: "1"
+        CODE_SIGN_ENTITLEMENTS: Notifications/RemaNotifications.entitlements
         LOCALIZATION_PREFERS_STRING_CATALOGS: YES
         SWIFT_EMIT_LOC_STRINGS: YES
         SKIP_INSTALL: YES

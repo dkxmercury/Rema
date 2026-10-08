@@ -99,6 +99,36 @@ struct SharedTests {
         #expect(SyncPlan.changes(in: snapshot, state: SyncState()).map(\.clientId) == [own.id.uuidString])
     }
 
+    @Test func aLatePushDoesNotUndoANewerState() throws {
+        let fresh = movieJSON().replacingOccurrences(of: "\"seq\": 7", with: "\"seq\": 9").replacingOccurrences(of: "Кино «Дюна»", with: "Кино в 20:00")
+        let merged = SharedMerge.apply([try item(fresh)], to: [], waiting: [], now: now)
+        let late = try #require(SharedPush(userInfo: ["rema": ["event": "changed", "to": "ilya", "actor": "anya", "item": try JSONSerialization.jsonObject(with: Data(movieJSON().utf8))]]))
+        #expect(late.applied(to: merged, now: now).first?.title == "Кино в 20:00")
+        let gone = try #require(SharedPush(userInfo: ["rema": ["event": "deleted", "to": "ilya", "actor": "anya", "item": ["id": movieID, "gone": true, "seq": 8]]]))
+        #expect(gone.applied(to: merged, now: now).count == 1)
+        let later = try #require(SharedPush(userInfo: ["rema": ["event": "deleted", "to": "ilya", "actor": "anya", "item": ["id": movieID, "gone": true, "seq": 10]]]))
+        #expect(later.applied(to: merged, now: now).isEmpty)
+    }
+
+    @Test func aPushWithoutParticipantsKeepsTheKnownOnes() throws {
+        let merged = SharedMerge.apply([try item(movieJSON())], to: [], waiting: [], now: now)
+        var partial = try JSONSerialization.jsonObject(with: Data(movieJSON().replacingOccurrences(of: "\"seq\": 7", with: "\"seq\": 8").utf8)) as! [String: Any]
+        partial["members"] = nil
+        partial["partial"] = true
+        let push = try #require(SharedPush(userInfo: ["rema": ["event": "changed", "to": "ilya", "actor": "anya", "item": partial]]))
+        #expect(push.event == .changed && push.recipient == "ilya")
+        let after = try #require(push.applied(to: merged, now: now).first)
+        #expect(after.shared?.members.map(\.id) == ["ilya", "mama"])
+        #expect(after.shared?.seq == 8)
+        #expect(SharedPush(userInfo: ["aps": ["alert": "hi"]]) == nil)
+    }
+
+    @Test func aReminderFromAnOlderBuildStaysShared() throws {
+        let saved = #"{"owner": {"id": "anya", "name": "Аня"}, "status": "accepted", "members": [], "doneMode": "one"}"#
+        let info = try JSONDecoder().decode(SharedInfo.self, from: Data(saved.utf8))
+        #expect(info.doneMode == .one && info.seq == 0 && !info.pending)
+    }
+
     @Test func theSharedPartIsTitleTimeAndDoneMode() throws {
         let shared = try #require(SharedMerge.apply([try item(movieJSON(doneMode: "one"))], to: [], waiting: [], now: now).first)
         let data = try JSONValue(encoding: shared.sharedData)

@@ -179,7 +179,10 @@ struct HomeScreen: View {
         ) { row in
             Button("In an hour") { onPostpone(row, .hour) }
             Button("Tomorrow morning") { onPostpone(row, .morning) }
-            Button("Choose a time") { onPostpone(row, .custom) }
+            // For a shared reminder a new time would be one for everybody, not a personal delay.
+            if !row.shared {
+                Button("Choose a time") { onPostpone(row, .custom) }
+            }
         }
     }
 

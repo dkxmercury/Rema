@@ -41,7 +41,7 @@ struct InviteAnswerSheet: View {
                     }
                     .buttonStyle(SmallButtonStyle(prominent: true))
                     .padding(.top, 16)
-                } else if let invite {
+                } else if let invite, !invite.inviter.id.isEmpty {
                     Avatar(name: invite.inviter.name.isEmpty ? "?" : invite.inviter.name, seed: invite.inviter.id, size: 72)
                     Text(verbatim: headline(invite))
                         .font(.app(.golos, 20, weight: 600))
@@ -116,7 +116,12 @@ struct InviteAnswerSheet: View {
                 problem = String(localized: "This invitation can no longer be used.", bundle: .app, locale: .app)
             }
         } catch let failure as Backend.Failure {
-            problem = failure == .offline ? failure.message : String(localized: "This invitation does not exist.", bundle: .app, locale: .app)
+            switch failure {
+            case .offline, .rateLimited, .unauthorized:
+                problem = failure.friendsMessage
+            default:
+                problem = String(localized: "This invitation does not exist.", bundle: .app, locale: .app)
+            }
         } catch {
             problem = Backend.Failure.server.message
         }
@@ -133,8 +138,8 @@ struct InviteAnswerSheet: View {
                 switch failure {
                 case .conflict(let code) where code == "friend_limit":
                     problem = String(localized: "There are already 40 friends.", bundle: .app, locale: .app)
-                case .offline:
-                    problem = failure.message
+                case .offline, .rateLimited, .unauthorized:
+                    problem = failure.friendsMessage
                 default:
                     problem = String(localized: "This invitation can no longer be used.", bundle: .app, locale: .app)
                 }
