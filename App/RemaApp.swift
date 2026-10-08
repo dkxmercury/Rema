@@ -8,6 +8,9 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         AppLanguage.activate()
+        #if DEBUG
+        MainActor.assumeIsolated { DemoMode.prepare() }
+        #endif
         AppFonts.register()
         SoundLibrary.prepare()
         Notifier.shared.configure()

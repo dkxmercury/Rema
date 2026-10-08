@@ -53,6 +53,11 @@ enum Backend {
     }
 
     static func raw(_ method: String, _ path: String, body: Data? = nil, contentType: String = "application/json", token: String? = nil) async throws -> Data {
+        #if DEBUG
+        if DemoMode.isOn {
+            throw Failure.offline
+        }
+        #endif
         var request = URLRequest(url: base.appending(path: path))
         request.httpMethod = method
         request.setValue("application/json", forHTTPHeaderField: "Accept")

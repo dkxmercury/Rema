@@ -176,6 +176,15 @@ final class SharedService {
         save()
     }
 
+    #if DEBUG
+    func useDemo(friends: [Friend], myName: String) {
+        state = State(account: "demo")
+        state.friends = friends
+        state.myName = myName
+        save()
+    }
+    #endif
+
     func clearRefused() {
         state.refused = nil
         state.refusedChange = nil
@@ -205,6 +214,19 @@ final class SharedService {
     }
 
     private func perform() async {
+        #if DEBUG
+        // The demo has no server: a new shared reminder counts as delivered at once.
+        if DemoMode.isOn {
+            for entry in state.outbox {
+                guard case .create(let id, _, _, _) = entry.op, let uuid = UUID(uuidString: id), var reminder = Store.shared.reminder(uuid) else { continue }
+                reminder.shared?.pending = false
+                Store.shared.save(reminder)
+            }
+            state.outbox = []
+            save()
+            return
+        }
+        #endif
         guard Remote.shared.isOn(.sync), let session = Account.shared.session else { return }
         if state.account != session.userID {
             state = State(account: session.userID)

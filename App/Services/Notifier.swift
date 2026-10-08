@@ -99,6 +99,12 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
     }
 
     func requestPermissionIfNeeded() {
+        #if DEBUG
+        // A system prompt over the filmed screen would spoil the recording.
+        if DemoMode.isOn {
+            return
+        }
+        #endif
         Task { @MainActor in
             let center = UNUserNotificationCenter.current()
             if await center.notificationSettings().authorizationStatus == .notDetermined {

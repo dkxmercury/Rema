@@ -1,0 +1,135 @@
+name: Videos
+
+on:
+  workflow_dispatch:
+    inputs:
+      languages:
+        description: languages to record
+        default: ru en
+      scenes:
+        description: scenes to record
+        default: Phrase Repeat List Calendar Friends
+
+permissions:
+  contents: read
+
+jobs:
+  record:
+    runs-on: macos-26
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: XcodeGen
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/xcodegen.zip" https://github.com/yonaskolb/XcodeGen/releases/download/2.46.0/xcodegen.zip
+          echo "4d9e34b62172d645eed6457cac13fc222569974098ef4ee9c3368bedf0196806  $RUNNER_TEMP/xcodegen.zip" | shasum -a 256 -c -
+          unzip -q "$RUNNER_TEMP/xcodegen.zip" -d "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/xcodegen/bin" >> "$GITHUB_PATH"
+
+      - name: Project
+        run: |
+          xcodegen generate
+
+      - name: Device
+        run: |
+          DEVICE=$(xcrun simctl list devices available -j | python3 -c "import json,sys;d=json.load(sys.stdin)['devices'];c=[x for k,v in sorted(d.items(),reverse=True) if 'iOS' in k for x in v if x['name'].startswith('iPhone')];p=next((x for name in ('iPhone 17 Pro','iPhone 16 Pro') for x in c if x['name']==name),c[0]);print(p['udid'],p['name'],file=sys.stderr);print(p['udid'])")
+          echo "DEVICE=$DEVICE" >> "$GITHUB_ENV"
+
+      - name: Build
+        run: |
+          xcodebuild -project Rema.xcodeproj -scheme RemaVideos -destination "id=$DEVICE" -derivedDataPath build/dd \
+            CODE_SIGNING_ALLOWED=NO build-for-testing > build.log 2>&1 || true
+          grep -E "error:|TEST BUILD (SUCCEEDED|FAILED)" build.log || true
+          grep -q "TEST BUILD SUCCEEDED" build.log
+
+      - name: Record
+        env:
+          LANGUAGES: ${{ inputs.languages }}
+          SCENES: ${{ inputs.scenes }}
+        # Every scene in each language; next to each video a json file with the seconds where the scene begins and ends.
+        run: |
+          set -uo pipefail
+
+          DEVICE="${DEVICE:?}"
+          LANGUAGES="${LANGUAGES:-ru en}"
+          SCENES="${SCENES:-Phrase Repeat List Calendar Friends}"
+          mkdir -p videos logs
+
+          prepare() {
+            local language="$1" locale keyboards
+            if [ "$language" = "ru" ]; then
+              locale="ru_RU"
+              keyboards=("ru_RU@sw=Russian;hw=Automatic" "en_US@sw=QWERTY;hw=Automatic")
+            else
+              locale="en_US"
+              keyboards=("en_US@sw=QWERTY;hw=Automatic")
+            fi
+            xcrun simctl boot "$DEVICE" 2>/dev/null || true
+            xcrun simctl bootstatus "$DEVICE" -b > /dev/null
+            run() { xcrun simctl spawn "$DEVICE" defaults write "$@"; }
+            run -g AppleLanguages -array "${locale/_/-}"
+            run -g AppleLocale -string "$locale"
+            run -g AppleKeyboards -array "${keyboards[@]}"
+            run -g AppleKeyboardsExpanded -int 1
+            # Corrections, the word bar and the swipe typing tour would change what the scene shows.
+            run com.apple.Preferences KeyboardAutocorrection -bool false
+            run com.apple.Preferences KeyboardPrediction -bool false
+            run com.apple.Preferences KeyboardAutocapitalization -bool false
+            run com.apple.Preferences KeyboardCheckSpelling -bool false
+            run com.apple.Preferences KeyboardContinuousPathEnabled -bool false
+            run com.apple.Preferences DidShowContinuousPathIntroduction -bool true
+            xcrun simctl shutdown "$DEVICE"
+            xcrun simctl boot "$DEVICE"
+            xcrun simctl bootstatus "$DEVICE" -b > /dev/null
+            xcrun simctl ui "$DEVICE" appearance light
+          }
+
+          for language in $LANGUAGES; do
+            prepare "$language"
+            for scene in $SCENES; do
+              name="$language-$(echo "$scene" | tr '[:upper:]' '[:lower:]')"
+              # The app gets a time zone where it is early afternoon, so the day on the dial is full; the status bar shows the same time.
+              read -r zone clock < <(python3 -c '
+          import datetime
+          now = datetime.datetime.now(datetime.timezone.utc)
+          shift = 14 - now.hour
+          shift = shift - 24 if shift > 12 else shift + 24 if shift < -12 else shift
+          print(f"Etc/GMT{-shift:+d}", (now + datetime.timedelta(hours=shift)).strftime("%H:%M"))')
+              xcrun simctl status_bar "$DEVICE" override --time "$clock" --dataNetwork wifi --wifiMode active --wifiBars 3 \
+                --cellularMode active --cellularBars 4 --batteryState charged --batteryLevel 100
+              xcrun simctl io "$DEVICE" recordVideo --codec=h264 --force "videos/$name.mp4" 2> "logs/record-$name.txt" &
+              recorder=$!
+              for _ in $(seq 1 100); do
+                grep -q "Recording started" "logs/record-$name.txt" && break
+                sleep 0.1
+              done
+              started=$(python3 -c 'import time; print(time.time())')
+              TEST_RUNNER_DEMO_LANGUAGE="$language" TEST_RUNNER_DEMO_TZ="$zone" xcodebuild test-without-building \
+                -project Rema.xcodeproj -scheme RemaVideos -destination "id=$DEVICE" -derivedDataPath build/dd \
+                -only-testing:"RemaVideos/Scenes/test$scene" CODE_SIGNING_ALLOWED=NO > "logs/$name.log" 2>&1
+              sleep 1
+              kill -INT "$recorder"
+              wait "$recorder" 2>/dev/null
+              python3 - "$name" "$started" <<'EOF'
+          import json, re, sys
+          name, started = sys.argv[1], float(sys.argv[2])
+          log = open(f"logs/{name}.log", encoding="utf-8", errors="replace").read()
+          marks = {kind.lower(): round(float(value) - started, 2) for kind, value in re.findall(r"SCENE-(START|END) ([0-9.]+)", log)}
+          json.dump(marks, open(f"videos/{name}.json", "w"))
+          print(name, marks, "passed" if "** TEST EXECUTE SUCCEEDED **" in log else "check the log")
+          EOF
+            done
+          done
+          ls -la videos
+
+      - name: Videos
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: videos
+          path: |
+            build.log
+            videos
+            logs
+          if-no-files-found: ignore

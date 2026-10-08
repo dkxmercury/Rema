@@ -222,3 +222,26 @@ targets:
       base:
         GENERATE_INFOPLIST_FILE: YES
         PRODUCT_BUNDLE_IDENTIFIER: uz.dkx.rema.snapshots
+  RemaVideos:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: Videos
+    dependencies:
+      - target: Rema
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: uz.dkx.rema.videos
+        TEST_TARGET_NAME: Rema
+schemes:
+  RemaVideos:
+    build:
+      targets:
+        Rema: all
+        RemaVideos: [test]
+    test:
+      config: Debug
+      gatherCoverageData: false
+      targets:
+        - RemaVideos

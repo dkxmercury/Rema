@@ -197,6 +197,13 @@ final class Account {
         UserDefaults.standard.set(false, forKey: Self.expiredKey)
     }
 
+    #if DEBUG
+    // The filmed demo shows an account but never reaches the server and never touches the keychain.
+    func useDemo(name: String) {
+        session = Session(token: "demo", userID: "demo", email: "", name: name, method: .password, issued: Date())
+    }
+    #endif
+
     private func begin(_ auth: AuthResponse, method: Method) {
         let session = Session(token: auth.token, userID: auth.record.id, email: auth.record.email ?? "", name: auth.record.name ?? "", method: method, issued: Date())
         self.session = session
