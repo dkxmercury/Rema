@@ -121,8 +121,8 @@ final class Scenes: XCTestCase {
             tree(app, "invitation")
         }
         compose(app)
-        // In an hour the new one comes before the demo reminders of the evening, so it stays on the screen above the bar.
-        type(english ? "movie in an hour" : "через час кино", into: app)
+        // The demo reminders start forty minutes from now; one in twenty minutes comes first and stays on the screen above the bar.
+        type(english ? "movie in 20 minutes" : "через 20 минут кино", into: app)
         pause(1)
         let share = app.buttons[english ? "With friends" : "С друзьями"].firstMatch
         if share.waitForExistence(timeout: 5) {
