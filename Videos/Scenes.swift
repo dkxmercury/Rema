@@ -1,7 +1,7 @@
 import XCTest
 
-// Each test plays one scene of the app at a calm pace for a video. The screen is recorded outside the test,
-// the printed marks tell where the scene begins and ends and where the typing goes, which the edit speeds up.
+// Each test plays one scene of the app at a calm pace for a video. The screen is recorded outside the test.
+// The printed marks tell the edit what happened when, and where on the screen: taps, typing, the new reminder.
 final class Scenes: XCTestCase {
     private let language = ProcessInfo.processInfo.environment["DEMO_LANGUAGE"] ?? "ru"
 
@@ -19,9 +19,8 @@ final class Scenes: XCTestCase {
         // A time counted from now stays today whatever hour the recording runs at, so the new reminder shows on the dial.
         type(english ? "call mom in 2 hours" : "через 2 часа позвонить маме", into: app)
         pause(2.5)
-        mark("SAVE")
-        app.typeText("\n")
-        pause(3)
+        save(app)
+        reveal(app, english ? "Call mom" : "Позвонить маме")
         finish()
     }
 
@@ -29,10 +28,22 @@ final class Scenes: XCTestCase {
         let app = launch("repeat")
         compose(app)
         type(english ? "yoga every Tue and Thu at 8" : "каждый вт и чт в 8 йога", into: app)
-        pause(3)
-        mark("SAVE")
-        app.typeText("\n")
+        pause(1)
+        let chip = app.buttons[english ? "Repeat" : "Повтор"].firstMatch
+        if chip.waitForExistence(timeout: 3) {
+            mark("CHIP", chip)
+        }
         pause(2.5)
+        save(app)
+        // The reminder comes next Tuesday, so it is shown where every coming reminder is.
+        let scheduled = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", english ? "All scheduled" : "Все запланированные")).firstMatch
+        if scheduled.waitForExistence(timeout: 5) {
+            tap(scheduled, "OPEN")
+            pause(1.5)
+            reveal(app, english ? "Yoga" : "Йога")
+        } else {
+            tree(app, "scheduled")
+        }
         finish()
     }
 
@@ -40,25 +51,26 @@ final class Scenes: XCTestCase {
         let app = launch("list")
         compose(app)
         type(english ? "buy bread, milk and eggs tonight" : "вечером купить хлеб, молоко и яйца", into: app)
-        pause(3)
-        app.typeText("\n")
-        pause(2)
-        let row = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH[c] %@", english ? "Buy bread, milk" : "Купить хлеб, молоко")).firstMatch
-        if row.waitForExistence(timeout: 5) {
-            row.tap()
+        pause(1)
+        let card = app.staticTexts[english ? "Make a list?" : "Составить список?"].firstMatch
+        if card.waitForExistence(timeout: 3) {
+            mark("CARD", card)
+        }
+        pause(2.5)
+        save(app)
+        if let row = reveal(app, english ? "Buy bread, milk" : "Купить хлеб, молоко") {
+            tap(row, "ROW")
             pause(2)
             // The tick is the round button before the name; the name itself does not react.
             for item in english ? ["Bread", "Milk"] : ["Хлеб", "Молоко"] {
                 let box = app.buttons[item].firstMatch
                 if box.waitForExistence(timeout: 3) {
-                    box.tap()
+                    tap(box, "TICK")
                     pause(1.2)
                 }
             }
             mark("TICKED")
             pause(2)
-        } else {
-            tree(app, "list row")
         }
         finish()
     }
@@ -68,13 +80,16 @@ final class Scenes: XCTestCase {
         pause(1.5)
         let button = app.buttons[english ? "Calendar" : "Календарь"].firstMatch
         if button.waitForExistence(timeout: 5) {
-            button.tap()
+            tap(button, "CALENDAR")
             pause(3)
             // The buttons, not a swipe: a swipe from the edge closes the calendar.
-            for label in english ? ["Next month", "Previous month", "Week"] : ["Следующий месяц", "Предыдущий месяц", "Неделя"] {
+            let steps = english
+                ? [("Next month", "NEXT"), ("Previous month", "PREVIOUS"), ("Week", "WEEK")]
+                : [("Следующий месяц", "NEXT"), ("Предыдущий месяц", "PREVIOUS"), ("Неделя", "WEEK")]
+            for (label, name) in steps {
                 let control = app.buttons[label].firstMatch
                 if control.waitForExistence(timeout: 3) {
-                    control.tap()
+                    tap(control, name)
                     pause(2.2)
                 }
             }
@@ -90,16 +105,16 @@ final class Scenes: XCTestCase {
         pause(1)
         let open = app.buttons[english ? "Open" : "Открыть"].firstMatch
         if open.waitForExistence(timeout: 5) {
-            open.tap()
+            tap(open, "INVITATION")
             pause(2.5)
             let accept = app.buttons[english ? "Accept" : "Принять"].firstMatch
             if accept.waitForExistence(timeout: 5) {
-                accept.tap()
+                tap(accept, "ACCEPT")
                 pause(2)
             }
             let close = app.buttons[english ? "Close" : "Закрыть"].firstMatch
             if close.exists {
-                close.tap()
+                tap(close, "CLOSE")
                 pause(1.5)
             }
         } else {
@@ -110,7 +125,7 @@ final class Scenes: XCTestCase {
         pause(1)
         let share = app.buttons[english ? "With friends" : "С друзьями"].firstMatch
         if share.waitForExistence(timeout: 5) {
-            share.tap()
+            tap(share, "SHARE")
             pause(1.2)
             // The friends come up under the keyboard; the screen is pushed up a little, the keyboard stays.
             app.scrollViews.firstMatch.swipeUp(velocity: .slow)
@@ -118,20 +133,21 @@ final class Scenes: XCTestCase {
             for name in english ? ["Anna", "Ilya"] : ["Аня", "Илья"] {
                 let chip = app.buttons[name].firstMatch
                 if chip.waitForExistence(timeout: 3) {
-                    chip.tap()
+                    tap(chip, "FRIEND")
                     pause(0.8)
                 }
             }
             pause(1)
-            mark("SAVE")
             let send = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", english ? "Send to" : "Отправить")).firstMatch
             if send.waitForExistence(timeout: 3), send.isHittable {
-                send.tap()
+                mark("SAVE")
+                tap(send, "SEND")
             } else {
                 app.textViews.firstMatch.tap()
-                app.typeText("\n")
+                save(app)
             }
-            pause(3)
+            pause(1)
+            reveal(app, english ? "Movie" : "Кино")
         } else {
             tree(app, "with friends")
         }
@@ -147,15 +163,18 @@ final class Scenes: XCTestCase {
             tree(app, "launch")
         }
         warmUp(app)
+        mark("WINDOW", app.windows.firstMatch)
         pause(1)
+        handshake()
         mark("START")
         pause(1.5)
         return app
     }
 
-    // The first keyboard of a fresh simulator shows a tour of swipe typing; it is seen and closed before the recording counts.
+    // The first keyboard of a fresh simulator shows a tour of swipe typing; it is seen and closed before the recording.
     private func warmUp(_ app: XCUIApplication) {
-        compose(app)
+        app.buttons[english ? "New reminder" : "Новое напоминание"].firstMatch.tap()
+        _ = app.keyboards.firstMatch.waitForExistence(timeout: 10)
         for label in ["Continue", "Продолжить"] {
             let button = app.buttons[label].firstMatch
             if button.waitForExistence(timeout: 2) {
@@ -171,7 +190,7 @@ final class Scenes: XCTestCase {
     }
 
     private func compose(_ app: XCUIApplication) {
-        app.buttons[english ? "New reminder" : "Новое напоминание"].firstMatch.tap()
+        tap(app.buttons[english ? "New reminder" : "Новое напоминание"].firstMatch, "COMPOSE")
         // Letters sent while the keyboard is still coming up get lost.
         _ = app.keyboards.firstMatch.waitForExistence(timeout: 10)
         pause(0.8)
@@ -189,17 +208,61 @@ final class Scenes: XCTestCase {
         mark("TYPED")
     }
 
+    // The return key confirms the reminder; it sits on the keyboard, so the mark carries no place.
+    private func save(_ app: XCUIApplication) {
+        mark("SAVE")
+        app.typeText("\n")
+    }
+
+    // The new reminder, found by the start of its title, is marked with its place for the highlight.
+    @discardableResult
+    private func reveal(_ app: XCUIApplication, _ title: String) -> XCUIElement? {
+        let element = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH[c] %@", title)).firstMatch
+        guard element.waitForExistence(timeout: 8) else {
+            tree(app, "new reminder")
+            return nil
+        }
+        pause(0.4)
+        mark("NEW", element)
+        pause(2.8)
+        return element
+    }
+
+    private func tap(_ element: XCUIElement, _ name: String) {
+        mark(name, element)
+        element.tap()
+    }
+
     private func finish() {
         pause(1)
         mark("END")
+    }
+
+    // The recording starts only when the app is up and warmed, so the launch never gets into the video;
+    // the scene says it is ready and waits for the word that the recording runs.
+    private func handshake() {
+        guard let sync = ProcessInfo.processInfo.environment["DEMO_SYNC"] else { return }
+        let folder = URL(fileURLWithPath: sync)
+        try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        FileManager.default.createFile(atPath: folder.appendingPathComponent("ready").path, contents: Data())
+        let go = folder.appendingPathComponent("go").path
+        let deadline = Date().addingTimeInterval(30)
+        while !FileManager.default.fileExists(atPath: go), Date() < deadline {
+            pause(0.1)
+        }
     }
 
     private func pause(_ seconds: Double) {
         Thread.sleep(forTimeInterval: seconds)
     }
 
-    private func mark(_ name: String) {
-        print("SCENE-MARK \(name) \(Date().timeIntervalSince1970)")
+    private func mark(_ name: String, _ element: XCUIElement? = nil) {
+        var line = "SCENE-MARK \(name) \(Date().timeIntervalSince1970)"
+        if let element, element.exists {
+            let frame = element.frame
+            line += " \(frame.minX) \(frame.minY) \(frame.width) \(frame.height)"
+        }
+        print(line)
     }
 
     private func tree(_ app: XCUIApplication, _ place: String) {
