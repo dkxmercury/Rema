@@ -47,6 +47,57 @@ struct EarlySuggestionCard: View {
     }
 }
 
+struct SnoozeHint: Equatable {
+    let reminderID: UUID
+    let title: String
+}
+
+struct SnoozeHintCard: View {
+    let hint: SnoozeHint
+    let onAnswer: (Bool) -> Void
+
+    var body: some View {
+        VStack(alignment: .trailing, spacing: 10) {
+            HStack(alignment: .top, spacing: 12) {
+                Glyph(paths: Icons.clock, size: 20, lineWidth: 2, color: Palette.accentText)
+                    .frame(width: 36, height: 36)
+                    .background(RoundedRectangle(cornerRadius: 10, style: .circular).fill(Palette.accent.opacity(0.14)))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Move it to another time?")
+                        .font(.app(.golos, 16, weight: 600))
+                    Text("“\(hint.title)” keeps being put off.")
+                        .font(.app(.golos, 14))
+                        .lineSpacing(2)
+                        .foregroundStyle(Palette.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            HStack(spacing: 8) {
+                Button {
+                    onAnswer(false)
+                } label: {
+                    Text("No thanks")
+                        .font(.app(.golos, 14, weight: 600))
+                        .foregroundStyle(Palette.secondary)
+                        .padding(.horizontal, 14)
+                        .frame(height: 36)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(RowPressStyle())
+                Button {
+                    onAnswer(true)
+                } label: {
+                    Text("Change time")
+                }
+                .buttonStyle(SmallButtonStyle(prominent: true))
+            }
+        }
+        .padding(14)
+        .panel()
+    }
+}
+
 struct HabitSuggestionCard: View {
     let suggestion: HabitSuggestion
     let onAnswer: (Bool) -> Void

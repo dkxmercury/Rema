@@ -33,6 +33,7 @@ final class WatchModel: NSObject, WCSessionDelegate {
             "action": current.items[index].done ? "done" : "undo",
             "id": item.reminderID.uuidString,
             "occurrence": item.occurrence.timeIntervalSince1970,
+            "at": Date().timeIntervalSince1970,
         ]
         let session = WCSession.default
         guard session.activationState == .activated else { return }

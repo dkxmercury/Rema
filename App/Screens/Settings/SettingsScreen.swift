@@ -14,11 +14,13 @@ struct SettingsScreen: View {
     var onLanguage: () -> Void = {}
     var onCity: () -> Void = {}
     var onFeatures: () -> Void = {}
+    var onSnooze: () -> Void = {}
     let onBack: () -> Void
 
     @AppStorage(Feedback.hapticsKey) private var haptics = true
     @AppStorage(Feedback.soundsKey) private var sounds = true
     @AppStorage(Notifier.missedKey) private var missed = true
+    @AppStorage(Notifier.summaryKey) private var summary = false
     @State private var editingTime: TimeTarget?
     @State private var permissions = Permissions()
     @State private var weather = WeatherAdvisor.shared
@@ -95,6 +97,13 @@ struct SettingsScreen: View {
                             }
                             Hairline()
                             nagRow
+                            Hairline()
+                            NavigationRow(icon: Icons.clock, iconColor: Palette.text, title: "Snooze in notifications", minHeight: 52, action: onSnooze) {
+                                EmptyView()
+                            }
+                            Hairline()
+                            ToggleRow(icon: Icons.sun, iconColor: Palette.text, title: "Summary of the day", subtitle: String(localized: "in the morning about today, in the evening about tomorrow", bundle: .app, locale: .app), isOn: $summary, minHeight: 60)
+                                .onChange(of: summary) { _, _ in Notifier.shared.scheduleSoon() }
                             if Remote.shared.isOn(.missed) {
                                 Hairline()
                                 ToggleRow(icon: Icons.bell, iconColor: Palette.text, title: "Missed reminders", subtitle: String(localized: "a badge on the icon and one more reminder in \(Int(Remote.shared.number(.missedFollowUp))) minutes", bundle: .app, locale: .app), isOn: $missed, minHeight: 60)
@@ -165,7 +174,9 @@ struct SettingsScreen: View {
         .sheet(item: $editingTime) { target in
             TimeSheet(
                 title: target.kind == .morning ? "Morning" : "Evening",
-                time: target.kind == .morning ? store.settings.morning : store.settings.evening
+                time: target.kind == .morning ? store.settings.morning : store.settings.evening,
+                hours: target.kind == .morning ? 0...11 : 12...23,
+                hint: target.kind == .morning ? "Morning is before noon" : "Evening is after noon"
             ) { time in
                 store.update { settings in
                     if target.kind == .morning {
@@ -514,12 +525,17 @@ struct SettingsScreen: View {
 
 struct TimeSheet: View {
     let title: LocalizedStringKey
+    var hours: ClosedRange<Int> = 0...23
+    var hint: LocalizedStringKey?
     let onDone: (LocalTime) -> Void
     @State private var hour: Int
     @State private var minute: Int
 
-    init(title: LocalizedStringKey, time: LocalTime, onDone: @escaping (LocalTime) -> Void) {
+    // «Вечером» and «ближе к вечеру» read the evening after noon, a swapped pair would turn them into the morning.
+    init(title: LocalizedStringKey, time: LocalTime, hours: ClosedRange<Int> = 0...23, hint: LocalizedStringKey? = nil, onDone: @escaping (LocalTime) -> Void) {
         self.title = title
+        self.hours = hours
+        self.hint = hint
         self.onDone = onDone
         _hour = State(initialValue: time.hour)
         _minute = State(initialValue: time.minute)
@@ -532,6 +548,12 @@ struct TimeSheet: View {
                 .padding(.top, 24)
             TimeDrums(hour: $hour, minute: $minute)
                 .padding(.top, 18)
+            if !hours.contains(hour), let hint {
+                Text(hint)
+                    .font(.app(.golos, 13, weight: 500))
+                    .foregroundStyle(Palette.urgentText)
+                    .padding(.top, 10)
+            }
             Button {
                 Feedback.play(.save)
                 onDone(LocalTime(hour: hour, minute: minute))
@@ -539,6 +561,7 @@ struct TimeSheet: View {
                 Text("Done")
             }
             .buttonStyle(PrimaryButtonStyle())
+            .disabled(!hours.contains(hour))
             .padding(.top, 18)
             Spacer(minLength: 0)
         }

@@ -18,6 +18,7 @@ struct ShareScreen: View {
 
     final class Memo {
         var text: String?
+        var minute: Int?
         var parsed: ParsedPhrase?
     }
 
@@ -30,7 +31,8 @@ struct ShareScreen: View {
     @State private var saving = false
     @State private var memo = Memo()
 
-    private let now = Date()
+    // A sheet left open for a while still reads «in 5 minutes» from the real current minute.
+    private var now: Date { Date() }
     private let calendar = Calendar.current
     private let locale = Locale.app
 
@@ -81,11 +83,13 @@ struct ShareScreen: View {
     }
 
     private var parsed: ParsedPhrase {
-        if memo.text == text, let parsed = memo.parsed {
+        let minute = Int(now.timeIntervalSince1970 / 60)
+        if memo.text == text, memo.minute == minute, let parsed = memo.parsed {
             return parsed
         }
         let parsed = Self.parser(snapshot: snapshot, now: now).parse(text)
         memo.text = text
+        memo.minute = minute
         memo.parsed = parsed
         return parsed
     }

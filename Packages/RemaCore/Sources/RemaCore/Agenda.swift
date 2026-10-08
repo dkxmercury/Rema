@@ -13,7 +13,7 @@ public enum Agenda {
         var items: [AgendaItem] = []
         for reminder in reminders where reminder.deletedAt == nil {
             guard let schedule = reminder.schedule else { continue }
-            for occurrence in Recurrence.next(schedule, after: start.addingTimeInterval(-1), limit: 3, calendar: calendar) where occurrence < end {
+            for occurrence in Recurrence.next(schedule, after: start.addingTimeInterval(-1), limit: 48, calendar: calendar) where occurrence < end {
                 items.append(AgendaItem(reminderID: reminder.id, occurrence: occurrence, done: isDone(reminder, occurrence)))
             }
         }
@@ -25,7 +25,12 @@ public enum Agenda {
         for reminder in reminders where reminder.deletedAt == nil {
             guard let schedule = reminder.schedule else { continue }
             let from = max(now, reminder.completedThrough ?? now)
-            if let next = Recurrence.next(schedule, after: from, limit: 1, calendar: calendar).first {
+            var next = Recurrence.next(schedule, after: from, limit: 1, calendar: calendar).first
+            // A snooze rings on its own and is usually sooner than the next regular time.
+            if let snoozed = reminder.snoozedUntil, snoozed > now, next.map({ snoozed < $0 }) ?? true {
+                next = snoozed
+            }
+            if let next {
                 items.append(AgendaItem(reminderID: reminder.id, occurrence: next, done: false))
             }
         }

@@ -222,7 +222,7 @@ struct CalendarScreen: View {
             if let next = Recurrence.next(schedule, after: now.addingTimeInterval(-60), limit: 1, calendar: calendar).first,
                !(schedule.rule == nil && (reminder.completedThrough.map { $0 >= next } ?? false)) {
                 upcoming.append(Match(reminder: reminder, date: next, done: false))
-            } else if let last = Recurrence.next(schedule, after: .distantPast, limit: 1000, calendar: calendar).last {
+            } else if let last = Recurrence.next(schedule, after: now.addingTimeInterval(-2 * 366 * 86_400), limit: 1000, calendar: calendar).last(where: { $0 < now }) ?? Recurrence.next(schedule, after: .distantPast, limit: 1000, calendar: calendar).last {
                 earlier.append(Match(reminder: reminder, date: last, done: reminder.completedThrough.map { $0 >= last } ?? false))
             }
         }

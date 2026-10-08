@@ -208,8 +208,9 @@ public struct Settings: Codable, Hashable, Sendable {
     public var updatedAt: Date
     // Set by the first change, so settings put back to the defaults still reach the other phones.
     public var touched: Bool?
+    public var snoozeOptions: [Int]?
 
-    public init(defaultSound: SoundChoice, morning: LocalTime, evening: LocalTime, nagInterval: Int, appearance: Appearance, updatedAt: Date, touched: Bool? = nil) {
+    public init(defaultSound: SoundChoice, morning: LocalTime, evening: LocalTime, nagInterval: Int, appearance: Appearance, updatedAt: Date, touched: Bool? = nil, snoozeOptions: [Int]? = nil) {
         self.defaultSound = defaultSound
         self.morning = morning
         self.evening = evening
@@ -217,6 +218,7 @@ public struct Settings: Codable, Hashable, Sendable {
         self.appearance = appearance
         self.updatedAt = updatedAt
         self.touched = touched
+        self.snoozeOptions = snoozeOptions
     }
 
     public static func standard(at date: Date) -> Settings {
@@ -229,6 +231,15 @@ public struct Settings: Codable, Hashable, Sendable {
             updatedAt: date
         )
     }
+}
+
+// Minutes to put a reminder off by; the two negative values are moments of the day.
+public enum SnoozeOption {
+    public static let tomorrowMorning = -1
+    public static let thisEvening = -2
+    public static let standard = [10, 60, -1]
+    public static let all = [5, 10, 15, 30, 60, 120, 180, -2, -1]
+    public static let limit = 3
 }
 
 public enum BuiltInSound: String, CaseIterable, Codable, Sendable {

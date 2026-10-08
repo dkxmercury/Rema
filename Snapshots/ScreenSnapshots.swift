@@ -41,6 +41,15 @@ final class ScreenSnapshots: XCTestCase {
         try render(RepeatScreen(draft: .constant(SampleData.server), now: SampleData.now, calendar: SampleData.calendar, locale: russian, onBack: {}), name: "D-Repeat", style: .light)
     }
 
+    func testSnooze() throws {
+        try render(SnoozeScreen(store: sampleStore(), onBack: {}), name: "D-Snooze", style: .light)
+        try render(HomeScreen(content: SampleData.home, snoozeHint: SnoozeHint(reminderID: UUID(), title: "Позвонить поставщику")), name: "Home-SnoozeHint", style: .light)
+    }
+
+    func testRepeatWeekdays() throws {
+        try render(RepeatScreen(draft: .constant(SampleData.reminders[3]), now: SampleData.now, calendar: SampleData.calendar, locale: russian, onBack: {}), name: "D-Repeat-Weekdays", style: .light)
+    }
+
     func testEarly() throws {
         try render(EarlyScreen(draft: .constant(SampleData.server), now: SampleData.now, calendar: SampleData.calendar, locale: russian, onBack: {}), name: "D-Before", style: .light)
     }
@@ -87,6 +96,7 @@ final class ScreenSnapshots: XCTestCase {
     func testStates() throws {
         let empty = HomeContent.make(reminders: [], places: [], now: SampleData.now, calendar: SampleData.calendar, locale: russian)
         try render(HomeScreen(content: empty, loadingAccount: true), name: "Home-Loading", style: .dark)
+        try render(HomeScreen(content: SampleData.home, alert: .notificationsOff), name: "Home-NotificationsOff", style: .light)
         try render(HomeScreen(content: HomeContent.make(reminders: SampleData.busyDay, places: [], now: SampleData.now, calendar: SampleData.calendar, locale: russian)), name: "Home-Many", style: .light)
         let recognizer = VoiceRecognizer()
         recognizer.failure = "Разрешите доступ к микрофону в Настройках, чтобы диктовать напоминания."

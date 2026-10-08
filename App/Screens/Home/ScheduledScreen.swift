@@ -10,7 +10,7 @@ struct ScheduledScreen: View {
         ZStack {
             Palette.background.ignoresSafeArea()
             ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
+                LazyVStack(alignment: .leading, spacing: 0) {
                     if content.isEmpty {
                         Text(loading ? LocalizedStringKey("Loading from your account…") : LocalizedStringKey("Nothing ahead"))
                             .font(.app(.golos, 16, weight: 600))

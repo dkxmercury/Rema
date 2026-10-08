@@ -6,6 +6,7 @@ import UserNotifications
 final class Notifier: NSObject, UNUserNotificationCenterDelegate {
     static let shared = Notifier()
     static let missedKey = "missedReminders"
+    static let summaryKey = "dailySummary"
 
     @MainActor
     static var missedEnabled: Bool {
@@ -24,21 +25,43 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         center.setNotificationCategories(categories)
     }
 
+    static func snoozeTitle(_ option: Int) -> String {
+        switch option {
+        case SnoozeOption.tomorrowMorning: return String(localized: "Tomorrow morning", bundle: .app, locale: .app)
+        case SnoozeOption.thisEvening: return String(localized: "This evening", bundle: .app, locale: .app)
+        case 5: return String(localized: "In 5 minutes", bundle: .app, locale: .app)
+        case 10: return String(localized: "In 10 minutes", bundle: .app, locale: .app)
+        case 15: return String(localized: "In 15 minutes", bundle: .app, locale: .app)
+        case 30: return String(localized: "In 30 minutes", bundle: .app, locale: .app)
+        case 120: return String(localized: "In 2 hours", bundle: .app, locale: .app)
+        case 180: return String(localized: "In 3 hours", bundle: .app, locale: .app)
+        default: return String(localized: "In an hour", bundle: .app, locale: .app)
+        }
+    }
+
+    private static func snoozeIdentifier(_ option: Int) -> String {
+        switch option {
+        case SnoozeOption.tomorrowMorning: return "morning"
+        case SnoozeOption.thisEvening: return "evening"
+        default: return "snooze\(option)"
+        }
+    }
+
     private var categories: Set<UNNotificationCategory> {
         let done = UNNotificationAction(identifier: "done", title: String(localized: "Done", bundle: .app, locale: .app))
-        let tenMinutes = UNNotificationAction(identifier: "snooze10", title: String(localized: "In 10 minutes", bundle: .app, locale: .app))
         let fifteenMinutes = UNNotificationAction(identifier: "snooze15", title: String(localized: "In 15 minutes", bundle: .app, locale: .app))
-        let hour = UNNotificationAction(identifier: "snooze60", title: String(localized: "In an hour", bundle: .app, locale: .app))
-        let morning = UNNotificationAction(identifier: "morning", title: String(localized: "Tomorrow morning", bundle: .app, locale: .app))
+        let snoozes = (store.settings.snoozeOptions ?? SnoozeOption.standard).prefix(SnoozeOption.limit).map { option in
+            UNNotificationAction(identifier: Self.snoozeIdentifier(option), title: Self.snoozeTitle(option))
+        }
         let skip = UNNotificationAction(identifier: "skip", title: String(localized: "Skip today", bundle: .app, locale: .app))
         let call = UNNotificationAction(identifier: "call", title: String(localized: "Call", bundle: .app, locale: .app), options: [.foreground], icon: UNNotificationActionIcon(systemImageName: "phone.fill"))
         let open = UNNotificationAction(identifier: "open", title: String(localized: "Open", bundle: .app, locale: .app), options: [.foreground], icon: UNNotificationActionIcon(systemImageName: "safari"))
         return [
-            UNNotificationCategory(identifier: "reminder", actions: [done, tenMinutes, hour, morning], intentIdentifiers: []),
+            UNNotificationCategory(identifier: "reminder", actions: [done] + snoozes, intentIdentifiers: []),
             UNNotificationCategory(identifier: "nag", actions: [done, fifteenMinutes, skip], intentIdentifiers: []),
             UNNotificationCategory(identifier: "place", actions: [done], intentIdentifiers: []),
-            UNNotificationCategory(identifier: "reminder.call", actions: [call, done, tenMinutes, hour], intentIdentifiers: []),
-            UNNotificationCategory(identifier: "reminder.open", actions: [open, done, tenMinutes, hour], intentIdentifiers: []),
+            UNNotificationCategory(identifier: "reminder.call", actions: [call, done] + snoozes.prefix(2), intentIdentifiers: []),
+            UNNotificationCategory(identifier: "reminder.open", actions: [open, done] + snoozes.prefix(2), intentIdentifiers: []),
             UNNotificationCategory(identifier: "nag.call", actions: [call, done, fifteenMinutes, skip], intentIdentifiers: []),
             UNNotificationCategory(identifier: "nag.open", actions: [open, done, fifteenMinutes, skip], intentIdentifiers: []),
             UNNotificationCategory(identifier: "place.call", actions: [call, done], intentIdentifiers: []),
@@ -130,15 +153,19 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
     private func rebuild() async {
         store.reloadIfChanged()
         let center = UNUserNotificationCenter.current()
+        // Snooze buttons follow the settings, which another phone may have changed.
+        center.setNotificationCategories(categories)
         let status = await center.notificationSettings().authorizationStatus
+        NotificationAccess.shared.update(status)
         guard status == .authorized || status == .provisional || status == .ephemeral else { return }
         let now = Date()
         let followUp = Self.missedEnabled ? Int(Remote.shared.number(.missedFollowUp)) : nil
         let places = placeRequests()
+        let summaries = summaryRequests(now: now)
         let weather = WeatherAdvisor.shared.notes(after: now)
         // Places and weather take their slots first; the planner picks what matters most for the rest.
-        let plan = Scheduler.plan(reminders: store.reminders, settings: store.settings, now: now, calendar: .current, capacity: max(0, Scheduler.capacity - places.count - weather.count), followUp: followUp)
-        var requests = places
+        let plan = Scheduler.plan(reminders: store.reminders, settings: store.settings, now: now, calendar: .current, capacity: max(0, Scheduler.capacity - places.count - summaries.count - weather.count), followUp: followUp)
+        var requests = places + summaries
         for note in weather {
             let content = UNMutableNotificationContent()
             content.title = note.title
@@ -176,6 +203,51 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         }
         let missed = Self.missedEnabled ? Agenda.missed(now, reminders: store.activeReminders, calendar: .current).count : 0
         try? await center.setBadgeCount(missed)
+    }
+
+    // In the morning the list of today, in the evening the list of tomorrow; a day with nothing gets no summary.
+    @MainActor
+    private func summaryRequests(now: Date) -> [UNNotificationRequest] {
+        guard UserDefaults.standard.bool(forKey: Self.summaryKey) else { return [] }
+        let calendar = Calendar.current
+        let describer = Describer(locale: AppLanguage.current.locale)
+        let start = calendar.startOfDay(for: now)
+        var requests: [UNNotificationRequest] = []
+        for offset in 0..<2 {
+            guard let day = calendar.date(byAdding: .day, value: offset, to: start), let next = calendar.date(byAdding: .day, value: 1, to: day) else { continue }
+            let morning = store.settings.morning
+            let evening = store.settings.evening
+            if let fire = calendar.date(bySettingHour: morning.hour, minute: morning.minute, second: 0, of: day), fire > now,
+               let request = summary(of: day, today: true, at: fire, describer: describer, calendar: calendar) {
+                requests.append(request)
+            }
+            if let fire = calendar.date(bySettingHour: evening.hour, minute: evening.minute, second: 0, of: day), fire > now,
+               let request = summary(of: next, today: false, at: fire, describer: describer, calendar: calendar) {
+                requests.append(request)
+            }
+        }
+        return requests
+    }
+
+    @MainActor
+    private func summary(of day: Date, today: Bool, at fire: Date, describer: Describer, calendar: Calendar) -> UNNotificationRequest? {
+        let items = Agenda.day(day, reminders: store.activeReminders, calendar: calendar).filter { !$0.done }
+        guard !items.isEmpty else { return nil }
+        let lines = items.prefix(5).compactMap { item in
+            store.reminder(item.reminderID).map { "\(describer.time(item.occurrence)) \($0.title)" }
+        }
+        let count = String(localized: "\(items.count) reminders", bundle: .app, locale: .app)
+        let content = UNMutableNotificationContent()
+        content.title = today ? String(localized: "Today, \(count)", bundle: .app, locale: .app) : String(localized: "Tomorrow, \(count)", bundle: .app, locale: .app)
+        var body = lines.joined(separator: "\n")
+        if items.count > lines.count {
+            body += "\n" + String(localized: "\(items.count - lines.count) more", bundle: .app, locale: .app)
+        }
+        content.body = body
+        content.interruptionLevel = .passive
+        content.threadIdentifier = "summary"
+        let parts = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: fire)
+        return UNNotificationRequest(identifier: "summary.\(Int(fire.timeIntervalSince1970))", content: content, trigger: UNCalendarNotificationTrigger(dateMatching: parts, repeats: false))
     }
 
     @MainActor
@@ -280,12 +352,18 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         switch action {
         case "done", "skip":
             store.complete(id, through: max(occurrence, store.reminder(id)?.snoozedUntil ?? occurrence))
-        case "snooze10":
-            store.snooze(id, until: now.addingTimeInterval(600))
-        case "snooze15":
-            store.snooze(id, until: now.addingTimeInterval(900))
-        case "snooze60":
-            store.snooze(id, until: now.addingTimeInterval(3600))
+        case "evening":
+            let calendar = Calendar.current
+            let evening = store.settings.evening
+            var date = calendar.date(bySettingHour: evening.hour, minute: evening.minute, second: 0, of: now) ?? now
+            if date <= now {
+                date = calendar.date(byAdding: .day, value: 1, to: date) ?? date
+            }
+            store.snooze(id, until: date)
+        case let snooze where snooze.hasPrefix("snooze"):
+            if let minutes = Int(snooze.dropFirst(6)), minutes > 0 {
+                store.snooze(id, until: now.addingTimeInterval(Double(minutes) * 60))
+            }
         case "morning":
             let calendar = Calendar.current
             let tomorrow = calendar.date(byAdding: .day, value: 1, to: now) ?? now

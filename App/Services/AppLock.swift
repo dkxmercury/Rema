@@ -55,6 +55,7 @@ final class AppLock {
         }
         enabled = on
         UserDefaults.standard.set(on, forKey: Self.enabledKey)
+        SpotlightIndex.scheduleUpdate()
     }
 
     func setDelay(_ seconds: Int) {
@@ -117,6 +118,11 @@ final class AppLock {
             .environment(\.locale, language.locale)
             .environment(\.layoutDirection, language.layoutDirection)
         window.rootViewController = UIHostingController(rootView: screen)
+        switch Store.shared.settings.appearance {
+        case .system: window.overrideUserInterfaceStyle = .unspecified
+        case .light: window.overrideUserInterfaceStyle = .light
+        case .dark: window.overrideUserInterfaceStyle = .dark
+        }
         window.makeKeyAndVisible()
         self.window = window
     }

@@ -22,6 +22,7 @@ enum RootRoute: Hashable {
     case city
     case features
     case scheduled
+    case snooze
 }
 
 // Lives outside the views, so the screen stack survives when a language change rebuilds them.
@@ -36,6 +37,7 @@ final class RootNavigation {
     var languageCode = AppLanguage.current.rawValue
     var showingSignIn = !Account.shared.isSignedIn && !UserDefaults.standard.bool(forKey: RootNavigation.welcomeKey)
     var composeRequest: ComposeTarget?
+    var openRequest: UUID?
 
     func requestCompose(voice: Bool) {
         composeRequest = ComposeTarget(voice: voice)
@@ -124,6 +126,7 @@ struct RootView: View {
         }
         .onChange(of: remote.config) { _, _ in showAnnouncementIfNew() }
         .onChange(of: navigation.composeRequest?.id) { _, _ in openRequestedCompose() }
+        .onChange(of: navigation.openRequest) { _, _ in openRequestedReminder() }
         .onChange(of: account.isSignedIn) { _, signedIn in
             // A session that ran out leaves no account to show, so its screens close.
             if !signedIn {
@@ -134,6 +137,7 @@ struct RootView: View {
             showAnnouncementIfNew()
             showIntroIfNeeded()
             openRequestedCompose()
+            openRequestedReminder()
         }
         .preferredColorScheme(colorScheme)
     }
@@ -152,6 +156,7 @@ struct RootView: View {
                 onLanguage: { showingLanguage = true },
                 onCity: { navigation.path.append(.city) },
                 onFeatures: { navigation.path.append(.features) },
+                onSnooze: { navigation.path.append(.snooze) },
                 onBack: { navigation.path.removeLast() }
             )
         case .defaultSound:
@@ -162,6 +167,8 @@ struct RootView: View {
             NewPlaceScreen(store: store, existing: store.places.first { $0.id == id }, onSaved: { _ in navigation.path.removeLast() }, onBack: { navigation.path.removeLast() })
         case .city:
             CityScreen { navigation.path.removeLast() }
+        case .snooze:
+            SnoozeScreen(store: store) { navigation.path.removeLast() }
         case .features:
             FeaturesScreen(onPlaces: { navigation.path.append(.places) }, onBack: { navigation.path.removeLast() })
         case .scheduled:
@@ -257,6 +264,24 @@ struct RootView: View {
         }
     }
 
+    // A search result can open the app over any screen; the one on top closes first.
+    private func openRequestedReminder() {
+        guard let id = navigation.openRequest else { return }
+        navigation.openRequest = nil
+        guard !navigation.showingSignIn, !showingIntro, let reminder = store.reminder(id), reminder.deletedAt == nil else { return }
+        let root = UIApplication.shared.mainWindow?.rootViewController
+        if editing != nil || showingCalendar || composing != nil || showingLanguage || root?.presentedViewController != nil {
+            editing = nil
+            showingCalendar = false
+            composing = nil
+            showingLanguage = false
+            root?.dismiss(animated: true)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { editing = EditingTarget(reminder: reminder, isNew: false) }
+        } else {
+            editing = EditingTarget(reminder: reminder, isNew: false)
+        }
+    }
+
     private func showAnnouncementIfNew() {
         guard announcement == nil, let next = remote.activeAnnouncement,
               UserDefaults.standard.string(forKey: "announcementSeen") != next.id else { return }
@@ -320,7 +345,11 @@ struct RootView: View {
                 onPostpone: postpone,
                 tip: tips.next(store: store, now: timeline.date),
                 onTip: answerTip,
-                loadingAccount: sync.loadingFirstTime
+                loadingAccount: sync.loadingFirstTime,
+                alert: homeAlert,
+                onAlert: answerAlert,
+                snoozeHint: remote.isOn(.suggestions) ? snoozeHint : nil,
+                onSnoozeHint: answerSnoozeHint
             )
         }
     }
@@ -348,6 +377,39 @@ struct RootView: View {
             withAnimation(Motion.standard) { store.snooze(row.reminderID, until: date) }
         }
         Feedback.play(.save)
+    }
+
+    // Put off three times in a row, the time itself is probably wrong.
+    private var snoozeHint: SnoozeHint? {
+        _ = store.reminders
+        guard let reminder = store.activeReminders.first(where: { SnoozeStats.count($0.id) >= 3 }) else { return nil }
+        return SnoozeHint(reminderID: reminder.id, title: reminder.title)
+    }
+
+    private func answerSnoozeHint(_ hint: SnoozeHint, accepted: Bool) {
+        SnoozeStats.reset(hint.reminderID)
+        store.reloadIfChanged(edit: false)
+        if accepted {
+            open(hint.reminderID)
+        }
+    }
+
+    private var homeAlert: HomeAlert? {
+        if store.writeFailed { return .storageFull }
+        if NotificationAccess.shared.denied { return .notificationsOff }
+        if account.expired, !account.isSignedIn { return .signInExpired }
+        return nil
+    }
+
+    private func answerAlert(_ alert: HomeAlert) {
+        switch alert {
+        case .storageFull, .notificationsOff:
+            if let url = URL(string: UIApplication.openSettingsURLString) {
+                openURL(url)
+            }
+        case .signInExpired:
+            navigation.showingSignIn = true
+        }
     }
 
     private func answerTip(_ tip: Tip, accepted: Bool) {

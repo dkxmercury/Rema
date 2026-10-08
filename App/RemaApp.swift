@@ -1,4 +1,5 @@
 import BackgroundTasks
+import CoreSpotlight
 import SwiftUI
 import UIKit
 
@@ -13,7 +14,10 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         WatchLink.shared.activate()
         Store.shared.onChange = {
             Notifier.shared.scheduleSoon()
-            Task { @MainActor in WatchLink.shared.send(store: Store.shared) }
+            Task { @MainActor in
+                WatchLink.shared.send(store: Store.shared)
+                SpotlightIndex.scheduleUpdate()
+            }
         }
         Store.shared.onEdit = {
             Task { @MainActor in SyncService.shared.schedule() }
@@ -42,6 +46,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
             }
             await WeatherAdvisor.shared.refresh()
             await Notifier.shared.reschedule()
+            WatchLink.shared.send(store: Store.shared)
             finish(true)
         }
         task.expirationHandler = {
@@ -83,6 +88,10 @@ struct RemaApp: App {
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.significantTimeChangeNotification)) { _ in
                 Notifier.shared.scheduleSoon()
             }
+            .onContinueUserActivity(CSSearchableItemActionType) { activity in
+                guard let raw = activity.userInfo?[CSSearchableItemActivityIdentifier] as? String, let id = UUID(uuidString: raw) else { return }
+                RootNavigation.shared.openRequest = id
+            }
         }
         .onChange(of: scenePhase) { _, phase in
             switch phase {
@@ -91,8 +100,10 @@ struct RemaApp: App {
                 Store.shared.reloadIfChanged()
                 Notifier.shared.scheduleSoon()
                 LiveActivities.refresh(store: Store.shared)
+                WatchLink.shared.send(store: Store.shared)
                 SyncService.shared.dropGuestTombstones()
                 Task {
+                    await NotificationAccess.shared.refresh()
                     await Remote.shared.refresh()
                     await WeatherAdvisor.shared.refresh()
                     await Account.shared.refreshIfNeeded()

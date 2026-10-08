@@ -56,6 +56,8 @@ jobs:
             -destination "id=$DEVICE" CODE_SIGNING_ALLOWED=NO test > test.log 2>&1 || true
           grep -E "error:|Test Case .* (passed|failed|skipped)|TEST (SUCCEEDED|FAILED)" test.log | tail -40 || true
           ls -la screens
+          # Recording new reference images counts as a failure, a build that did not compile must not pass quietly.
+          if grep -q "The following build commands failed" test.log; then exit 1; fi
 
       - name: Logs and screens
         if: always()

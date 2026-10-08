@@ -4,6 +4,7 @@ import WatchConnectivity
 
 final class WatchLink: NSObject, WCSessionDelegate {
     static let shared = WatchLink()
+    @MainActor private var latest: [String: Double] = [:]
 
     private var session: WCSession? {
         WCSession.isSupported() ? WCSession.default : nil
@@ -48,7 +49,12 @@ final class WatchLink: NSObject, WCSessionDelegate {
     private func handle(_ message: [String: Any]) {
         guard let raw = message["id"] as? String, let id = UUID(uuidString: raw), let action = message["action"] as? String else { return }
         let occurrence = Date(timeIntervalSince1970: message["occurrence"] as? Double ?? Date().timeIntervalSince1970)
+        let at = message["at"] as? Double ?? Date().timeIntervalSince1970
         Task { @MainActor in
+            // A queued older tap can arrive after a newer one that was sent directly.
+            let key = "\(raw)-\(Int(occurrence.timeIntervalSince1970))"
+            if let last = latest[key], last > at { return }
+            latest[key] = at
             let store = Store.shared
             store.reloadIfChanged()
             switch action {

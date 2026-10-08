@@ -300,10 +300,14 @@ struct IntroScreen: View {
                 .padding(.top, 10)
             PanelList {
                 accessRow(Icons.bell, prominent: true, title: "Notifications", text: "arrive on time, urgent ones get through Do Not Disturb", state: notifications)
-                Hairline()
-                accessRow(Icons.pin, prominent: false, title: "Location", text: "for “when I arrive” and “when I leave” reminders", state: location)
-                Hairline()
-                accessRow(Icons.microphone, prominent: false, title: "Microphone", text: "for voice input", state: microphone)
+                if Remote.shared.isOn(.places) {
+                    Hairline()
+                    accessRow(Icons.pin, prominent: false, title: "Location", text: "for “when I arrive” and “when I leave” reminders", state: location)
+                }
+                if VoiceRecognizer.available {
+                    Hairline()
+                    accessRow(Icons.microphone, prominent: false, title: "Microphone", text: "for voice input", state: microphone)
+                }
             }
             .padding(.top, 20)
             Button(action: onFeatures) {

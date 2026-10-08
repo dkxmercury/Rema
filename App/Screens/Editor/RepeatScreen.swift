@@ -41,6 +41,11 @@ struct RepeatScreen: View {
                         .padding(.top, 14)
                     options
                         .padding(.top, 12)
+                    if kind == .weekly {
+                        weekdayPicker
+                            .padding(.top, 12)
+                            .transition(.opacity.combined(with: .move(edge: .top)))
+                    }
                     PanelList {
                         endRow
                     }
@@ -137,6 +142,76 @@ struct RepeatScreen: View {
         }
         .buttonStyle(RowPressStyle())
         .accessibilityAddTraits(selected ? .isSelected : [])
+    }
+
+    private var selectedDays: [Weekday] {
+        if case .weekly(let days) = schedule.rule {
+            return days
+        }
+        return []
+    }
+
+    // The row starts on the first day of the week of the phone's calendar.
+    private var weekdayOrder: [Weekday] {
+        (0..<7).compactMap { offset in
+            let foundation = (calendar.firstWeekday - 1 + offset) % 7 + 1
+            return Weekday(rawValue: (foundation + 5) % 7 + 1)
+        }
+    }
+
+    private var weekdayPicker: some View {
+        var local = calendar
+        local.locale = locale
+        let short = local.shortStandaloneWeekdaySymbols
+        let full = local.standaloneWeekdaySymbols
+        return HStack(spacing: 6) {
+            ForEach(weekdayOrder, id: \.self) { day in
+                let on = selectedDays.contains(day)
+                let index = day.rawValue % 7
+                Button {
+                    toggle(day)
+                } label: {
+                    Text(verbatim: short[index].capitalizedFirst(locale))
+                        .font(.app(.golos, 14, weight: on ? 600 : 500))
+                        .foregroundStyle(on ? Palette.onAccent : Palette.text)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 44)
+                        .background {
+                            let shape = RoundedRectangle(cornerRadius: 12, style: .circular)
+                            if on {
+                                shape.fill(Palette.accent).insetShadow(shape, .black.opacity(0.14), y: -2)
+                            } else {
+                                shape.fill(Palette.well).insetShadow(shape, Palette.wellShadow, blur: 3, y: 1)
+                            }
+                        }
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(PressableStyle())
+                .accessibilityLabel(Text(verbatim: full[index]))
+                .accessibilityAddTraits(on ? .isSelected : [])
+            }
+        }
+        .padding(10)
+        .panel()
+        .animation(Motion.small, value: selectedDays)
+    }
+
+    private func toggle(_ day: Weekday) {
+        var days = selectedDays
+        if let index = days.firstIndex(of: day) {
+            // A weekly repeat with no day would never come, the last day stays.
+            guard days.count > 1 else {
+                Feedback.play(.error)
+                return
+            }
+            days.remove(at: index)
+        } else {
+            days.append(day)
+        }
+        Feedback.play(.select)
+        setRule(.weekly(days.sorted()))
     }
 
     private func title(_ option: Kind) -> LocalizedStringKey {

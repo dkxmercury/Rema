@@ -32,6 +32,23 @@ struct AgendaTests {
         #expect(today.map(\.done) == [true, false, false, false])
     }
 
+    @Test func snoozeIsTheNextRing() {
+        var call = Reminder(title: "Позвонить", schedule: Schedule(start: LocalDate(year: 2026, month: 10, day: 5), time: LocalTime(hour: 14, minute: 0)), createdAt: moment(1, 0, 0))
+        call.snoozedUntil = moment(5, 14, 10)
+        let next = Agenda.upcoming(after: moment(5, 14, 5), reminders: [call], calendar: calendar).first
+        #expect(next?.occurrence == moment(5, 14, 10))
+        var pills = Reminder(title: "Таблетки", schedule: Schedule(start: LocalDate(year: 2026, month: 10, day: 1), time: LocalTime(hour: 9, minute: 0), rule: .daily), createdAt: moment(1, 0, 0))
+        pills.snoozedUntil = moment(6, 10, 0)
+        #expect(Agenda.upcoming(after: moment(5, 14, 5), reminders: [pills], calendar: calendar).first?.occurrence == moment(6, 9, 0))
+    }
+
+    @Test func manyTimesADayStayInTheDay() {
+        let hourly = (0..<10).map { hour in
+            Reminder(title: "Вода \(hour)", schedule: Schedule(start: LocalDate(year: 2026, month: 10, day: 5), time: LocalTime(hour: 8 + hour, minute: 0), rule: .daily), createdAt: moment(1, 0, 0))
+        }
+        #expect(Agenda.day(moment(5, 7, 0), reminders: hourly, calendar: calendar).count == 10)
+    }
+
     @Test func upcomingSkipsDoneAndPast() {
         let reminders = sample
         let next = Agenda.upcoming(after: moment(5, 13, 50), reminders: reminders, calendar: calendar)

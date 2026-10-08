@@ -9,6 +9,7 @@ final class Store {
     private(set) var places: [Place] = []
     private(set) var sounds: [CustomSound] = []
     private(set) var settings: Settings
+    private(set) var writeFailed = false
 
     @ObservationIgnored private let directory: URL
     @ObservationIgnored private let shared: Bool
@@ -79,6 +80,7 @@ final class Store {
         guard var reminder = reminder(id) else { return }
         reminder.completedThrough = max(reminder.completedThrough ?? occurrence, occurrence)
         reminder.snoozedUntil = nil
+        SnoozeStats.reset(id)
         save(reminder)
     }
 
@@ -93,6 +95,7 @@ final class Store {
         fresh()
         guard var reminder = reminder(id) else { return }
         reminder.snoozedUntil = date
+        SnoozeStats.add(id)
         save(reminder)
     }
 
@@ -251,7 +254,15 @@ final class Store {
     }
 
     private func persist(edit: Bool = true) {
-        try? SharedStore.save(snapshot, to: directory)
+        // A full disk keeps the change only in memory; the home screen says so instead of losing it quietly.
+        do {
+            try SharedStore.save(snapshot, to: directory)
+            if writeFailed {
+                writeFailed = false
+            }
+        } catch {
+            writeFailed = true
+        }
         loadedAt = SharedStore.modified(in: directory)
         onChange?()
         if edit {

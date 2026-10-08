@@ -26,6 +26,10 @@ final class Account {
     }
 
     private(set) var session: Session?
+    // A session that ran out by itself, not by the person's choice; the home screen asks to sign in again.
+    private(set) var expired = UserDefaults.standard.bool(forKey: Account.expiredKey)
+
+    private static let expiredKey = "session.expired"
 
     private init() {
         session = Keychain.load()
@@ -168,12 +172,21 @@ final class Account {
         guard session?.token == token else { return }
         session = nil
         Keychain.delete()
+        expired = true
+        UserDefaults.standard.set(true, forKey: Self.expiredKey)
+    }
+
+    func dismissExpired() {
+        guard expired else { return }
+        expired = false
+        UserDefaults.standard.set(false, forKey: Self.expiredKey)
     }
 
     private func begin(_ auth: AuthResponse, method: Method) {
         let session = Session(token: auth.token, userID: auth.record.id, email: auth.record.email ?? "", name: auth.record.name ?? "", method: method, issued: Date())
         self.session = session
         Keychain.save(session)
+        dismissExpired()
     }
 
     private func end() {

@@ -273,7 +273,8 @@ struct TodayWidgetView: View {
             .frame(height: 8)
             .padding(.top, 10)
             VStack(spacing: 0) {
-                let rows = Array(entry.rows.prefix(5))
+                let open = entry.openRows
+                let rows = Array((open.isEmpty ? entry.rows : open).prefix(5))
                 ForEach(rows) { row in
                     HStack(spacing: 12) {
                         Text(verbatim: row.time)
@@ -295,6 +296,13 @@ struct TodayWidgetView: View {
                     if row.id != rows.last?.id {
                         WidgetHairline()
                     }
+                }
+                if open.count > rows.count {
+                    Text(verbatim: String(localized: "\(open.count - rows.count) more today", bundle: .app, locale: .app))
+                        .font(.app(.golos, 13))
+                        .foregroundStyle(Palette.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.top, 6)
                 }
                 if rows.isEmpty {
                     Text(verbatim: String(localized: "Nothing for today", bundle: .app, locale: .app))

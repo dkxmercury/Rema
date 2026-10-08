@@ -26,6 +26,10 @@ struct HomeScreen: View {
     var tip: Tip?
     var onTip: (Tip, Bool) -> Void = { _, _ in }
     var loadingAccount = false
+    var alert: HomeAlert?
+    var onAlert: (HomeAlert) -> Void = { _ in }
+    var snoozeHint: SnoozeHint?
+    var onSnoozeHint: (SnoozeHint, Bool) -> Void = { _, _ in }
     @State private var addPressed = false
     @State private var intro = false
     @State private var lift: DialLift?
@@ -67,6 +71,12 @@ struct HomeScreen: View {
                 if let habit, lift == nil {
                     HabitSuggestionCard(suggestion: habit) { accepted in
                         withAnimation(Motion.standard) { onHabit(habit, accepted) }
+                    }
+                    .padding(.top, 12)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+                } else if let snoozeHint, lift == nil {
+                    SnoozeHintCard(hint: snoozeHint) { accepted in
+                        withAnimation(Motion.standard) { onSnoozeHint(snoozeHint, accepted) }
                     }
                     .padding(.top, 12)
                     .transition(.opacity.combined(with: .move(edge: .top)))
@@ -137,6 +147,7 @@ struct HomeScreen: View {
         .animation(Motion.adaptive(Motion.standard, reduceMotion: reduceMotion), value: content.rows.map(\.id))
         .animation(Motion.adaptive(Motion.standard, reduceMotion: reduceMotion), value: lift == nil)
         .animation(Motion.adaptive(Motion.standard, reduceMotion: reduceMotion), value: habit)
+        .animation(Motion.adaptive(Motion.standard, reduceMotion: reduceMotion), value: snoozeHint)
         .animation(Motion.adaptive(Motion.standard, reduceMotion: reduceMotion), value: tip)
         .onChange(of: holding) { _, active in
             guard !active else { return }
@@ -402,6 +413,10 @@ struct HomeScreen: View {
 
     private var day: some View {
         VStack(spacing: 12) {
+            if let alert {
+                HomeNotice(alert: alert) { onAlert(alert) }
+                    .transition(.opacity)
+            }
             if content.rows.isEmpty {
                 emptyDay
             } else {

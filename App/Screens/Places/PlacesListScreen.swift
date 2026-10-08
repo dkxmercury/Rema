@@ -21,7 +21,20 @@ struct PlacesListScreen: View {
                 VStack(spacing: 0) {
                     PlacesMap(places: places, height: 180)
                         .padding(.top, 14)
-                    if !places.isEmpty {
+                    if places.isEmpty {
+                        VStack(spacing: 6) {
+                            Text("No places yet")
+                                .font(.app(.golos, 16, weight: 600))
+                            Text("for “when I arrive” and “when I leave” reminders")
+                                .font(.app(.golos, 13))
+                                .foregroundStyle(Palette.secondary)
+                        }
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 22)
+                        .panel()
+                        .padding(.top, 12)
+                    } else {
                         list
                             .padding(.top, 12)
                     }

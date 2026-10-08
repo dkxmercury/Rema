@@ -8,7 +8,7 @@ enum QuickNotifications {
         let center = UNUserNotificationCenter.current()
         let status = await center.notificationSettings().authorizationStatus
         guard status == .authorized || status == .provisional || status == .ephemeral else { return }
-        let plan = Scheduler.plan(reminders: [reminder], settings: settings, now: Date(), calendar: .current, capacity: 8)
+        let plan = Scheduler.plan(reminders: [reminder], settings: settings, now: Date(), calendar: .current, capacity: 1 + Scheduler.nagRepeats + reminder.preAlerts.count)
         for item in plan {
             let content = UNMutableNotificationContent()
             content.title = item.title
@@ -20,6 +20,7 @@ enum QuickNotifications {
             }
             content.sound = .default
             content.categoryIdentifier = item.nag ? "nag" : "reminder"
+            content.interruptionLevel = item.urgent ? .timeSensitive : .active
             content.threadIdentifier = item.reminderID.uuidString
             content.userInfo = ["reminder": item.reminderID.uuidString, "occurrence": item.occurrence.timeIntervalSince1970]
             let parts = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: item.fireDate)
