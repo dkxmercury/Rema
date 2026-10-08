@@ -16,8 +16,10 @@ final class Scenes: XCTestCase {
     func testPhrase() {
         let app = launch("phrase")
         compose(app)
-        type(english ? "call mom at 6 pm" : "в 6 вечера позвонить маме", into: app)
+        // A time counted from now stays today whatever hour the recording runs at, so the new reminder shows on the dial.
+        type(english ? "call mom in 2 hours" : "через 2 часа позвонить маме", into: app)
         pause(2.5)
+        mark("SAVE")
         app.typeText("\n")
         pause(3)
         finish()
@@ -28,6 +30,7 @@ final class Scenes: XCTestCase {
         compose(app)
         type(english ? "yoga every Tue and Thu at 8" : "каждый вт и чт в 8 йога", into: app)
         pause(3)
+        mark("SAVE")
         app.typeText("\n")
         pause(2.5)
         finish()
@@ -52,6 +55,7 @@ final class Scenes: XCTestCase {
                     pause(1.2)
                 }
             }
+            mark("TICKED")
             pause(2)
         } else {
             tree(app, "list row")
@@ -66,10 +70,15 @@ final class Scenes: XCTestCase {
         if button.waitForExistence(timeout: 5) {
             button.tap()
             pause(3)
-            app.swipeLeft()
-            pause(2.5)
-            app.swipeRight()
-            pause(2.5)
+            // The buttons, not a swipe: a swipe from the edge closes the calendar.
+            for label in english ? ["Next month", "Previous month", "Week"] : ["Следующий месяц", "Предыдущий месяц", "Неделя"] {
+                let control = app.buttons[label].firstMatch
+                if control.waitForExistence(timeout: 3) {
+                    control.tap()
+                    pause(2.2)
+                }
+            }
+            pause(1)
         } else {
             tree(app, "calendar")
         }
@@ -97,15 +106,15 @@ final class Scenes: XCTestCase {
             tree(app, "invitation")
         }
         compose(app)
-        type(english ? "movie on Friday at 8 pm" : "в пятницу в 20 кино", into: app)
+        type(english ? "movie at 10 pm" : "в 22 кино", into: app)
         pause(1)
-        // The friends sit under the keyboard; it goes down the way a person would push it.
-        app.scrollViews.firstMatch.swipeDown()
-        pause(1.2)
         let share = app.buttons[english ? "With friends" : "С друзьями"].firstMatch
         if share.waitForExistence(timeout: 5) {
             share.tap()
             pause(1.2)
+            // The friends come up under the keyboard; the screen is pushed up a little, the keyboard stays.
+            app.scrollViews.firstMatch.swipeUp(velocity: .slow)
+            pause(1)
             for name in english ? ["Anna", "Ilya"] : ["Аня", "Илья"] {
                 let chip = app.buttons[name].firstMatch
                 if chip.waitForExistence(timeout: 3) {
@@ -114,10 +123,12 @@ final class Scenes: XCTestCase {
                 }
             }
             pause(1)
+            mark("SAVE")
             let send = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", english ? "Send to" : "Отправить")).firstMatch
             if send.waitForExistence(timeout: 3), send.isHittable {
                 send.tap()
             } else {
+                app.textViews.firstMatch.tap()
                 app.typeText("\n")
             }
             pause(3)

@@ -58,6 +58,12 @@ jobs:
           SCENES="${SCENES:-Phrase Repeat List Calendar Friends}"
           mkdir -p videos logs
 
+          # Crash reports of the app, from the Mac and from the simulator, before an erase wipes them.
+          reports() {
+            find "$HOME/Library/Logs/DiagnosticReports" "$HOME/Library/Developer/CoreSimulator/Devices/$DEVICE/data/Library/Logs" \
+              -name "*.ips" -exec cp {} logs/ \; 2>/dev/null || true
+          }
+
           # A clean simulator for every language: what one run left behind never leaks into the next.
           prepare() {
             local language="$1" locale keyboards
@@ -69,6 +75,7 @@ jobs:
               keyboards=("en_US@sw=QWERTY;hw=Automatic")
             fi
             xcrun simctl shutdown "$DEVICE" 2>/dev/null || true
+            reports
             xcrun simctl erase "$DEVICE"
             xcrun simctl boot "$DEVICE"
             xcrun simctl bootstatus "$DEVICE" -b > /dev/null
@@ -123,9 +130,13 @@ jobs:
           json.dump({"marks": marks}, open(f"videos/{name}.json", "w"))
           print(name, marks, "passed" if "** TEST EXECUTE SUCCEEDED **" in log else "check the log")
           EOF
+              # Errors of the app and the system's word on why it ended, if it ended before the test did.
+              xcrun simctl spawn "$DEVICE" log show --last 4m --style compact \
+                --predicate '(process == "Rema" AND (messageType == error OR messageType == fault)) OR (eventMessage CONTAINS "uz.dkx.rema" AND (process == "runningboardd" OR process == "SpringBoard"))' \
+                > "logs/device-$name.txt" 2>&1 || true
             done
           done
-          cp ~/Library/Logs/DiagnosticReports/Rema* logs/ 2>/dev/null || true
+          reports
           ls -la videos logs
 
       - name: Videos
