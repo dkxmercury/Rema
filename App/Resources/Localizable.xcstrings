@@ -5095,6 +5095,52 @@
         }
       }
     },
+    "Could not tell where you are. Check that Rema has location access.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر تحديد موقعك. تأكّد من أن Rema لديه إذن الوصول إلى الموقع."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dein Standort ließ sich nicht bestimmen. Prüf, ob Rema auf den Standort zugreifen darf."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible de savoir où vous êtes. Vérifiez que Rema a accès à la localisation."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не получилось определить, где вы. Проверьте, что у Rema есть доступ к геопозиции."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не вдалося визначити, де ви. Перевірте, чи має Rema доступ до геопозиції."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Қаердалигингизни аниқлаб бўлмади. Rema жойлашувга рухсати борлигини текширинг."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qayerdaligingizni aniqlab bo‘lmadi. Rema joylashuvga ruxsati borligini tekshiring."
+          }
+        }
+      }
+    },
     "Country house": {
       "localizations": {
         "ar": {

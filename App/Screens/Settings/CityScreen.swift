@@ -121,6 +121,7 @@ struct CityScreen: View {
 
     private func locate() {
         locating = true
+        problem = nil
         Task {
             let found = await advisor.useCurrentLocation()
             locating = false
@@ -130,6 +131,7 @@ struct CityScreen: View {
                 onBack()
             } else {
                 Feedback.play(.error)
+                problem = String(localized: "Could not tell where you are. Check that Rema has location access.", bundle: .app, locale: .app)
             }
         }
     }
