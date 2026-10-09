@@ -105,8 +105,8 @@ final class ScreenSnapshots: XCTestCase {
     }
 
     func testNews() throws {
-        try render(HomeScreen(content: SampleData.home, settingsBadge: true, update: "1.2"), name: "K-Update", style: .light)
-        try render(HomeScreen(content: SampleData.home, settingsBadge: true, update: "1.2"), name: "K-Update-Dark", style: .dark)
+        try render(HomeScreen(content: SampleData.home, bellCount: 3, update: "1.2"), name: "K-Update", style: .light)
+        try render(HomeScreen(content: SampleData.home, bellCount: 12, update: "1.2"), name: "K-Update-Dark", style: .dark)
         try render(NewsConsentSheet(onAnswer: { _ in }).background(Palette.panel), name: "K-Consent", style: .light, height: 520)
         try render(NewsConsentSheet(onAnswer: { _ in }).background(Palette.panel), name: "K-Consent-Dark", style: .dark, height: 520)
     }

@@ -11,7 +11,9 @@ public struct SharedPush: Sendable {
         case declined
         case left
         case done
+        case ticked
         case friend
+        case unfriended
     }
 
     public var event: Event

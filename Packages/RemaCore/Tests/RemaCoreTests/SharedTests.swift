@@ -110,6 +110,14 @@ struct SharedTests {
         #expect(SharedMerge.apply([later], to: merged, waiting: [], now: now).isEmpty)
     }
 
+    @Test func aFriendsTickAndARemovalAreReadFromThePush() throws {
+        let ticked = try #require(SharedPush(userInfo: ["rema": ["event": "ticked", "to": "ilya", "actor": "anya", "item": try JSONSerialization.jsonObject(with: Data(movieJSON().utf8))]]))
+        #expect(ticked.event == .ticked && ticked.item?.id == movieID)
+        let removed = try #require(SharedPush(userInfo: ["rema": ["event": "unfriended", "to": "ilya", "actor": "anya"]]))
+        #expect(removed.event == .unfriended && removed.item == nil)
+        #expect(SharedPush(userInfo: ["rema": ["event": "blocked", "to": "ilya", "actor": "anya"]]) == nil)
+    }
+
     @Test func aPushWithoutParticipantsKeepsTheKnownOnes() throws {
         let merged = SharedMerge.apply([try item(movieJSON())], to: [], waiting: [], now: now)
         var partial = try JSONSerialization.jsonObject(with: Data(movieJSON().replacingOccurrences(of: "\"seq\": 7", with: "\"seq\": 8").utf8)) as! [String: Any]

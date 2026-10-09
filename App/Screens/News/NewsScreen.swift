@@ -11,6 +11,16 @@ struct NewsScreen: View {
             Palette.background.ignoresSafeArea()
             ScrollView {
                 VStack(spacing: 12) {
+                    if news.unread > 0 {
+                        HStack {
+                            Spacer()
+                            Button("Read all") {
+                                withAnimation(Motion.small) { news.markSeen(news.items.map(\.id)) }
+                            }
+                            .buttonStyle(SmallButtonStyle(prominent: false))
+                        }
+                        .transition(.opacity.combined(with: .move(edge: .top)))
+                    }
                     if news.items.isEmpty {
                         Text(loading ? "Loading…" : "No news yet.")
                             .font(.app(.golos, 15))
@@ -20,6 +30,7 @@ struct NewsScreen: View {
                     }
                     ForEach(news.items) { item in
                         Button {
+                            news.markSeen([item.id])
                             onOpen(item.id)
                         } label: {
                             card(item)
@@ -42,8 +53,6 @@ struct NewsScreen: View {
             await news.refresh(force: true)
             loading = false
         }
-        // Marked as read on the way out, so «New» stays in sight while the list is open.
-        .onDisappear { news.markSeen(news.items.map(\.id)) }
     }
 
     private func card(_ item: NewsService.Item) -> some View {

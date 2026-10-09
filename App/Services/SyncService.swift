@@ -127,6 +127,7 @@ final class SyncService {
         RecentPhrases.clear()
         Notifier.shared.forgetDelivered()
         LiveActivities.endAll()
+        BellService.shared.clear()
     }
 
     // Another account's records must not leak into this one; what was written here after its session ended moves in like a guest's.

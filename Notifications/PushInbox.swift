@@ -44,9 +44,10 @@ enum PushInbox {
 
     // The words come in the language of the app and with the name I gave the friend, not the server's.
     private static func word(_ push: SharedPush, reminder: Reminder?, content: UNMutableNotificationContent) {
-        let sent = push.event == .friend ? content.title : content.subtitle
+        let about = push.event == .friend || push.event == .unfriended
+        let sent = about ? content.title : content.subtitle
         let friend = SharedNames.name(of: push.actor, fallback: sent)
-        if push.event == .friend {
+        if about {
             content.title = friend
             content.subtitle = ""
         } else {
@@ -81,8 +82,12 @@ enum PushInbox {
             return String(localized: "No longer in this reminder", bundle: .app, locale: .app)
         case .done:
             return String(localized: "Done, ticked for everybody", bundle: .app, locale: .app)
+        case .ticked:
+            return String(localized: "Marked as done", bundle: .app, locale: .app)
         case .friend:
             return String(localized: "You are friends in Rema now", bundle: .app, locale: .app)
+        case .unfriended:
+            return String(localized: "No longer friends in Rema", bundle: .app, locale: .app)
         }
     }
 }

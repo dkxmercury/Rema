@@ -14063,6 +14063,52 @@
         }
       }
     },
+    "Marked as done": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تم التأشير عليه كمنجز"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Als erledigt abgehakt"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Marqué comme fait"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отмечено как сделанное"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Позначено як зроблене"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бажарилди деб белгиланди"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bajarildi deb belgilandi"
+          }
+        }
+      }
+    },
     "Marks the current or the next reminder as done.": {
       "localizations": {
         "ar": {
@@ -15283,6 +15329,52 @@
         }
       }
     },
+    "New": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جديد"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neu"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nouveau"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Новое"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нове"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Янги"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yangi"
+          }
+        }
+      }
+    },
     "New place": {
       "localizations": {
         "ar": {
@@ -16015,6 +16107,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Internet yo‘q. Aloqa paydo bo‘lganda qayta urinib ko‘ring."
+          }
+        }
+      }
+    },
+    "No longer friends in Rema": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لم تعودا صديقين في Rema"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ihr seid in Rema nicht mehr befreundet"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vous n’êtes plus amis sur Rema"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Вы больше не друзья в Rema"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ви більше не друзі в Rema"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Энди Rema’да дўст эмассиз"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Endi Rema’da do‘st emassiz"
           }
         }
       }
@@ -16797,6 +16935,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Hech narsa topilmadi"
+          }
+        }
+      }
+    },
+    "Nothing here yet.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا شيء هنا بعد."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noch nichts da."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rien pour l’instant."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пока ничего нет."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Поки нічого немає."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ҳозирча ҳеч нарса йўқ."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hozircha hech narsa yo‘q."
           }
         }
       }
@@ -19143,6 +19327,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ertaga yomg‘ir"
+          }
+        }
+      }
+    },
+    "Read all": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعليم الكل كمقروء"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle gelesen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tout marquer comme lu"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Прочитать все"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Прочитати все"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ҳаммасини ўқиш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hammasini o‘qish"
           }
         }
       }
@@ -23439,52 +23669,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sozlamalar"
-          }
-        }
-      }
-    },
-    "Settings, there is news": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "الإعدادات، توجد أخبار"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Einstellungen, es gibt Neuigkeiten"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Réglages, il y a des actualités"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Настройки, есть новости"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Налаштування, є новини"
-          }
-        },
-        "uz-Cyrl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Созламалар, янгиликлар бор"
-          }
-        },
-        "uz-Latn": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sozlamalar, yangiliklar bor"
           }
         }
       }

@@ -29,6 +29,7 @@ enum RootRoute: Hashable {
     case friend(String)
     case news
     case newsItem(String)
+    case bell
 }
 
 struct SharedTarget: Identifiable {
@@ -99,6 +100,7 @@ struct RootView: View {
     @State private var answering: InviteTarget?
     @State private var viewingShared: SharedTarget?
     @State private var news = NewsService.shared
+    @State private var bell = BellService.shared
     @State private var askingNews = false
     @AppStorage("updateHidden") private var updateHidden = ""
     @Environment(\.openURL) private var openURL
@@ -257,6 +259,8 @@ struct RootView: View {
             NewsScreen(onOpen: { navigation.path.append(.newsItem($0)) }, onBack: { navigation.path.removeLast() })
         case .newsItem(let id):
             NewsItemScreen(id: id) { navigation.path.removeLast() }
+        case .bell:
+            BellScreen(onEvent: openEvent, onNews: { navigation.path.append(.newsItem($0)) }, onBack: { navigation.path.removeLast() })
         case .defaultSound:
             SoundScreen(store: store, choice: defaultSound) { navigation.path.removeLast() }
         case .places:
@@ -340,6 +344,7 @@ struct RootView: View {
         navigation.showingSignIn = false
         if signedIn {
             SyncService.shared.becameActive()
+            Task { await BellService.shared.refresh(force: true) }
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { showIntroIfNeeded() }
     }
@@ -368,6 +373,15 @@ struct RootView: View {
                   viewingShared == nil, !showingCalendar, !showingLanguage, navigation.path.isEmpty,
                   UIApplication.shared.mainWindow?.rootViewController?.presentedViewController == nil else { return }
             askingNews = true
+        }
+    }
+
+    // An event of the bell leads to its reminder, or to the friends when it was about a friendship.
+    private func openEvent(_ event: BellService.Event) {
+        if let id = UUID(uuidString: event.item), let reminder = store.reminder(id), reminder.deletedAt == nil, reminder.shared != nil {
+            viewingShared = SharedTarget(id: id)
+        } else if event.kind == "friend" {
+            navigation.path.append(.friends)
         }
     }
 
@@ -524,7 +538,8 @@ struct RootView: View {
                 snoozeHint: remote.isOn(.suggestions) ? snoozeHint : nil,
                 onSnoozeHint: answerSnoozeHint,
                 onRemindEvent: remindEvent,
-                settingsBadge: news.unread > 0,
+                bellCount: bell.unread,
+                onBell: { navigation.path.append(.bell) },
                 update: remote.newerVersion.flatMap { $0 == updateHidden ? nil : $0 },
                 onUpdate: { openURL(remote.link(.appStore)) },
                 onHideUpdate: { updateHidden = remote.newerVersion ?? "" }

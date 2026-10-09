@@ -361,8 +361,8 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
                 SharedService.shared.kick()
             }
         }
-        if notification.request.content.userInfo["remaNews"] != nil {
-            Task { @MainActor in await NewsService.shared.refresh(force: true) }
+        if notification.request.content.userInfo["rema"] != nil || notification.request.content.userInfo["remaNews"] != nil {
+            Task { @MainActor in await BellService.shared.refresh(force: true) }
         }
         completionHandler([.banner, .sound, .list])
     }

@@ -31,7 +31,8 @@ struct HomeScreen: View {
     var snoozeHint: SnoozeHint?
     var onSnoozeHint: (SnoozeHint, Bool) -> Void = { _, _ in }
     var onRemindEvent: (HomeContent.Event) -> Void = { _ in }
-    var settingsBadge = false
+    var bellCount = 0
+    var onBell: () -> Void = {}
     var update: String?
     var onUpdate: () -> Void = {}
     var onHideUpdate: () -> Void = {}
@@ -344,28 +345,46 @@ struct HomeScreen: View {
                     .tracking(1.2)
                     .textCase(.uppercase)
                     .foregroundStyle(Palette.secondary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
                 Text("Today")
                     .font(.app(.jost, 32, weight: 500))
                     .frame(height: 36)
             }
             Spacer(minLength: 0)
+            Button(action: onBell) {
+                ZStack {
+                    RaisedCircle()
+                    Glyph(paths: Icons.bell, size: 20, lineWidth: 1.8, color: Palette.text)
+                }
+                .overlay(alignment: .topTrailing) {
+                    if bellCount > 0 {
+                        Text(verbatim: bellCount > 9 ? "9+" : "\(bellCount)")
+                            .font(.app(.golos, 11, weight: 700))
+                            .foregroundStyle(.white)
+                            .contentTransition(.numericText())
+                            .padding(.horizontal, 5)
+                            .frame(minWidth: 18, minHeight: 18)
+                            .background(Capsule().fill(Palette.urgent))
+                            .overlay { Capsule().stroke(Palette.background, lineWidth: 2) }
+                            .offset(x: 4, y: -2)
+                            .transition(.scale(scale: 0.3).combined(with: .opacity))
+                    }
+                }
+                .animation(Motion.standard, value: bellCount)
+            }
+            .buttonStyle(PressableStyle())
+            .accessibilityLabel(Text("Notifications"))
+            .accessibilityValue(bellCount > 0 ? Text("\(bellCount) new") : Text(verbatim: ""))
+            .padding(.trailing, -4)
             Button(action: onSettings) {
                 ZStack {
                     RaisedCircle()
                     Glyph(paths: Icons.sliders, size: 20, lineWidth: 1.8, color: Palette.text)
                 }
-                .overlay(alignment: .topTrailing) {
-                    if settingsBadge {
-                        Circle()
-                            .fill(Palette.accent)
-                            .frame(width: 10, height: 10)
-                            .overlay { Circle().stroke(Palette.panel, lineWidth: 2) }
-                            .padding(6)
-                    }
-                }
             }
             .buttonStyle(PressableStyle())
-            .accessibilityLabel(settingsBadge ? Text("Settings, there is news") : Text("Settings"))
+            .accessibilityLabel(Text("Settings"))
             .padding(.trailing, -4)
             Button(action: onCalendar) {
                 ZStack {
