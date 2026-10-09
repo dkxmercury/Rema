@@ -227,12 +227,14 @@ final class Scenes: XCTestCase {
     // The new reminder, found by its title or the start of it, is marked with its place for the highlight.
     @discardableResult
     private func reveal(_ app: XCUIApplication, _ title: String, exact: Bool = false) -> XCUIElement? {
-        let element = app.staticTexts.matching(NSPredicate(format: exact ? "label ==[c] %@" : "label BEGINSWITH[c] %@", title)).firstMatch
-        guard element.waitForExistence(timeout: 8) else {
+        let matches = app.staticTexts.matching(NSPredicate(format: exact ? "label ==[c] %@" : "label BEGINSWITH[c] %@", title))
+        guard matches.firstMatch.waitForExistence(timeout: 8) else {
             tree(app, "new reminder")
             return nil
         }
         pause(0.4)
+        // The nearest reminder is named under the dial as well; its row in the list is the lowest of the matches.
+        let element = matches.allElementsBoundByIndex.max { $0.frame.minY < $1.frame.minY } ?? matches.firstMatch
         mark("NEW", element)
         pause(2.8)
         return element
