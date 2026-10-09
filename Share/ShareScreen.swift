@@ -518,9 +518,11 @@ struct ShareScreen: View {
             stamped.updatedAt = Date()
             return stamped
         }
-        var store = SharedStore.load() ?? StoreSnapshot(reminders: [], places: [], settings: settings, sounds: nil)
+        let existing = SharedStore.load()
+        var store = existing ?? StoreSnapshot(reminders: [], places: [], settings: settings, sounds: nil)
         store.reminders.append(contentsOf: items)
-        guard (try? SharedStore.save(store)) != nil else {
+        // A store the extension could not read is the app's to put aside; writing over it would lose everything in it.
+        guard existing != nil || !SharedStore.exists(), (try? SharedStore.save(store)) != nil else {
             saving = false
             UINotificationFeedbackGenerator().notificationOccurred(.error)
             return

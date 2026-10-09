@@ -41,6 +41,15 @@ struct OutsideTests {
         #expect(birthday.data?.schedule?.start.year == 1960)
         let rare = try item(#"{"title":"Редко","schedule":{"start":{"year":2026,"month":10,"day":9},"time":{"hour":9,"minute":0},"rule":{"everyDays":{"_0":9999}},"end":{"count":{"_0":12}}},"doneMode":"each"}"#)
         #expect(rare.data?.schedule?.rule == .everyDays(9999))
+        let elul = try item(#"{"title":"Элул","schedule":{"start":{"year":5787,"month":13,"day":20},"time":{"hour":9,"minute":0},"rule":{"yearly":{"month":13,"day":20}}},"doneMode":"each"}"#)
+        #expect(elul.data?.schedule?.start.month == 13)
+        let rent = try item(#"{"title":"Аренда","schedule":{"start":{"year":2026,"month":10,"day":31},"time":{"hour":9,"minute":0},"rule":{"monthlyOnDay":{"_0":45}}},"doneMode":"each"}"#)
+        #expect(rent.data?.schedule?.rule == .monthlyOnDay(45))
+        let wrong = try item(#"{"title":"Нет","schedule":{"start":{"year":2026,"month":14,"day":1},"time":{"hour":9,"minute":0}},"doneMode":"each"}"#)
+        #expect(wrong.data?.schedule == nil)
+        for schedule in [elul.data?.schedule, rent.data?.schedule].compactMap({ $0 }) {
+            _ = Recurrence.next(schedule, after: now, limit: 3, calendar: .current)
+        }
         let schedules = [
             Schedule(start: LocalDate(year: 1960, month: 3, day: 8), time: LocalTime(hour: 10, minute: 0), rule: .yearly(month: 3, day: 8)),
             Schedule(start: LocalDate(year: 2026, month: 10, day: 9), time: LocalTime(hour: 9, minute: 0), rule: .everyDays(9999), end: .count(12)),

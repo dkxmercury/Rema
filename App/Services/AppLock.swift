@@ -66,7 +66,8 @@ final class AppLock {
     // The app switcher, the shade, a call, Siri: anything that takes the screen makes the app inactive, and the cover goes up at once.
     func becameInactive() {
         if enabled {
-            show()
+            // Only hidden, not locked: the field being typed in keeps its keyboard.
+            show(focused: false)
         }
     }
 
@@ -124,8 +125,14 @@ final class AppLock {
     }
 
     // A window of its own covers sheets and full screen covers too, which an overlay in the root view would not.
-    private func show() {
-        guard window == nil, let scene = UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).first else { return }
+    private func show(focused: Bool = true) {
+        if let window {
+            if focused {
+                window.makeKey()
+            }
+            return
+        }
+        guard let scene = UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).first else { return }
         let window = UIWindow(windowScene: scene)
         window.windowLevel = .alert + 1
         let language = AppLanguage.current
@@ -138,7 +145,11 @@ final class AppLock {
         case .light: window.overrideUserInterfaceStyle = .light
         case .dark: window.overrideUserInterfaceStyle = .dark
         }
-        window.makeKeyAndVisible()
+        if focused {
+            window.makeKeyAndVisible()
+        } else {
+            window.isHidden = false
+        }
         self.window = window
     }
 

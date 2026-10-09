@@ -2,12 +2,13 @@ import Foundation
 
 // Values that come from outside, from the server or a friend, are checked before any date arithmetic runs on them.
 // Swift traps on an overflow, and a reminder that trapped on every launch could not even be deleted.
-// The ranges stop only the absurd: a birthday imported from Reminders starts in its year of birth, a phrase allows «каждые 9999 дней».
+// The ranges stop only the absurd: a birthday imported from Reminders starts in its year of birth, a phrase allows «каждые 9999 дней»
+// and «каждый месяц 45 числа», the Hebrew calendar has a thirteenth month.
 public extension LocalDate {
     static let years = 1...9999
 
     var isValid: Bool {
-        Self.years.contains(year) && (1...12).contains(month) && (1...31).contains(day)
+        Self.years.contains(year) && (1...13).contains(month) && (1...99).contains(day)
     }
 }
 
@@ -27,11 +28,11 @@ public extension RepeatRule {
         case .everyDays(let days):
             (1...99_999).contains(days)
         case .monthlyOnDay(let day):
-            (1...31).contains(day)
+            (1...99).contains(day)
         case .monthlyOnWeekday(let ordinal, _):
             (-53...53).contains(ordinal)
         case .yearly(let month, let day):
-            (1...12).contains(month) && (1...31).contains(day)
+            (1...13).contains(month) && (1...99).contains(day)
         case .everyMonths(let months):
             (1...12_000).contains(months)
         }
