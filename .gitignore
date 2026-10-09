@@ -10,3 +10,8 @@ build/
 GoogleService-Info.plist
 Secrets.xcconfig
 *.local.xcconfig
+*.p8
+*.p12
+*.mobileprovision
+*.ipa
+.env

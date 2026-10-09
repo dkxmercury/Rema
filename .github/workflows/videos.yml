@@ -102,8 +102,10 @@ jobs:
           }
 
           for language in $LANGUAGES; do
+            [[ "$language" =~ ^[a-z]{2}$ ]] || { echo "bad language $language"; exit 1; }
             prepare "$language"
             for scene in $SCENES; do
+              [[ "$scene" =~ ^[A-Za-z]+$ ]] || { echo "bad scene $scene"; exit 1; }
               name="$language-$(echo "$scene" | tr '[:upper:]' '[:lower:]')"
               # Every scene starts from a fresh install, nothing of the scene before stays in the app.
               xcrun simctl uninstall "$DEVICE" uz.dkx.rema 2>/dev/null || true

@@ -36,6 +36,27 @@ struct OutsideTests {
         #expect(Int64(-5).asMilliseconds == 0)
     }
 
+    @Test func realRemindersStayReadable() throws {
+        let birthday = try item(#"{"title":"День рождения","schedule":{"start":{"year":1960,"month":3,"day":8},"time":{"hour":10,"minute":0},"rule":{"yearly":{"month":3,"day":8}},"end":{"never":{}}},"doneMode":"each"}"#)
+        #expect(birthday.data?.schedule?.start.year == 1960)
+        let rare = try item(#"{"title":"Редко","schedule":{"start":{"year":2026,"month":10,"day":9},"time":{"hour":9,"minute":0},"rule":{"everyDays":{"_0":9999}},"end":{"count":{"_0":12}}},"doneMode":"each"}"#)
+        #expect(rare.data?.schedule?.rule == .everyDays(9999))
+        let schedules = [
+            Schedule(start: LocalDate(year: 1960, month: 3, day: 8), time: LocalTime(hour: 10, minute: 0), rule: .yearly(month: 3, day: 8)),
+            Schedule(start: LocalDate(year: 2026, month: 10, day: 9), time: LocalTime(hour: 9, minute: 0), rule: .everyDays(9999), end: .count(12)),
+            Schedule(start: LocalDate(year: 2026, month: 1, day: 31), time: LocalTime(hour: 23, minute: 59), rule: .monthlyOnWeekday(ordinal: -1, weekday: .friday), end: .until(LocalDate(year: 2030, month: 12, day: 31))),
+            Schedule(start: LocalDate(year: 2026, month: 1, day: 1), time: LocalTime(hour: 0, minute: 0), rule: .weekly([.tuesday, .thursday]), timeZone: "Asia/Tashkent"),
+            Schedule(start: LocalDate(year: 2026, month: 1, day: 1), time: LocalTime(hour: 8, minute: 30), rule: .everyMonths(3)),
+            Schedule(start: LocalDate(year: 2026, month: 1, day: 1), time: LocalTime(hour: 8, minute: 30), rule: .lastWorkday),
+            Schedule(start: LocalDate(year: 2026, month: 1, day: 1), time: LocalTime(hour: 8, minute: 30), rule: .evenDays),
+            Schedule(start: LocalDate(year: 2026, month: 1, day: 1), time: LocalTime(hour: 8, minute: 30), rule: .monthlyOnDay(31)),
+        ]
+        for schedule in schedules {
+            let data = try JSONEncoder().encode(schedule)
+            #expect(try JSONDecoder().decode(Schedule.self, from: data) == schedule)
+        }
+    }
+
     @Test func dateArithmeticNeverTraps() {
         let far = LocalDate(year: Int.max / 2, month: 3, day: 1)
         _ = far.adding(days: Int.max / 2)
