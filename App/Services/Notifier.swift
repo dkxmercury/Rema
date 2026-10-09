@@ -69,6 +69,11 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         ]
     }
 
+    // What was already shown stays in the shade after the account is gone unless it is taken down.
+    func forgetDelivered() {
+        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+    }
+
     private static let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.phoneNumber.rawValue | NSTextCheckingResult.CheckingType.link.rawValue)
 
     static func contact(in text: String) -> (action: String, value: String)? {
@@ -197,7 +202,11 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
             content.interruptionLevel = item.urgent ? .timeSensitive : .active
             content.threadIdentifier = item.reminderID.uuidString
             content.userInfo = ["reminder": item.reminderID.uuidString, "occurrence": item.occurrence.timeIntervalSince1970]
-            addContact(of: item.title, link: store.reminder(item.reminderID)?.contact, to: content)
+            // A number or a link in a friend's reminder is not a button to press; only one's own reminders get those.
+            let owned = store.reminder(item.reminderID)
+            if owned?.shared?.isMine != false {
+                addContact(of: item.title, link: owned?.contact, to: content)
+            }
             if item.kind == .missed {
                 content.title = String(localized: "Not done: \(item.title)", bundle: .app, locale: .app)
                 content.badge = NSNumber(value: max(1, Agenda.missed(item.fireDate, reminders: store.activeReminders, calendar: .current).count))
@@ -283,7 +292,9 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
                 content.interruptionLevel = reminder.urgent ? .timeSensitive : .active
                 content.threadIdentifier = reminder.id.uuidString
                 content.userInfo = ["reminder": reminder.id.uuidString]
-                addContact(of: reminder.title, link: reminder.contact, to: content)
+                if reminder.shared?.isMine != false {
+                    addContact(of: reminder.title, link: reminder.contact, to: content)
+                }
                 let trigger = UNLocationNotificationTrigger(region: region, repeats: true)
                 requests.append(UNNotificationRequest(identifier: "place.\(region.identifier)", content: content, trigger: trigger))
                 if requests.count >= Place.maximumCount {

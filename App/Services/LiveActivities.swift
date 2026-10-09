@@ -36,6 +36,11 @@ enum LiveActivities {
         }
     }
 
+    // The titles shown on the lock screen go with the account.
+    static func endAll() {
+        end(Activity<ReminderActivity>.activities)
+    }
+
     private static func end(_ activities: [Activity<ReminderActivity>]) {
         guard !activities.isEmpty else { return }
         Task {

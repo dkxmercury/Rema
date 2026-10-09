@@ -9,7 +9,7 @@ public enum SharedInbox {
         let folder = directory.appendingPathComponent(folderName, isDirectory: true)
         try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
         // The time first, so the names sort in the order the pushes came.
-        let stamp = String(Int64(now.timeIntervalSince1970 * 1000))
+        let stamp = String(max(0, now.milliseconds))
         let name = String(repeating: "0", count: max(0, 15 - stamp.count)) + stamp + "-" + UUID().uuidString + ".json"
         try JSONEncoder().encode(item).write(to: folder.appendingPathComponent(name), options: .atomic)
     }

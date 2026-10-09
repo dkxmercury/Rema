@@ -177,7 +177,7 @@ public extension Settings {
 
 public enum SyncStamp {
     public static func of(_ date: Date) -> Int64 {
-        Int64((date.timeIntervalSince1970 * 1000).rounded())
+        date.milliseconds
     }
 
     static func of(_ reminder: Reminder) -> Int64 { of(reminder.updatedAt) }

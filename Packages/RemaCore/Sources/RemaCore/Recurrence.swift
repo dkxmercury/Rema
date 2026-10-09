@@ -178,24 +178,24 @@ extension LocalDate {
         let era = (shifted >= 0 ? shifted : shifted - 399) / 400
         let yearOfEra = shifted - era * 400
         let dayOfYear = (153 * ((month + 9) % 12) + 2) / 5 + day - 1
-        let dayOfEra = yearOfEra * 365 + yearOfEra / 4 - yearOfEra / 100 + dayOfYear
-        return era * 146_097 + dayOfEra - 719_468
+        let dayOfEra = yearOfEra &* 365 &+ yearOfEra / 4 &- yearOfEra / 100 &+ dayOfYear
+        return era &* 146_097 &+ dayOfEra &- 719_468
     }
 
     init(dayNumber: Int) {
-        let shifted = dayNumber + 719_468
-        let era = (shifted >= 0 ? shifted : shifted - 146_096) / 146_097
-        let dayOfEra = shifted - era * 146_097
+        let shifted = dayNumber &+ 719_468
+        let era = (shifted >= 0 ? shifted : shifted &- 146_096) / 146_097
+        let dayOfEra = shifted &- era &* 146_097
         let yearOfEra = (dayOfEra - dayOfEra / 1_460 + dayOfEra / 36_524 - dayOfEra / 146_096) / 365
         let dayOfYear = dayOfEra - (365 * yearOfEra + yearOfEra / 4 - yearOfEra / 100)
         let monthIndex = (5 * dayOfYear + 2) / 153
         let day = dayOfYear - (153 * monthIndex + 2) / 5 + 1
         let month = monthIndex < 10 ? monthIndex + 3 : monthIndex - 9
-        self.init(year: yearOfEra + era * 400 + (month <= 2 ? 1 : 0), month: month, day: day)
+        self.init(year: yearOfEra &+ era &* 400 &+ (month <= 2 ? 1 : 0), month: month, day: day)
     }
 
     public func adding(days: Int) -> LocalDate {
-        LocalDate(dayNumber: dayNumber + days)
+        LocalDate(dayNumber: dayNumber &+ days)
     }
 
     public var weekday: Weekday {

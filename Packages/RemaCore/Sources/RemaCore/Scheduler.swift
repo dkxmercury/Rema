@@ -61,7 +61,7 @@ public enum Scheduler {
 
     static func plan(_ reminder: Reminder, settings: Settings, now: Date, calendar: Calendar, followUp: Int? = nil) -> [PlannedNotification] {
         var result: [PlannedNotification] = []
-        let interval = max(1, reminder.nagInterval ?? settings.nagInterval)
+        let interval = min(max(1, reminder.nagInterval ?? settings.nagInterval), 1440)
 
         func add(_ kind: PlannedNotification.Kind, at date: Date, occurrence: Date) {
             guard date > now else { return }

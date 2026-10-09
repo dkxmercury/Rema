@@ -1,6 +1,7 @@
 import CoreImage.CIFilterBuiltins
 import RemaCore
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct InviteScreen: View {
     let onClose: () -> Void
@@ -145,7 +146,8 @@ struct InviteScreen: View {
     private func copy() {
         guard let link, let code else { return }
         service.handedOut(code)
-        UIPasteboard.general.url = link
+        // The code is for one friend: it stays on this phone and leaves the clipboard on its own.
+        UIPasteboard.general.setItems([[UTType.url.identifier: link]], options: [.localOnly: true, .expirationDate: Date().addingTimeInterval(600)])
         Feedback.play(.select)
         withAnimation(Motion.standard) { copied = true }
     }

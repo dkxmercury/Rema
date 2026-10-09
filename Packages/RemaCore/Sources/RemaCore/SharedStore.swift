@@ -116,16 +116,32 @@ public enum SharedStore {
         groupDirectory ?? localDirectory
     }
 
-    public static func load(from directory: URL = directory) -> StoreSnapshot? {
+    // Only the app puts a file nothing can read aside; an extension leaves it where it is and saves nothing over it.
+    public static func load(from directory: URL = directory, aside: Bool = false) -> StoreSnapshot? {
         let url = directory.appendingPathComponent(fileName)
         guard let data = try? Data(contentsOf: url) else { return nil }
         if let snapshot = try? JSONDecoder().decode(StoreSnapshot.self, from: data) {
             return snapshot
         }
-        // A file nothing can read is put aside rather than overwritten by the next save, so it can still be recovered.
-        let aside = directory.appendingPathComponent("store-unreadable-\(Int(Date().timeIntervalSince1970)).json")
-        try? FileManager.default.moveItem(at: url, to: aside)
+        if aside {
+            // A file nothing can read is put aside rather than overwritten by the next save, so it can still be recovered.
+            let kept = directory.appendingPathComponent("store-unreadable-\(Int(Date().timeIntervalSince1970)).json")
+            try? FileManager.default.moveItem(at: url, to: kept)
+        }
         return nil
+    }
+
+    // Whether the store file exists at all; an extension must not create a new one over a file it could not read.
+    public static func exists(in directory: URL = directory) -> Bool {
+        FileManager.default.fileExists(atPath: directory.appendingPathComponent(fileName).path)
+    }
+
+    // The copies put aside hold everything the account had; they go with the account.
+    public static func removeAside(in directory: URL = directory) {
+        let names = (try? FileManager.default.contentsOfDirectory(atPath: directory.path)) ?? []
+        for name in names where name.hasPrefix("store-unreadable-") {
+            try? FileManager.default.removeItem(at: directory.appendingPathComponent(name))
+        }
     }
 
     public static func save(_ snapshot: StoreSnapshot, to directory: URL = directory) throws {

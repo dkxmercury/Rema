@@ -75,6 +75,23 @@ public struct Schedule: Codable, Hashable, Sendable {
         self.end = end
         self.timeZone = timeZone
     }
+
+    enum CodingKeys: String, CodingKey {
+        case start, time, rule, end, timeZone
+    }
+
+    // A schedule from outside is accepted only within the ranges the date arithmetic is safe for.
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        start = try container.decode(LocalDate.self, forKey: .start)
+        time = try container.decode(LocalTime.self, forKey: .time)
+        rule = try container.decodeIfPresent(RepeatRule.self, forKey: .rule)
+        end = try container.decodeIfPresent(RepeatEnd.self, forKey: .end) ?? .never
+        timeZone = try container.decodeIfPresent(String.self, forKey: .timeZone)
+        guard isValid else {
+            throw DecodingError.dataCorruptedError(forKey: .start, in: container, debugDescription: "schedule out of range")
+        }
+    }
 }
 
 public enum PlaceTrigger: String, Codable, Sendable {
@@ -333,7 +350,11 @@ public struct Place: Codable, Identifiable, Hashable, Sendable {
         icon = try container.decode(String.self, forKey: .icon)
         latitude = try container.decode(Double.self, forKey: .latitude)
         longitude = try container.decode(Double.self, forKey: .longitude)
-        radius = try container.decode(Double.self, forKey: .radius)
+        guard latitude.isFinite, longitude.isFinite, (-90...90).contains(latitude), (-180...180).contains(longitude) else {
+            throw DecodingError.dataCorruptedError(forKey: .latitude, in: container, debugDescription: "coordinate out of range")
+        }
+        let radius = try container.decode(Double.self, forKey: .radius)
+        self.radius = radius.isFinite ? min(max(radius, Self.radiusRange.lowerBound), Self.radiusRange.upperBound) : Self.radiusRange.lowerBound
         createdAt = try container.decode(Date.self, forKey: .createdAt)
         updatedAt = try container.decode(Date.self, forKey: .updatedAt)
         deletedAt = try container.decodeIfPresent(Date.self, forKey: .deletedAt)

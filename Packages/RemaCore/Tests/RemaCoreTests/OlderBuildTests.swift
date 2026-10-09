@@ -123,6 +123,8 @@ struct OlderBuildTests {
         defer { try? FileManager.default.removeItem(at: directory) }
         try Data("{\"reminders\": [".utf8).write(to: directory.appendingPathComponent(SharedStore.fileName))
         #expect(SharedStore.load(from: directory) == nil)
+        #expect(try FileManager.default.contentsOfDirectory(atPath: directory.path) == [SharedStore.fileName])
+        #expect(SharedStore.load(from: directory, aside: true) == nil)
         let names = try FileManager.default.contentsOfDirectory(atPath: directory.path)
         #expect(names.contains { $0.hasPrefix("store-unreadable-") })
         #expect(!names.contains(SharedStore.fileName))

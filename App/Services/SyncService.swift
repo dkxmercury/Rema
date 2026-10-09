@@ -122,8 +122,11 @@ final class SyncService {
 
     private static func clearLocal() {
         Store.shared.reset()
+        SharedStore.removeAside()
         SoundSync.removeCustomFiles()
         RecentPhrases.clear()
+        Notifier.shared.forgetDelivered()
+        LiveActivities.endAll()
     }
 
     // Another account's records must not leak into this one; what was written here after its session ended moves in like a guest's.
@@ -242,6 +245,7 @@ private final class Realtime {
         let configuration = URLSessionConfiguration.default
         configuration.timeoutIntervalForRequest = 600
         configuration.timeoutIntervalForResource = 3600
+        configuration.urlCache = nil
         return URLSession(configuration: configuration)
     }()
 

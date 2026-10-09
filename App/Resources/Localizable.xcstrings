@@ -18950,7 +18950,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "Rema مقفل"
+            "value": "Rema مقفلة"
           }
         },
         "de": {
@@ -18962,7 +18962,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Rema est verrouillé"
+            "value": "Rema est verrouillée"
           }
         },
         "ru": {
@@ -18980,13 +18980,59 @@
         "uz-Cyrl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Rema ёпиқ"
+            "value": "Rema қулфланган"
           }
         },
         "uz-Latn": {
           "stringUnit": {
             "state": "translated",
-            "value": "Rema yopiq"
+            "value": "Rema qulflangan"
+          }
+        }
+      }
+    },
+    "Rema is locked, open it on the phone first.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema مقفلة، افتحها على الهاتف أولًا."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema ist gesperrt, öffne sie zuerst auf dem iPhone."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema est verrouillée, ouvrez-la d’abord sur le téléphone."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema закрыта, сначала откройте её на телефоне."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema закрита, спочатку відкрийте її на телефоні."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema қулфланган, аввал уни телефонда очинг."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rema qulflangan, avval uni telefonda oching."
           }
         }
       }
@@ -29555,48 +29601,48 @@
         }
       }
     },
-    "Widgets and notifications stay open. If %@ does not work, you can enter the phone passcode.": {
+    "Widgets, notifications and the watch stay open. If %@ does not work, you can enter the phone passcode.": {
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "لا يغلق هذا الأدوات والإشعارات. وإن لم يعمل %@ يمكنك إدخال رمز دخول الهاتف."
+            "value": "لا يغلق هذا الأدوات والإشعارات والساعة. وإن لم يعمل %@ يمكنك إدخال رمز دخول الهاتف."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Widgets und Mitteilungen bleiben offen. Klappt %@ nicht, kannst du den iPhone-Code eingeben."
+            "value": "Widgets, Mitteilungen und die Watch bleiben offen. Klappt %@ nicht, kannst du den iPhone-Code eingeben."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Les widgets et les notifications restent visibles. Si %@ ne fonctionne pas, vous pouvez saisir le code du téléphone."
+            "value": "Les widgets, les notifications et la montre restent visibles. Si %@ ne fonctionne pas, vous pouvez saisir le code du téléphone."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Виджеты и уведомления это не закрывает. Если %@ не сработал, можно ввести код телефона."
+            "value": "Виджеты, уведомления и часы это не закрывает. Если %@ не сработал, можно ввести код телефона."
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Віджети й сповіщення це не закриває. Якщо %@ не спрацював, можна ввести код-пароль телефона."
+            "value": "Віджети, сповіщення й годинник це не закриває. Якщо %@ не спрацював, можна ввести код-пароль телефона."
           }
         },
         "uz-Cyrl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Виджет ва билдиришномалар ёпилмайди. Агар %@ ишламаса, телефон кодини киритиш мумкин."
+            "value": "Виджет, билдиришнома ва соат ёпилмайди. Агар %@ ишламаса, телефон кодини киритиш мумкин."
           }
         },
         "uz-Latn": {
           "stringUnit": {
             "state": "translated",
-            "value": "Vidjet va bildirishnomalar yopilmaydi. Agar %@ ishlamasa, telefon kodini kiritish mumkin."
+            "value": "Vidjet, bildirishnoma va soat yopilmaydi. Agar %@ ishlamasa, telefon kodini kiritish mumkin."
           }
         }
       }

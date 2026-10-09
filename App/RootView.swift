@@ -175,7 +175,7 @@ struct RootView: View {
             Text(verbatim: announcement.flatMap { remote.text($0.title) } ?? "Rema"),
             isPresented: Binding(get: { announcement != nil }, set: { if !$0 { dismissAnnouncement() } })
         ) {
-            if let link = announcement?.link.flatMap(URL.init(string:)) {
+            if let link = announcement?.link.flatMap(URL.init(string:)), link.scheme == "https", link.host() != nil {
                 Button("Open") {
                     openURL(link)
                     dismissAnnouncement()
@@ -532,7 +532,7 @@ struct RootView: View {
 
     // https://remaapp.cc/i/CODE opens the answer to a friend's invitation.
     private func openInvite(_ url: URL?) {
-        guard let url, url.host?.hasSuffix("remaapp.cc") == true else { return }
+        guard let url, url.scheme == "https", ["remaapp.cc", "www.remaapp.cc"].contains(url.host() ?? "") else { return }
         let parts = url.pathComponents
         guard parts.count >= 3, parts[parts.count - 2] == "i" else { return }
         let code = parts[parts.count - 1].uppercased()

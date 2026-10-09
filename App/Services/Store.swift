@@ -405,7 +405,7 @@ final class Store {
     }
 
     private func load() {
-        guard let snapshot = SharedStore.load(from: directory) else { return }
+        guard let snapshot = SharedStore.load(from: directory, aside: true) else { return }
         let before = Dictionary(reminders.filter { $0.shared != nil }.map { ($0.id, $0.completedThrough) }, uniquingKeysWith: { first, _ in first })
         reminders = snapshot.reminders
         places = snapshot.places

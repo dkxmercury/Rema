@@ -25,8 +25,18 @@ enum Backend {
         let configuration = URLSessionConfiguration.default
         configuration.timeoutIntervalForRequest = 25
         configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
+        // The answers carry the reminders; nothing of them is to settle in the cache on disk.
+        configuration.urlCache = nil
         return URLSession(configuration: configuration)
     }()
+
+    // An identifier from the server goes into a path only when it looks like one.
+    static func segment(_ id: String) throws -> String {
+        guard !id.isEmpty, id.count <= 64, id.allSatisfy({ $0.isLetter || $0.isNumber || $0 == "-" || $0 == "_" }) else {
+            throw Failure.invalid("id")
+        }
+        return id
+    }
 
     static func request<Response: Decodable>(_ method: String, _ path: String, token: String? = nil, as type: Response.Type) async throws -> Response {
         try decode(type, from: try await raw(method, path, token: token))

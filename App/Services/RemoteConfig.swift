@@ -135,8 +135,12 @@ final class Remote {
         return min(max(value, tunable.range.lowerBound), tunable.range.upperBound)
     }
 
+    // A link from the server may only lead to our own places; a compromised config must not turn «Privacy» into a stranger's page.
+    private static let trustedHosts = ["remaapp.cc", "apps.apple.com", "instagram.com", "t.me"]
+
     func link(_ key: LinkKey) -> URL {
-        if let text = config.links?[key.rawValue], let url = URL(string: text), url.scheme == "https", url.host() != nil {
+        if let text = config.links?[key.rawValue], let url = URL(string: text), url.scheme == "https", let host = url.host()?.lowercased(),
+           Self.trustedHosts.contains(where: { host == $0 || host.hasSuffix("." + $0) }) {
             return url
         }
         if key != .instagram, key != .appStore, AppLanguage.current == .russian {
@@ -190,22 +194,27 @@ final class Remote {
 
 extension Remote {
     // A fix whose placeholders differ from the key would break String(format:), so it is dropped.
+    // Strings with links inside stay as built; a fix could point them anywhere.
     private static func checked(_ strings: [String: [String: String]]?) -> [String: [String: String]] {
         (strings ?? [:]).mapValues { table in
-            table.filter { key, value in placeholders(key) == placeholders(value) }
+            table.filter { key, value in placeholders(key) == placeholders(value) && !key.contains("](") && !value.contains("](") }
         }
     }
 
-    private static let placeholder = try? NSRegularExpression(pattern: "%(?:[0-9]+[$])?[-+ #0']*[0-9]*(?:[.][0-9]+)?(hh|h|ll|l|q|L|z|t|j)?([@dDuUxXoOfFeEgGcCsSpaA%])")
+    private static let placeholder = try? NSRegularExpression(pattern: "%([0-9]+[$])?[-+ #0']*[0-9]*(?:[.][0-9]+)?(hh|h|ll|l|q|L|z|t|j)?([@dDuUxXoOfFeEgGcCsSpaAn%])")
 
+    // Each argument with the type it is read as, in the order the arguments are taken; a fix must read every one the same way the key does.
     private static func placeholders(_ text: String) -> [String] {
         guard let placeholder else { return [] }
         let range = NSRange(text.startIndex..., in: text)
+        var next = 1
         return placeholder.matches(in: text, range: range).compactMap { match in
-            let conversion = Range(match.range(at: 2), in: text).map { String(text[$0]) } ?? ""
+            let conversion = Range(match.range(at: 3), in: text).map { String(text[$0]) } ?? ""
             guard conversion != "%" else { return nil }
-            let length = Range(match.range(at: 1), in: text).map { String(text[$0]) } ?? ""
-            return length + conversion
+            let length = Range(match.range(at: 2), in: text).map { String(text[$0]) } ?? ""
+            let position = Range(match.range(at: 1), in: text).flatMap { Int(text[$0].dropLast()) } ?? next
+            next = position + 1
+            return "\(position):\(length)\(conversion)"
         }
         .sorted()
     }

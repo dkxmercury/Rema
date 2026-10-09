@@ -425,7 +425,7 @@ final class SharedService {
     }
 
     static func milliseconds(_ date: Date?) -> Int64 {
-        date.map { Int64(($0.timeIntervalSince1970 * 1000).rounded()) } ?? 0
+        date?.milliseconds ?? 0
     }
 
     func create(_ reminder: Reminder, with members: [SharedPerson], doneMode: DoneMode) {
@@ -562,7 +562,7 @@ final class SharedService {
 
     func remove(_ friendID: String) async throws {
         guard let session = Account.shared.session else { throw Backend.Failure.unauthorized }
-        try await Backend.send("DELETE", "/api/rema/friends/\(friendID)", token: session.token)
+        try await Backend.send("DELETE", "/api/rema/friends/\(Backend.segment(friendID))", token: session.token)
         state.names[friendID] = nil
         forget(friendID)
     }
@@ -582,7 +582,7 @@ final class SharedService {
     // The person can invite me again; being friends takes a new invitation.
     func unblock(_ userID: String) async throws {
         guard let session = Account.shared.session else { throw Backend.Failure.unauthorized }
-        try await Backend.send("DELETE", "/api/rema/blocks/\(userID)", token: session.token)
+        try await Backend.send("DELETE", "/api/rema/blocks/\(Backend.segment(userID))", token: session.token)
         state.blocked.removeAll { $0.id == userID }
         save()
     }
@@ -635,9 +635,9 @@ final class SharedService {
 
     func setMyName(_ name: String) async throws {
         guard let session = Account.shared.session else { throw Backend.Failure.unauthorized }
-        let trimmed = String(name.trimmingCharacters(in: .whitespacesAndNewlines).prefix(40))
+        let trimmed = name.cleanedName()
         struct Body: Encodable { let name: String }
-        try await Backend.send("PATCH", "/api/collections/users/records/\(session.userID)", body: Body(name: trimmed), token: session.token)
+        try await Backend.send("PATCH", "/api/collections/users/records/\(Backend.segment(session.userID))", body: Body(name: trimmed), token: session.token)
         state.myName = trimmed
         save()
     }
@@ -669,7 +669,7 @@ final class SharedService {
                 person.name.isEmpty ? SharedPerson(id: person.id, name: known[person.id] ?? "") : person
             }
         }
-        state.friends = (answer.friends ?? []).map { Friend(id: $0.id, name: $0.name ?? "", since: Date(timeIntervalSince1970: Double($0.since ?? 0) / 1000)) }
+        state.friends = (answer.friends ?? []).map { Friend(id: $0.id, name: ($0.name ?? "").cleanedName(), since: Date(timeIntervalSince1970: Double($0.since ?? 0) / 1000)) }
         state.invites = (answer.invites ?? []).map { SentInvite(code: $0.code, state: $0.state, expires: Date(timeIntervalSince1970: Double($0.expires) / 1000), friendID: $0.friend?.id) }
         // The name typed when inviting goes to the friend who took the invitation.
         for invite in answer.invites ?? [] {

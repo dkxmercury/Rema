@@ -120,6 +120,8 @@ struct RemaApp: App {
                         SyncService.shared.becameActive()
                     }
                 }
+            case .inactive:
+                AppLock.shared.becameInactive()
             case .background:
                 AppLock.shared.movedToBackground()
                 LiveActivities.refresh(store: Store.shared)

@@ -38,10 +38,11 @@ public struct WatchPayload: Codable, Hashable, Sendable {
             guard let day = calendar.date(byAdding: .day, value: offset, to: start) else { continue }
             for entry in Agenda.day(day, reminders: active, calendar: calendar) {
                 guard let reminder = byID[entry.reminderID] else { continue }
-                items.append(WatchItem(reminderID: reminder.id, title: reminder.title, occurrence: entry.occurrence, done: entry.done, urgent: reminder.urgent))
+                items.append(WatchItem(reminderID: reminder.id, title: String(reminder.title.prefix(60)), occurrence: entry.occurrence, done: entry.done, urgent: reminder.urgent))
             }
         }
-        return WatchPayload(items: items, generated: now)
+        // The watch takes a limited message; a crowded day is cut, the nearest first.
+        return WatchPayload(items: Array(items.prefix(100)), generated: now)
     }
 
     public func today(_ now: Date, calendar: Calendar) -> [WatchItem] {

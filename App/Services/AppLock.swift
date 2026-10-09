@@ -63,6 +63,21 @@ final class AppLock {
         UserDefaults.standard.set(seconds, forKey: Self.delayKey)
     }
 
+    // The app switcher, the shade, a call, Siri: anything that takes the screen makes the app inactive, and the cover goes up at once.
+    func becameInactive() {
+        if enabled {
+            show()
+        }
+    }
+
+    // Whether Siri and the Shortcuts may read the reminders now: what the lock would ask for on the screen, they do not get for free.
+    var sealed: Bool {
+        guard enabled else { return false }
+        if locked { return true }
+        guard let leftAt else { return false }
+        return Date().timeIntervalSince(leftAt) >= Double(delay)
+    }
+
     // The cover goes up before the system takes the picture for the app switcher.
     func movedToBackground() {
         leftAt = Date()

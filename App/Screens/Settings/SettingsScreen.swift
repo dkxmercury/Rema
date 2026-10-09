@@ -92,7 +92,7 @@ struct SettingsScreen: View {
                                     lockDelayRow
                                 }
                             }
-                            Text("Widgets and notifications stay open. If \(lock.biometryName) does not work, you can enter the phone passcode.")
+                            Text("Widgets, notifications and the watch stay open. If \(lock.biometryName) does not work, you can enter the phone passcode.")
                                 .font(.app(.golos, 13))
                                 .lineHeight(18, .golos, 13)
                                 .foregroundStyle(Palette.secondary)

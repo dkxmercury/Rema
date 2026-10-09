@@ -29,7 +29,7 @@ public struct SharedPerson: Codable, Hashable, Sendable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(String.self, forKey: .id)
-        name = (try? container.decodeIfPresent(String.self, forKey: .name)) ?? ""
+        name = ((try? container.decodeIfPresent(String.self, forKey: .name)) ?? "").cleanedName()
     }
 }
 
@@ -53,9 +53,9 @@ public struct SharedMember: Codable, Hashable, Sendable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(String.self, forKey: .id)
-        name = try container.decodeIfPresent(String.self, forKey: .name) ?? ""
+        name = (try container.decodeIfPresent(String.self, forKey: .name) ?? "").cleanedName()
         status = try container.decodeIfPresent(String.self, forKey: .status) ?? SharedStatus.invited
-        doneThrough = try container.decodeIfPresent(Int64.self, forKey: .doneThrough) ?? 0
+        doneThrough = (try container.decodeIfPresent(Int64.self, forKey: .doneThrough) ?? 0).asMilliseconds
     }
 }
 
@@ -152,12 +152,12 @@ public struct SharedItem: Codable, Sendable {
         gone = (try? container.decodeIfPresent(Bool.self, forKey: .gone)) ?? false
         owner = try? container.decodeIfPresent(SharedPerson.self, forKey: .owner)
         data = try? container.decodeIfPresent(SharedData.self, forKey: .data)
-        clientUpdatedAt = (try? container.decodeIfPresent(Int64.self, forKey: .clientUpdatedAt)) ?? 0
-        doneThrough = (try? container.decodeIfPresent(Int64.self, forKey: .doneThrough)) ?? 0
-        myDone = (try? container.decodeIfPresent(Int64.self, forKey: .myDone)) ?? 0
+        clientUpdatedAt = ((try? container.decodeIfPresent(Int64.self, forKey: .clientUpdatedAt)) ?? 0).asMilliseconds
+        doneThrough = ((try? container.decodeIfPresent(Int64.self, forKey: .doneThrough)) ?? 0).asMilliseconds
+        myDone = ((try? container.decodeIfPresent(Int64.self, forKey: .myDone)) ?? 0).asMilliseconds
         myStatus = (try? container.decodeIfPresent(String.self, forKey: .myStatus)) ?? SharedStatus.invited
         members = (try? container.decodeIfPresent([SharedMember].self, forKey: .members)) ?? []
-        seq = (try? container.decodeIfPresent(Int64.self, forKey: .seq)) ?? 0
+        seq = max(0, (try? container.decodeIfPresent(Int64.self, forKey: .seq)) ?? 0)
         partial = (try? container.decodeIfPresent(Bool.self, forKey: .partial)) ?? false
     }
 }
@@ -200,7 +200,7 @@ public enum SharedMerge {
             let members = item.partial ? reminder.shared?.members ?? [] : item.members
             reminder.shared = SharedInfo(owner: owner, status: item.myStatus, members: members, doneMode: data.doneMode, seq: item.seq)
             let through = data.doneMode == .one ? item.doneThrough : item.myDone
-            let done = through > 0 ? Date(timeIntervalSince1970: Double(through) / 1000) : nil
+            let done = Date.fromMilliseconds(through)
             // The server keeps milliseconds, a tick made here may have more; under a second apart is the same tick.
             let same = done.map { day in reminder.completedThrough.map { abs($0.timeIntervalSince(day)) < 1 } ?? false } ?? (reminder.completedThrough == nil)
             if !same {
@@ -229,7 +229,7 @@ public enum SharedMerge {
     public static func unconfirmed(_ reminders: [Reminder], acknowledged: [String: Int64]) -> Set<UUID> {
         Set(reminders.compactMap { reminder in
             guard let shared = reminder.shared, !shared.isInvitation, !shared.pending, let known = acknowledged[reminder.id.uuidString] else { return nil }
-            let through = reminder.completedThrough.map { Int64(($0.timeIntervalSince1970 * 1000).rounded()) } ?? 0
+            let through = reminder.completedThrough?.milliseconds ?? 0
             return through == known ? nil : reminder.id
         })
     }

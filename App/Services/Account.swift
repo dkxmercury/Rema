@@ -141,7 +141,8 @@ final class Account {
         struct Body: Encodable {
             let lang: String
         }
-        try? await Backend.send("PATCH", "/api/collections/users/records/\(session.userID)", body: Body(lang: AppLanguage.current.rawValue), token: session.token)
+        guard let userID = try? Backend.segment(session.userID) else { return }
+        try? await Backend.send("PATCH", "/api/collections/users/records/\(userID)", body: Body(lang: AppLanguage.current.rawValue), token: session.token)
     }
 
     enum DeletionCheck {
@@ -222,8 +223,8 @@ struct Nonce {
     let raw: String
 
     init() {
-        var bytes = [UInt8](repeating: 0, count: 32)
-        _ = SecRandomCopyBytes(kSecRandomDefault, bytes.count, &bytes)
+        // The system generator cannot fail; it draws from the same source as SecRandomCopyBytes.
+        let bytes = (0..<32).map { _ in UInt8.random(in: .min ... .max) }
         raw = Data(bytes).base64EncodedString()
             .replacingOccurrences(of: "+", with: "-")
             .replacingOccurrences(of: "/", with: "_")

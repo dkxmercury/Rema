@@ -195,6 +195,9 @@ extension PhraseParser {
                     return token + " " + suffix
                 }
             }
+            // The same hour written many times is one reminder, and a list longer than a day has is not a list.
+            var seen = Set<String>()
+            tokens = Array(tokens.filter { seen.insert($0).inserted }.prefix(12))
         case .perDay:
             let words = (1..<match.numberOfRanges).compactMap { group(match, $0, lower) }
             guard let word = words.first, let count = Int(word.filter(\.isNumber)) ?? Self.spreadCounts[word], (2...6).contains(count) else { return nil }
