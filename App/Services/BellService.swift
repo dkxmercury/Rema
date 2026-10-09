@@ -20,6 +20,11 @@ final class BellService {
         var day: Date {
             Date(timeIntervalSince1970: Double(at) / 1000)
         }
+
+        // The server folds several changes of one reminder into one line with a newer time; read once is not read again.
+        var mark: String {
+            "\(id):\(at)"
+        }
     }
 
     enum Row: Identifiable {
@@ -48,14 +53,14 @@ final class BellService {
     private(set) var events: [Event]
     private(set) var seen: Set<String>
 
-    private init() {
+    init(events: [Event]? = nil, seen: Set<String>? = nil) {
         let defaults = UserDefaults.standard
-        events = defaults.data(forKey: Self.eventsKey).flatMap { try? JSONDecoder().decode([Event].self, from: $0) } ?? []
-        seen = Set(defaults.stringArray(forKey: Self.seenKey) ?? [])
+        self.events = events ?? defaults.data(forKey: Self.eventsKey).flatMap { try? JSONDecoder().decode([Event].self, from: $0) } ?? []
+        self.seen = seen ?? Set(defaults.stringArray(forKey: Self.seenKey) ?? [])
     }
 
     var unread: Int {
-        events.filter { !seen.contains($0.id) }.count + NewsService.shared.unread
+        events.filter { !seen.contains($0.mark) }.count + NewsService.shared.unread
     }
 
     var rows: [Row] {
@@ -64,7 +69,7 @@ final class BellService {
 
     func isRead(_ row: Row) -> Bool {
         switch row {
-        case .event(let event): seen.contains(event.id)
+        case .event(let event): seen.contains(event.mark)
         case .news(let item): NewsService.shared.seen.contains(item.id)
         }
     }
@@ -83,7 +88,7 @@ final class BellService {
               Account.shared.session?.userID == session.userID else { return }
         events = answer.items
         // Only ids still in the list are kept, so the set does not grow for ever.
-        seen = seen.intersection(events.map(\.id))
+        seen = seen.intersection(events.map(\.mark))
         save()
         defaults.set(Date(), forKey: Self.fetchedKey)
     }
@@ -91,8 +96,8 @@ final class BellService {
     func markRead(_ row: Row) {
         switch row {
         case .event(let event):
-            guard !seen.contains(event.id) else { return }
-            seen.insert(event.id)
+            guard !seen.contains(event.mark) else { return }
+            seen.insert(event.mark)
             save()
         case .news(let item):
             NewsService.shared.markSeen([item.id])
@@ -100,7 +105,7 @@ final class BellService {
     }
 
     func markAllRead() {
-        seen.formUnion(events.map(\.id))
+        seen.formUnion(events.map(\.mark))
         save()
         NewsService.shared.markSeen(NewsService.shared.items.map(\.id))
     }

@@ -111,6 +111,19 @@ final class ScreenSnapshots: XCTestCase {
         try render(NewsConsentSheet(onAnswer: { _ in }).background(Palette.panel), name: "K-Consent-Dark", style: .dark, height: 520)
     }
 
+    func testBell() throws {
+        let now = Int64(Date().timeIntervalSince1970 * 1000)
+        let events = [
+            BellService.Event(id: "e1", kind: "new", actor: "a1", actorName: "Аня", item: "", title: "Кино в субботу", at: now - 5 * 60_000),
+            BellService.Event(id: "e2", kind: "ticked", actor: "a2", actorName: "Илья", item: "", title: "Купить подарок маме", at: now - 70 * 60_000),
+            BellService.Event(id: "e3", kind: "accepted", actor: "a3", actorName: "Мама", item: "", title: "Полить цветы", at: now - 26 * 3_600_000),
+            BellService.Event(id: "e4", kind: "unfriended", actor: "a4", actorName: "Сардор", item: "", title: "", at: now - 50 * 3_600_000),
+        ]
+        let read: Set<String> = [events[2].mark, events[3].mark]
+        try render(BellScreen(bell: BellService(events: events, seen: read), onEvent: { _ in }, onNews: { _ in }, onBack: {}), name: "K-Bell", style: .light)
+        try render(BellScreen(bell: BellService(events: events, seen: read), onEvent: { _ in }, onNews: { _ in }, onBack: {}), name: "K-Bell-Dark", style: .dark)
+    }
+
     func testChecklist() throws {
         let store = sampleStore()
         store.save(SampleData.groceries)

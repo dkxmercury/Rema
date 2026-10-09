@@ -4,8 +4,15 @@ struct BellScreen: View {
     let onEvent: (BellService.Event) -> Void
     let onNews: (String) -> Void
     let onBack: () -> Void
-    @State private var bell = BellService.shared
+    @State private var bell: BellService
     @State private var loading = true
+
+    init(bell: BellService = .shared, onEvent: @escaping (BellService.Event) -> Void, onNews: @escaping (String) -> Void, onBack: @escaping () -> Void) {
+        _bell = State(initialValue: bell)
+        self.onEvent = onEvent
+        self.onNews = onNews
+        self.onBack = onBack
+    }
 
     var body: some View {
         ZStack {
