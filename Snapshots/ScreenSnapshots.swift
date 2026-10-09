@@ -111,6 +111,7 @@ final class ScreenSnapshots: XCTestCase {
         try render(NewsConsentSheet(onAnswer: { _ in }).background(Palette.panel), name: "K-Consent-Dark", style: .dark, height: 520)
     }
 
+    @MainActor
     func testBell() throws {
         let now = Int64(Date().timeIntervalSince1970 * 1000)
         let events = [
