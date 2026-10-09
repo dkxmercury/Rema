@@ -104,6 +104,13 @@ final class ScreenSnapshots: XCTestCase {
         try render(VoiceScreen(store: sampleStore(), now: SampleData.now, calendar: SampleData.calendar, locale: russian, recognizer: recognizer, live: false, onFinish: { _ in }), name: "Voice-Denied", style: .dark)
     }
 
+    func testNews() throws {
+        try render(HomeScreen(content: SampleData.home, settingsBadge: true, update: "1.2"), name: "K-Update", style: .light)
+        try render(HomeScreen(content: SampleData.home, settingsBadge: true, update: "1.2"), name: "K-Update-Dark", style: .dark)
+        try render(NewsConsentSheet(onAnswer: { _ in }).background(Palette.panel), name: "K-Consent", style: .light, height: 520)
+        try render(NewsConsentSheet(onAnswer: { _ in }).background(Palette.panel), name: "K-Consent-Dark", style: .dark, height: 520)
+    }
+
     func testChecklist() throws {
         let store = sampleStore()
         store.save(SampleData.groceries)

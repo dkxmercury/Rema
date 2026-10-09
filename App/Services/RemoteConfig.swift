@@ -12,6 +12,7 @@ struct RemoteConfig: Codable, Equatable {
     }
 
     var minimumVersion: String?
+    var latestVersion: String?
     var update: [String: String]?
     var announcement: Announcement?
     var features: [String: Bool]?
@@ -183,6 +184,14 @@ final class Remote {
         guard let minimum = config.minimumVersion,
               let current = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String else { return false }
         return current.compare(minimum, options: .numeric) == .orderedAscending
+    }
+
+    // The version just out in the App Store, offered gently; the one below the minimum is asked for in an alert instead.
+    var newerVersion: String? {
+        guard !needsUpdate, let latest = config.latestVersion, latest.count <= 20, latest.allSatisfy({ $0.isNumber || $0 == "." }),
+              let current = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String,
+              current.compare(latest, options: .numeric) == .orderedAscending else { return nil }
+        return latest
     }
 
     var activeAnnouncement: RemoteConfig.Announcement? {

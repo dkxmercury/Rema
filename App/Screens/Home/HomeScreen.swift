@@ -31,6 +31,10 @@ struct HomeScreen: View {
     var snoozeHint: SnoozeHint?
     var onSnoozeHint: (SnoozeHint, Bool) -> Void = { _, _ in }
     var onRemindEvent: (HomeContent.Event) -> Void = { _ in }
+    var settingsBadge = false
+    var update: String?
+    var onUpdate: () -> Void = {}
+    var onHideUpdate: () -> Void = {}
     @State private var addPressed = false
     @State private var intro = false
     @State private var lift: DialLift?
@@ -46,6 +50,13 @@ struct HomeScreen: View {
 
             VStack(spacing: 0) {
                 header
+                if let update, lift == nil {
+                    UpdateNotice(version: update, onUpdate: onUpdate) {
+                        withAnimation(Motion.standard) { onHideUpdate() }
+                    }
+                    .padding(.top, 14)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+                }
                 Dial(
                     handMinutes: shown ? Double(content.nowHour * 60 + content.nowMinute) : 0,
                     markerProgress: shown ? 1 : 0,
@@ -343,9 +354,18 @@ struct HomeScreen: View {
                     RaisedCircle()
                     Glyph(paths: Icons.sliders, size: 20, lineWidth: 1.8, color: Palette.text)
                 }
+                .overlay(alignment: .topTrailing) {
+                    if settingsBadge {
+                        Circle()
+                            .fill(Palette.accent)
+                            .frame(width: 10, height: 10)
+                            .overlay { Circle().stroke(Palette.panel, lineWidth: 2) }
+                            .padding(6)
+                    }
+                }
             }
             .buttonStyle(PressableStyle())
-            .accessibilityLabel(Text("Settings"))
+            .accessibilityLabel(settingsBadge ? Text("Settings, there is news") : Text("Settings"))
             .padding(.trailing, -4)
             Button(action: onCalendar) {
                 ZStack {

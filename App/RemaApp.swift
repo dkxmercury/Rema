@@ -119,6 +119,8 @@ struct RemaApp: App {
                     if Remote.shared.isOn(.sync) {
                         SyncService.shared.becameActive()
                     }
+                    await NewsService.shared.refresh()
+                    await NewsService.shared.send()
                 }
             case .inactive:
                 AppLock.shared.becameInactive()

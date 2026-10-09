@@ -41,6 +41,8 @@ enum Icons {
     static let early = ["M4.5 12a7.5 7.5 0 1 0 2.2-5.3", "M4 4v3.5h3.5", "M12 8v4l2.5 1.5"]
     static let bell = ["M6.5 9.5a5.5 5.5 0 0 1 11 0c0 5 2.3 7 2.3 7H4.2s2.3-2 2.3-7z", "M10 20a2.2 2.2 0 0 0 4 0", "M3 5.5a8 8 0 0 1 2.2-3M21 5.5a8 8 0 0 0-2.2-3"]
     static let bolt = ["M13 2.5L5 13.5h6l-1 8 8-11h-6l1-8z"]
+    static let megaphone = ["M4 10v4a1 1 0 0 0 1 1h2l6 4V5L7 9H5a1 1 0 0 0-1 1z", "M16.5 8.5a5 5 0 0 1 0 7"]
+    static let download = ["M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"]
     static let note = ["M9 18V5.5l11-2V16", circle(6.5, 18, 2.5), circle(17.5, 16, 2.5)]
     static let play = ["M7 4.5v15l13-7.5z"]
     static let microphone = [rect(9, 3, 6, 11.5, 3), "M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"]

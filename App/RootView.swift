@@ -27,6 +27,8 @@ enum RootRoute: Hashable {
     case importReminders
     case friends
     case friend(String)
+    case news
+    case newsItem(String)
 }
 
 struct SharedTarget: Identifiable {
@@ -96,6 +98,9 @@ struct RootView: View {
     @State private var inviting = false
     @State private var answering: InviteTarget?
     @State private var viewingShared: SharedTarget?
+    @State private var news = NewsService.shared
+    @State private var askingNews = false
+    @AppStorage("updateHidden") private var updateHidden = ""
     @Environment(\.openURL) private var openURL
     @Namespace private var zoom
 
@@ -145,6 +150,21 @@ struct RootView: View {
             .presentationCornerRadius(30)
             .presentationBackground(Palette.background)
         }
+        .sheet(isPresented: $askingNews, onDismiss: {
+            // Swiped away is an answer too; the question does not come back.
+            if NewsService.shared.shouldAsk {
+                NewsService.shared.answer(false)
+            }
+        }) {
+            NewsConsentSheet { yes in
+                NewsService.shared.answer(yes)
+                askingNews = false
+            }
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
+            .presentationCornerRadius(30)
+            .presentationBackground(Palette.panel)
+        }
         .onOpenURL { url in openInvite(url) }
         .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in openInvite(activity.webpageURL) }
         .fullScreenCover(isPresented: $showingCalendar) {
@@ -189,6 +209,7 @@ struct RootView: View {
         .onChange(of: navigation.composeRequest?.id) { _, _ in openRequestedCompose() }
         .onChange(of: editing != nil || checking != nil || composing != nil || inviting) { _, open in navigation.editingOpen = open }
         .onChange(of: navigation.openRequest) { _, _ in openRequestedReminder() }
+        .onChange(of: news.openRequest) { _, _ in openRequestedNews() }
         .onChange(of: account.isSignedIn) { _, signedIn in
             // Someone new first sees the intro; the invitation opens when it closes.
             if signedIn, UserDefaults.standard.bool(forKey: RootNavigation.introKey), let code = navigation.pendingInvite {
@@ -205,6 +226,8 @@ struct RootView: View {
             showIntroIfNeeded()
             openRequestedCompose()
             openRequestedReminder()
+            openRequestedNews()
+            askAboutNewsIfNeeded()
         }
         .preferredColorScheme(colorScheme)
     }
@@ -227,8 +250,13 @@ struct RootView: View {
                 onBirthdays: { navigation.path.append(.birthdays) },
                 onImport: { navigation.path.append(.importReminders) },
                 onFriends: { navigation.path.append(.friends) },
+                onNews: { navigation.path.append(.news) },
                 onBack: { navigation.path.removeLast() }
             )
+        case .news:
+            NewsScreen(onOpen: { navigation.path.append(.newsItem($0)) }, onBack: { navigation.path.removeLast() })
+        case .newsItem(let id):
+            NewsItemScreen(id: id) { navigation.path.removeLast() }
         case .defaultSound:
             SoundScreen(store: store, choice: defaultSound) { navigation.path.removeLast() }
         case .places:
@@ -327,6 +355,41 @@ struct RootView: View {
         if account.isSignedIn, let code = navigation.pendingInvite {
             navigation.pendingInvite = nil
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { answering = InviteTarget(code: code) }
+        } else {
+            askAboutNewsIfNeeded()
+        }
+    }
+
+    // Once, when nothing else is on the screen: after the update for those who had Rema, after the intro for someone new.
+    private func askAboutNewsIfNeeded() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+            guard NewsService.shared.shouldAsk, UserDefaults.standard.bool(forKey: RootNavigation.introKey), !navigation.showingSignIn, !showingIntro,
+                  !remote.needsUpdate, announcement == nil, editing == nil, checking == nil, composing == nil, !inviting, answering == nil,
+                  viewingShared == nil, !showingCalendar, !showingLanguage, navigation.path.isEmpty,
+                  UIApplication.shared.mainWindow?.rootViewController?.presentedViewController == nil else { return }
+            askingNews = true
+        }
+    }
+
+    // A news push can open the app over any screen; the one on top closes first.
+    private func openRequestedNews() {
+        guard let id = news.openRequest else { return }
+        news.openRequest = nil
+        guard !navigation.showingSignIn, !showingIntro else { return }
+        let route: [RootRoute] = id.isEmpty ? [.news] : [.news, .newsItem(id)]
+        let root = UIApplication.shared.mainWindow?.rootViewController
+        if editing != nil || showingCalendar || composing != nil || showingLanguage || askingNews || root?.presentedViewController != nil {
+            editing = nil
+            showingCalendar = false
+            composing = nil
+            showingLanguage = false
+            viewingShared = nil
+            inviting = false
+            askingNews = false
+            root?.dismiss(animated: true)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { navigation.path = route }
+        } else {
+            navigation.path = route
         }
     }
 
@@ -336,6 +399,10 @@ struct RootView: View {
         Notifier.shared.configure()
         Notifier.shared.scheduleSoon()
         Task { await Account.shared.updateLanguage() }
+        Task {
+            await NewsService.shared.refresh(force: true)
+            await NewsService.shared.send()
+        }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
             navigation.languageCode = AppLanguage.current.rawValue
         }
@@ -456,7 +523,11 @@ struct RootView: View {
                 onAlert: answerAlert,
                 snoozeHint: remote.isOn(.suggestions) ? snoozeHint : nil,
                 onSnoozeHint: answerSnoozeHint,
-                onRemindEvent: remindEvent
+                onRemindEvent: remindEvent,
+                settingsBadge: news.unread > 0,
+                update: remote.newerVersion.flatMap { $0 == updateHidden ? nil : $0 },
+                onUpdate: { openURL(remote.link(.appStore)) },
+                onHideUpdate: { updateHidden = remote.newerVersion ?? "" }
             )
         }
     }

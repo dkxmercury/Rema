@@ -1,7 +1,8 @@
 import Foundation
 import UIKit
 
-// The phone's push address goes to the server after sign-in, so friends' changes reach it while Rema is closed.
+// The phone's push address goes to the server after sign-in, so friends' changes reach it while Rema is closed,
+// and without an account too when the person asked for news.
 @MainActor
 final class PushRegistration {
     static let shared = PushRegistration()
@@ -17,14 +18,21 @@ final class PushRegistration {
 
     private init() {}
 
+    var currentToken: String? {
+        token
+    }
+
     func start() {
-        guard Account.shared.isSignedIn else { return }
+        guard Account.shared.isSignedIn || NewsService.shared.pushes else { return }
         UIApplication.shared.registerForRemoteNotifications()
     }
 
     func received(_ data: Data) {
         token = data.map { String(format: "%02x", $0) }.joined()
-        Task { await send() }
+        Task {
+            await send()
+            await NewsService.shared.send()
+        }
     }
 
     // Sent again once a day, in case the server dropped the address after a failed push.
@@ -53,7 +61,7 @@ final class PushRegistration {
         return token
     }
 
-    private static var environment: String {
+    static var environment: String {
         #if DEBUG
         "development"
         #else

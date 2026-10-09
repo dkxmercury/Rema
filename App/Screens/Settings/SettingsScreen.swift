@@ -18,6 +18,7 @@ struct SettingsScreen: View {
     var onBirthdays: () -> Void = {}
     var onImport: () -> Void = {}
     var onFriends: () -> Void = {}
+    var onNews: () -> Void = {}
     let onBack: () -> Void
 
     @AppStorage(Feedback.hapticsKey) private var haptics = true
@@ -29,6 +30,7 @@ struct SettingsScreen: View {
     @State private var weather = WeatherAdvisor.shared
     @State private var lock = AppLock.shared
     @State private var calendarFeed = CalendarFeed.shared
+    @State private var news = NewsService.shared
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.colorScheme) private var colorScheme
 
@@ -63,12 +65,32 @@ struct SettingsScreen: View {
         })
     }
 
+    private var newsBinding: Binding<Bool> {
+        Binding(get: { news.pushes }, set: { on in Task { await news.setPushes(on) } })
+    }
+
     var body: some View {
         ZStack {
             Palette.background.ignoresSafeArea()
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     section("Account", top: 14) { accountPanel }
+                    section("News") {
+                        PanelList {
+                            NavigationRow(icon: Icons.megaphone, iconColor: Palette.text, title: "Rema news", minHeight: 56, action: onNews) {
+                                if news.unread > 0 {
+                                    Text("\(news.unread) new")
+                                        .font(.app(.golos, 12, weight: 600))
+                                        .foregroundStyle(Palette.onAccent)
+                                        .padding(.horizontal, 8)
+                                        .frame(height: 22)
+                                        .background(Capsule().fill(Palette.accent))
+                                }
+                            }
+                            Hairline()
+                            ToggleRow(icon: Icons.bell, iconColor: Palette.text, title: "Send by push", subtitle: String(localized: "no more than a couple of times a month, in the daytime", bundle: .app, locale: .app), isOn: newsBinding, minHeight: 60)
+                        }
+                    }
                     section("Shared reminders") {
                         PanelList {
                             NavigationRow(icon: Icons.people, iconColor: Palette.text, title: "Friends", minHeight: 52, action: onFriends) {

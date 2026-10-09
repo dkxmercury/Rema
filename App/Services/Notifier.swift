@@ -375,6 +375,14 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
                 completionHandler()
                 return
             }
+            // A news push opens that news, or the list when it came without one.
+            if let news = info["remaNews"] as? String {
+                if action == UNNotificationDefaultActionIdentifier {
+                    NewsService.shared.openRequest = news
+                }
+                completionHandler()
+                return
+            }
             if info["rema"] != nil {
                 store.reloadIfChanged()
                 SharedService.shared.kick()
