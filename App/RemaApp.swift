@@ -104,6 +104,7 @@ struct RemaApp: App {
         .onChange(of: scenePhase) { _, phase in
             switch phase {
             case .active:
+                KeyboardDismissal.shared.installEverywhere()
                 AppLock.shared.becameActive()
                 Store.shared.reloadIfChanged()
                 PushRegistration.shared.start()

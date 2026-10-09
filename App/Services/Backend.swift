@@ -62,13 +62,22 @@ enum Backend {
         }
     }
 
+    // appending(path:) escapes a question mark, so the query is put on separately.
+    static func url(_ path: String) -> URL {
+        let parts = path.split(separator: "?", maxSplits: 1, omittingEmptySubsequences: false)
+        let address = base.appending(path: String(parts[0]))
+        guard parts.count == 2, var components = URLComponents(url: address, resolvingAgainstBaseURL: false) else { return address }
+        components.percentEncodedQuery = String(parts[1])
+        return components.url ?? address
+    }
+
     static func raw(_ method: String, _ path: String, body: Data? = nil, contentType: String = "application/json", token: String? = nil) async throws -> Data {
         #if DEBUG
         if DemoMode.isOn {
             throw Failure.offline
         }
         #endif
-        var request = URLRequest(url: base.appending(path: path))
+        var request = URLRequest(url: url(path))
         request.httpMethod = method
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         if let body {
