@@ -204,7 +204,7 @@ struct SharedDetailScreen: View {
                         .padding(.top, 10)
                 }
                 if talks(shared) {
-                    DiscussionSection(model: discussion, me: me, name: { author in authorName(author, shared) }, locale: locale) { comment in
+                    DiscussionSection(model: discussion, me: self.me, name: { author in authorName(author, shared) }, locale: locale) { comment in
                         Task {
                             try? await service.report(user: comment.author, shared: reminderID, reason: "message", comment: comment.id)
                             withAnimation(Motion.standard) { reportedMessage = true }
