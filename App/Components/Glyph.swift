@@ -30,8 +30,10 @@ extension CGPoint {
 enum Icons {
     static let calendar = [rect(3.5, 5, 17, 15.5, 3), "M3.5 10h17M8.5 3v4M15.5 3v4"]
     static let plus = ["M12 5v14M5 12h14"]
+    static let minus = ["M5 12h14"]
     static let pin = ["M12 21s-6.5-6.2-6.5-11.2a6.5 6.5 0 0 1 13 0C18.5 14.8 12 21 12 21z", circle(12, 9.8, 2.3)]
     static let star = ["M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8L3.5 9.7l5.9-.9z"]
+    static let pill = ["M10.5 20.5a4.95 4.95 0 0 1-7-7l10-10a4.95 4.95 0 0 1 7 7z", "M8.5 8.5l7 7"]
     static let check = ["M5 12.5l4.5 4.5L19 7.5"]
     static let close = ["M6.5 6.5l11 11M17.5 6.5l-11 11"]
     static let back = ["M14.5 6l-6 6 6 6"]

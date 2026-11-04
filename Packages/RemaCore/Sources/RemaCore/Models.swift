@@ -381,6 +381,31 @@ public struct Priorities: Codable, Hashable, Sendable {
     }
 }
 
+// One box of pills for the reminders of a course; what is left follows from the ticks given after the count.
+public struct PillCourse: Codable, Hashable, Identifiable, Sendable {
+    public static let maximumPills = 999
+    public static let doses = [1, 2, 3]
+    public static let warnings = [2, 3, 7]
+
+    public var id: UUID
+    public var reminderIDs: [UUID]
+    public var left: Int
+    public var counted: Date
+    public var perDose: Int
+    public var pack: Int
+    public var warnDays: Int
+
+    public init(id: UUID = UUID(), reminderIDs: [UUID], left: Int, counted: Date, perDose: Int = 1, pack: Int? = nil, warnDays: Int = 3) {
+        self.id = id
+        self.reminderIDs = reminderIDs
+        self.left = min(max(left, 0), Self.maximumPills)
+        self.counted = counted
+        self.perDose = max(perDose, 1)
+        self.pack = min(max(pack ?? left, 1), Self.maximumPills)
+        self.warnDays = max(warnDays, 1)
+    }
+}
+
 public struct Settings: Codable, Hashable, Sendable {
     public var defaultSound: SoundChoice
     public var morning: LocalTime
@@ -393,8 +418,10 @@ public struct Settings: Codable, Hashable, Sendable {
     public var snoozeOptions: [Int]?
     // Never cleared to nil once set: a sync without the key then means an older build, and the picks of the day stay.
     public var priorities: Priorities?
+    // The same rule as the picks: no courses left is an empty list, a missing key is an older build.
+    public var courses: [PillCourse]?
 
-    public init(defaultSound: SoundChoice, morning: LocalTime, evening: LocalTime, nagInterval: Int, appearance: Appearance, updatedAt: Date, touched: Bool? = nil, snoozeOptions: [Int]? = nil, priorities: Priorities? = nil) {
+    public init(defaultSound: SoundChoice, morning: LocalTime, evening: LocalTime, nagInterval: Int, appearance: Appearance, updatedAt: Date, touched: Bool? = nil, snoozeOptions: [Int]? = nil, priorities: Priorities? = nil, courses: [PillCourse]? = nil) {
         self.defaultSound = defaultSound
         self.morning = morning
         self.evening = evening
@@ -404,11 +431,24 @@ public struct Settings: Codable, Hashable, Sendable {
         self.touched = touched
         self.snoozeOptions = snoozeOptions
         self.priorities = priorities
+        self.courses = courses
     }
 
     public func priorityIDs(on day: LocalDate) -> [UUID] {
         guard let priorities, priorities.day == day else { return [] }
         return priorities.ids
+    }
+
+    public func course(for reminderID: UUID) -> PillCourse? {
+        courses?.first { $0.reminderIDs.contains(reminderID) }
+    }
+
+    public mutating func setCourse(_ course: PillCourse?, id: UUID) {
+        var list = (courses ?? []).filter { $0.id != id }
+        if let course {
+            list.append(course)
+        }
+        courses = list
     }
 
     public static func standard(at date: Date) -> Settings {

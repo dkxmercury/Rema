@@ -91,8 +91,8 @@ struct AgendaRow: View {
                     Text("missed")
                         .font(.app(.golos, 12, weight: 600))
                         .foregroundStyle(Palette.urgentText)
-                } else if showsSubtitle, let subtitle = row.subtitle {
-                    Text(verbatim: subtitle)
+                } else if showsSubtitle, row.subtitle != nil || row.alert != nil {
+                    subtitle
                         .font(.app(.golos, 12))
                         .foregroundStyle(Palette.secondary)
                 }
@@ -108,7 +108,14 @@ struct AgendaRow: View {
                 .accessibilityLabel(Text(row.done ? LocalizedStringKey("Mark as not done") : LocalizedStringKey("Mark as done")))
             }
         }
-        .frame(minHeight: actionable ? 0 : minHeight ?? (row.subtitle == nil || !showsSubtitle ? 46 : 52))
+        .frame(minHeight: actionable ? 0 : minHeight ?? ((row.subtitle == nil && row.alert == nil) || !showsSubtitle ? 46 : 52))
+    }
+
+    private var subtitle: Text {
+        let base = Text(verbatim: row.subtitle ?? "")
+        guard let alert = row.alert else { return base }
+        let warning = Text(verbatim: alert).foregroundStyle(Palette.accentText).fontWeight(.semibold)
+        return row.subtitle == nil ? warning : base + Text(verbatim: " · ") + warning
     }
 
     private var swipe: some Gesture {

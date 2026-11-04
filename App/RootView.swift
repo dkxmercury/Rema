@@ -106,6 +106,8 @@ struct RootView: View {
     @AppStorage("updateHidden") private var updateHidden = ""
     @AppStorage("prioritiesSkipped") private var prioritiesSkipped = ""
     @State private var choosingPriorities = false
+    @AppStorage("pillsHidden") private var pillsHidden = ""
+    @State private var buyingCourse: PillCourse?
     @Environment(\.openURL) private var openURL
     @Namespace private var zoom
 
@@ -124,6 +126,18 @@ struct RootView: View {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) { edit(target.id) }
             }, onClose: { checking = nil })
             .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
+            .presentationCornerRadius(30)
+            .presentationBackground(Palette.background)
+        }
+        .sheet(item: $buyingCourse) { course in
+            BoughtSheet(course: course, store: store) { added in
+                buyingCourse = nil
+                guard let added else { return }
+                Feedback.play(.save)
+                store.update { $0.setCourse(added, id: added.id) }
+            }
+            .presentationDetents([.medium])
             .presentationDragIndicator(.visible)
             .presentationCornerRadius(30)
             .presentationBackground(Palette.background)
@@ -521,7 +535,8 @@ struct RootView: View {
                     locale: AppLanguage.current.locale,
                     missed: Notifier.missedEnabled,
                     events: calendarFeed.day(timeline.date),
-                    priorities: store.settings.priorityIDs(on: LocalDate(timeline.date, in: .current))
+                    priorities: store.settings.priorityIDs(on: LocalDate(timeline.date, in: .current)),
+                    courses: store.settings.courses ?? []
                 ),
                 onToggle: toggle,
                 onOpen: open,
@@ -560,7 +575,10 @@ struct RootView: View {
                 onHideUpdate: { updateHidden = remote.newerVersion ?? "" },
                 prioritiesPrompt: showsPrioritiesPrompt(at: timeline.date),
                 onPrioritiesPrompt: answerPrioritiesPrompt,
-                onEditPriorities: { choosingPriorities = true }
+                onEditPriorities: { choosingPriorities = true },
+                pills: pillsAlert(at: timeline.date),
+                onPillsBought: { alert in buyingCourse = store.settings.courses?.first { $0.id == alert.courseID } },
+                onPillsRemind: remindToBuy
             )
         }
     }
@@ -587,6 +605,47 @@ struct RootView: View {
 
     private static func dayKey(_ day: LocalDate) -> String {
         "\(day.year)-\(day.month)-\(day.day)"
+    }
+
+    // The first course that runs short; «Remind to buy» hides it until tomorrow.
+    private func pillsAlert(at now: Date) -> PillsAlert? {
+        guard pillsHidden != Self.dayKey(LocalDate(now, in: .current)) else { return nil }
+        for course in store.settings.courses ?? [] {
+            guard let reminder = store.activeReminders.first(where: { course.reminderIDs.contains($0.id) }) else { continue }
+            let forecast = PillCount.forecast(course, reminders: store.reminders, now: now, calendar: .current)
+            if forecast.low {
+                return PillsAlert(courseID: course.id, title: reminder.title, forecast: forecast)
+            }
+        }
+        return nil
+    }
+
+    // A one-off reminder to buy this evening, or tomorrow morning when the evening is already near.
+    private func remindToBuy(_ alert: PillsAlert) -> (text: String, undo: () -> Void)? {
+        let calendar = Calendar.current
+        let now = Date()
+        let evening = store.settings.evening
+        let morning = store.settings.morning
+        var fire = calendar.date(bySettingHour: evening.hour, minute: evening.minute, second: 0, of: now)
+        if fire.map({ $0 < now.addingTimeInterval(15 * 60) }) ?? true {
+            fire = calendar.date(byAdding: .day, value: 1, to: now).flatMap { calendar.date(bySettingHour: morning.hour, minute: morning.minute, second: 0, of: $0) }
+        }
+        guard let fire else { return nil }
+        let parts = calendar.dateComponents([.hour, .minute], from: fire)
+        let title = String(localized: "Buy pills: \(alert.title)", bundle: .app, locale: .app)
+        let reminder = Reminder(title: String(title.prefix(Reminder.maximumTitleLength)), schedule: Schedule(start: LocalDate(fire, in: calendar), time: LocalTime(hour: parts.hour ?? morning.hour, minute: parts.minute ?? morning.minute)), createdAt: now)
+        withAnimation(Motion.standard) {
+            store.save(reminder)
+            pillsHidden = Self.dayKey(LocalDate(now, in: calendar))
+        }
+        Notifier.shared.requestPermissionIfNeeded()
+        let when = Describer(calendar: calendar, locale: AppLanguage.current.locale).dayAndTime(fire, now: now)
+        return (String(localized: "I'll remind \(when)", bundle: .app, locale: .app), {
+            withAnimation(Motion.standard) {
+                store.delete(reminder.id)
+                pillsHidden = ""
+            }
+        })
     }
 
     // A calendar event becomes a reminder at its start with a quarter of an hour ahead.

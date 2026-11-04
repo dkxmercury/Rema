@@ -26,6 +26,9 @@ struct EditorScreen: View {
     @State private var foundContact: ContactLink?
     @State private var contactDismissed = false
     @State private var opened: Reminder?
+    @State private var course: PillCourse?
+    @State private var courseEdited = false
+    @State private var editingPills = false
     @FocusState private var titleFocused: Bool
 
     private var describer: Describer {
@@ -66,6 +69,17 @@ struct EditorScreen: View {
                     pop()
                 }, onBack: pop)
             }
+        }
+        .sheet(isPresented: $editingPills) {
+            PillsSheet(reminder: draft, course: pills, store: store, calendar: calendar, locale: locale) { result in
+                course = result
+                courseEdited = true
+                editingPills = false
+            }
+            .presentationDetents([.large])
+            .presentationDragIndicator(.visible)
+            .presentationCornerRadius(30)
+            .presentationBackground(Palette.background)
         }
         .fullScreenCover(isPresented: $pickingDate) {
             DateTimeScreen(initial: when, now: now, settings: store.settings, calendar: calendar, locale: locale, repeats: draft.schedule?.rule != nil, onDone: { date in
@@ -263,6 +277,14 @@ struct EditorScreen: View {
                         .foregroundStyle(Palette.secondary)
                 }
             }
+            if draft.schedule?.rule != nil || pills != nil {
+                Hairline()
+                NavigationRow(icon: Icons.pill, iconColor: Palette.text, title: "Pills", action: { editingPills = true }) {
+                    Text(verbatim: pills.map { describer.pillsLeft(PillCount.left($0, reminders: store.reminders)) } ?? String(localized: "No", bundle: .app, locale: .app))
+                        .font(.app(.golos, 14))
+                        .foregroundStyle(Palette.secondary)
+                }
+            }
             if Remote.shared.isOn(.places) || !draft.placeIDs.isEmpty {
                 Hairline()
                 NavigationRow(icon: Icons.pin, iconColor: Palette.text, title: "By place", action: { path.append(.places) }) {
@@ -278,6 +300,11 @@ struct EditorScreen: View {
             Hairline()
             soundRow
         }
+    }
+
+    // The course as the store has it until the sheet changes it here.
+    private var pills: PillCourse? {
+        courseEdited ? course : store.settings.course(for: draft.id)
     }
 
     private var shownContact: ContactLink? {
@@ -503,6 +530,10 @@ struct EditorScreen: View {
             }
         }
         store.save(reminder)
+        let stored = store.settings.course(for: reminder.id)
+        if courseEdited, course != stored, let id = course?.id ?? stored?.id {
+            store.update { $0.setCourse(course, id: id) }
+        }
         let occurrence = Agenda.listOccurrence(reminder, now: Date(), calendar: calendar)
         let finished = reminder.doneWhenChecked && !reminder.items.isEmpty && reminder.items.allSatisfy(\.done)
         if finished, !reminder.isDone(occurrence), before.map({ $0.items.isEmpty || !$0.items.allSatisfy(\.done) }) ?? true {

@@ -39,6 +39,20 @@ final class ScreenSnapshots: XCTestCase {
         try render(HomeScreen(content: home), name: "L-TopHome-Dark", style: .dark)
     }
 
+    func testPills() throws {
+        let store = Store(directory: FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString))
+        let reminders = SampleData.reminders + SampleData.pillReminders
+        store.seed(reminders: reminders, places: SampleData.places, sounds: [SampleData.gong])
+        store.update { $0.courses = [SampleData.pillCourse] }
+        let home = HomeContent.make(reminders: reminders, places: SampleData.places, now: SampleData.now, calendar: SampleData.calendar, locale: russian, courses: [SampleData.pillCourse])
+        let alert = PillsAlert(courseID: SampleData.pillCourse.id, title: "Пить таблетки", forecast: SampleData.pillForecast)
+        try render(HomeScreen(content: home, pills: alert), name: "M-PillsHome", style: .light)
+        try render(HomeScreen(content: home, pills: alert), name: "M-PillsHome-Dark", style: .dark)
+        try render(EditorScreen(draft: SampleData.pillReminders[1], isNew: false, store: store, now: SampleData.now, calendar: SampleData.calendar, locale: russian, onClose: {}), name: "M-PillsEditor", style: .light, height: 1000)
+        try render(PillsSheet(reminder: SampleData.pillReminders[1], course: SampleData.pillCourse, store: store, now: SampleData.now, calendar: SampleData.calendar, locale: russian, onDone: { _ in }), name: "M-PillsSheet", style: .light)
+        try render(BoughtSheet(course: SampleData.pillCourse, store: store, now: SampleData.now, calendar: SampleData.calendar, locale: russian, onDone: { _ in }), name: "M-PillsBought", style: .light, height: 520)
+    }
+
     func testOtherReading() throws {
         try render(PhraseScreen(store: sampleStore(), text: "в 7 ужин с семьёй", now: SampleData.now, calendar: SampleData.calendar, locale: russian, autofocus: false, onClose: {}), name: "Phrase-OtherReading", style: .dark)
     }

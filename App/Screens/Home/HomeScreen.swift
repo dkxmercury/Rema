@@ -39,6 +39,9 @@ struct HomeScreen: View {
     var prioritiesPrompt = false
     var onPrioritiesPrompt: (Bool) -> Void = { _ in }
     var onEditPriorities: () -> Void = {}
+    var pills: PillsAlert?
+    var onPillsBought: (PillsAlert) -> Void = { _ in }
+    var onPillsRemind: (PillsAlert) -> (text: String, undo: () -> Void)? = { _ in nil }
     @State private var addPressed = false
     @State private var intro = false
     @State private var lift: DialLift?
@@ -84,7 +87,11 @@ struct HomeScreen: View {
                     scheduledButton
                         .padding(.top, 12)
                 }
-                if let habit, lift == nil {
+                if let pills, lift == nil {
+                    PillsCard(alert: pills, onBought: { onPillsBought(pills) }, onRemind: { remindToBuy(pills) })
+                        .padding(.top, 12)
+                        .transition(.opacity.combined(with: .move(edge: .top)))
+                } else if let habit, lift == nil {
                     HabitSuggestionCard(suggestion: habit) { accepted in
                         withAnimation(Motion.standard) { onHabit(habit, accepted) }
                     }
@@ -180,6 +187,7 @@ struct HomeScreen: View {
         .animation(Motion.adaptive(Motion.standard, reduceMotion: reduceMotion), value: snoozeHint)
         .animation(Motion.adaptive(Motion.standard, reduceMotion: reduceMotion), value: tip)
         .animation(Motion.adaptive(Motion.standard, reduceMotion: reduceMotion), value: prioritiesPrompt)
+        .animation(Motion.adaptive(Motion.standard, reduceMotion: reduceMotion), value: pills)
         .onChange(of: holding) { _, active in
             guard !active else { return }
             // A cancelled gesture never reaches onEnded, so a lift left over after it is dropped here.
@@ -596,6 +604,14 @@ struct HomeScreen: View {
             if !content.tiles.isEmpty, scheduledCount == 0 {
                 tiles
             }
+        }
+    }
+
+    private func remindToBuy(_ alert: PillsAlert) {
+        guard let done = onPillsRemind(alert) else { return }
+        Feedback.play(.save)
+        withAnimation(Motion.standard) {
+            toast = Toast(text: done.text, undo: done.undo)
         }
     }
 

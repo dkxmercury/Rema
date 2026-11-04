@@ -314,7 +314,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         let when = describer.dayAndTime(item.occurrence, now: item.fireDate).capitalizedFirst(.current)
         switch item.kind {
         case .main:
-            return [when, listLine(item.reminderID)].compactMap { $0 }.joined(separator: "\n")
+            return [when, listLine(item.reminderID), pillsLine(item, now: now)].compactMap { $0 }.joined(separator: "\n")
         case .early:
             return [String(localized: "\(when), reminding in advance", bundle: .app, locale: .app), listLine(item.reminderID)].compactMap { $0 }.joined(separator: "\n")
         case .snoozed:
@@ -326,6 +326,14 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
             let next = index == Scheduler.nagRepeats ? String(localized: "This is the last reminder.", bundle: .app, locale: .app) : String(localized: "I'll repeat in \(interval) minutes until you tap Done.", bundle: .app, locale: .app)
             return "\(ordinal(index + 1)). \(next)"
         }
+    }
+
+    // Counted for the moment of the dose, as if the doses before it were taken.
+    private func pillsLine(_ item: PlannedNotification, now: Date) -> String? {
+        guard let course = store.settings.course(for: item.reminderID) else { return nil }
+        let forecast = PillCount.forecast(course, reminders: store.reminders, at: item.occurrence, now: now, calendar: .current)
+        guard forecast.low else { return nil }
+        return Describer(locale: AppLanguage.current.locale).pillsWarning(forecast)
     }
 
     // What is still to tick, right in the notification, so the list is at hand in the shop.

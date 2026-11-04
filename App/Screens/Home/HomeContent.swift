@@ -21,6 +21,7 @@ struct HomeContent {
         var missed = false
         var shared = false
         var priority: Int?
+        var alert: String?
     }
 
     struct Event: Identifiable {
@@ -76,7 +77,7 @@ extension HomeContent {
         return trimmed.isEmpty ? String(localized: "Event from the calendar", bundle: .app, locale: .app) : String(trimmed.prefix(Reminder.maximumTitleLength))
     }
 
-    static func make(reminders: [Reminder], places: [Place], now: Date, calendar: Calendar, locale: Locale, missed showsMissed: Bool = false, events entries: [CalendarEntry] = [], priorities: [UUID] = []) -> HomeContent {
+    static func make(reminders: [Reminder], places: [Place], now: Date, calendar: Calendar, locale: Locale, missed showsMissed: Bool = false, events entries: [CalendarEntry] = [], priorities: [UUID] = [], courses: [PillCourse] = []) -> HomeContent {
         let describer = Describer(calendar: calendar, locale: locale)
         let active = reminders.filter(\.isLive)
         let byID = Dictionary(active.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
@@ -130,6 +131,13 @@ extension HomeContent {
         for index in rows.indices where priorities.contains(rows[index].reminderID) && !ranked.contains(rows[index].reminderID) {
             ranked.insert(rows[index].reminderID)
             rows[index].priority = ranked.count
+        }
+        for course in courses {
+            let forecast = PillCount.forecast(course, reminders: reminders, now: now, calendar: calendar)
+            guard forecast.low else { continue }
+            for index in rows.indices where !rows[index].done && course.reminderIDs.contains(rows[index].reminderID) {
+                rows[index].alert = describer.pillsShort(forecast)
+            }
         }
 
         var next: Next?
@@ -330,6 +338,21 @@ enum SampleData {
 
     static var fullPriorities: Priorities {
         Priorities(day: LocalDate(year: 2026, month: 10, day: 5), ids: priorityIDs)
+    }
+
+    static let pillReminders: [Reminder] = {
+        let start = LocalDate(year: 2026, month: 10, day: 1)
+        var morning = Reminder(title: "Пить таблетки", schedule: Schedule(start: start, time: LocalTime(hour: 9, minute: 0), rule: .daily), createdAt: now)
+        let nine = calendar.date(from: DateComponents(year: 2026, month: 10, day: 5, hour: 9, minute: 0))!
+        morning.markDone(through: nine, at: nine.addingTimeInterval(120))
+        let evening = Reminder(title: "Пить таблетки", schedule: Schedule(start: start, time: LocalTime(hour: 21, minute: 0), rule: .daily), createdAt: now)
+        return [morning, evening]
+    }()
+
+    static let pillCourse = PillCourse(reminderIDs: pillReminders.map(\.id), left: 3, counted: calendar.date(from: DateComponents(year: 2026, month: 10, day: 5, hour: 10, minute: 0))!, pack: 20)
+
+    static var pillForecast: PillForecast {
+        PillCount.forecast(pillCourse, reminders: pillReminders, now: now, calendar: calendar)
     }
 
     // A day longer than the screen, for the scrolling check.

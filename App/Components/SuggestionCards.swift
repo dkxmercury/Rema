@@ -47,6 +47,55 @@ struct EarlySuggestionCard: View {
     }
 }
 
+struct PillsAlert: Equatable {
+    let courseID: UUID
+    let title: String
+    let forecast: PillForecast
+}
+
+struct PillsCard: View {
+    let alert: PillsAlert
+    var locale: Locale = AppLanguage.current.locale
+    let onBought: () -> Void
+    let onRemind: () -> Void
+
+    var body: some View {
+        VStack(spacing: 12) {
+            HStack(spacing: 12) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 12, style: .circular)
+                        .fill(Palette.segment)
+                    Glyph(paths: Icons.pill, size: 20, lineWidth: 2, color: Palette.accentOnSegment)
+                }
+                .frame(width: 40, height: 40)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(alert.forecast.pills > 0 ? LocalizedStringKey("Pills are running out") : LocalizedStringKey("Pills have run out"))
+                        .font(.app(.golos, 15, weight: 600))
+                    Text(verbatim: Describer(locale: locale).pillsCard(title: alert.title, forecast: alert.forecast))
+                        .font(.app(.golos, 13))
+                        .foregroundStyle(Palette.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            HStack(spacing: 8) {
+                Button(action: onBought) {
+                    Text("Bought")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(SmallButtonStyle(prominent: true, height: 40))
+                Button(action: onRemind) {
+                    Text("Remind to buy")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(SmallButtonStyle(prominent: false, height: 40))
+            }
+        }
+        .padding(14)
+        .panel(radius: 20)
+    }
+}
+
 struct PrioritiesPromptCard: View {
     let onAnswer: (Bool) -> Void
 
