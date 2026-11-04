@@ -25,8 +25,8 @@ enum SharedNames {
         return fallback.isEmpty ? String(localized: "Friend", bundle: .app, locale: .app) : fallback
     }
 
-    // «Аня, сестра и Илья»: the others in the reminder.
-    static func line(_ shared: SharedInfo) -> String {
+    // The others in the reminder, by the names I gave them.
+    static func people(_ shared: SharedInfo) -> [String] {
         let known = names
         let account = me
         var result: [String] = []
@@ -36,6 +36,11 @@ enum SharedNames {
         for member in shared.members where member.id != account && (member.status == SharedStatus.accepted || member.status == SharedStatus.invited) {
             result.append(name(of: member.id, fallback: member.name, known: known))
         }
-        return result.formatted(.list(type: .and).locale(Locale.app))
+        return result
+    }
+
+    // «Аня, сестра и Илья»: the others in the reminder.
+    static func line(_ shared: SharedInfo) -> String {
+        people(shared).formatted(.list(type: .and).locale(Locale.app))
     }
 }

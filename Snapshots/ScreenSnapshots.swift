@@ -12,9 +12,33 @@ final class ScreenSnapshots: XCTestCase {
     func testScheduled() throws {
         let content = ScheduledContent.make(reminders: SampleData.reminders, places: SampleData.places, now: SampleData.now, calendar: SampleData.calendar, locale: russian)
         let count = ScheduledContent.count(reminders: SampleData.reminders, now: SampleData.now, calendar: SampleData.calendar)
-        try render(ScheduledScreen(content: content, onBack: {}), name: "D-Scheduled", style: .light)
-        try render(ScheduledScreen(content: content, onBack: {}), name: "Dark-Scheduled", style: .dark)
+        let store = sampleStore()
+        try render(ScheduledScreen(content: content, store: store, now: SampleData.now, calendar: SampleData.calendar, locale: russian, onBack: {}), name: "D-Scheduled", style: .light)
+        try render(ScheduledScreen(content: content, store: store, now: SampleData.now, calendar: SampleData.calendar, locale: russian, onBack: {}), name: "Dark-Scheduled", style: .dark)
         try render(HomeScreen(content: SampleData.home, scheduledCount: count), name: "Home-Scheduled", style: .dark)
+    }
+
+    func testSearch() throws {
+        let store = Store(directory: FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString))
+        let created = SampleData.now
+        let sasha = Place(name: "У Саши", icon: "home", latitude: 41.3, longitude: 69.25, radius: 150, createdAt: created)
+        var groceries = SampleData.groceries
+        groceries.items.append(ChecklistItem(text: "Торт для Саши"))
+        let friends = SharedInfo(owner: SharedPerson(id: "me", name: "Я"), status: SharedStatus.owner, members: [SharedMember(id: "f1", name: "Саша", status: SharedStatus.accepted), SharedMember(id: "f2", name: "Илья", status: SharedStatus.accepted)], doneMode: .each)
+        var gift = Reminder(title: "Подарок для Саши", schedule: Schedule(start: LocalDate(year: 2026, month: 9, day: 28), time: LocalTime(hour: 18, minute: 0)), createdAt: created)
+        gift.markDone(through: SampleData.calendar.date(from: DateComponents(year: 2026, month: 9, day: 28, hour: 18))!)
+        let extra = [
+            Reminder(title: "Забрать Сашу из школы", schedule: Schedule(start: LocalDate(year: 2026, month: 10, day: 6), time: LocalTime(hour: 15, minute: 30), rule: .weekdays), createdAt: created),
+            groceries,
+            Reminder(title: "Кино в субботу", schedule: Schedule(start: LocalDate(year: 2026, month: 10, day: 10), time: LocalTime(hour: 19, minute: 0)), shared: friends, createdAt: created),
+            Reminder(title: "Отвезти книги", schedule: nil, placeIDs: [sasha.id], createdAt: created),
+            gift,
+        ]
+        store.seed(reminders: SampleData.reminders + extra, places: SampleData.places + [sasha], sounds: [])
+        let content = ScheduledContent.make(reminders: store.reminders, places: store.places, now: SampleData.now, calendar: SampleData.calendar, locale: russian)
+        for (name, style) in [("L-SearchResults", UIUserInterfaceStyle.light), ("L-SearchResults-Dark", .dark)] {
+            try render(ScheduledScreen(content: content, store: store, now: SampleData.now, calendar: SampleData.calendar, locale: russian, onBack: {}, query: "саш"), name: name, style: style)
+        }
     }
 
     func testOtherReading() throws {
@@ -138,7 +162,7 @@ final class ScreenSnapshots: XCTestCase {
     func testHistory() throws {
         let done = DoneContent.make(reminders: SampleData.withHistory, now: SampleData.now, calendar: SampleData.calendar, locale: russian)
         let content = ScheduledContent.make(reminders: SampleData.reminders, places: SampleData.places, now: SampleData.now, calendar: SampleData.calendar, locale: russian)
-        try render(ScheduledScreen(content: content, done: done, onBack: {}, tab: .done), name: "D-History", style: .dark, height: 1400)
+        try render(ScheduledScreen(content: content, done: done, store: sampleStore(), onBack: {}, tab: .done), name: "D-History", style: .dark, height: 1400)
     }
 
     func testMulti() throws {

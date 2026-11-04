@@ -8,34 +8,58 @@ struct ScheduledScreen: View {
 
     let content: ScheduledContent
     var done: DoneContent = .empty
+    let store: Store
+    var now = Date()
+    var calendar: Calendar = .current
+    var locale: Locale = AppLanguage.current.locale
     var onOpen: (UUID) -> Void = { _ in }
     let onBack: () -> Void
     var loading = false
     @State var tab = Tab.upcoming
+    @State var query = ""
+    @State private var resultLimit = SearchResultsList.pageSize
+    @FocusState private var searchFocused: Bool
 
     var body: some View {
         ZStack {
             Palette.background.ignoresSafeArea()
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 0) {
-                    Segmented(options: [(Tab.upcoming, "Upcoming"), (Tab.done, "Completed")], selection: $tab)
-                        .padding(.top, 14)
-                    switch tab {
-                    case .upcoming:
-                        upcoming
-                    case .done:
-                        history
+                    if searching {
+                        SearchResultsList(query: query, store: store, now: now, calendar: calendar, locale: locale, limit: $resultLimit, onOpen: onOpen)
+                    } else {
+                        Segmented(options: [(Tab.upcoming, "Upcoming"), (Tab.done, "Completed")], selection: $tab)
+                            .padding(.top, 14)
+                        switch tab {
+                        case .upcoming:
+                            upcoming
+                        case .done:
+                            history
+                        }
                     }
                 }
                 .padding(.horizontal, 18)
                 .padding(.bottom, 40)
             }
             .scrollIndicators(.hidden)
+            .scrollDismissesKeyboard(.interactively)
             .pinnedHeader {
-                ScreenHeader(title: "Scheduled", leading: .back, action: onBack)
+                VStack(spacing: 14) {
+                    if !searching {
+                        ScreenHeader(title: "Scheduled", leading: .back, action: onBack)
+                            .transition(.opacity.combined(with: .move(edge: .top)))
+                    }
+                    SearchBar(query: $query, focused: $searchFocused, searching: searching)
+                }
+                .animation(Motion.standard, value: searching)
             }
         }
         .foregroundStyle(Palette.text)
+        .onChange(of: query) { _, _ in resultLimit = SearchResultsList.pageSize }
+    }
+
+    private var searching: Bool {
+        searchFocused || !query.isEmpty
     }
 
     @ViewBuilder

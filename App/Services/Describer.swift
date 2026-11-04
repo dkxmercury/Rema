@@ -111,6 +111,22 @@ struct Describer {
         return String(localized: "\(day) at \(time)", bundle: .app, locale: .app)
     }
 
+    func relativeDay(_ date: Date, now: Date) -> String {
+        let style = Date.FormatStyle(locale: locale, calendar: calendar, timeZone: calendar.timeZone)
+        let day = date.formatted(style.day().month(.wide))
+        if calendar.isDate(date, inSameDayAs: now) {
+            return String(localized: "today, \(day)", bundle: .app, locale: .app)
+        }
+        if let tomorrow = calendar.date(byAdding: .day, value: 1, to: now), calendar.isDate(date, inSameDayAs: tomorrow) {
+            return String(localized: "tomorrow, \(day)", bundle: .app, locale: .app)
+        }
+        let days = calendar.dateComponents([.day], from: calendar.startOfDay(for: now), to: calendar.startOfDay(for: date)).day ?? 0
+        if days > 1, days < 7 {
+            return date.formatted(style.weekday(.abbreviated).day().month(.wide))
+        }
+        return day
+    }
+
     func time(_ date: Date) -> String {
         let parts = calendar.dateComponents([.hour, .minute], from: date)
         return String(format: "%02d:%02d", parts.hour ?? 0, parts.minute ?? 0)
