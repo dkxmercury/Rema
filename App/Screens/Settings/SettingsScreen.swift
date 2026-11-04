@@ -19,6 +19,7 @@ struct SettingsScreen: View {
     var onImport: () -> Void = {}
     var onFriends: () -> Void = {}
     var onNews: () -> Void = {}
+    var onIcon: () -> Void = {}
     let onBack: () -> Void
 
     @AppStorage(Feedback.hapticsKey) private var haptics = true
@@ -31,6 +32,7 @@ struct SettingsScreen: View {
     @State private var lock = AppLock.shared
     @State private var calendarFeed = CalendarFeed.shared
     @State private var news = NewsService.shared
+    @State private var icons = AppIcons.shared
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.colorScheme) private var colorScheme
 
@@ -200,6 +202,13 @@ struct SettingsScreen: View {
                     }
                     section("Theme") {
                         Segmented(options: [(Appearance.system, "As in system"), (Appearance.light, "Light"), (Appearance.dark, "Dark")], selection: appearance, fontSize: 14)
+                    }
+                    if icons.available {
+                        section("Icon") {
+                            PanelList {
+                                iconRow
+                            }
+                        }
                     }
                     section("Feedback") {
                         PanelList {
@@ -451,6 +460,24 @@ struct SettingsScreen: View {
             .contentShape(Rectangle())
             .foregroundStyle(Palette.text)
         }
+    }
+
+    private var iconRow: some View {
+        Button(action: onIcon) {
+            HStack(spacing: 12) {
+                AppIconTile(choice: icons.current, size: 30)
+                Text("App icon")
+                    .font(.app(.golos, 16, weight: 500))
+                    .lineLimit(2)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                value(icons.current.name)
+                    .layoutPriority(1)
+                Glyph(paths: Icons.chevron, size: 16, lineWidth: 2, color: Palette.secondary)
+            }
+            .frame(minHeight: 56)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(RowPressStyle())
     }
 
     private func value(_ text: String) -> some View {

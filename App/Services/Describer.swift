@@ -81,9 +81,14 @@ struct Describer {
     }
 
     func placeText(_ reminder: Reminder, places: [Place]) -> String {
-        let names = reminder.placeIDs.compactMap { id in places.first { $0.id == id }?.name.lowercased(with: locale) }
+        let names = reminder.placeIDs.compactMap { id in places.first { $0.id == id }.map { inlineName($0.name) } }
         let trigger = reminder.placeTrigger == .leave ? String(localized: "leaving", bundle: .app, locale: .app) : String(localized: "arriving", bundle: .app, locale: .app)
         return String(localized: "\(trigger): \(names.joined(separator: ", "))", bundle: .app, locale: .app)
+    }
+
+    // A name with capitals inside, like a friend's, is a proper name and keeps the case it was typed in.
+    private func inlineName(_ name: String) -> String {
+        name.dropFirst().contains { $0.isUppercase } ? name : name.lowercased(with: locale)
     }
 
     func countdown(from now: Date, to date: Date) -> String {

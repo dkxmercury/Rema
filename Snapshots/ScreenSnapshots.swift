@@ -32,6 +32,8 @@ final class ScreenSnapshots: XCTestCase {
         let store = sampleStore()
         store.update { $0.priorities = SampleData.priorities }
         try render(PrioritiesSheet(store: store, now: SampleData.now, calendar: SampleData.calendar, locale: russian, onClose: {}), name: "L-TopSheet", style: .light)
+        store.update { $0.priorities = SampleData.fullPriorities }
+        try render(PrioritiesSheet(store: store, now: SampleData.now, calendar: SampleData.calendar, locale: russian, onClose: {}), name: "L-TopSheet-Full", style: .light)
         let home = HomeContent.make(reminders: SampleData.reminders, places: SampleData.places, now: SampleData.now, calendar: SampleData.calendar, locale: russian, priorities: SampleData.priorityIDs)
         try render(HomeScreen(content: home), name: "L-TopHome", style: .light)
         try render(HomeScreen(content: home), name: "L-TopHome-Dark", style: .dark)
@@ -90,7 +92,12 @@ final class ScreenSnapshots: XCTestCase {
     }
 
     func testSettings() throws {
-        try render(SettingsScreen(store: sampleStore(), locale: russian, onBack: {}), name: "D-Settings", style: .light, height: 1500)
+        try render(SettingsScreen(store: sampleStore(), locale: russian, onBack: {}), name: "D-Settings", style: .light, height: 2800)
+    }
+
+    func testIcon() throws {
+        try render(IconScreen(onBack: {}), name: "L-IconPicker", style: .light)
+        try render(IconScreen(onBack: {}), name: "L-IconPicker-Dark", style: .dark)
     }
 
     func testSound() throws {

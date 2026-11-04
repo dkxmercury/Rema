@@ -51,15 +51,20 @@ struct PrioritiesSheet: View {
                 }
                 .padding(.top, 28)
                 ScrollView {
-                    list
-                        .padding(.top, 16)
-                    Text("To choose another, unstar one of the three. You can change this at any time.")
-                        .font(.app(.golos, 13))
-                        .foregroundStyle(Palette.secondary)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: .infinity)
-                        .padding(.top, 12)
-                        .padding(.bottom, 120)
+                    VStack(spacing: 0) {
+                        list
+                            .padding(.top, 16)
+                        if chosen.count >= Priorities.limit {
+                            Text("To choose another, unstar one of the three. You can change this at any time.")
+                                .font(.app(.golos, 13))
+                                .foregroundStyle(Palette.secondary)
+                                .multilineTextAlignment(.center)
+                                .frame(maxWidth: .infinity)
+                                .padding(.top, 12)
+                                .transition(.opacity)
+                        }
+                    }
+                    .padding(.bottom, 120)
                 }
                 .scrollIndicators(.hidden)
             }

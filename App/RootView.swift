@@ -30,6 +30,7 @@ enum RootRoute: Hashable {
     case news
     case newsItem(String)
     case bell
+    case icon
 }
 
 struct SharedTarget: Identifiable {
@@ -262,8 +263,11 @@ struct RootView: View {
                 onImport: { navigation.path.append(.importReminders) },
                 onFriends: { navigation.path.append(.friends) },
                 onNews: { navigation.path.append(.news) },
+                onIcon: { navigation.path.append(.icon) },
                 onBack: { navigation.path.removeLast() }
             )
+        case .icon:
+            IconScreen { navigation.path.removeLast() }
         case .news:
             NewsScreen(onOpen: { navigation.path.append(.newsItem($0)) }, onBack: { navigation.path.removeLast() })
         case .newsItem(let id):

@@ -328,6 +328,10 @@ enum SampleData {
         Priorities(day: LocalDate(year: 2026, month: 10, day: 5), ids: [reminders[1].id, reminders[3].id])
     }
 
+    static var fullPriorities: Priorities {
+        Priorities(day: LocalDate(year: 2026, month: 10, day: 5), ids: priorityIDs)
+    }
+
     // A day longer than the screen, for the scrolling check.
     static var busyDay: [Reminder] {
         let day = LocalDate(year: 2026, month: 10, day: 5)
