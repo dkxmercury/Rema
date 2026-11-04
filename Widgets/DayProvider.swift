@@ -19,6 +19,10 @@ struct DayEntry: TimelineEntry {
         rows.filter { !$0.done }
     }
 
+    var mainRows: [HomeContent.Row] {
+        rows.filter { $0.priority != nil }
+    }
+
     var laterToday: Int {
         guard let nextOccurrence else { return openRows.count }
         return openRows.filter { $0.occurrence > nextOccurrence }.count
@@ -39,7 +43,8 @@ struct DayEntry: TimelineEntry {
     static func make(at date: Date, snapshot: StoreSnapshot?) -> DayEntry {
         let reminders = snapshot?.reminders ?? []
         let places = snapshot?.places ?? []
-        let content = HomeContent.make(reminders: reminders, places: places, now: date, calendar: .current, locale: .app)
+        let priorities = snapshot?.settings.priorityIDs(on: LocalDate(date, in: .current)) ?? []
+        let content = HomeContent.make(reminders: reminders, places: places, now: date, calendar: .current, locale: .app, priorities: priorities)
         let active = reminders.filter(\.isLive)
         let next = Agenda.upcoming(after: date, reminders: active, calendar: .current, limit: 1).first
         return DayEntry(date: date, content: content, nextOccurrence: next?.occurrence)

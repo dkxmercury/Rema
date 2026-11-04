@@ -366,7 +366,10 @@ private struct Merger {
             state.known[key] = record.clientUpdatedAt
             return
         }
-        guard let data = record.data, let settings = try? data.decode(Settings.self) else { return }
+        guard let data = record.data, var settings = try? data.decode(Settings.self) else { return }
+        if case .object(let fields) = data, fields["priorities"] == nil {
+            settings.priorities = snapshot.settings.priorities
+        }
         state.known[key] = record.clientUpdatedAt
         if settings != snapshot.settings {
             snapshot.settings = settings

@@ -204,21 +204,26 @@ struct TodayWidgetView: View {
     }
 
     private var medium: some View {
-        HStack(spacing: 14) {
+        let main = entry.mainRows
+        let rows = main.isEmpty ? Array(entry.openRows.prefix(3)) : Array(main.prefix(3))
+        return HStack(spacing: 14) {
             WidgetDial(style: .medium, size: 142, hour: entry.content.nowHour, minute: entry.content.nowMinute, markers: entry.content.markers)
             VStack(alignment: .leading, spacing: 0) {
                 HStack(alignment: .firstTextBaseline) {
-                    Text(verbatim: String(localized: "Today", bundle: .app, locale: .app))
-                        .font(.app(.golos, 11, weight: 600))
-                        .tracking(0.88)
-                        .textCase(.uppercase)
+                    if main.isEmpty {
+                        Text(verbatim: String(localized: "Today", bundle: .app, locale: .app))
+                            .font(.app(.golos, 11, weight: 600))
+                            .tracking(0.88)
+                            .textCase(.uppercase)
+                    } else {
+                        mainLabel
+                    }
                     Spacer(minLength: 4)
-                    Text(verbatim: String(localized: "\(entry.doneCount) of \(entry.rows.count)", bundle: .app, locale: .app))
+                    Text(verbatim: main.isEmpty ? String(localized: "\(entry.doneCount) of \(entry.rows.count)", bundle: .app, locale: .app) : String(localized: "\(main.filter(\.done).count) of \(main.count)", bundle: .app, locale: .app))
                         .font(.app(.golos, 11))
                 }
                 .foregroundStyle(Palette.secondary)
                 .padding(.bottom, 4)
-                let rows = Array(entry.openRows.prefix(3))
                 if rows.isEmpty {
                     Text(verbatim: String(localized: "Nothing ahead", bundle: .app, locale: .app))
                         .font(.app(.golos, 13, weight: 600))
@@ -249,8 +254,24 @@ struct TodayWidgetView: View {
         .foregroundStyle(Palette.text)
     }
 
+    private var mainLabel: some View {
+        HStack(spacing: 5) {
+            Glyph(paths: Icons.star, size: 12, lineWidth: 2, color: Palette.accentText, filled: true)
+            Text(verbatim: String(localized: "Main", bundle: .app, locale: .app))
+                .font(.app(.golos, 11, weight: 600))
+                .tracking(0.88)
+                .textCase(.uppercase)
+                .foregroundStyle(Palette.accentText)
+        }
+    }
+
     private var large: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        let main = entry.mainRows
+        let open = entry.openRows
+        // With the main things on top there is room for two more rows of the day.
+        let rest = Array(open.filter { $0.priority == nil }.prefix(max(0, 5 - main.count)))
+        let rows = Array((open.isEmpty ? entry.rows : open).prefix(5))
+        return VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .firstTextBaseline) {
                 Text(verbatim: entry.content.dateLine.capitalizedFirst(.app))
                     .font(.app(.jost, 20, weight: 500))
@@ -272,59 +293,91 @@ struct TodayWidgetView: View {
             }
             .frame(height: 8)
             .padding(.top, 10)
-            VStack(spacing: 0) {
-                let open = entry.openRows
-                let rows = Array((open.isEmpty ? entry.rows : open).prefix(5))
-                ForEach(rows) { row in
-                    HStack(spacing: 12) {
-                        Text(verbatim: row.time)
-                            .font(.app(.jost, 18, weight: row.highlighted ? 600 : 500))
-                            .foregroundStyle(row.done ? Palette.secondary : (row.highlighted ? Palette.accentText : Palette.text))
-                            .frame(width: 48, alignment: .leading)
-                        Text(verbatim: row.title)
-                            .font(.app(.golos, 15, weight: row.highlighted ? 600 : 400))
-                            .strikethrough(row.done)
-                            .foregroundStyle(row.done ? Palette.secondary : Palette.text)
-                            .lineLimit(1)
+            if main.isEmpty {
+                VStack(spacing: 0) {
+                    ForEach(rows) { row in
+                        largeRow(row, last: row.id == rows.last?.id)
+                    }
+                    if open.count > rows.count {
+                        Text(verbatim: String(localized: "\(open.count - rows.count) more today", bundle: .app, locale: .app))
+                            .font(.app(.golos, 13))
+                            .foregroundStyle(Palette.secondary)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        Button(intent: ToggleReminderIntent(reminderID: row.reminderID, occurrence: row.occurrence, done: !row.done)) {
-                            CheckBox(isOn: row.done)
+                            .padding(.top, 6)
+                    }
+                    if rows.isEmpty {
+                        Text(verbatim: String(localized: "Nothing for today", bundle: .app, locale: .app))
+                            .font(.app(.golos, 15, weight: 600))
+                            .foregroundStyle(Palette.secondary)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 24)
+                    }
+                }
+                .padding(.top, 8)
+            } else {
+                mainLabel
+                    .padding(.top, 12)
+                VStack(spacing: 0) {
+                    ForEach(main) { row in
+                        largeRow(row, last: row.id == main.last?.id)
+                    }
+                }
+                if !rest.isEmpty {
+                    Text(verbatim: String(localized: "More today", bundle: .app, locale: .app))
+                        .font(.app(.golos, 11, weight: 600))
+                        .tracking(0.88)
+                        .textCase(.uppercase)
+                        .foregroundStyle(Palette.secondary)
+                        .padding(.top, 10)
+                    VStack(spacing: 0) {
+                        ForEach(rest) { row in
+                            largeRow(row, last: row.id == rest.last?.id)
                         }
-                        .buttonStyle(.plain)
                     }
-                    .frame(minHeight: 47)
-                    if row.id != rows.last?.id {
-                        WidgetHairline()
-                    }
-                }
-                if open.count > rows.count {
-                    Text(verbatim: String(localized: "\(open.count - rows.count) more today", bundle: .app, locale: .app))
-                        .font(.app(.golos, 13))
-                        .foregroundStyle(Palette.secondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.top, 6)
-                }
-                if rows.isEmpty {
-                    Text(verbatim: String(localized: "Nothing for today", bundle: .app, locale: .app))
-                        .font(.app(.golos, 15, weight: 600))
-                        .foregroundStyle(Palette.secondary)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 24)
                 }
             }
-            .padding(.top, 8)
             Spacer(minLength: 0)
-            VStack(alignment: .leading, spacing: 6) {
-                if let place = entry.placeLine {
-                    footnote(place, icon: Icons.pin, color: Palette.secondary)
+            if main.isEmpty {
+                VStack(alignment: .leading, spacing: 6) {
+                    if let place = entry.placeLine {
+                        footnote(place, icon: Icons.pin, color: Palette.secondary)
+                    }
+                    if let yearly = entry.yearlyLine {
+                        footnote(yearly, icon: Icons.star, color: Palette.yearly)
+                    }
                 }
-                if let yearly = entry.yearlyLine {
-                    footnote(yearly, icon: Icons.star, color: Palette.yearly)
-                }
+                .padding(.top, 10)
             }
-            .padding(.top, 10)
         }
         .foregroundStyle(Palette.text)
+    }
+
+    private func largeRow(_ row: HomeContent.Row, last: Bool) -> some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 12) {
+                if let priority = row.priority {
+                    PriorityBadge(number: priority)
+                }
+                Text(verbatim: row.time)
+                    .font(.app(.jost, 18, weight: row.highlighted ? 600 : 500))
+                    .foregroundStyle(row.done ? Palette.secondary : (row.highlighted ? Palette.accentText : Palette.text))
+                    .frame(width: 48, alignment: .leading)
+                Text(verbatim: row.title)
+                    .font(.app(.golos, 15, weight: row.highlighted ? 600 : 400))
+                    .strikethrough(row.done)
+                    .foregroundStyle(row.done ? Palette.secondary : Palette.text)
+                    .lineLimit(1)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                Button(intent: ToggleReminderIntent(reminderID: row.reminderID, occurrence: row.occurrence, done: !row.done)) {
+                    CheckBox(isOn: row.done)
+                }
+                .buttonStyle(.plain)
+            }
+            .frame(minHeight: 46)
+            if !last {
+                WidgetHairline()
+            }
+        }
     }
 
     private func footnote(_ text: String, icon: [String], color: Color) -> some View {

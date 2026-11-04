@@ -79,6 +79,7 @@ targets:
       - path: App/Components/Glyph.swift
       - path: App/Components/CheckBox.swift
       - path: App/Components/Dial.swift
+      - path: App/Components/PriorityBadge.swift
       - path: App/Screens/Home/HomeContent.swift
       - path: App/Resources/Fonts
         buildPhase: resources

@@ -368,6 +368,19 @@ public enum Appearance: String, Codable, Sendable {
     case dark
 }
 
+// The main things of one day, up to three reminders picked to stand on top.
+public struct Priorities: Codable, Hashable, Sendable {
+    public static let limit = 3
+
+    public var day: LocalDate
+    public var ids: [UUID]
+
+    public init(day: LocalDate, ids: [UUID]) {
+        self.day = day
+        self.ids = Array(ids.prefix(Self.limit))
+    }
+}
+
 public struct Settings: Codable, Hashable, Sendable {
     public var defaultSound: SoundChoice
     public var morning: LocalTime
@@ -378,8 +391,10 @@ public struct Settings: Codable, Hashable, Sendable {
     // Set by the first change, so settings put back to the defaults still reach the other phones.
     public var touched: Bool?
     public var snoozeOptions: [Int]?
+    // Never cleared to nil once set: a sync without the key then means an older build, and the picks of the day stay.
+    public var priorities: Priorities?
 
-    public init(defaultSound: SoundChoice, morning: LocalTime, evening: LocalTime, nagInterval: Int, appearance: Appearance, updatedAt: Date, touched: Bool? = nil, snoozeOptions: [Int]? = nil) {
+    public init(defaultSound: SoundChoice, morning: LocalTime, evening: LocalTime, nagInterval: Int, appearance: Appearance, updatedAt: Date, touched: Bool? = nil, snoozeOptions: [Int]? = nil, priorities: Priorities? = nil) {
         self.defaultSound = defaultSound
         self.morning = morning
         self.evening = evening
@@ -388,6 +403,12 @@ public struct Settings: Codable, Hashable, Sendable {
         self.updatedAt = updatedAt
         self.touched = touched
         self.snoozeOptions = snoozeOptions
+        self.priorities = priorities
+    }
+
+    public func priorityIDs(on day: LocalDate) -> [UUID] {
+        guard let priorities, priorities.day == day else { return [] }
+        return priorities.ids
     }
 
     public static func standard(at date: Date) -> Settings {

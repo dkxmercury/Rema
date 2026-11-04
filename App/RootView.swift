@@ -103,6 +103,8 @@ struct RootView: View {
     @State private var bell = BellService.shared
     @State private var askingNews = false
     @AppStorage("updateHidden") private var updateHidden = ""
+    @AppStorage("prioritiesSkipped") private var prioritiesSkipped = ""
+    @State private var choosingPriorities = false
     @Environment(\.openURL) private var openURL
     @Namespace private var zoom
 
@@ -124,6 +126,13 @@ struct RootView: View {
             .presentationDragIndicator(.visible)
             .presentationCornerRadius(30)
             .presentationBackground(Palette.background)
+        }
+        .sheet(isPresented: $choosingPriorities) {
+            PrioritiesSheet(store: store, onClose: { choosingPriorities = false })
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(30)
+                .presentationBackground(Palette.background)
         }
         .fullScreenCover(item: $composing) { target in
             PhraseScreen(store: store, startWithVoice: target.voice, onClose: { composing = nil })
@@ -507,7 +516,8 @@ struct RootView: View {
                     calendar: .current,
                     locale: AppLanguage.current.locale,
                     missed: Notifier.missedEnabled,
-                    events: calendarFeed.day(timeline.date)
+                    events: calendarFeed.day(timeline.date),
+                    priorities: store.settings.priorityIDs(on: LocalDate(timeline.date, in: .current))
                 ),
                 onToggle: toggle,
                 onOpen: open,
@@ -543,9 +553,36 @@ struct RootView: View {
                 onBell: { navigation.path.append(.bell) },
                 update: remote.newerVersion.flatMap { $0 == updateHidden ? nil : $0 },
                 onUpdate: { openURL(remote.link(.appStore)) },
-                onHideUpdate: { updateHidden = remote.newerVersion ?? "" }
+                onHideUpdate: { updateHidden = remote.newerVersion ?? "" },
+                prioritiesPrompt: showsPrioritiesPrompt(at: timeline.date),
+                onPrioritiesPrompt: answerPrioritiesPrompt,
+                onEditPriorities: { choosingPriorities = true }
             )
         }
+    }
+
+    // Asked before the evening and only when there is a choice; «Not today» puts it off until tomorrow.
+    private func showsPrioritiesPrompt(at now: Date) -> Bool {
+        let calendar = Calendar.current
+        let today = LocalDate(now, in: calendar)
+        guard store.settings.priorities?.day != today, prioritiesSkipped != Self.dayKey(today) else { return false }
+        let evening = store.settings.evening
+        let parts = calendar.dateComponents([.hour, .minute], from: now)
+        guard (parts.hour ?? 0) * 60 + (parts.minute ?? 0) < evening.hour * 60 + evening.minute else { return false }
+        let ahead = Agenda.day(now, reminders: store.reminders, calendar: calendar).filter { !$0.done && $0.occurrence > now }
+        return Set(ahead.map(\.reminderID)).count >= 2
+    }
+
+    private func answerPrioritiesPrompt(_ choose: Bool) {
+        if choose {
+            choosingPriorities = true
+        } else {
+            prioritiesSkipped = Self.dayKey(LocalDate(Date(), in: .current))
+        }
+    }
+
+    private static func dayKey(_ day: LocalDate) -> String {
+        "\(day.year)-\(day.month)-\(day.day)"
     }
 
     // A calendar event becomes a reminder at its start with a quarter of an hour ahead.

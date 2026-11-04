@@ -36,6 +36,9 @@ struct HomeScreen: View {
     var update: String?
     var onUpdate: () -> Void = {}
     var onHideUpdate: () -> Void = {}
+    var prioritiesPrompt = false
+    var onPrioritiesPrompt: (Bool) -> Void = { _ in }
+    var onEditPriorities: () -> Void = {}
     @State private var addPressed = false
     @State private var intro = false
     @State private var lift: DialLift?
@@ -90,6 +93,12 @@ struct HomeScreen: View {
                 } else if let snoozeHint, lift == nil {
                     SnoozeHintCard(hint: snoozeHint) { accepted in
                         withAnimation(Motion.standard) { onSnoozeHint(snoozeHint, accepted) }
+                    }
+                    .padding(.top, 12)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+                } else if prioritiesPrompt, lift == nil {
+                    PrioritiesPromptCard { choose in
+                        withAnimation(Motion.standard) { onPrioritiesPrompt(choose) }
                     }
                     .padding(.top, 12)
                     .transition(.opacity.combined(with: .move(edge: .top)))
@@ -170,6 +179,7 @@ struct HomeScreen: View {
         .animation(Motion.adaptive(Motion.standard, reduceMotion: reduceMotion), value: habit)
         .animation(Motion.adaptive(Motion.standard, reduceMotion: reduceMotion), value: snoozeHint)
         .animation(Motion.adaptive(Motion.standard, reduceMotion: reduceMotion), value: tip)
+        .animation(Motion.adaptive(Motion.standard, reduceMotion: reduceMotion), value: prioritiesPrompt)
         .onChange(of: holding) { _, active in
             guard !active else { return }
             // A cancelled gesture never reaches onEnded, so a lift left over after it is dropped here.
@@ -451,6 +461,13 @@ struct HomeScreen: View {
             case .event(let event): event.start
             }
         }
+
+        var isPriority: Bool {
+            if case .reminder(let row) = self {
+                return row.priority != nil
+            }
+            return false
+        }
     }
 
     // Calendar events stand among the reminders by time, quieter and without a tick.
@@ -489,7 +506,38 @@ struct HomeScreen: View {
         .accessibilityElement(children: .combine)
     }
 
-    private var list: some View {
+    private var prioritized: some View {
+        let rest = lines.filter { !$0.isPriority }
+        return VStack(alignment: .leading, spacing: 8) {
+            HStack(alignment: .firstTextBaseline) {
+                Text("Main")
+                    .font(.app(.golos, 12, weight: 600))
+                    .tracking(1.2)
+                    .textCase(.uppercase)
+                    .foregroundStyle(Palette.accentTextOnBackground)
+                Spacer(minLength: 8)
+                Button(action: onEditPriorities) {
+                    Text("Change")
+                        .font(.app(.golos, 14, weight: 600))
+                        .foregroundStyle(Palette.accentTextOnBackground)
+                        .frame(minHeight: 44)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(RowPressStyle())
+            }
+            .padding(.horizontal, 4)
+            .padding(.vertical, -8)
+            list(lines.filter(\.isPriority))
+            if !rest.isEmpty {
+                SectionLabel(text: "More today")
+                    .padding(.horizontal, 4)
+                    .padding(.top, 6)
+                list(rest)
+            }
+        }
+    }
+
+    private func list(_ lines: [Line]) -> some View {
         VStack(spacing: 0) {
             ForEach(lines) { line in
                 switch line {
@@ -540,8 +588,10 @@ struct HomeScreen: View {
             }
             if content.rows.isEmpty && content.events.isEmpty {
                 emptyDay
+            } else if lines.contains(where: \.isPriority) {
+                prioritized
             } else {
-                list
+                list(lines)
             }
             if !content.tiles.isEmpty, scheduledCount == 0 {
                 tiles

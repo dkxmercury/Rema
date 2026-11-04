@@ -443,11 +443,12 @@ final class Store {
         }
     }
 
-    // Widgets show reminders and places only, so a change of settings or sounds does not redraw them.
+    // Widgets show reminders, places and the main things of the day, so other settings and sounds do not redraw them.
     private func reloadWidgetsIfNeeded() {
         var hasher = Hasher()
         hasher.combine(reminders)
         hasher.combine(places)
+        hasher.combine(settings.priorities)
         let signature = hasher.finalize()
         guard signature != widgetSignature else { return }
         widgetSignature = signature

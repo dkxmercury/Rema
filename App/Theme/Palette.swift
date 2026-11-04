@@ -13,6 +13,7 @@ enum Palette {
     static let accentText = Color(light: 0xB44A0A, dark: 0xF7924F)
     static let accentTextOnBackground = Color(light: 0xAE470A, dark: 0xF7924F)
     static let accentOnDark = Color(hex: 0xF7924F)
+    static let accentOnSegment = Color(light: 0xF7924F, dark: 0xB44A0A)
     static let urgent = Color(hex: 0xC0341D)
     static let urgentIcon = Color(light: 0xC0341D, dark: 0xFF7A63)
     static let urgentText = Color(light: 0xC0341D, dark: 0xFF8E7A)

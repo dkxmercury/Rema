@@ -20,6 +20,7 @@ struct HomeContent {
         let highlighted: Bool
         var missed = false
         var shared = false
+        var priority: Int?
     }
 
     struct Event: Identifiable {
@@ -75,7 +76,7 @@ extension HomeContent {
         return trimmed.isEmpty ? String(localized: "Event from the calendar", bundle: .app, locale: .app) : String(trimmed.prefix(Reminder.maximumTitleLength))
     }
 
-    static func make(reminders: [Reminder], places: [Place], now: Date, calendar: Calendar, locale: Locale, missed showsMissed: Bool = false, events entries: [CalendarEntry] = []) -> HomeContent {
+    static func make(reminders: [Reminder], places: [Place], now: Date, calendar: Calendar, locale: Locale, missed showsMissed: Bool = false, events entries: [CalendarEntry] = [], priorities: [UUID] = []) -> HomeContent {
         let describer = Describer(calendar: calendar, locale: locale)
         let active = reminders.filter(\.isLive)
         let byID = Dictionary(active.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
@@ -121,8 +122,14 @@ extension HomeContent {
             )
         }
 
-        let rows = today.compactMap { item -> Row? in
+        var rows = today.compactMap { item -> Row? in
             byID[item.reminderID].map { row(item, reminder: $0, places: places, describer: describer, highlighted: isNext(item), missed: isMissed(item)) }
+        }
+        // A main thing that comes several times today is numbered once, by its first time.
+        var ranked = Set<UUID>()
+        for index in rows.indices where priorities.contains(rows[index].reminderID) && !ranked.contains(rows[index].reminderID) {
+            ranked.insert(rows[index].reminderID)
+            rows[index].priority = ranked.count
         }
 
         var next: Next?
@@ -293,6 +300,32 @@ enum SampleData {
             list[3].markDone(through: occurrence, at: occurrence.addingTimeInterval(300))
         }
         return list
+    }
+
+    static let sashaPlace = Place(name: "У Саши", icon: "home", latitude: 41.3, longitude: 69.25, radius: 150, createdAt: now)
+
+    // One query found in a title, a list, a place and a friend's name, for the search check.
+    static var searchReminders: [Reminder] {
+        var shopping = groceries
+        shopping.items.append(ChecklistItem(text: "Торт для Саши"))
+        let friends = SharedInfo(owner: SharedPerson(id: "me", name: "Я"), status: SharedStatus.owner, members: [SharedMember(id: "f1", name: "Саша", status: SharedStatus.accepted), SharedMember(id: "f2", name: "Илья", status: SharedStatus.accepted)], doneMode: .each)
+        var gift = Reminder(title: "Подарок для Саши", schedule: Schedule(start: LocalDate(year: 2026, month: 9, day: 28), time: LocalTime(hour: 18, minute: 0)), createdAt: now)
+        gift.markDone(through: calendar.date(from: DateComponents(year: 2026, month: 9, day: 28, hour: 18))!)
+        return reminders + [
+            Reminder(title: "Забрать Сашу из школы", schedule: Schedule(start: LocalDate(year: 2026, month: 10, day: 6), time: LocalTime(hour: 15, minute: 30), rule: .weekdays), createdAt: now),
+            shopping,
+            Reminder(title: "Кино в субботу", schedule: Schedule(start: LocalDate(year: 2026, month: 10, day: 10), time: LocalTime(hour: 19, minute: 0)), shared: friends, createdAt: now),
+            Reminder(title: "Отвезти книги", schedule: nil, placeIDs: [sashaPlace.id], createdAt: now),
+            gift,
+        ]
+    }
+
+    static var priorityIDs: [UUID] {
+        [reminders[1].id, reminders[2].id, reminders[3].id]
+    }
+
+    static var priorities: Priorities {
+        Priorities(day: LocalDate(year: 2026, month: 10, day: 5), ids: [reminders[1].id, reminders[3].id])
     }
 
     // A day longer than the screen, for the scrolling check.

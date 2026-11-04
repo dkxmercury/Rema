@@ -5453,6 +5453,52 @@
         }
       }
     },
+    "Choose": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختيار"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auswählen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisir"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выбрать"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Вибрати"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Танлаш"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tanlash"
+          }
+        }
+      }
+    },
     "Choose a time": {
       "localizations": {
         "ar": {
@@ -13741,6 +13787,98 @@
         }
       }
     },
+    "Main": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الأهم"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Wichtigste"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’essentiel"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Главное"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Головне"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Энг муҳими"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eng muhimi"
+          }
+        }
+      }
+    },
+    "Main things today": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الأهم اليوم"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Wichtigste heute"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’essentiel du jour"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Главное на сегодня"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Головне на сьогодні"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бугунги энг муҳим ишлар"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bugungi eng muhim ishlar"
+          }
+        }
+      }
+    },
     "Make %@ your evening?": {
       "localizations": {
         "ar": {
@@ -13925,6 +14063,52 @@
         }
       }
     },
+    "Make it main: %@": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اجعلها من الأهم: %@"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zum Wichtigsten: %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mettre dans l’essentiel : %@"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сделать главным: %@"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Зробити головним: %@"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Энг муҳимга қўшиш: %@"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eng muhimga qo‘shish: %@"
+          }
+        }
+      }
+    },
     "Mark as done": {
       "localizations": {
         "ar": {
@@ -14059,6 +14243,98 @@
           "stringUnit": {
             "state": "translated",
             "value": "Eslatmani belgilash"
+          }
+        }
+      }
+    },
+    "Mark up to three things": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حدّد حتى ثلاث مهام"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Markiere bis zu drei Dinge"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisissez jusqu’à trois choses"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отметьте до трёх дел"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Позначте до трьох справ"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Учтагача ишни белгиланг"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uchtagacha ishni belgilang"
+          }
+        }
+      }
+    },
+    "Mark up to three things, they will go on top": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حدّد حتى ثلاث مهام لتظهر في الأعلى"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Markiere bis zu drei Dinge, sie stehen dann oben"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisissez jusqu’à trois choses, elles passeront en haut"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отметьте до трёх дел, они встанут сверху"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Позначте до трьох справ, вони стануть угорі"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Учтагача ишни белгиланг, улар тепада туради"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uchtagacha ishni belgilang, ular tepada turadi"
           }
         }
       }
@@ -14479,6 +14755,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Batafsil saytda"
+          }
+        }
+      }
+    },
+    "More today": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المزيد اليوم"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heute außerdem"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Encore aujourd’hui"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ещё сегодня"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ще сьогодні"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бугун яна"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bugun yana"
           }
         }
       }
@@ -16705,6 +17027,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Hali yuborilmadi. Aloqa paydo bo‘lganda do‘stlarga ketadi."
+          }
+        }
+      }
+    },
+    "Not today": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ليس اليوم"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heute nicht"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pas aujourd’hui"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не сегодня"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не сьогодні"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бугун эмас"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bugun emas"
           }
         }
       }
@@ -21903,6 +22271,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Do‘stlardan olib tashlash"
+          }
+        }
+      }
+    },
+    "Remove from main: %@": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إزالة من الأهم: %@"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aus dem Wichtigsten entfernen: %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retirer de l’essentiel : %@"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Убрать из главного: %@"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Прибрати з головного: %@"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Энг муҳимдан олиб ташлаш: %@"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eng muhimdan olib tashlash: %@"
           }
         }
       }
@@ -28009,6 +28423,52 @@
         }
       }
     },
+    "To choose another, unstar one of the three. You can change this at any time.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لاختيار مهمة أخرى، أزل النجمة عن إحدى الثلاث. يمكنك التغيير في أي وقت."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Um etwas anderes zu wählen, nimm einem der drei den Stern. Ändern kannst du jederzeit."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pour en choisir une autre, retirez l’étoile de l’une des trois. Vous pouvez changer à tout moment."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Чтобы выбрать другое, снимите звезду с одного из трёх. Поменять можно в любой момент."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Щоб вибрати інше, зніміть зірку з однієї з трьох. Змінити можна будь-коли."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бошқасини танлаш учун учтадан биридан юлдузчани олиб ташланг. Исталган пайт ўзгартириш мумкин."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Boshqasini tanlash uchun uchtadan biridan yulduzchani olib tashlang. Istalgan payt o‘zgartirish mumkin."
+          }
+        }
+      }
+    },
     "Today": {
       "localizations": {
         "ar": {
@@ -30121,6 +30581,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Keyingi nima va qachon."
+          }
+        }
+      }
+    },
+    "What matters most today?": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ما الأهم اليوم؟"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Was ist heute am wichtigsten?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qu’est-ce qui compte le plus aujourd’hui ?"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Что главное сегодня?"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Що головне сьогодні?"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бугун энг муҳими нима?"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bugun eng muhimi nima?"
           }
         }
       }

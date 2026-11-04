@@ -47,6 +47,51 @@ struct EarlySuggestionCard: View {
     }
 }
 
+struct PrioritiesPromptCard: View {
+    let onAnswer: (Bool) -> Void
+
+    var body: some View {
+        VStack(spacing: 12) {
+            HStack(spacing: 12) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 12, style: .circular)
+                        .fill(Palette.segment)
+                    Glyph(paths: Icons.star, size: 20, lineWidth: 2.2, color: Palette.accentOnSegment)
+                }
+                .frame(width: 40, height: 40)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("What matters most today?")
+                        .font(.app(.golos, 15, weight: 600))
+                    Text("Mark up to three things, they will go on top")
+                        .font(.app(.golos, 13))
+                        .foregroundStyle(Palette.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            HStack(spacing: 8) {
+                Button {
+                    onAnswer(true)
+                } label: {
+                    Text("Choose")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(SmallButtonStyle(prominent: true, height: 40))
+                Button {
+                    onAnswer(false)
+                } label: {
+                    Text("Not today")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(SmallButtonStyle(prominent: false, height: 40))
+            }
+        }
+        .padding(14)
+        .panel(radius: 20)
+        .accessibilityElement(children: .contain)
+    }
+}
+
 struct SnoozeHint: Equatable {
     let reminderID: UUID
     let title: String

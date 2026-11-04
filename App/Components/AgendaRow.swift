@@ -65,11 +65,16 @@ struct AgendaRow: View {
 
     private var line: some View {
         HStack(spacing: 14) {
-            Text(verbatim: row.time)
-                .font(.app(.jost, 18, weight: row.highlighted || row.missed ? 600 : 500))
-                .monospacedDigit()
-                .foregroundStyle(timeColor)
-                .timeColumn()
+            HStack(spacing: 8) {
+                if let priority = row.priority {
+                    PriorityBadge(number: priority)
+                }
+                Text(verbatim: row.time)
+                    .font(.app(.jost, 18, weight: row.highlighted || row.missed ? 600 : 500))
+                    .monospacedDigit()
+                    .foregroundStyle(timeColor)
+                    .timeColumn()
+            }
             VStack(alignment: .leading, spacing: 2) {
                 Text(verbatim: row.title)
                     .font(.app(.golos, 16, weight: row.highlighted || row.missed ? 600 : 400))
