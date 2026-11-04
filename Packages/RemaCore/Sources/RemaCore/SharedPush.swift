@@ -14,18 +14,23 @@ public struct SharedPush: Sendable {
         case ticked
         case friend
         case unfriended
+        case comment
+        case thanks
     }
 
     public var event: Event
     public var recipient: String
     public var actor: String
     public var item: SharedItem?
+    // The shared reminder the push is about, for its buttons, also when the push carries no data of it.
+    public var shared: String?
 
-    public init(event: Event, recipient: String, actor: String, item: SharedItem?) {
+    public init(event: Event, recipient: String, actor: String, item: SharedItem?, shared: String? = nil) {
         self.event = event
         self.recipient = recipient
         self.actor = actor
         self.item = item
+        self.shared = shared
     }
 
     public init?(userInfo: [AnyHashable: Any]) {
@@ -36,6 +41,7 @@ public struct SharedPush: Sendable {
         self.event = event
         self.recipient = recipient
         self.actor = actor
+        shared = rema["shared"] as? String
         if let raw = rema["item"], JSONSerialization.isValidJSONObject(raw),
            let data = try? JSONSerialization.data(withJSONObject: raw) {
             item = try? JSONDecoder().decode(SharedItem.self, from: data)

@@ -68,6 +68,8 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
             UNNotificationCategory(identifier: "place.call", actions: [call, done], intentIdentifiers: []),
             UNNotificationCategory(identifier: "place.open", actions: [open, done], intentIdentifiers: []),
             UNNotificationCategory(identifier: "reminder.voice", actions: [done, listen] + snoozes.prefix(2), intentIdentifiers: []),
+            UNNotificationCategory(identifier: "comment", actions: [UNTextInputNotificationAction(identifier: "reply", title: String(localized: "Reply", bundle: .app, locale: .app), options: [], textInputButtonTitle: String(localized: "Send", bundle: .app, locale: .app), textInputPlaceholder: String(localized: "Message", bundle: .app, locale: .app))], intentIdentifiers: []),
+            UNNotificationCategory(identifier: "ticked", actions: [UNNotificationAction(identifier: "thanks", title: String(localized: "Thank you", bundle: .app, locale: .app), options: [], icon: UNNotificationActionIcon(systemImageName: "heart.fill"))], intentIdentifiers: []),
             UNNotificationCategory(identifier: "nag.voice", actions: [done, listen, fifteenMinutes], intentIdentifiers: []),
         ]
     }
@@ -403,6 +405,19 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
                 }
                 completionHandler()
                 return
+            }
+            // An answer to a message and a thank-you for a tick go straight from the push, without opening Rema.
+            if let push = SharedPush(userInfo: info), let shared = push.shared.flatMap(UUID.init(uuidString:)) {
+                if action == "reply", let reply = (response as? UNTextInputNotificationResponse)?.userText, let words = Discussion.cleaned(reply) {
+                    _ = try? await SharedService.shared.sendComment(words, id: UUID().uuidString, to: shared)
+                    completionHandler()
+                    return
+                }
+                if action == "thanks" {
+                    try? await SharedService.shared.thank(push.actor, in: shared)
+                    completionHandler()
+                    return
+                }
             }
             if info["rema"] != nil {
                 store.reloadIfChanged()

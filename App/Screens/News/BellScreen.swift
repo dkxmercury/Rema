@@ -6,6 +6,8 @@ struct BellScreen: View {
     let onBack: () -> Void
     @State private var bell: BellService
     @State private var loading = true
+    @State private var thanked = Set(UserDefaults.standard.stringArray(forKey: BellScreen.thankedKey) ?? [])
+    private static let thankedKey = "bell.thanked"
 
     init(bell: BellService = .shared, onEvent: @escaping (BellService.Event) -> Void, onNews: @escaping (String) -> Void, onBack: @escaping () -> Void) {
         _bell = State(initialValue: bell)
@@ -102,12 +104,65 @@ struct BellScreen: View {
                     .foregroundStyle(Palette.secondary)
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
+                if case .event(let event) = row, Self.thankable(event) {
+                    thanks(event)
+                        .padding(.top, 6)
+                }
             }
         }
         .padding(.vertical, 12)
         .contentShape(Rectangle())
         .accessibilityElement(children: .combine)
         .accessibilityValue(read ? Text(verbatim: "") : Text("New"))
+        .accessibilityActions {
+            if case .event(let event) = row, Self.thankable(event), !thanked.contains(event.id) {
+                Button("Thank you") { thank(event) }
+            }
+        }
+    }
+
+    // A friend's tick can be answered with a thank-you, once; the server keeps it to one per tick too.
+    static func thankable(_ event: BellService.Event) -> Bool {
+        (event.kind == "ticked" || event.kind == "done") && UUID(uuidString: event.item) != nil && event.actor != SharedNames.me
+    }
+
+    @ViewBuilder
+    private func thanks(_ event: BellService.Event) -> some View {
+        if thanked.contains(event.id) {
+            HStack(spacing: 6) {
+                Glyph(paths: Icons.check, size: 15, lineWidth: 2.6, color: Palette.secondary)
+                Text("Thanks sent")
+                    .font(.app(.golos, 14, weight: 600))
+                    .foregroundStyle(Palette.secondary)
+            }
+            .frame(height: 32)
+        } else {
+            Button {
+                thank(event)
+            } label: {
+                HStack(spacing: 6) {
+                    Glyph(paths: Icons.heart, size: 15, lineWidth: 2.2, color: Palette.accent, filled: true)
+                    Text("Thank you")
+                }
+                .padding(.horizontal, 6)
+            }
+            .buttonStyle(SmallButtonStyle(prominent: false, height: 36))
+            .fixedSize()
+        }
+    }
+
+    private func thank(_ event: BellService.Event) {
+        guard let id = UUID(uuidString: event.item) else { return }
+        Task {
+            do {
+                try await SharedService.shared.thank(event.actor, in: id)
+                Feedback.play(.save)
+                withAnimation(Motion.standard) { thanked.insert(event.id) }
+                UserDefaults.standard.set(Array(thanked), forKey: Self.thankedKey)
+            } catch {
+                Feedback.play(.error)
+            }
+        }
     }
 
     private func icon(_ row: BellService.Row) -> [String] {
@@ -118,6 +173,8 @@ struct BellScreen: View {
         case "declined", "left": return Icons.close
         case "deleted": return Icons.trash
         case "changed": return Icons.pen
+        case "comment": return Icons.speech
+        case "thanks": return Icons.heart
         default: return Icons.bell
         }
     }
@@ -134,6 +191,9 @@ struct BellScreen: View {
         case .news(let item):
             return item.body
         case .event(let event):
+            if event.kind == "comment", let text = event.text, !text.isEmpty {
+                return event.title.isEmpty ? text : "\(event.title.quoted()) · \(text)"
+            }
             let what = Self.text(event.kind)
             return event.title.isEmpty ? what : "\(what) · \(event.title)"
         }
@@ -151,6 +211,8 @@ struct BellScreen: View {
         case "ticked": String(localized: "Marked as done", bundle: .app, locale: .app)
         case "friend": String(localized: "You are friends in Rema now", bundle: .app, locale: .app)
         case "unfriended": String(localized: "No longer friends in Rema", bundle: .app, locale: .app)
+        case "comment": String(localized: "New message", bundle: .app, locale: .app)
+        case "thanks": String(localized: "Says thank you", bundle: .app, locale: .app)
         default: ""
         }
     }

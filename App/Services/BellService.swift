@@ -16,6 +16,8 @@ final class BellService {
         let item: String
         let title: String
         let at: Int64
+        // The words of a message in the discussion; other events have none.
+        var text: String? = nil
 
         var day: Date {
             Date(timeIntervalSince1970: Double(at) / 1000)

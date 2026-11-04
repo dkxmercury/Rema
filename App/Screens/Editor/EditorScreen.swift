@@ -589,6 +589,8 @@ struct EditorScreen: View {
                     Text(verbatim: describer.soundName(draft.sound, settings: store.settings, sounds: store.sounds))
                         .font(.app(.golos, 14))
                         .foregroundStyle(Palette.secondary)
+                        .lineLimit(1)
+                        .layoutPriority(1)
                 }
                 .frame(height: 44)
                 .contentShape(Rectangle())

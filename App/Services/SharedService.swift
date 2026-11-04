@@ -623,15 +623,49 @@ final class SharedService {
         kick()
     }
 
-    func report(user: String?, shared: UUID?, reason: String) async throws {
+    func report(user: String?, shared: UUID?, reason: String, comment: String? = nil) async throws {
         guard let session = Account.shared.session else { throw Backend.Failure.unauthorized }
         struct Body: Encodable {
             let user: String
             let shared: String
             let reason: String
             let text: String
+            let comment: String
         }
-        try await Backend.send("POST", "/api/rema/reports", body: Body(user: user ?? "", shared: shared?.uuidString ?? "", reason: reason, text: ""), token: session.token)
+        try await Backend.send("POST", "/api/rema/reports", body: Body(user: user ?? "", shared: shared?.uuidString ?? "", reason: reason, text: "", comment: comment ?? ""), token: session.token)
+    }
+
+    struct CommentsPage: Decodable {
+        let items: [SharedComment]?
+        let cursor: Int64?
+        let more: Bool?
+    }
+
+    func comments(of id: UUID, since: Int64) async throws -> CommentsPage {
+        guard let session = Account.shared.session else { throw Backend.Failure.unauthorized }
+        return try await Backend.request("GET", "/api/rema/shared/\(id.uuidString)/comments?since=\(since)", token: session.token, as: CommentsPage.self)
+    }
+
+    func sendComment(_ text: String, id commentID: String, to id: UUID) async throws -> SharedComment {
+        guard let session = Account.shared.session else { throw Backend.Failure.unauthorized }
+        struct Body: Encodable {
+            let id: String
+            let text: String
+        }
+        return try await Backend.request("POST", "/api/rema/shared/\(id.uuidString)/comments", body: Body(id: commentID, text: text), token: session.token, as: SharedComment.self)
+    }
+
+    func deleteComment(_ commentID: String, in id: UUID) async throws {
+        guard let session = Account.shared.session, let escaped = commentID.addingPercentEncoding(withAllowedCharacters: .alphanumerics.union(CharacterSet(charactersIn: "-"))) else { throw Backend.Failure.unauthorized }
+        try await Backend.send("DELETE", "/api/rema/shared/\(id.uuidString)/comments/\(escaped)", token: session.token)
+    }
+
+    func thank(_ person: String, in id: UUID) async throws {
+        guard let session = Account.shared.session else { throw Backend.Failure.unauthorized }
+        struct Body: Encodable {
+            let to: String
+        }
+        try await Backend.send("POST", "/api/rema/shared/\(id.uuidString)/thanks", body: Body(to: person), token: session.token)
     }
 
     func setMyName(_ name: String) async throws {

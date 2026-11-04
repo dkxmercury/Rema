@@ -56,7 +56,10 @@ enum PushInbox {
             }
             content.subtitle = friend
         }
-        content.body = body(push.event, reminder: reminder)
+        // The words of a message are the friend's own and stay as they came.
+        if push.event != .comment {
+            content.body = body(push.event, reminder: reminder)
+        }
     }
 
     private static func body(_ event: SharedPush.Event, reminder: Reminder?) -> String {
@@ -88,6 +91,10 @@ enum PushInbox {
             return String(localized: "You are friends in Rema now", bundle: .app, locale: .app)
         case .unfriended:
             return String(localized: "No longer friends in Rema", bundle: .app, locale: .app)
+        case .comment:
+            return String(localized: "New message", bundle: .app, locale: .app)
+        case .thanks:
+            return String(localized: "Says thank you", bundle: .app, locale: .app)
         }
     }
 }

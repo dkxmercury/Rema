@@ -17,6 +17,21 @@ struct SharedDetailScreen: View {
     @State private var adding = false
     @State private var removing: SharedMember?
     @State private var player = VoicePlayer.shared
+    @State private var discussion: DiscussionModel
+    @State private var reportedMessage = false
+    private let me: String
+
+    init(store: Store, reminderID: UUID, now: Date = Date(), calendar: Calendar = .current, locale: Locale = AppLanguage.current.locale, comments: [SharedComment] = [], me: String? = nil, onEdit: @escaping () -> Void, onClose: @escaping () -> Void) {
+        self.me = me ?? SharedNames.me ?? ""
+        self.store = store
+        self.reminderID = reminderID
+        self.now = now
+        self.calendar = calendar
+        self.locale = locale
+        self.onEdit = onEdit
+        self.onClose = onClose
+        _discussion = State(initialValue: DiscussionModel(reminderID: reminderID, comments: comments))
+    }
 
     enum Confirm: Identifiable {
         case leave
@@ -68,6 +83,7 @@ struct SharedDetailScreen: View {
         }
         .foregroundStyle(Palette.text)
         .onDisappear { player.stop() }
+        .task { await discussion.refresh() }
         .onChange(of: store.reminder(reminderID) == nil) { _, gone in
             if gone {
                 onClose()
@@ -187,6 +203,19 @@ struct SharedDetailScreen: View {
                     Note("One “done” counts for everybody.")
                         .padding(.top, 10)
                 }
+                if talks(shared) {
+                    DiscussionSection(model: discussion, me: me, name: { author in authorName(author, shared) }, locale: locale) { comment in
+                        Task {
+                            try? await service.report(user: comment.author, shared: reminderID, reason: "message", comment: comment.id)
+                            withAnimation(Motion.standard) { reportedMessage = true }
+                        }
+                    }
+                    .padding(.top, 18)
+                    if reportedMessage {
+                        Note("Report sent")
+                            .padding(.top, 8)
+                    }
+                }
                 PanelList {
                     if shared.isMine {
                         ActionRow(icon: Icons.pen, title: Text("Change")) { onEdit() }
@@ -214,13 +243,16 @@ struct SharedDetailScreen: View {
                 }
             }
             .padding(.horizontal, 18)
-            .padding(.bottom, shared.isInvitation ? 160 : 40)
+            .padding(.bottom, shared.isInvitation ? 160 : (talks(shared) ? 110 : 40))
         }
         .scrollIndicators(.hidden)
         .pinnedHeader {
             ScreenHeader(title: "Shared reminder", leading: .close, action: onClose)
         }
         .overlay(alignment: .bottom) {
+            if talks(shared) {
+                CommentComposer(model: discussion)
+            }
             if shared.isInvitation {
                 VStack(spacing: 6) {
                     Button {
@@ -246,6 +278,16 @@ struct SharedDetailScreen: View {
                 .background(Palette.background.opacity(0.95))
             }
         }
+    }
+
+    // The one who made it and those who accepted talk; an invitation not answered yet only looks.
+    private func talks(_ shared: SharedInfo) -> Bool {
+        shared.isMine || shared.status == SharedStatus.accepted
+    }
+
+    private func authorName(_ author: String, _ shared: SharedInfo) -> String {
+        let sent = author == shared.owner.id ? shared.owner.name : shared.members.first { $0.id == author }?.name
+        return SharedService.shared.name(of: author, fallback: sent ?? "")
     }
 
     private func statusText(_ status: String) -> String {
