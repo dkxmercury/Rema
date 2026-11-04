@@ -204,22 +204,11 @@ struct NewsConsentSheet: View {
                 Button("Send me news") { onAnswer(true) }
                     .buttonStyle(PrimaryButtonStyle())
                     .padding(.top, 24)
-                Button {
-                    onAnswer(false)
-                } label: {
-                    Text("Not now")
-                        .font(.app(.golos, 16, weight: 500))
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 48)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(PressableStyle())
-                .padding(.top, 8)
                 Text("You can turn this off in Settings.")
                     .font(.app(.golos, 13))
                     .foregroundStyle(Palette.secondary)
                     .multilineTextAlignment(.center)
-                    .padding(.top, 6)
+                    .padding(.top, 12)
             }
             .padding(.horizontal, 22)
             .padding(.bottom, 20)
