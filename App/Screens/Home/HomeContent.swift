@@ -356,7 +356,11 @@ enum SampleData {
     static let breadNote = CustomSound(name: "Купить хлеб", duration: 12, createdAt: now)
 
     static var voiceLevels: [Float] {
-        (0..<30).map { index in Float(0.25 + 0.75 * abs(sin(Double(index) * 0.9 + 1.3) * cos(Double(index) * 0.37 + 2.6))) }
+        (0..<30).map { index -> Float in
+            let step = Double(index)
+            let wave: Double = sin(step * 0.9 + 1.3) * cos(step * 0.37 + 2.6)
+            return Float(0.25 + 0.75 * abs(wave))
+        }
     }
 
     static let pillCourse = PillCourse(reminderIDs: pillReminders.map(\.id), left: 3, counted: calendar.date(from: DateComponents(year: 2026, month: 10, day: 5, hour: 10, minute: 0))!, pack: 20)
