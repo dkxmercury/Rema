@@ -77,4 +77,16 @@ struct SearchTests {
     @Test func blankQueryFindsNothing() {
         #expect(find("  ", [once("Позвонить Саше", day: 6)]) == .empty)
     }
+
+    @Test func aLongRepeatOverYearsAgoShowsItsRealLastTime() throws {
+        let start = LocalDate(year: 2020, month: 1, day: 1)
+        let until = Reminder(title: "Таблетки старые", schedule: Schedule(start: start, time: LocalTime(hour: 19, minute: 0), rule: .daily, end: .until(LocalDate(year: 2023, month: 6, day: 30))), createdAt: moment(1, 0, 0))
+        let counted = Reminder(title: "Таблетки по счёту", schedule: Schedule(start: start, time: LocalTime(hour: 19, minute: 0), rule: .daily, end: .count(1500)), createdAt: moment(1, 0, 0))
+        let found = find("таблетки", [until, counted])
+        #expect(found.upcoming.isEmpty)
+        let first = try #require(calendar.date(from: DateComponents(year: 2020, month: 1, day: 1, hour: 19)))
+        let byCount = try #require(calendar.date(byAdding: .day, value: 1499, to: first))
+        let byDate = try #require(calendar.date(from: DateComponents(year: 2023, month: 6, day: 30, hour: 19)))
+        #expect(Set(found.earlier.compactMap(\.date)) == [byCount, byDate])
+    }
 }

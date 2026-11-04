@@ -144,16 +144,26 @@ struct VoicePlayerSheet: View {
     let reminder: Reminder
     let note: CustomSound
     let occurrence: Date
-    var now: Date = Date()
-    var calendar: Calendar = .current
-    var locale: Locale = AppLanguage.current.locale
-    var levels: [Float]?
+    let now: Date
+    let calendar: Calendar
+    let locale: Locale
+    let levels: [Float]?
     let onSnooze: () -> Void
     let onDone: () -> Void
     @State private var player = VoicePlayer.shared
+    @State private var shape: [Float]
 
-    private var shape: [Float] {
-        levels ?? VoiceShape.levels(of: note)
+    init(reminder: Reminder, note: CustomSound, occurrence: Date, now: Date = Date(), calendar: Calendar = .current, locale: Locale = AppLanguage.current.locale, levels: [Float]? = nil, onSnooze: @escaping () -> Void, onDone: @escaping () -> Void) {
+        self.reminder = reminder
+        self.note = note
+        self.occurrence = occurrence
+        self.now = now
+        self.calendar = calendar
+        self.locale = locale
+        self.levels = levels
+        self.onSnooze = onSnooze
+        self.onDone = onDone
+        _shape = State(initialValue: levels ?? [])
     }
 
     private var playing: Bool {
@@ -219,9 +229,10 @@ struct VoicePlayerSheet: View {
         }
         .foregroundStyle(Palette.text)
         .onAppear {
-            if levels == nil {
-                player.play(note)
-            }
+            guard levels == nil else { return }
+            // Read from the file once; the bars are drawn many times a second while it plays.
+            shape = VoiceShape.levels(of: note)
+            player.play(note)
         }
         .onDisappear {
             player.stop()

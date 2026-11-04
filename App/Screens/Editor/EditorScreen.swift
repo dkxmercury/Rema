@@ -164,6 +164,9 @@ struct EditorScreen: View {
                 Feedback.play(.delete)
                 store.delete(draft.id)
                 dropNotes(except: nil)
+                if let course = store.settings.course(for: draft.id), course.reminderIDs.allSatisfy({ store.reminder($0)?.deletedAt != nil }) {
+                    store.update { $0.setCourse(nil, id: course.id) }
+                }
                 onClose()
             }
         }

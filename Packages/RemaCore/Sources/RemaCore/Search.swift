@@ -74,7 +74,19 @@ public enum ReminderSearch {
 
     // The last two years are looked through first, so a repeat that ran more than a thousand times still gives its latest time.
     private static func lastOccurrence(_ schedule: Schedule, before now: Date, calendar: Calendar) -> Date? {
-        Recurrence.next(schedule, after: now.addingTimeInterval(-2 * 366 * 86_400), limit: 1000, calendar: calendar).last { $0 < now }
-            ?? Recurrence.next(schedule, after: .distantPast, limit: 1000, calendar: calendar).last
+        let span: TimeInterval = 2 * 366 * 86_400
+        if let recent = Recurrence.next(schedule, after: now.addingTimeInterval(-span), limit: 1000, calendar: calendar).last(where: { $0 < now }) {
+            return recent
+        }
+        // Nothing in the last two years means the repeat is over, so its end says where to look.
+        switch schedule.end {
+        case .count(let total):
+            return Recurrence.next(schedule, after: .distantPast, limit: total, calendar: calendar).last { $0 < now }
+        case .until(let last):
+            guard let end = calendar.date(from: DateComponents(year: last.year, month: last.month, day: last.day, hour: 23, minute: 59)) else { return nil }
+            return Recurrence.next(schedule, after: end.addingTimeInterval(-span), limit: 1000, calendar: calendar).last { $0 < now }
+        case .never:
+            return Recurrence.next(schedule, after: .distantPast, limit: 1, calendar: calendar).last { $0 < now }
+        }
     }
 }

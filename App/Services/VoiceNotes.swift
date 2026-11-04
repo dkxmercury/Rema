@@ -164,33 +164,55 @@ final class VoicePlayer {
 enum VoiceNotes {
     // The note a reminder plays: its own, or the one a friend recorded in a shared reminder once its file is here.
     static func note(of reminder: Reminder, sounds: [CustomSound]) -> CustomSound? {
+        let note: CustomSound
         if let own = reminder.voiceNote(in: sounds) {
-            return own
+            note = own
+        } else if let shared = reminder.shared, !shared.isMine, let voice = shared.voice {
+            note = CustomSound(id: voice.id, name: reminder.title, duration: voice.duration, createdAt: reminder.createdAt, reminderID: reminder.id)
+        } else {
+            return nil
         }
-        guard let shared = reminder.shared, !shared.isMine, let voice = shared.voice else { return nil }
-        let note = CustomSound(id: voice.id, name: reminder.title, duration: voice.duration, createdAt: reminder.createdAt, reminderID: reminder.id)
+        // On another phone the file comes after the sync; until then nothing offers to play it.
         return FileManager.default.fileExists(atPath: SoundLibrary.folder.appendingPathComponent(note.fileName).path) ? note : nil
     }
+
+    private static let fetchedKey = "voices.fetched"
 
     // A friend's note comes down once, through the shared reminder it is in; the name of the file is only its id.
     @MainActor
     static func fetchShared(token: String) async {
-        var fetched = false
+        var fetched = Set(UserDefaults.standard.stringArray(forKey: fetchedKey) ?? [])
+        var wanted = Set<String>()
+        var changed = false
         for reminder in Store.shared.activeReminders {
             guard let shared = reminder.shared, !shared.isMine, let voice = shared.voice else { continue }
-            let file = SoundLibrary.folder.appendingPathComponent(CustomSound(id: voice.id, name: "", duration: 0, createdAt: Date()).fileName)
+            wanted.insert(voice.id.uuidString)
+            let file = fileURL(voice.id)
             guard !FileManager.default.fileExists(atPath: file.path),
                   let data = try? await Backend.raw("GET", "/api/rema/shared/\(reminder.id.uuidString)/voice", token: token),
                   data.count <= 1_100_000, data.prefix(4) == Data("caff".utf8)
             else { continue }
             try? FileManager.default.createDirectory(at: file.deletingLastPathComponent(), withIntermediateDirectories: true)
             if (try? data.write(to: file, options: .atomic)) != nil {
-                fetched = true
+                fetched.insert(voice.id.uuidString)
+                changed = true
             }
         }
-        if fetched {
+        // Only files fetched here are counted, so a note being recorded in the editor is never taken for a stale one.
+        for id in fetched.subtracting(wanted) {
+            if let uuid = UUID(uuidString: id) {
+                try? FileManager.default.removeItem(at: fileURL(uuid))
+            }
+            fetched.remove(id)
+        }
+        UserDefaults.standard.set(Array(fetched), forKey: fetchedKey)
+        if changed {
             Notifier.shared.scheduleSoon()
         }
+    }
+
+    private static func fileURL(_ id: UUID) -> URL {
+        SoundLibrary.folder.appendingPathComponent(CustomSound(id: id, name: "", duration: 0, createdAt: Date()).fileName)
     }
 }
 
