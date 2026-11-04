@@ -200,7 +200,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
             let content = UNMutableNotificationContent()
             content.title = item.title
             content.body = body(for: item, now: now)
-            content.sound = SoundPlayer.notificationSound(soundFor(item), settings: store.settings, sounds: store.sounds)
+            content.sound = soundFor(item)
             content.categoryIdentifier = item.nag ? "nag" : "reminder"
             content.interruptionLevel = item.urgent ? .timeSensitive : .active
             content.threadIdentifier = item.reminderID.uuidString
@@ -208,7 +208,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
             // A number or a link in a friend's reminder is not a button to press; only one's own reminders get those.
             let owned = store.reminder(item.reminderID)
             // A note to listen to wins over a contact button; the call stays one tap away inside the app.
-            if owned?.voiceNote(in: store.sounds) != nil {
+            if let owned, VoiceNotes.note(of: owned, sounds: store.sounds) != nil {
                 content.categoryIdentifier += ".voice"
             } else if owned?.shared?.isMine != false {
                 addContact(of: item.title, link: owned?.contact, to: content)
@@ -311,8 +311,12 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         return requests
     }
 
-    private func soundFor(_ item: PlannedNotification) -> SoundChoice {
-        store.reminder(item.reminderID)?.sound ?? item.sound
+    private func soundFor(_ item: PlannedNotification) -> UNNotificationSound? {
+        let reminder = store.reminder(item.reminderID)
+        if let reminder, let note = VoiceNotes.note(of: reminder, sounds: store.sounds) {
+            return UNNotificationSound(named: UNNotificationSoundName(note.fileName))
+        }
+        return SoundPlayer.notificationSound(reminder?.sound ?? item.sound, settings: store.settings, sounds: store.sounds)
     }
 
     private func body(for item: PlannedNotification, now: Date) -> String {

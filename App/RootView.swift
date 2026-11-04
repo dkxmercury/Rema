@@ -138,7 +138,7 @@ struct RootView: View {
             .presentationBackground(Palette.background)
         }
         .sheet(item: $navigation.listenRequest) { target in
-            if let reminder = store.reminder(target.reminderID), let note = reminder.voiceNote(in: store.sounds) {
+            if let reminder = store.reminder(target.reminderID), let note = VoiceNotes.note(of: reminder, sounds: store.sounds) {
                 VoicePlayerSheet(reminder: reminder, note: note, occurrence: target.occurrence, onSnooze: {
                     Feedback.play(.save)
                     store.snooze(reminder.id, until: Date().addingTimeInterval(15 * 60))

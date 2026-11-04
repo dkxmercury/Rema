@@ -75,7 +75,7 @@ final class Store {
         persist()
         if let before, let shared = updated.shared {
             let ticked = before.completedThrough != updated.completedThrough
-            let changed = shared.isMine && before.sharedData != updated.sharedData
+            let changed = shared.isMine && before.sharedData(sounds: sounds) != updated.sharedData(sounds: sounds)
             onMain { [updated] in
                 if ticked {
                     SharedService.shared.ticked(updated)

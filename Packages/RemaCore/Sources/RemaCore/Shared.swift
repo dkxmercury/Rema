@@ -69,18 +69,20 @@ public struct SharedInfo: Codable, Hashable, Sendable {
     public var pending: Bool
     // The server's number of the state this copy is in; an older one arriving late is not applied over it.
     public var seq: Int64
+    public var voice: SharedVoice?
 
-    public init(owner: SharedPerson, status: String, members: [SharedMember], doneMode: DoneMode, pending: Bool = false, seq: Int64 = 0) {
+    public init(owner: SharedPerson, status: String, members: [SharedMember], doneMode: DoneMode, pending: Bool = false, seq: Int64 = 0, voice: SharedVoice? = nil) {
         self.owner = owner
         self.status = status
         self.members = members
         self.doneMode = doneMode
         self.pending = pending
         self.seq = seq
+        self.voice = voice
     }
 
     enum CodingKeys: String, CodingKey {
-        case owner, status, members, doneMode, pending, seq
+        case owner, status, members, doneMode, pending, seq, voice
     }
 
     // Read leniently, so a reminder saved by an earlier build stays shared and is not turned into a personal one.
@@ -92,6 +94,7 @@ public struct SharedInfo: Codable, Hashable, Sendable {
         doneMode = (try? container.decodeIfPresent(DoneMode.self, forKey: .doneMode)) ?? .each
         pending = (try? container.decodeIfPresent(Bool.self, forKey: .pending)) ?? false
         seq = (try? container.decodeIfPresent(Int64.self, forKey: .seq)) ?? 0
+        voice = try? container.decodeIfPresent(SharedVoice.self, forKey: .voice)
     }
 
     public var isMine: Bool {
@@ -104,19 +107,40 @@ public struct SharedInfo: Codable, Hashable, Sendable {
 }
 
 // What goes to the friends: the title and the time in the zone of the one who made it. Early alerts, persistence and the sound stay with each person.
+public struct SharedVoice: Codable, Hashable, Sendable {
+    public var id: UUID
+    public var duration: Double
+
+    public init(id: UUID, duration: Double) {
+        self.id = id
+        self.duration = duration
+    }
+}
+
 public struct SharedData: Codable, Hashable, Sendable {
     public var title: String
     public var schedule: Schedule?
     public var doneMode: DoneMode
+    public var voice: SharedVoice?
 
-    public init(title: String, schedule: Schedule?, doneMode: DoneMode) {
+    public init(title: String, schedule: Schedule?, doneMode: DoneMode, voice: SharedVoice? = nil) {
         self.title = title
         self.schedule = schedule
         self.doneMode = doneMode
+        self.voice = voice
     }
 
     enum CodingKeys: String, CodingKey {
-        case title, schedule, doneMode
+        case title, schedule, doneMode, voice
+    }
+
+    // The voice goes out even when there is none: a missing key tells the server the change came from an app older than notes.
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(title, forKey: .title)
+        try container.encodeIfPresent(schedule, forKey: .schedule)
+        try container.encode(doneMode, forKey: .doneMode)
+        try container.encode(voice, forKey: .voice)
     }
 
     public init(from decoder: Decoder) throws {
@@ -124,6 +148,7 @@ public struct SharedData: Codable, Hashable, Sendable {
         title = try container.decodeIfPresent(String.self, forKey: .title) ?? ""
         schedule = try? container.decodeIfPresent(Schedule.self, forKey: .schedule)
         doneMode = (try? container.decodeIfPresent(DoneMode.self, forKey: .doneMode)) ?? .each
+        voice = try? container.decodeIfPresent(SharedVoice.self, forKey: .voice)
     }
 }
 
@@ -168,8 +193,8 @@ public extension Reminder {
         deletedAt == nil && shared?.isInvitation != true
     }
 
-    var sharedData: SharedData {
-        SharedData(title: title, schedule: schedule, doneMode: shared?.doneMode ?? .each)
+    func sharedData(sounds: [CustomSound]) -> SharedData {
+        SharedData(title: title, schedule: schedule, doneMode: shared?.doneMode ?? .each, voice: voiceNote(in: sounds).map { SharedVoice(id: $0.id, duration: $0.duration) })
     }
 
     // A note counts only while the reminder still rings with it; a sound picked over it leaves the note behind.
@@ -204,7 +229,7 @@ public enum SharedMerge {
             reminder.title = String(data.title.prefix(Reminder.maximumTitleLength))
             reminder.schedule = data.schedule
             let members = item.partial ? reminder.shared?.members ?? [] : item.members
-            reminder.shared = SharedInfo(owner: owner, status: item.myStatus, members: members, doneMode: data.doneMode, seq: item.seq)
+            reminder.shared = SharedInfo(owner: owner, status: item.myStatus, members: members, doneMode: data.doneMode, seq: item.seq, voice: data.voice)
             let through = data.doneMode == .one ? item.doneThrough : item.myDone
             let done = Date.fromMilliseconds(through)
             // The server keeps milliseconds, a tick made here may have more; under a second apart is the same tick.

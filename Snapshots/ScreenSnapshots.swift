@@ -54,7 +54,7 @@ final class ScreenSnapshots: XCTestCase {
     }
 
     @MainActor
-    func testVoice() throws {
+    func testVoiceNote() throws {
         let file = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).caf")
         let recording = VoiceRecordSheet(title: "Купить хлеб", recorder: VoiceRecorder(file: file, elapsed: 7, levels: SampleData.voiceLevels), onDone: { _ in })
         try render(recording, name: "M-VoiceRecord", style: .light)

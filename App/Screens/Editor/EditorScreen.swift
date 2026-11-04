@@ -308,7 +308,7 @@ struct EditorScreen: View {
                         .foregroundStyle(Palette.secondary)
                 }
             }
-            if draft.shared == nil {
+            if draft.shared?.isMine != false {
                 Hairline()
                 voiceRow
             }

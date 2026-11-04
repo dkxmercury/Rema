@@ -41,6 +41,38 @@ struct VoiceNoteTests {
         #expect(merged.first?.reminderID == owner)
     }
 
+    @Test func theOwnerSendsTheNoteToTheFriends() throws {
+        var movie = reminder("Кино")
+        let note = CustomSound(name: "Кино", duration: 9.5, createdAt: created, reminderID: movie.id)
+        movie.sound = .custom(note.id)
+        #expect(movie.sharedData(sounds: [note]).voice == SharedVoice(id: note.id, duration: 9.5))
+        guard case .object(let fields) = try JSONValue(encoding: movie.sharedData(sounds: [])) else {
+            Issue.record("not an object")
+            return
+        }
+        #expect(fields["voice"] == .null)
+    }
+
+    @Test func aFriendKeepsTheNoteOfTheReminder() throws {
+        let json = """
+        {"id": "0F8FAD5B-D9CB-469F-A165-70867728950E", "gone": false, "owner": {"id": "anya", "name": "Аня"},
+         "data": {"title": "Кино", "doneMode": "each", "voice": {"id": "5C7E2A10-1B2C-4D3E-8F40-A1B2C3D4E5F6", "duration": 12}},
+         "clientUpdatedAt": 1000, "doneThrough": 0, "myDone": 0, "myStatus": "accepted", "members": [], "seq": 7}
+        """
+        let item = try JSONDecoder().decode(SharedItem.self, from: Data(json.utf8))
+        let friend = try #require(SharedMerge.apply([item], to: [], waiting: [], now: created).first)
+        let voice = SharedVoice(id: try #require(UUID(uuidString: "5C7E2A10-1B2C-4D3E-8F40-A1B2C3D4E5F6")), duration: 12)
+        #expect(friend.shared?.voice == voice)
+        let saved = try JSONDecoder().decode(SharedInfo.self, from: JSONEncoder().encode(try #require(friend.shared)))
+        #expect(saved.voice == voice)
+    }
+
+    @Test func aBrokenNoteFromTheServerIsLeftOut() throws {
+        let data = try JSONDecoder().decode(SharedData.self, from: Data(#"{"title": "Кино", "doneMode": "each", "voice": {"id": "nope"}}"#.utf8))
+        #expect(data.voice == nil)
+        #expect(data.title == "Кино")
+    }
+
     @Test func aNoteArrivesWithItsLink() throws {
         let owner = UUID()
         let note = CustomSound(name: "Купить хлеб", duration: 12, createdAt: created, reminderID: owner)

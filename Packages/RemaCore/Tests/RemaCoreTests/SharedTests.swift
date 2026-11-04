@@ -185,14 +185,15 @@ struct SharedTests {
         #expect(info.doneMode == .one && info.seq == 0 && !info.pending)
     }
 
-    @Test func theSharedPartIsTitleTimeAndDoneMode() throws {
+    @Test func theSharedPartIsTitleTimeDoneModeAndVoice() throws {
         let shared = try #require(SharedMerge.apply([try item(movieJSON(doneMode: "one"))], to: [], waiting: [], now: now).first)
-        let data = try JSONValue(encoding: shared.sharedData)
+        let data = try JSONValue(encoding: shared.sharedData(sounds: []))
         guard case .object(let fields) = data else {
             Issue.record("not an object")
             return
         }
-        #expect(Set(fields.keys) == ["title", "schedule", "doneMode"])
-        #expect(shared.sharedData.doneMode == .one)
+        #expect(Set(fields.keys) == ["title", "schedule", "doneMode", "voice"])
+        #expect(fields["voice"] == JSONValue.null)
+        #expect(shared.sharedData(sounds: []).doneMode == .one)
     }
 }

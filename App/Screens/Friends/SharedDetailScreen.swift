@@ -16,6 +16,7 @@ struct SharedDetailScreen: View {
     @State private var reported = false
     @State private var adding = false
     @State private var removing: SharedMember?
+    @State private var player = VoicePlayer.shared
 
     enum Confirm: Identifiable {
         case leave
@@ -30,6 +31,34 @@ struct SharedDetailScreen: View {
         Describer(calendar: calendar, locale: locale)
     }
 
+    private func voiceRow(_ note: CustomSound) -> some View {
+        let playing = player.playing == note.id && !player.paused
+        return Button {
+            player.toggle(note)
+        } label: {
+            HStack(spacing: 12) {
+                Glyph(paths: Icons.microphone, size: 20, lineWidth: 2, color: Palette.text)
+                Text("Voice note")
+                    .font(.app(.golos, 16, weight: 500))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                Text(verbatim: note.duration.clock)
+                    .font(.app(.jost, 15, weight: 500))
+                    .monospacedDigit()
+                    .foregroundStyle(Palette.secondary)
+                ZStack {
+                    RaisedCircle(size: 30)
+                    Glyph(paths: playing ? Icons.pause : Icons.play, size: 12, lineWidth: 2.4, color: Palette.text, filled: !playing)
+                }
+            }
+            .frame(minHeight: 52)
+            .padding(.horizontal, 16)
+            .contentShape(Rectangle())
+            .panel()
+        }
+        .buttonStyle(RowPressStyle())
+        .accessibilityLabel(Text(playing ? LocalizedStringKey("Pause") : LocalizedStringKey("Listen")))
+    }
+
     var body: some View {
         ZStack {
             Palette.background.ignoresSafeArea()
@@ -38,6 +67,7 @@ struct SharedDetailScreen: View {
             }
         }
         .foregroundStyle(Palette.text)
+        .onDisappear { player.stop() }
         .onChange(of: store.reminder(reminderID) == nil) { _, gone in
             if gone {
                 onClose()
@@ -103,6 +133,10 @@ struct SharedDetailScreen: View {
                 if shared.pending {
                     Note("Not sent yet. It goes to the friends when there is a connection.")
                         .padding(.top, 10)
+                }
+                if let note = VoiceNotes.note(of: reminder, sounds: store.sounds) {
+                    voiceRow(note)
+                        .padding(.top, 12)
                 }
                 SectionLabel(text: "Participants")
                     .padding(.horizontal, 4)

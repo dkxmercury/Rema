@@ -270,6 +270,7 @@ final class SharedService {
                 }
             }
             try await loadFriends(token: session.token, account: account)
+            await VoiceNotes.fetchShared(token: session.token)
             problem = trouble
         } catch let failure as Backend.Failure {
             problem = failure
@@ -443,14 +444,14 @@ final class SharedService {
             pending: true
         )
         Store.shared.save(local)
-        enqueue(.create(id: local.id.uuidString, data: local.sharedData, members: members.map(\.id), stamp: Self.stamp()))
+        enqueue(.create(id: local.id.uuidString, data: local.sharedData(sounds: Store.shared.sounds), members: members.map(\.id), stamp: Self.stamp()))
         kick()
     }
 
     func changed(_ reminder: Reminder) {
         guard let shared = reminder.shared, shared.isMine else { return }
         let members = shared.members.filter { $0.status == SharedStatus.invited || $0.status == SharedStatus.accepted }.map(\.id)
-        enqueue(.update(id: reminder.id.uuidString, data: reminder.sharedData, members: members, stamp: Self.stamp()))
+        enqueue(.update(id: reminder.id.uuidString, data: reminder.sharedData(sounds: Store.shared.sounds), members: members, stamp: Self.stamp()))
         kick()
     }
 
@@ -610,7 +611,7 @@ final class SharedService {
         local.shared = shared
         Store.shared.save(local)
         let active = members.filter { $0.status == SharedStatus.invited || $0.status == SharedStatus.accepted }.map(\.id)
-        enqueue(.update(id: local.id.uuidString, data: local.sharedData, members: active, stamp: Self.stamp()))
+        enqueue(.update(id: local.id.uuidString, data: local.sharedData(sounds: Store.shared.sounds), members: active, stamp: Self.stamp()))
         kick()
     }
 
