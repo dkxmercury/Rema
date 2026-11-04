@@ -37,6 +37,12 @@ struct SharedTarget: Identifiable {
     let id: UUID
 }
 
+struct ListenTarget: Identifiable {
+    let id = UUID()
+    let reminderID: UUID
+    let occurrence: Date
+}
+
 // Lives outside the views, so the screen stack survives when a language change rebuilds them.
 @MainActor
 @Observable
@@ -52,6 +58,7 @@ final class RootNavigation {
     var showingSignIn = !Account.shared.isSignedIn && !UserDefaults.standard.bool(forKey: RootNavigation.welcomeKey)
     var composeRequest: ComposeTarget?
     var openRequest: UUID?
+    var listenRequest: ListenTarget?
     var editingOpen = false
 
     func requestCompose(voice: Bool) {
@@ -129,6 +136,23 @@ struct RootView: View {
             .presentationDragIndicator(.visible)
             .presentationCornerRadius(30)
             .presentationBackground(Palette.background)
+        }
+        .sheet(item: $navigation.listenRequest) { target in
+            if let reminder = store.reminder(target.reminderID), let note = reminder.voiceNote(in: store.sounds) {
+                VoicePlayerSheet(reminder: reminder, note: note, occurrence: target.occurrence, onSnooze: {
+                    Feedback.play(.save)
+                    store.snooze(reminder.id, until: Date().addingTimeInterval(15 * 60))
+                    navigation.listenRequest = nil
+                }, onDone: {
+                    Feedback.play(.check)
+                    store.complete(reminder.id, through: target.occurrence)
+                    navigation.listenRequest = nil
+                })
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(30)
+                .presentationBackground(Palette.background)
+            }
         }
         .sheet(item: $buyingCourse) { course in
             BoughtSheet(course: course, store: store) { added in

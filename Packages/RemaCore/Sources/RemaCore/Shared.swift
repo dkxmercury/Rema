@@ -171,6 +171,12 @@ public extension Reminder {
     var sharedData: SharedData {
         SharedData(title: title, schedule: schedule, doneMode: shared?.doneMode ?? .each)
     }
+
+    // A note counts only while the reminder still rings with it; a sound picked over it leaves the note behind.
+    func voiceNote(in sounds: [CustomSound]) -> CustomSound? {
+        guard case .custom(let soundID) = sound else { return nil }
+        return sounds.first { $0.id == soundID && $0.reminderID == id && $0.deletedAt == nil }
+    }
 }
 
 public enum SharedMerge {

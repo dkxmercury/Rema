@@ -320,7 +320,13 @@ private struct Merger {
             snapshot.places = places
         case .sounds:
             var sounds = snapshot.sounds ?? []
-            merge(&sounds, id: id, record: record, key: key, stamp: SyncStamp.of)
+            merge(&sounds, id: id, record: record, key: key, stamp: SyncStamp.of) { incoming, local, data in
+                var sound = incoming
+                if case .object(let fields) = data, fields["reminderID"] == nil {
+                    sound.reminderID = local.reminderID
+                }
+                return sound
+            }
             snapshot.sounds = sounds
             if !record.deleted {
                 soundFiles[id] = record.file ?? ""

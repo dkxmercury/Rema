@@ -22,7 +22,7 @@ struct SoundScreen: View {
     }
 
     private var customSounds: [CustomSound] {
-        store.sounds.filter { $0.deletedAt == nil }
+        store.sounds.filter { $0.deletedAt == nil && !$0.isVoiceNote }
     }
 
     var body: some View {

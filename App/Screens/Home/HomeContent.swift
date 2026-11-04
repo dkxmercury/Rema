@@ -345,9 +345,19 @@ enum SampleData {
         var morning = Reminder(title: "Пить таблетки", schedule: Schedule(start: start, time: LocalTime(hour: 9, minute: 0), rule: .daily), createdAt: now)
         let nine = calendar.date(from: DateComponents(year: 2026, month: 10, day: 5, hour: 9, minute: 0))!
         morning.markDone(through: nine, at: nine.addingTimeInterval(120))
-        let evening = Reminder(title: "Пить таблетки", schedule: Schedule(start: start, time: LocalTime(hour: 21, minute: 0), rule: .daily), createdAt: now)
+        let evening = Reminder(id: pillsEveningID, title: "Пить таблетки", schedule: Schedule(start: start, time: LocalTime(hour: 21, minute: 0), rule: .daily), sound: .custom(eveningNoteID), createdAt: now)
         return [morning, evening]
     }()
+
+    static let pillsEveningID = UUID(uuidString: "6A1F2B3C-0000-4000-8000-000000000021")!
+    static let eveningNoteID = UUID(uuidString: "6A1F2B3C-0000-4000-8000-0000000000A1")!
+    static let eveningNote = CustomSound(id: eveningNoteID, name: "Пить таблетки", duration: 12, createdAt: now, reminderID: pillsEveningID)
+
+    static let breadNote = CustomSound(name: "Купить хлеб", duration: 12, createdAt: now)
+
+    static var voiceLevels: [Float] {
+        (0..<30).map { index in Float(0.25 + 0.75 * abs(sin(Double(index) * 0.9 + 1.3) * cos(Double(index) * 0.37 + 2.6))) }
+    }
 
     static let pillCourse = PillCourse(reminderIDs: pillReminders.map(\.id), left: 3, counted: calendar.date(from: DateComponents(year: 2026, month: 10, day: 5, hour: 10, minute: 0))!, pack: 20)
 

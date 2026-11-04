@@ -42,15 +42,27 @@ final class ScreenSnapshots: XCTestCase {
     func testPills() throws {
         let store = Store(directory: FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString))
         let reminders = SampleData.reminders + SampleData.pillReminders
-        store.seed(reminders: reminders, places: SampleData.places, sounds: [SampleData.gong])
+        store.seed(reminders: reminders, places: SampleData.places, sounds: [SampleData.gong, SampleData.eveningNote])
         store.update { $0.courses = [SampleData.pillCourse] }
         let home = HomeContent.make(reminders: reminders, places: SampleData.places, now: SampleData.now, calendar: SampleData.calendar, locale: russian, courses: [SampleData.pillCourse])
         let alert = PillsAlert(courseID: SampleData.pillCourse.id, title: "Пить таблетки", forecast: SampleData.pillForecast)
-        try render(HomeScreen(content: home, pills: alert), name: "M-PillsHome", style: .light)
-        try render(HomeScreen(content: home, pills: alert), name: "M-PillsHome-Dark", style: .dark)
+        try render(HomeScreen(content: home, pills: alert), name: "M-PillsHome", style: .light, height: 1150)
+        try render(HomeScreen(content: home, pills: alert), name: "M-PillsHome-Dark", style: .dark, height: 1150)
         try render(EditorScreen(draft: SampleData.pillReminders[1], isNew: false, store: store, now: SampleData.now, calendar: SampleData.calendar, locale: russian, onClose: {}), name: "M-PillsEditor", style: .light, height: 1000)
         try render(PillsSheet(reminder: SampleData.pillReminders[1], course: SampleData.pillCourse, store: store, now: SampleData.now, calendar: SampleData.calendar, locale: russian, onDone: { _ in }), name: "M-PillsSheet", style: .light)
         try render(BoughtSheet(course: SampleData.pillCourse, store: store, now: SampleData.now, calendar: SampleData.calendar, locale: russian, onDone: { _ in }), name: "M-PillsBought", style: .light, height: 520)
+    }
+
+    @MainActor
+    func testVoice() throws {
+        let file = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).caf")
+        let recording = VoiceRecordSheet(title: "Купить хлеб", recorder: VoiceRecorder(file: file, elapsed: 7, levels: SampleData.voiceLevels), onDone: { _ in })
+        try render(recording, name: "M-VoiceRecord", style: .light)
+        try render(recording, name: "M-VoiceRecord-Dark", style: .dark)
+        let bread = SampleData.reminders[2]
+        let player = VoicePlayerSheet(reminder: bread, note: SampleData.breadNote, occurrence: SampleData.now.addingTimeInterval(5 * 3600 + 600), now: SampleData.now, calendar: SampleData.calendar, locale: russian, levels: SampleData.voiceLevels, onSnooze: {}, onDone: {})
+        try render(player, name: "M-VoicePlay", style: .light, height: 520)
+        try render(player, name: "M-VoicePlay-Dark", style: .dark, height: 520)
     }
 
     func testOtherReading() throws {

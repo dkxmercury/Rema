@@ -493,13 +493,20 @@ public struct CustomSound: Codable, Identifiable, Hashable, Sendable {
     public var duration: Double
     public var createdAt: Date
     public var deletedAt: Date?
+    // Set for a voice note, recorded for one reminder and never cleared, so a sync without the key comes from an older build.
+    public var reminderID: UUID?
 
-    public init(id: UUID = UUID(), name: String, duration: Double, createdAt: Date, deletedAt: Date? = nil) {
+    public init(id: UUID = UUID(), name: String, duration: Double, createdAt: Date, deletedAt: Date? = nil, reminderID: UUID? = nil) {
         self.id = id
         self.name = name
         self.duration = min(duration, Self.maximumSeconds)
         self.createdAt = createdAt
         self.deletedAt = deletedAt
+        self.reminderID = reminderID
+    }
+
+    public var isVoiceNote: Bool {
+        reminderID != nil
     }
 
     public var fileName: String {

@@ -29,6 +29,12 @@ struct EditorScreen: View {
     @State private var course: PillCourse?
     @State private var courseEdited = false
     @State private var editingPills = false
+    @State private var voice: CustomSound?
+    @State private var voiceEdited = false
+    @State private var take: VoiceTake?
+    @State private var unsavedFiles: [URL] = []
+    @State private var saved = false
+    @State private var player = VoicePlayer.shared
     @FocusState private var titleFocused: Bool
 
     private var describer: Describer {
@@ -68,6 +74,22 @@ struct EditorScreen: View {
                     draft.placeIDs.append(place.id)
                     pop()
                 }, onBack: pop)
+            }
+        }
+        .sheet(item: $take) { take in
+            VoiceRecordSheet(title: draft.title, shared: draft.shared != nil, recorder: take.recorder) { duration in
+                finishRecording(take, duration: duration)
+            }
+            .interactiveDismissDisabled()
+            .presentationDetents([.large])
+            .presentationCornerRadius(30)
+            .presentationBackground(Palette.background)
+        }
+        .onDisappear {
+            player.stop()
+            guard !saved else { return }
+            for file in unsavedFiles {
+                try? FileManager.default.removeItem(at: file)
             }
         }
         .sheet(isPresented: $editingPills) {
@@ -141,6 +163,7 @@ struct EditorScreen: View {
             Button("Delete", role: .destructive) {
                 Feedback.play(.delete)
                 store.delete(draft.id)
+                dropNotes(except: nil)
                 onClose()
             }
         }
@@ -285,6 +308,10 @@ struct EditorScreen: View {
                         .foregroundStyle(Palette.secondary)
                 }
             }
+            if draft.shared == nil {
+                Hairline()
+                voiceRow
+            }
             if Remote.shared.isOn(.places) || !draft.placeIDs.isEmpty {
                 Hairline()
                 NavigationRow(icon: Icons.pin, iconColor: Palette.text, title: "By place", action: { path.append(.places) }) {
@@ -305,6 +332,119 @@ struct EditorScreen: View {
     // The course as the store has it until the sheet changes it here.
     private var pills: PillCourse? {
         courseEdited ? course : store.settings.course(for: draft.id)
+    }
+
+    private var note: CustomSound? {
+        voiceEdited ? voice : draft.voiceNote(in: store.sounds)
+    }
+
+    @ViewBuilder
+    private var voiceRow: some View {
+        if let note {
+            let playing = player.playing == note.id && !player.paused
+            HStack(spacing: 12) {
+                Menu {
+                    Button {
+                        player.toggle(note)
+                    } label: {
+                        Label("Listen", systemImage: "play.fill")
+                    }
+                    Button(action: startRecording) {
+                        Label("Record again", systemImage: "mic")
+                    }
+                    Button(role: .destructive, action: removeNote) {
+                        Label("Delete the note", systemImage: "trash")
+                    }
+                } label: {
+                    HStack(spacing: 12) {
+                        Glyph(paths: Icons.microphone, size: 20, lineWidth: 2, color: Palette.text)
+                        Text("Voice note")
+                            .font(.app(.golos, 16, weight: 500))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        Text(verbatim: note.duration.clock)
+                            .font(.app(.jost, 15, weight: 500))
+                            .monospacedDigit()
+                            .foregroundStyle(Palette.secondary)
+                    }
+                    .frame(minHeight: 51)
+                    .contentShape(Rectangle())
+                    .foregroundStyle(Palette.text)
+                }
+                Button {
+                    player.toggle(note)
+                } label: {
+                    ZStack {
+                        RaisedCircle(size: 30)
+                        Glyph(paths: playing ? Icons.pause : Icons.play, size: 12, lineWidth: 2.4, color: Palette.text, filled: !playing)
+                    }
+                    .frame(width: 44, height: 44)
+                }
+                .buttonStyle(.plain)
+                .padding(.trailing, -7)
+                .accessibilityLabel(Text(playing ? LocalizedStringKey("Pause") : LocalizedStringKey("Listen")))
+            }
+        } else {
+            NavigationRow(icon: Icons.microphone, iconColor: Palette.text, title: "Voice note", action: startRecording) {
+                Text("Record")
+                    .font(.app(.golos, 14, weight: 600))
+                    .foregroundStyle(Palette.accentText)
+            }
+        }
+    }
+
+    private func startRecording() {
+        player.stop()
+        let id = UUID()
+        let file = SoundLibrary.folder.appendingPathComponent(CustomSound(id: id, name: "", duration: 0, createdAt: Date()).fileName)
+        take = VoiceTake(soundID: id, recorder: VoiceRecorder(file: file))
+    }
+
+    private func finishRecording(_ finished: VoiceTake, duration: TimeInterval?) {
+        take = nil
+        let file = finished.recorder.file
+        guard let duration else {
+            try? FileManager.default.removeItem(at: file)
+            return
+        }
+        forgetUnsaved(note)
+        unsavedFiles.append(file)
+        let name = draft.title.trimmingCharacters(in: .whitespacesAndNewlines)
+        let recorded = CustomSound(id: finished.soundID, name: name.isEmpty ? String(localized: "Voice note", bundle: .app, locale: .app) : name, duration: duration, createdAt: Date(), reminderID: draft.id)
+        withAnimation(Motion.standard) {
+            voice = recorded
+            voiceEdited = true
+            draft.sound = .custom(recorded.id)
+        }
+    }
+
+    private func removeNote() {
+        player.stop()
+        forgetUnsaved(note)
+        Feedback.play(.delete)
+        withAnimation(Motion.standard) {
+            voice = nil
+            voiceEdited = true
+            draft.sound = .standard
+        }
+    }
+
+    // A recording made here and replaced before saving never reached the store, so only its file has to go.
+    private func forgetUnsaved(_ old: CustomSound?) {
+        guard let old, store.sound(old.id) == nil else { return }
+        let file = SoundLibrary.folder.appendingPathComponent(old.fileName)
+        try? FileManager.default.removeItem(at: file)
+        unsavedFiles.removeAll { $0 == file }
+    }
+
+    // Notes the reminder no longer rings with go away together with their files.
+    private func dropNotes(except kept: CustomSound?) {
+        let stale = store.sounds.filter { $0.reminderID == draft.id && $0.deletedAt == nil && $0.id != kept?.id }
+        for old in stale {
+            var gone = old
+            gone.deletedAt = Date()
+            store.save(gone)
+            try? FileManager.default.removeItem(at: SoundLibrary.folder.appendingPathComponent(old.fileName))
+        }
     }
 
     private var shownContact: ContactLink? {
@@ -529,7 +669,17 @@ struct EditorScreen: View {
                 }
             }
         }
+        if let recorded = reminder.voiceNote(in: voice.map { [$0] } ?? []), store.sound(recorded.id) == nil {
+            store.save(recorded)
+        }
         store.save(reminder)
+        let kept = reminder.voiceNote(in: store.sounds)
+        dropNotes(except: kept)
+        let keptFile = kept.map { SoundLibrary.folder.appendingPathComponent($0.fileName) }
+        for file in unsavedFiles where file != keptFile {
+            try? FileManager.default.removeItem(at: file)
+        }
+        saved = true
         let stored = store.settings.course(for: reminder.id)
         if courseEdited, course != stored, let id = course?.id ?? stored?.id {
             store.update { $0.setCourse(course, id: id) }
@@ -611,4 +761,10 @@ struct Shake: GeometryEffect {
     func effectValue(size: CGSize) -> ProjectionTransform {
         ProjectionTransform(CGAffineTransform(translationX: 8 * sin(amount * .pi * 4), y: 0))
     }
+}
+
+struct VoiceTake: Identifiable {
+    let id = UUID()
+    let soundID: UUID
+    let recorder: VoiceRecorder
 }

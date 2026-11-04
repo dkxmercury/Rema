@@ -272,49 +272,49 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "يُستخدم الميكروفون فقط أثناء إملاء التذكير."
+            "value": "يُستخدم الميكروفون فقط أثناء إملاء التذكير أو تسجيل ملاحظة صوتية."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Das Mikrofon wird nur verwendet, während du eine Erinnerung diktierst."
+            "value": "Das Mikrofon wird nur verwendet, während du eine Erinnerung diktierst oder eine Sprachnotiz aufnimmst."
           }
         },
         "en": {
           "stringUnit": {
-            "state": "new",
-            "value": "The microphone is used only while you dictate a reminder."
+            "state": "translated",
+            "value": "The microphone is used only while you dictate a reminder or record a voice note."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Le micro n’est utilisé que pendant que vous dictez un rappel."
+            "value": "Le micro n’est utilisé que pendant que vous dictez un rappel ou enregistrez une note vocale."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Микрофон работает, только пока вы диктуете напоминание."
+            "value": "Микрофон работает, только пока вы диктуете напоминание или записываете голосовую заметку."
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Мікрофон працює, лише поки ви диктуєте нагадування."
+            "value": "Мікрофон працює, лише поки ви диктуєте нагадування або записуєте голосову нотатку."
           }
         },
         "uz-Cyrl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Микрофон фақат эслатмани айтиб ёзаётганингизда ишлайди."
+            "value": "Микрофон фақат эслатмани айтиб ёзаётганингизда ёки овозли эслатма ёзиб олаётганингизда ишлайди."
           }
         },
         "uz-Latn": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mikrofon faqat eslatmani aytib yozayotganingizda ishlaydi."
+            "value": "Mikrofon faqat eslatmani aytib yozayotganingizda yoki ovozli eslatma yozib olayotganingizda ishlaydi."
           }
         }
       }

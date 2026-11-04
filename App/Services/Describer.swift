@@ -177,7 +177,8 @@ struct Describer {
         case .builtIn(let id):
             return builtInName(BuiltInSound(rawValue: id) ?? .mechanika)
         case .custom(let id):
-            return sounds.first { $0.id == id && $0.deletedAt == nil }?.name ?? builtInName(.mechanika)
+            guard let sound = sounds.first(where: { $0.id == id && $0.deletedAt == nil }) else { return builtInName(.mechanika) }
+            return sound.isVoiceNote ? String(localized: "Voice note", bundle: .app, locale: .app) : sound.name
         }
     }
 

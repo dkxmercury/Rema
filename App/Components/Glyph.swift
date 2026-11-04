@@ -47,6 +47,7 @@ enum Icons {
     static let download = ["M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"]
     static let note = ["M9 18V5.5l11-2V16", circle(6.5, 18, 2.5), circle(17.5, 16, 2.5)]
     static let play = ["M7 4.5v15l13-7.5z"]
+    static let pause = ["M8 5v14M16 5v14"]
     static let microphone = [rect(9, 3, 6, 11.5, 3), "M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"]
     static let sliders = ["M4 7h9M17 7h3M4 17h3M11 17h9", circle(15, 7, 2), circle(9, 17, 2)]
     static let cloudCheck = ["M7 18.5h10a4 4 0 0 0 .6-8A6 6 0 0 0 6.2 9.6 4.5 4.5 0 0 0 7 18.5z", "M9.5 13.8l2 2 3.5-3.6"]

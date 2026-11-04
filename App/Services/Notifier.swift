@@ -56,6 +56,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         let skip = UNNotificationAction(identifier: "skip", title: String(localized: "Skip today", bundle: .app, locale: .app))
         let call = UNNotificationAction(identifier: "call", title: String(localized: "Call", bundle: .app, locale: .app), options: [.foreground], icon: UNNotificationActionIcon(systemImageName: "phone.fill"))
         let open = UNNotificationAction(identifier: "open", title: String(localized: "Open", bundle: .app, locale: .app), options: [.foreground], icon: UNNotificationActionIcon(systemImageName: "safari"))
+        let listen = UNNotificationAction(identifier: "listen", title: String(localized: "Listen", bundle: .app, locale: .app), options: [.foreground], icon: UNNotificationActionIcon(systemImageName: "play.fill"))
         return [
             UNNotificationCategory(identifier: "reminder", actions: [done] + snoozes, intentIdentifiers: []),
             UNNotificationCategory(identifier: "nag", actions: [done, fifteenMinutes, skip], intentIdentifiers: []),
@@ -66,6 +67,8 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
             UNNotificationCategory(identifier: "nag.open", actions: [open, done, fifteenMinutes, skip], intentIdentifiers: []),
             UNNotificationCategory(identifier: "place.call", actions: [call, done], intentIdentifiers: []),
             UNNotificationCategory(identifier: "place.open", actions: [open, done], intentIdentifiers: []),
+            UNNotificationCategory(identifier: "reminder.voice", actions: [done, listen] + snoozes.prefix(2), intentIdentifiers: []),
+            UNNotificationCategory(identifier: "nag.voice", actions: [done, listen, fifteenMinutes], intentIdentifiers: []),
         ]
     }
 
@@ -204,7 +207,10 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
             content.userInfo = ["reminder": item.reminderID.uuidString, "occurrence": item.occurrence.timeIntervalSince1970]
             // A number or a link in a friend's reminder is not a button to press; only one's own reminders get those.
             let owned = store.reminder(item.reminderID)
-            if owned?.shared?.isMine != false {
+            // A note to listen to wins over a contact button; the call stays one tap away inside the app.
+            if owned?.voiceNote(in: store.sounds) != nil {
+                content.categoryIdentifier += ".voice"
+            } else if owned?.shared?.isMine != false {
                 addContact(of: item.title, link: owned?.contact, to: content)
             }
             if item.kind == .missed {
@@ -406,6 +412,9 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
             if let raw = info["reminder"] as? String, let id = UUID(uuidString: raw) {
                 let occurrence = Date(timeIntervalSince1970: info["occurrence"] as? Double ?? Date().timeIntervalSince1970)
                 store.reloadIfChanged()
+                if action == "listen" {
+                    RootNavigation.shared.listenRequest = ListenTarget(reminderID: id, occurrence: occurrence)
+                }
                 apply(action, to: id, occurrence: occurrence)
             }
             await reschedule()
