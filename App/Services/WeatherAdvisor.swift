@@ -28,6 +28,7 @@ final class WeatherAdvisor {
     private static let forecastKey = "weather.forecast"
     private static let fetchedKey = "weather.fetched"
     private static let failedKey = "weather.failed"
+    private static let failureKey = "weather.failure"
     private static let lastSnowKey = "weather.lastSnow"
 
     private(set) var enabled: Bool
@@ -35,6 +36,9 @@ final class WeatherAdvisor {
     private(set) var markLight: URL?
     private(set) var markDark: URL?
     private(set) var legal: URL?
+    // What the last request brought, shown under the switch so a silent failure is visible.
+    private(set) var fetchedAt: Date?
+    private(set) var failure: String?
 
     private let defaults = UserDefaults.standard
 
@@ -47,6 +51,8 @@ final class WeatherAdvisor {
     private init() {
         enabled = defaults.bool(forKey: Self.enabledKey)
         city = defaults.string(forKey: Self.cityKey)
+        fetchedAt = defaults.object(forKey: Self.fetchedKey) as? Date
+        failure = defaults.string(forKey: Self.failureKey)
     }
 
     var available: Bool {
@@ -135,7 +141,13 @@ final class WeatherAdvisor {
         let calendar = Calendar.current
         let start = calendar.date(byAdding: .day, value: -2, to: calendar.startOfDay(for: now)) ?? now
         let end = calendar.date(byAdding: .day, value: 4, to: calendar.startOfDay(for: now)) ?? now
-        guard let days = try? await WeatherService.shared.weather(for: location, including: .daily(startDate: start, endDate: end)) else {
+        let days: Forecast<DayWeather>
+        do {
+            days = try await WeatherService.shared.weather(for: location, including: .daily(startDate: start, endDate: end))
+        } catch {
+            let reason = error as NSError
+            failure = "\(reason.domain) \(reason.code)"
+            defaults.set(failure, forKey: Self.failureKey)
             defaults.set(now, forKey: Self.failedKey)
             return
         }
@@ -153,6 +165,9 @@ final class WeatherAdvisor {
         defaults.set(try? JSONEncoder().encode(forecast), forKey: Self.forecastKey)
         defaults.set(now, forKey: Self.fetchedKey)
         defaults.removeObject(forKey: Self.failedKey)
+        defaults.removeObject(forKey: Self.failureKey)
+        fetchedAt = now
+        failure = nil
         Notifier.shared.scheduleSoon()
     }
 

@@ -184,6 +184,7 @@ struct SettingsScreen: View {
                                     }
                                 }
                             }
+                            weatherStatus
                             weatherAttribution
                         }
                     }
@@ -312,6 +313,33 @@ struct SettingsScreen: View {
             Feedback.play(.toggle)
             Task { await weather.setEnabled(on) }
         })
+    }
+
+    // Says what the weather part is doing, so silence after a failed request or on a calm day is not a mystery.
+    @ViewBuilder
+    private var weatherStatus: some View {
+        if weather.enabled {
+            let now = Date()
+            let text: String = {
+                if let failure = weather.failure {
+                    return String(localized: "Could not get the forecast (\(failure)).", bundle: .app, locale: .app)
+                }
+                guard let fetched = weather.fetchedAt else {
+                    return String(localized: "The forecast has not come yet.", bundle: .app, locale: .app)
+                }
+                let updated = String(localized: "Forecast updated \(describer.dayAndTime(fetched, now: now)).", bundle: .app, locale: .app)
+                let next = weather.notes(after: now).first.map { String(localized: "Next notification \(describer.dayAndTime($0.fireDate, now: now)).", bundle: .app, locale: .app) }
+                    ?? String(localized: "No reason to notify today or tomorrow.", bundle: .app, locale: .app)
+                return "\(updated) \(next)"
+            }()
+            Text(verbatim: text)
+                .font(.app(.golos, 13))
+                .lineHeight(18, .golos, 13)
+                .foregroundStyle(weather.failure == nil ? Palette.secondary : Palette.urgentText)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity)
+                .padding(.top, 4)
+        }
     }
 
     private var weatherMark: some View {

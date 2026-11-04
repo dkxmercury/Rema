@@ -7053,6 +7053,52 @@
         }
       }
     },
+    "Could not get the forecast (%@).": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر الحصول على التوقعات (%@)."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Vorhersage kam nicht an (%@)."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible d’obtenir la prévision (%@)."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось получить прогноз (%@)."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не вдалося отримати прогноз (%@)."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Об-ҳаво маълумотини олиб бўлмади (%@)."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ob-havo ma’lumotini olib bo‘lmadi (%@)."
+          }
+        }
+      }
+    },
     "Could not read this file": {
       "localizations": {
         "ar": {
@@ -11051,6 +11097,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "«Ertalab», «kechqurun» so‘zlari va soatsiz eslatmalar uchun"
+          }
+        }
+      }
+    },
+    "Forecast updated %@.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حُدّثت التوقعات %@."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vorhersage aktualisiert %@."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prévision mise à jour %@."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Прогноз обновлён %@."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Прогноз оновлено %@."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Об-ҳаво маълумоти янгиланди: %@."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ob-havo ma’lumoti yangilandi: %@."
           }
         }
       }
@@ -17389,6 +17481,52 @@
         }
       }
     },
+    "Next notification %@.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الإشعار التالي %@."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nächste Mitteilung %@."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prochaine notification %@."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ближайшее уведомление %@."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Найближче сповіщення %@."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Кейинги билдиришнома: %@."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keyingi bildirishnoma: %@."
+          }
+        }
+      }
+    },
     "Next reminder": {
       "localizations": {
         "ar": {
@@ -18075,6 +18213,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Hozircha joylar yo‘q"
+          }
+        }
+      }
+    },
+    "No reason to notify today or tomorrow.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا سبب للإشعار اليوم أو غدًا."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heute und morgen gibt es keinen Anlass."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rien à signaler aujourd’hui ni demain."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "На сегодня и завтра повода нет."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "На сьогодні й завтра приводу немає."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бугун ва эртага учун сабаб йўқ."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bugun va ertaga uchun sabab yo‘q."
           }
         }
       }
@@ -29513,6 +29697,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "24 soatlik siferblatdagi kun va eng yaqin eslatma."
+          }
+        }
+      }
+    },
+    "The forecast has not come yet.": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لم تصل التوقعات بعد."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noch keine Vorhersage."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pas encore de prévision."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Прогноза пока нет."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Прогнозу поки немає."
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ҳозирча об-ҳаво маълумоти йўқ."
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hozircha ob-havo ma’lumoti yo‘q."
           }
         }
       }
