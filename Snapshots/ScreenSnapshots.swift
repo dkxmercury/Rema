@@ -94,8 +94,11 @@ final class ScreenSnapshots: XCTestCase {
             BellService.Event(id: "e1", kind: "comment", actor: "anna", actorName: "Аня", item: movie.id.uuidString, title: "Кино в субботу", at: now - 5 * 60_000, text: "Билеты купила, ряд 7, места 12–14"),
             BellService.Event(id: "e2", kind: "ticked", actor: "ilya", actorName: "Илья", item: UUID().uuidString, title: "Купить подарок маме", at: now - 60 * 60_000),
             BellService.Event(id: "e3", kind: "thanks", actor: "mom", actorName: "Мама", item: UUID().uuidString, title: "Полить цветы", at: now - 26 * 3_600_000),
+            BellService.Event(id: "e4", kind: "ticked", actor: "ilya", actorName: "Илья", item: UUID().uuidString, title: "Забрать посылку", at: now - 50 * 3_600_000),
         ]
-        let bell = BellScreen(bell: BellService(events: events, seen: [events[2].mark]), onEvent: { _ in }, onNews: { _ in }, onBack: {})
+        UserDefaults.standard.set(["e4"], forKey: "bell.thanked")
+        defer { UserDefaults.standard.removeObject(forKey: "bell.thanked") }
+        let bell = BellScreen(bell: BellService(events: events, seen: [events[2].mark, events[3].mark]), onEvent: { _ in }, onNews: { _ in }, onBack: {})
         try render(bell, name: "P-Bell", style: .light)
         try render(bell, name: "P-Bell-Dark", style: .dark)
     }

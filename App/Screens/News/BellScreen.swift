@@ -79,11 +79,12 @@ struct BellScreen: View {
 
     private func line(_ row: BellService.Row) -> some View {
         let read = bell.isRead(row)
+        let glyph = icon(row)
         return HStack(alignment: .top, spacing: 12) {
             ZStack {
                 Circle()
                     .fill(read ? Palette.track : Palette.accent)
-                Glyph(paths: icon(row), size: 18, lineWidth: 2, color: read ? Palette.text : Palette.onAccent)
+                Glyph(paths: glyph, size: 18, lineWidth: 2, color: read ? Palette.text : Palette.onAccent, filled: glyph == Icons.heart)
             }
             .frame(width: 36, height: 36)
             .accessibilityHidden(true)
@@ -192,7 +193,7 @@ struct BellScreen: View {
             return item.body
         case .event(let event):
             if event.kind == "comment", let text = event.text, !text.isEmpty {
-                return event.title.isEmpty ? text : "\(event.title.quoted()) · \(text)"
+                return event.title.isEmpty ? text : "\(String(localized: "Writes in \(event.title.quoted())", bundle: .app, locale: .app)) · \(text)"
             }
             let what = Self.text(event.kind)
             return event.title.isEmpty ? what : "\(what) · \(event.title)"
@@ -221,6 +222,16 @@ struct BellScreen: View {
         let formatter = RelativeDateTimeFormatter()
         formatter.locale = AppLanguage.current.locale
         formatter.unitsStyle = .short
-        return formatter.localizedString(for: date, relativeTo: Date())
+        let now = Date()
+        let calendar = Calendar.current
+        let days = calendar.dateComponents([.day], from: calendar.startOfDay(for: date), to: calendar.startOfDay(for: now)).day ?? 0
+        if days == 1 {
+            formatter.dateTimeStyle = .named
+            return formatter.localizedString(from: DateComponents(day: -1))
+        }
+        if days > 1, days < 7 {
+            return formatter.localizedString(from: DateComponents(day: -days))
+        }
+        return formatter.localizedString(for: date, relativeTo: now)
     }
 }

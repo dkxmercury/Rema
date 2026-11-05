@@ -95,10 +95,23 @@ struct DiscussionSection: View {
         let mine = comment.author == me
         let words = comment.deleted ? String(localized: "Message deleted", bundle: .app, locale: .app) : comment.text ?? ""
         let shape = UnevenRoundedRectangle(topLeadingRadius: 16, bottomLeadingRadius: mine ? 16 : 4, bottomTrailingRadius: mine ? 4 : 16, topTrailingRadius: 16, style: .circular)
-        return VStack(alignment: mine ? .trailing : .leading, spacing: 3) {
+        let author = name(comment.author)
+        return HStack(alignment: .bottom, spacing: 8) {
+            if !mine {
+                Avatar(name: author.isEmpty ? "?" : author, seed: comment.author, size: 28)
+            }
+            message(comment, mine: mine, words: words, author: author, shape: shape)
+        }
+        .frame(maxWidth: .infinity, alignment: mine ? .trailing : .leading)
+        .padding(mine ? .leading : .trailing, 48)
+        .accessibilityElement(children: .combine)
+    }
+
+    private func message(_ comment: SharedComment, mine: Bool, words: String, author: String, shape: UnevenRoundedRectangle) -> some View {
+        VStack(alignment: mine ? .trailing : .leading, spacing: 3) {
             VStack(alignment: .leading, spacing: 1) {
                 if !mine {
-                    Text(verbatim: name(comment.author))
+                    Text(verbatim: author)
                         .font(.app(.golos, 12, weight: 600))
                         .foregroundStyle(Palette.secondary)
                 }
@@ -138,9 +151,6 @@ struct DiscussionSection: View {
                 .font(.app(.golos, 11))
                 .foregroundStyle(Palette.secondary)
         }
-        .frame(maxWidth: .infinity, alignment: mine ? .trailing : .leading)
-        .padding(mine ? .leading : .trailing, 48)
-        .accessibilityElement(children: .combine)
     }
 }
 
