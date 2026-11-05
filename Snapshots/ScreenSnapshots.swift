@@ -98,6 +98,7 @@ final class ScreenSnapshots: XCTestCase {
         let bell = BellScreen(bell: BellService(events: events, seen: [events[2].mark]), onEvent: { _ in }, onNews: { _ in }, onBack: {})
         try render(bell, name: "P-Bell", style: .light)
         try render(bell, name: "P-Bell-Dark", style: .dark)
+    }
 
     func testOtherReading() throws {
         try render(PhraseScreen(store: sampleStore(), text: "в 7 ужин с семьёй", now: SampleData.now, calendar: SampleData.calendar, locale: russian, autofocus: false, onClose: {}), name: "Phrase-OtherReading", style: .dark)
