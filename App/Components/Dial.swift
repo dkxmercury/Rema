@@ -35,12 +35,8 @@ struct Dial: View {
     var handMinutes: Double
     var markerProgress: Double = 1
     var markers: [DialMarker]
-    var windowTime: String
-    var windowCaption: String
-    var windowFontSize: CGFloat = 17
-    var windowTitleOnly = false
     var lift: DialLift?
-    var badge: String?
+    var spoken = ""
 
     private let geometry = DialGeometry()
 
@@ -76,7 +72,7 @@ struct Dial: View {
                 .animation(Motion.hand, value: handMinutes)
 
             if let lift {
-                let origin = geometry.point(angle: Double(lift.original) / 1440 * 360, radius: 133)
+                let origin = geometry.point(angle: geometry.clockAngle(minutes: Double(lift.original)), radius: 133)
                 DialLiftLayer(minutes: Double(lift.minutes), original: Double(lift.original))
                     .frame(width: size, height: size)
                     .animation(Motion.press, value: lift.minutes)
@@ -85,60 +81,12 @@ struct Dial: View {
                         removal: .opacity
                     ))
             }
-
-            window
-                .frame(width: 100 * unit, height: 38 * unit)
-                .offset(x: 68 * unit, y: 72 * unit)
-
-            if let badge {
-                Text(verbatim: badge)
-                    .font(.appFixed(.golos, 11, weight: 600))
-                    .foregroundStyle(.white)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
-                    .padding(.horizontal, 4)
-                    .frame(width: 100 * unit, height: 20 * unit)
-                    .background(RoundedRectangle(cornerRadius: 6, style: .circular).fill(Palette.urgent))
-                    .offset(x: 68 * unit, y: 116 * unit)
-                    .transition(.opacity.combined(with: .scale(scale: 0.8)))
-            }
         }
         .frame(width: size, height: size)
         .environment(\.layoutDirection, .leftToRight)
-        // The marks are drawn, so VoiceOver gets the window: the next time, how soon, and the missed count.
+        // The marks are drawn, so VoiceOver gets what the screen says around the dial.
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text(verbatim: [windowTime, windowTitleOnly ? nil : windowCaption, badge].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: ", ")))
-    }
-
-    private var window: some View {
-        RoundedRectangle(cornerRadius: 9, style: .circular)
-            .fill(Palette.dialWindow)
-            .insetShadow(RoundedRectangle(cornerRadius: 9, style: .circular), .black.opacity(0.45), blur: 4, y: 2)
-            .overlay {
-                RoundedRectangle(cornerRadius: 9, style: .circular)
-                    .strokeBorder(Palette.dialWindowBorder, lineWidth: 1)
-            }
-            .overlay {
-                VStack(spacing: 0) {
-                    Text(verbatim: windowTime)
-                        .font(.appFixed(.jost, windowFontSize, weight: 500))
-                        .tracking(windowTitleOnly ? windowFontSize * 0.02 : 0)
-                        .foregroundStyle(Palette.dialWindowText)
-                        .frame(height: max(19, windowFontSize + 2))
-                        .contentTransition(.numericText())
-                    if !windowTitleOnly {
-                        Text(verbatim: windowCaption)
-                            .font(.appFixed(.golos, 10, weight: 600))
-                            .foregroundStyle(Palette.accentOnDark)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.6)
-                            .padding(.horizontal, 4)
-                            .contentTransition(.numericText())
-                    }
-                }
-                .animation(Motion.standard, value: windowTime)
-                .animation(Motion.standard, value: windowCaption)
-            }
+        .accessibilityLabel(Text(verbatim: spoken))
     }
 
     private func draw(in context: inout GraphicsContext, scale: CGFloat) {
@@ -160,20 +108,19 @@ struct Dial: View {
             context.fill(Path(ellipseIn: CGRect(x: point.x - r, y: point.y - r, width: 2 * r, height: 2 * r)), with: .color(color))
         }
 
-        for index in 0..<24 {
-            tick(angle: Double(index) * 15, inner: 108, outer: 116, width: 1.4, color: Palette.dialTick.opacity(0.45))
+        for index in 0..<60 where index % 5 != 0 {
+            tick(angle: Double(index) * 6, inner: 109, outer: 116, width: 1.2, color: Palette.dialTick.opacity(0.35))
         }
-        for index in 0..<8 {
-            tick(angle: Double(index) * 45, inner: 105, outer: 117, width: 3, color: Palette.dialTick)
+        for hour in 0..<12 {
+            tick(angle: Double(hour) * 30, inner: 104, outer: 117, width: 3, color: Palette.dialTick)
         }
 
-        for index in 0..<8 {
-            let label = Text(verbatim: "\(index * 3)")
-                .font(.appFixed(.jost, 13 * scale, weight: 500))
+        for hour in 1...12 {
+            let label = Text(verbatim: "\(hour)")
+                .font(.appFixed(.jost, 16 * scale, weight: 500))
                 .foregroundColor(Palette.dialNumeral)
-            context.draw(label, at: place(geometry.point(angle: Double(index) * 45, radius: 90)), anchor: .center)
+            context.draw(label, at: place(geometry.point(angle: Double(hour % 12) * 30, radius: 88)), anchor: .center)
         }
-
     }
 }
 
@@ -199,7 +146,7 @@ private struct DialMarkersLayer: View, Animatable {
                 return (marker, share)
             }
             func place(_ minutes: Double) -> CGPoint {
-                let center = geometry.point(angle: minutes / 1440 * 360, radius: 133)
+                let center = geometry.point(angle: geometry.clockAngle(minutes: minutes), radius: 133)
                 return CGPoint(x: center.x * scale, y: center.y * scale)
             }
             func minutes(_ marker: DialMarker) -> Double {
@@ -266,7 +213,7 @@ private struct DialLiftLayer: View, Animatable {
         Canvas { context, canvas in
             let scale = canvas.width / 280
             func place(_ value: Double) -> CGPoint {
-                let point = geometry.point(angle: value / 1440 * 360, radius: 133)
+                let point = geometry.point(angle: geometry.clockAngle(minutes: value), radius: 133)
                 return CGPoint(x: point.x * scale, y: point.y * scale)
             }
             func circle(_ center: CGPoint, _ radius: Double) -> Path {
@@ -314,13 +261,18 @@ private struct DialHandLayer: View, Animatable {
                 let r = radius * scale
                 context.fill(Path(ellipseIn: CGRect(x: point.x - r, y: point.y - r, width: 2 * r, height: 2 * r)), with: .color(color))
             }
-            let angle = minutes / 1440 * 360
-            var hand = Path()
-            hand.move(to: place(geometry.point(angle: angle + 180, radius: 18)))
-            hand.addLine(to: place(geometry.point(angle: angle, radius: 104)))
-            context.stroke(hand, with: .color(Palette.accent), style: StrokeStyle(lineWidth: 3.2 * scale, lineCap: .round))
-            dot(7, Palette.dialCap)
-            dot(2.6, Palette.accent)
+            func hand(_ angle: Double, length: Double, tail: Double, width: Double, color: Color) {
+                var path = Path()
+                path.move(to: place(geometry.point(angle: angle + 180, radius: tail)))
+                path.addLine(to: place(geometry.point(angle: angle, radius: length)))
+                var shadow = context
+                shadow.addFilter(.shadow(color: .black.opacity(0.28), radius: 1.5 * scale, x: 0, y: 1 * scale))
+                shadow.stroke(path, with: .color(color), style: StrokeStyle(lineWidth: width * scale, lineCap: .round))
+            }
+            hand(geometry.clockAngle(minutes: minutes), length: 58, tail: 12, width: 7, color: Palette.dialCap)
+            hand(geometry.minuteAngle(minutes: minutes), length: 96, tail: 18, width: 3.4, color: Palette.accent)
+            dot(7.5, Palette.dialCap)
+            dot(2.8, Palette.accent)
         }
     }
 }

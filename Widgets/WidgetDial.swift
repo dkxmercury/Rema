@@ -47,17 +47,17 @@ struct WidgetDial: View {
         }
         let middle = SVGPoint(geometry.center, geometry.center)
         if style == .medium {
-            ticks(context, count: 24, radius: 112, length: 9, width: 1.6, color: ink.opacity(0.45), scale: scale)
+            ticks(context, count: 60, radius: 112, length: 7, width: 1.6, color: ink.opacity(0.35), scale: scale)
         }
-        ticks(context, count: 8, radius: 111, length: style == .lock ? 16 : (style == .small ? 14 : 13), width: style == .lock ? 4 : (style == .small ? 3.5 : 3.2), color: style == .lock ? ink.opacity(0.85) : ink, scale: scale)
+        ticks(context, count: 12, radius: 111, length: style == .lock ? 16 : (style == .small ? 14 : 13), width: style == .lock ? 4 : (style == .small ? 3.5 : 3.2), color: style == .lock ? ink.opacity(0.85) : ink, scale: scale)
 
         for marker in markers where marker.kind != .next {
-            let angle = geometry.angle(hour: marker.hour, minute: marker.minute)
+            let angle = geometry.clockAngle(hour: marker.hour, minute: marker.minute)
             let color: Color = style == .lock ? .white.opacity(0.7) : (marker.kind == .done ? Palette.dialDone : Palette.dialUpcoming)
             context.fill(disc(geometry.point(angle: angle, radius: 133), style == .medium ? 7 : (style == .lock ? 9 : 8)), with: .color(color))
         }
         for marker in markers where marker.kind == .next {
-            let angle = geometry.angle(hour: marker.hour, minute: marker.minute)
+            let angle = geometry.clockAngle(hour: marker.hour, minute: marker.minute)
             let point = geometry.point(angle: angle, radius: 133)
             if style == .lock {
                 context.fill(disc(point, 13), with: .color(.white))
@@ -68,12 +68,16 @@ struct WidgetDial: View {
             }
         }
 
-        let angle = geometry.angle(hour: hour, minute: minute)
-        var hand = Path()
-        hand.move(to: place(geometry.point(angle: angle + 180, radius: 18)))
-        hand.addLine(to: place(geometry.point(angle: angle, radius: 104)))
-        let handWidth = style == .lock ? 9 : (style == .medium ? 5.5 : 7)
-        context.stroke(hand, with: .color(style == .lock ? .white : Palette.accent), style: StrokeStyle(lineWidth: handWidth * scale, lineCap: .round))
+        let minutes = Double(hour * 60 + minute)
+        func hand(_ angle: Double, length: Double, tail: Double, width: Double, color: Color) {
+            var path = Path()
+            path.move(to: place(geometry.point(angle: angle + 180, radius: tail)))
+            path.addLine(to: place(geometry.point(angle: angle, radius: length)))
+            context.stroke(path, with: .color(color), style: StrokeStyle(lineWidth: width * scale, lineCap: .round))
+        }
+        let thin = style == .lock ? 9.0 : (style == .medium ? 5.5 : 7)
+        hand(geometry.clockAngle(minutes: minutes), length: 62, tail: 12, width: thin * 1.8, color: style == .lock ? .white : Palette.dialCap)
+        hand(geometry.minuteAngle(minutes: minutes), length: 100, tail: 18, width: thin, color: style == .lock ? .white.opacity(0.85) : Palette.accent)
         context.fill(disc(middle, style == .lock ? 14 : (style == .medium ? 11 : 13)), with: .color(style == .lock ? .white : Palette.dialCap))
         if style != .lock {
             context.fill(disc(middle, style == .medium ? 4.5 : 5), with: .color(Palette.accent))

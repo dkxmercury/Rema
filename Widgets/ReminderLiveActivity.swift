@@ -224,15 +224,15 @@ private struct IslandDial: View {
             }
             context.fill(disc(24, 24, 21), with: .color(Color(hex: 0x1C1B19)))
             context.stroke(disc(24, 24, 21), with: .color(.white.opacity(0.22)), lineWidth: 1.5 * scale)
-            for index in 0..<8 {
-                let bar = Path(CGRect(x: -0.7, y: -17.5, width: 1.4, height: 3))
-                let transform = CGAffineTransform(rotationAngle: Double(index) * 45 * .pi / 180)
+            for index in 0..<12 {
+                let bar = Path(CGRect(x: -0.7, y: -17.5, width: 1.4, height: index % 3 == 0 ? 3.5 : 2.5))
+                let transform = CGAffineTransform(rotationAngle: Double(index) * 30 * .pi / 180)
                     .concatenating(CGAffineTransform(translationX: 24, y: 24))
                     .concatenating(CGAffineTransform(scaleX: scale, y: scale))
                 context.fill(bar.applying(transform), with: .color(Color(hex: 0xF1EFEA, alpha: 0.6)))
             }
             let parts = Calendar.current.dateComponents([.hour, .minute], from: due)
-            let angle = DialGeometry().angle(hour: parts.hour ?? 0, minute: parts.minute ?? 0) * .pi / 180
+            let angle = DialGeometry().clockAngle(hour: parts.hour ?? 0, minute: parts.minute ?? 0) * .pi / 180
             var hand = Path()
             hand.move(to: CGPoint(x: 24 * scale, y: 24 * scale))
             hand.addLine(to: CGPoint(x: (24 + 13 * sin(angle)) * scale, y: (24 - 13 * cos(angle)) * scale))

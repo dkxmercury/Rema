@@ -69,33 +69,11 @@ struct DayProvider: TimelineProvider {
         }
     }
 
-    // A frame every five minutes keeps the hand moving; the exact minutes of reminders keep the list honest.
+    // A frame every minute keeps the minute hand true and the list exact; after two hours the widget asks again, a dozen times a day.
     func getTimeline(in context: Context, completion: @escaping (Timeline<DayEntry>) -> Void) {
         let snapshot = SharedInbox.overlaid(SharedStore.load())
-        let now = Date()
-        let start = Date(timeIntervalSinceReferenceDate: floor(now.timeIntervalSinceReferenceDate / 60) * 60)
-        let end = start.addingTimeInterval(6 * 3600)
-        var moments: Set<Date> = [start]
-        var step = Date(timeIntervalSinceReferenceDate: ceil(start.timeIntervalSinceReferenceDate / 300) * 300)
-        while step < end {
-            moments.insert(step)
-            step = step.addingTimeInterval(300)
-        }
-        for reminder in snapshot?.reminders ?? [] where reminder.isLive {
-            if let snoozed = reminder.snoozedUntil, snoozed > now, snoozed < end {
-                moments.insert(Self.minute(snoozed))
-            }
-            guard let schedule = reminder.schedule else { continue }
-            for occurrence in Recurrence.next(schedule, after: now, limit: 4, calendar: .current) where occurrence < end {
-                moments.insert(Self.minute(occurrence))
-                moments.insert(Self.minute(occurrence.addingTimeInterval(60)))
-            }
-        }
-        let entries = moments.sorted().map { DayEntry.make(at: $0, snapshot: snapshot) }
+        let start = Date(timeIntervalSinceReferenceDate: floor(Date().timeIntervalSinceReferenceDate / 60) * 60)
+        let entries = (0..<120).map { DayEntry.make(at: start.addingTimeInterval(Double($0) * 60), snapshot: snapshot) }
         completion(Timeline(entries: entries, policy: .atEnd))
-    }
-
-    private static func minute(_ date: Date) -> Date {
-        Date(timeIntervalSinceReferenceDate: floor(date.timeIntervalSinceReferenceDate / 60) * 60)
     }
 }

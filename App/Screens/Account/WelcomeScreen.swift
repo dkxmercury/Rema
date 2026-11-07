@@ -24,15 +24,11 @@ struct WelcomeScreen: View {
                 size: 208,
                 handMinutes: introAnimations && !reduceMotion ? hand : Self.handTarget,
                 markers: [
-                    DialMarker(id: 0, hour: 9, minute: 0, kind: .done),
                     DialMarker(id: 1, hour: 14, minute: 30, kind: .next),
                     DialMarker(id: 2, hour: 19, minute: 0, kind: .upcoming),
                     DialMarker(id: 3, hour: 21, minute: 30, kind: .upcoming),
                 ],
-                windowTime: "Rema",
-                windowCaption: "",
-                windowFontSize: 19,
-                windowTitleOnly: true
+                spoken: "Rema"
             )
             .padding(.top, 22)
             Text("I’ll remind you on time")

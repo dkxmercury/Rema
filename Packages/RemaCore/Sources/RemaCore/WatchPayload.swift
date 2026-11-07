@@ -49,6 +49,12 @@ public struct WatchPayload: Codable, Hashable, Sendable {
         items.filter { calendar.isDate($0.occurrence, inSameDayAs: now) }
     }
 
+    // What a twelve-hour face shows: not done and due within the next twelve hours, tomorrow morning included.
+    public func ahead(_ now: Date, hours: Double = 12) -> [WatchItem] {
+        let horizon = now.addingTimeInterval(hours * 3600)
+        return items.filter { !$0.done && $0.occurrence > now && $0.occurrence <= horizon }
+    }
+
     public func next(after now: Date) -> WatchItem? {
         items.filter { !$0.done && $0.occurrence > now }.min { $0.occurrence < $1.occurrence }
     }

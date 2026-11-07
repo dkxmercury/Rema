@@ -96,14 +96,17 @@ extension HomeContent {
             item.reminderID == nextItem?.reminderID && item.occurrence == nextItem?.occurrence
         }
 
-        let markers = today.enumerated().map { index, item -> DialMarker in
+        // A twelve-hour face holds what is still ahead in the next twelve hours, tonight's and tomorrow morning's alike.
+        let horizon = now.addingTimeInterval(12 * 3600)
+        let tomorrowItems = calendar.date(byAdding: .day, value: 1, to: now).map { Agenda.day($0, reminders: active, calendar: calendar) } ?? []
+        let ahead = (today + tomorrowItems).filter { !$0.done && $0.occurrence > now && $0.occurrence <= horizon }
+        let markers = ahead.enumerated().map { index, item -> DialMarker in
             let parts = calendar.dateComponents([.hour, .minute], from: item.occurrence)
-            let kind: DialMarker.Kind = item.done ? .done : (isMissed(item) ? .missed : (isNext(item) ? .next : .upcoming))
-            let movable = !item.done && byID[item.reminderID].map { $0.schedule?.rule == nil && $0.shared?.isMine != false } == true
-            return DialMarker(id: index, hour: parts.hour ?? 0, minute: parts.minute ?? 0, kind: kind, reminderID: item.reminderID, occurrence: item.occurrence, movable: movable)
+            let movable = calendar.isDate(item.occurrence, inSameDayAs: now) && byID[item.reminderID].map { $0.schedule?.rule == nil && $0.shared?.isMine != false } == true
+            return DialMarker(id: index, hour: parts.hour ?? 0, minute: parts.minute ?? 0, kind: isNext(item) ? .next : .upcoming, reminderID: item.reminderID, occurrence: item.occurrence, movable: movable)
         }
 
-        let eventMarkers = entries.enumerated().map { index, entry -> DialMarker in
+        let eventMarkers = entries.filter { $0.start > now && $0.start <= horizon }.enumerated().map { index, entry -> DialMarker in
             let parts = calendar.dateComponents([.hour, .minute], from: entry.start)
             return DialMarker(id: 10_000 + index, hour: parts.hour ?? 0, minute: parts.minute ?? 0, kind: .event)
         }

@@ -45,7 +45,7 @@ struct WatchHome: View {
         let next = model.payload?.next(after: now)
         return ScrollView {
             VStack(spacing: 0) {
-                WatchDial(now: now, items: today, next: next)
+                WatchDial(now: now, items: model.payload?.ahead(now) ?? [], next: next)
                     .frame(width: 146, height: 146)
                 if let next {
                     Text(verbatim: time(next.occurrence))
@@ -159,26 +159,30 @@ struct WatchDial: View {
             let r = radius * scale
             return Path(ellipseIn: CGRect(x: center.x - r, y: center.y - r, width: 2 * r, height: 2 * r))
         }
-        ticks(context, count: 24, radius: 112, length: 9, width: 1.6, color: WatchPalette.ink.opacity(0.45), scale: scale)
-        ticks(context, count: 8, radius: 111, length: 13, width: 3.2, color: WatchPalette.ink, scale: scale)
+        ticks(context, count: 60, radius: 112, length: 7, width: 1.6, color: WatchPalette.ink.opacity(0.35), scale: scale)
+        ticks(context, count: 12, radius: 111, length: 13, width: 3.2, color: WatchPalette.ink, scale: scale)
         let calendar = Calendar.current
         for item in items where item.id != next?.id {
             let parts = calendar.dateComponents([.hour, .minute], from: item.occurrence)
-            let angle = geometry.angle(hour: parts.hour ?? 0, minute: parts.minute ?? 0)
-            context.fill(disc(geometry.point(angle: angle, radius: 133), 7), with: .color(item.done ? WatchPalette.done : WatchPalette.ink))
+            let angle = geometry.clockAngle(hour: parts.hour ?? 0, minute: parts.minute ?? 0)
+            context.fill(disc(geometry.point(angle: angle, radius: 133), 7), with: .color(WatchPalette.ink))
         }
-        if let next, calendar.isDate(next.occurrence, inSameDayAs: now) {
+        if let next, items.contains(where: { $0.id == next.id }) {
             let parts = calendar.dateComponents([.hour, .minute], from: next.occurrence)
-            let point = geometry.point(angle: geometry.angle(hour: parts.hour ?? 0, minute: parts.minute ?? 0), radius: 133)
+            let point = geometry.point(angle: geometry.clockAngle(hour: parts.hour ?? 0, minute: parts.minute ?? 0), radius: 133)
             context.fill(disc(point, 9.5), with: .color(WatchPalette.accent))
             context.stroke(disc(point, 9.5), with: .color(WatchPalette.face), lineWidth: 2.5 * scale)
         }
         let clock = calendar.dateComponents([.hour, .minute], from: now)
-        let angle = geometry.angle(hour: clock.hour ?? 0, minute: clock.minute ?? 0)
-        var hand = Path()
-        hand.move(to: place(geometry.point(angle: angle + 180, radius: 18)))
-        hand.addLine(to: place(geometry.point(angle: angle, radius: 104)))
-        context.stroke(hand, with: .color(WatchPalette.accent), style: StrokeStyle(lineWidth: 6 * scale, lineCap: .round))
+        let minutes = Double((clock.hour ?? 0) * 60 + (clock.minute ?? 0))
+        func hand(_ angle: Double, length: Double, tail: Double, width: Double, color: Color) {
+            var path = Path()
+            path.move(to: place(geometry.point(angle: angle + 180, radius: tail)))
+            path.addLine(to: place(geometry.point(angle: angle, radius: length)))
+            context.stroke(path, with: .color(color), style: StrokeStyle(lineWidth: width * scale, lineCap: .round))
+        }
+        hand(geometry.clockAngle(minutes: minutes), length: 62, tail: 12, width: 10, color: WatchPalette.ink)
+        hand(geometry.minuteAngle(minutes: minutes), length: 100, tail: 18, width: 5.5, color: WatchPalette.accent)
         context.fill(disc(SVGPoint(geometry.center, geometry.center), 11), with: .color(WatchPalette.ink))
         context.fill(disc(SVGPoint(geometry.center, geometry.center), 4.5), with: .color(WatchPalette.accent))
     }

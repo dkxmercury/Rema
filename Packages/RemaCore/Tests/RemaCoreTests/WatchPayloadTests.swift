@@ -23,6 +23,16 @@ struct WatchPayloadTests {
         #expect(payload.items.first?.done == true)
     }
 
+    @Test func aheadIsTheNextTwelveHours() throws {
+        var vitamins = reminder("Витамины", day: 5, hour: 9)
+        vitamins.completedThrough = calendar.date(from: DateComponents(year: 2026, month: 10, day: 5, hour: 9))
+        let call = reminder("Позвонить", day: 5, hour: 14, minute: 30)
+        let night = reminder("Ночью", day: 6, hour: 1)
+        let server = reminder("Сервер", day: 6, hour: 10)
+        let payload = WatchPayload.make(reminders: [vitamins, call, night, server], now: now, calendar: calendar)
+        #expect(payload.ahead(now).map(\.title) == ["Позвонить", "Ночью"])
+    }
+
     @Test func roundTripsThroughJSON() throws {
         let payload = WatchPayload.make(reminders: [reminder("Позвонить", day: 5, hour: 14, minute: 30)], now: now, calendar: calendar)
         let data = try JSONEncoder().encode(payload)

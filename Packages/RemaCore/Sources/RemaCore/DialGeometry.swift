@@ -11,8 +11,17 @@ public struct DialGeometry: Sendable {
         size / 2
     }
 
-    public func angle(hour: Int, minute: Int) -> Double {
-        (Double(hour) + Double(minute) / 60) / 24 * 360
+    // A real clock: the short hand goes round in twelve hours, so 9:00 and 21:00 share a place.
+    public func clockAngle(hour: Int, minute: Int) -> Double {
+        (Double(hour % 12) + Double(minute) / 60) / 12 * 360
+    }
+
+    public func clockAngle(minutes: Double) -> Double {
+        minutes.truncatingRemainder(dividingBy: 720) / 720 * 360
+    }
+
+    public func minuteAngle(minutes: Double) -> Double {
+        minutes.truncatingRemainder(dividingBy: 60) / 60 * 360
     }
 
     public func point(angle degrees: Double, radius: Double) -> SVGPoint {

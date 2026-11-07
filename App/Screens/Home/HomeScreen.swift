@@ -68,15 +68,24 @@ struct HomeScreen: View {
                     handMinutes: shown ? Double(content.nowHour * 60 + content.nowMinute) : 0,
                     markerProgress: shown ? 1 : 0,
                     markers: content.markers,
-                    windowTime: lift.map { clockText($0.minutes) } ?? content.next?.time ?? content.nowText,
-                    windowCaption: lift.map { String(localized: "was \(clockText($0.original))", bundle: .app, locale: .app) } ?? content.next?.countdown ?? String(localized: "now", bundle: .app, locale: .app),
                     lift: lift,
-                    badge: content.missedCount > 0 && lift == nil ? String(localized: "\(content.missedCount) missed", bundle: .app, locale: .app) : nil
+                    spoken: [content.next?.time ?? content.nowText, content.next?.countdown, missedText].compactMap { $0 }.joined(separator: ", ")
                 )
                 .overlay { handles }
                 .padding(.top, 14)
+                if let missedText, lift == nil {
+                    Text(verbatim: missedText)
+                        .font(.app(.golos, 11, weight: 600))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 8)
+                        .frame(height: 20)
+                        .background(RoundedRectangle(cornerRadius: 6, style: .circular).fill(Palette.urgent))
+                        .padding(.top, 10)
+                        .transition(.opacity.combined(with: .scale(scale: 0.8)))
+                        .accessibilityHidden(true)
+                }
                 if let lift, let row = content.rows.first(where: { lift.holds($0) }) {
-                    liftSummary(row.title)
+                    liftSummary(row.title, lift: lift)
                         .padding(.top, 10)
                 } else if let next = content.next {
                     nextSummary(next)
@@ -226,6 +235,10 @@ struct HomeScreen: View {
         (content.nowHour * 60 + content.nowMinute) / 5 * 5 + 5
     }
 
+    private var missedText: String? {
+        content.missedCount > 0 ? String(localized: "\(content.missedCount) missed", bundle: .app, locale: .app) : nil
+    }
+
     private func clockText(_ minutes: Int) -> String {
         String(format: "%02d:%02d", minutes / 60, minutes % 60)
     }
@@ -236,7 +249,7 @@ struct HomeScreen: View {
         return ZStack(alignment: .topLeading) {
             if earliestMove < 24 * 60 {
                 ForEach(content.markers.filter(\.movable), id: \.handleID) { marker in
-                    let point = geometry.point(angle: geometry.angle(hour: marker.hour, minute: marker.minute), radius: 133)
+                    let point = geometry.point(angle: geometry.clockAngle(hour: marker.hour, minute: marker.minute), radius: 133)
                     Color.clear
                         .frame(width: 44, height: 44)
                         .contentShape(Circle())
@@ -291,21 +304,23 @@ struct HomeScreen: View {
         if degrees < 0 {
             degrees += 360
         }
-        let raw = Int((degrees / 360 * 1440 / 5).rounded()) * 5 % 1440
-        let target = allowed(raw)
+        // The dial holds the next twelve hours, so the finger's place is read as the first such time from now.
+        let now = content.nowHour * 60 + content.nowMinute
+        let onDial = Int((degrees / 360 * 720 / 5).rounded()) * 5 % 720
+        let target = allowed(now + (onDial - now % 720 + 720) % 720)
         guard target != current.minutes else { return }
         current.minutes = target
         lift = current
         Feedback.play(.select)
     }
 
-    // Only later today; a finger in the past snaps to whichever end of the free part is closer on the circle.
+    // Only later today; a finger past midnight or in the last minutes snaps to whichever end of today's part is closer on the dial.
     private func allowed(_ minutes: Int) -> Int {
         let low = earliestMove
         let high = 24 * 60 - 5
         guard minutes < low || minutes > high else { return minutes }
-        let toLow = (low - minutes + 1440) % 1440
-        let toHigh = (minutes - high + 1440) % 1440
+        let toLow = ((low - minutes) % 720 + 720) % 720
+        let toHigh = ((minutes - high) % 720 + 720) % 720
         return toLow <= toHigh ? low : high
     }
 
@@ -324,8 +339,9 @@ struct HomeScreen: View {
         }
     }
 
-    private func liftSummary(_ title: String) -> some View {
+    private func liftSummary(_ title: String, lift: DialLift) -> some View {
         VStack(spacing: 4) {
+            timeLine("\(clockText(lift.minutes)) · \(String(localized: "was \(clockText(lift.original))", bundle: .app, locale: .app))")
             Text(verbatim: title)
                 .font(.app(.golos, 17, weight: 600))
                 .lineLimit(2)
@@ -416,8 +432,19 @@ struct HomeScreen: View {
         }
     }
 
+    // The time of the next one and how soon, under the dial, so the hands have the face to themselves.
+    private func timeLine(_ text: String) -> some View {
+        Text(verbatim: text)
+            .font(.app(.jost, 16, weight: 600))
+            .monospacedDigit()
+            .foregroundStyle(Palette.accentTextOnBackground)
+            .contentTransition(.numericText())
+            .animation(Motion.standard, value: text)
+    }
+
     private func nextSummary(_ next: HomeContent.Next) -> some View {
         VStack(spacing: 4) {
+            timeLine("\(next.time) · \(next.countdown)")
             Text(verbatim: next.title)
                 .font(.app(.golos, 17, weight: 600))
                 .lineLimit(2)
