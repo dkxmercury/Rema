@@ -223,6 +223,9 @@ struct BellScreen: View {
         formatter.locale = AppLanguage.current.locale
         formatter.unitsStyle = .short
         let now = Date()
+        guard now.timeIntervalSince(date) >= 86_400 else {
+            return formatter.localizedString(for: date, relativeTo: now)
+        }
         let calendar = Calendar.current
         let days = calendar.dateComponents([.day], from: calendar.startOfDay(for: date), to: calendar.startOfDay(for: now)).day ?? 0
         if days == 1 {

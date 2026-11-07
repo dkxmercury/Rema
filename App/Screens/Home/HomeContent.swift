@@ -68,6 +68,7 @@ struct HomeContent {
     let tiles: [Tile]
     var missedCount = 0
     var events: [Event] = []
+    var earlier: [Row] = []
 }
 
 extension HomeContent {
@@ -181,6 +182,16 @@ extension HomeContent {
             ))
         }
 
+        let startOfToday = calendar.startOfDay(for: now)
+        let earlier = Agenda.overdue(now, reminders: active, calendar: calendar)
+            .filter { $0.occurrence < startOfToday }
+            .compactMap { item -> Row? in
+                guard let reminder = byID[item.reminderID] else { return nil }
+                let plain = row(item, reminder: reminder, places: places, describer: describer, highlighted: false)
+                let details = [describer.pastDay(item.occurrence, now: now), plain.subtitle].compactMap { $0 }
+                return Row(id: "earlier-" + plain.id, reminderID: plain.reminderID, occurrence: plain.occurrence, time: plain.time, title: plain.title, subtitle: details.joined(separator: " · "), done: false, highlighted: false, shared: plain.shared)
+            }
+
         return HomeContent(
             dateLine: describer.dateLine(now),
             nowHour: clock.hour ?? 0,
@@ -191,7 +202,8 @@ extension HomeContent {
             rows: rows,
             tiles: tiles,
             missedCount: missed.count,
-            events: events
+            events: events,
+            earlier: earlier
         )
     }
 }

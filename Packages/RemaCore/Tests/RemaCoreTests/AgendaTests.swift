@@ -85,4 +85,29 @@ struct AgendaTests {
         #expect(Agenda.missed(moment(5, 15, 0), reminders: reminders, calendar: calendar).isEmpty)
         #expect(Agenda.missed(moment(5, 14, 30), reminders: sample, calendar: calendar).isEmpty)
     }
+
+    @Test func overdueAreOneTimeOnesFromTheLastWeekWithoutATick() {
+        var reminders = sample
+        func titles(_ now: Date) -> [String] {
+            Agenda.overdue(now, reminders: reminders, calendar: calendar).compactMap { item in reminders.first { $0.id == item.reminderID }?.title }
+        }
+        #expect(titles(moment(5, 14, 30)).isEmpty)
+        #expect(titles(moment(5, 15, 0)) == ["Позвонить поставщику"])
+        #expect(titles(moment(7, 12, 0)) == ["Купить хлеб и молоко", "Позвонить поставщику"])
+        #expect(titles(moment(12, 12, 0)).count == 2)
+        #expect(titles(moment(13, 12, 0)).isEmpty)
+        reminders[2].markDone(through: moment(5, 19, 0))
+        #expect(titles(moment(7, 12, 0)) == ["Позвонить поставщику"])
+        reminders[1].snoozedUntil = moment(7, 13, 0)
+        #expect(titles(moment(7, 12, 0)).isEmpty)
+        reminders[1].snoozedUntil = nil
+        reminders[1].deletedAt = moment(6, 9, 0)
+        #expect(titles(moment(7, 12, 0)).isEmpty)
+    }
+
+    @Test func lastTimeOfAFinishedOneTimeReminder() {
+        let call = sample[1]
+        #expect(Recurrence.last(call.schedule!, before: moment(7, 12, 0), calendar: calendar) == moment(5, 14, 30))
+        #expect(Recurrence.last(call.schedule!, before: moment(5, 14, 0), calendar: calendar) == nil)
+    }
 }

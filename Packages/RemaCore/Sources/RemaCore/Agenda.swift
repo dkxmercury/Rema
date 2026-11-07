@@ -67,6 +67,20 @@ public enum Agenda {
         }
     }
 
+    // One-time reminders whose time passed lately without a tick, the newest first; otherwise after their day they are seen only in the calendar.
+    public static func overdue(_ now: Date, reminders: [Reminder], calendar: Calendar, days: Int = 7, grace: TimeInterval = 60) -> [AgendaItem] {
+        let start = calendar.date(byAdding: .day, value: -days, to: calendar.startOfDay(for: now)) ?? now
+        var items: [AgendaItem] = []
+        for reminder in reminders where reminder.isLive {
+            guard let schedule = reminder.schedule, schedule.rule == nil,
+                  let occurrence = Recurrence.next(schedule, after: start.addingTimeInterval(-1), limit: 1, calendar: calendar).first,
+                  occurrence.addingTimeInterval(grace) < now, !isDone(reminder, occurrence),
+                  !(reminder.snoozedUntil.map { $0 > now } ?? false) else { continue }
+            items.append(AgendaItem(reminderID: reminder.id, occurrence: occurrence, done: false))
+        }
+        return items.sorted { $0.occurrence > $1.occurrence }
+    }
+
     public static func isDone(_ reminder: Reminder, _ occurrence: Date) -> Bool {
         guard let done = reminder.completedThrough else { return false }
         return occurrence <= done

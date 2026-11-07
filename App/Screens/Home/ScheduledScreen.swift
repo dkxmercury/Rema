@@ -148,8 +148,26 @@ struct ScheduledScreen: View {
                 .panel()
                 .padding(.top, 14)
         }
+        if !content.overdue.isEmpty {
+            label(Text("Not ticked"), accent: false, top: 14, color: Palette.urgentText)
+            PanelList {
+                ForEach(Array(content.overdue.enumerated()), id: \.element.id) { index, item in
+                    overdueRow(item)
+                    if index < content.overdue.count - 1 {
+                        Hairline()
+                    }
+                }
+            }
+            Text("One-time reminders from the last week that passed without a tick")
+                .font(.app(.golos, 13))
+                .foregroundStyle(Palette.secondary)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 12)
+                .padding(.top, 10)
+        }
         ForEach(Array(content.days.enumerated()), id: \.element.id) { index, day in
-            label(Text(verbatim: day.title), accent: index == 0, top: index == 0 ? 14 : 20)
+            label(Text(verbatim: day.title), accent: index == 0, top: index == 0 ? (content.overdue.isEmpty ? 14 : 18) : 20)
             PanelList {
                 rows(day.items, soonest: index == 0)
             }
@@ -182,12 +200,42 @@ struct ScheduledScreen: View {
         }
     }
 
-    private func label(_ text: Text, accent: Bool, top: CGFloat) -> some View {
+    private func overdueRow(_ item: ScheduledContent.Item) -> some View {
+        HStack(spacing: 0) {
+            Button {
+                if let id = item.reminderID {
+                    onOpen(id)
+                }
+            } label: {
+                row(item, highlighted: false)
+            }
+            .buttonStyle(RowPressStyle())
+            Button {
+                tick(item)
+            } label: {
+                CheckBox(isOn: false)
+                    .frame(width: 44, height: 44)
+            }
+            .buttonStyle(.plain)
+            .padding(.trailing, -9)
+            .accessibilityLabel(Text("Mark as done"))
+        }
+    }
+
+    private func tick(_ item: ScheduledContent.Item) {
+        guard let id = item.reminderID, let occurrence = item.at else { return }
+        Feedback.play(.check)
+        withAnimation(Motion.standard) {
+            store.complete(id, through: occurrence)
+        }
+    }
+
+    private func label(_ text: Text, accent: Bool, top: CGFloat, color: Color? = nil) -> some View {
         text
             .font(.app(.golos, 12, weight: 600))
             .tracking(1.2)
             .textCase(.uppercase)
-            .foregroundStyle(accent ? Palette.accentText : Palette.secondary)
+            .foregroundStyle(color ?? (accent ? Palette.accentText : Palette.secondary))
             .padding(.horizontal, 4)
             .padding(.top, top)
             .padding(.bottom, 8)

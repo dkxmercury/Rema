@@ -601,6 +601,20 @@ struct HomeScreen: View {
             } else {
                 list(lines)
             }
+            if !content.earlier.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("From earlier days")
+                        .font(.app(.golos, 12, weight: 600))
+                        .tracking(1.2)
+                        .textCase(.uppercase)
+                        .foregroundStyle(Palette.urgentText)
+                        .padding(.horizontal, 4)
+                        .padding(.top, 4)
+                        .accessibilityAddTraits(.isHeader)
+                    list(content.earlier.map(Line.reminder))
+                }
+                .transition(.opacity)
+            }
             if !content.tiles.isEmpty, scheduledCount == 0 {
                 tiles
             }

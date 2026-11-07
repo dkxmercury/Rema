@@ -24,9 +24,10 @@ struct ScheduledContent {
     let yearly: [Item]
     let places: [Item]
     let hasRepeats: Bool
+    var overdue: [Item] = []
 
     var isEmpty: Bool {
-        days.isEmpty && monthly.isEmpty && yearly.isEmpty && places.isEmpty
+        days.isEmpty && monthly.isEmpty && yearly.isEmpty && places.isEmpty && overdue.isEmpty
     }
 
     static func make(reminders: [Reminder], places: [Place], now: Date, calendar: Calendar, locale: Locale, withPlaces: Bool = true, events: [CalendarEntry] = []) -> ScheduledContent {
@@ -81,7 +82,12 @@ struct ScheduledContent {
         let placed = (withPlaces ? byPlace(active) : []).map { reminder in
             Item(id: reminder.id.uuidString, reminderID: reminder.id, lead: nil, title: reminder.title, subtitle: describer.placeText(reminder, places: places))
         }
-        return ScheduledContent(days: days, monthly: monthly, yearly: yearly, places: placed, hasRepeats: hasRepeats)
+        let overdue = Agenda.overdue(now, reminders: active, calendar: calendar).compactMap { item -> Item? in
+            guard let reminder = byID[item.reminderID] else { return nil }
+            let details = [describer.pastDay(item.occurrence, now: now), describer.subtitle(for: reminder, places: places)].compactMap { $0 }
+            return Item(id: "overdue-\(reminder.id.uuidString)", reminderID: reminder.id, lead: describer.time(item.occurrence), title: reminder.title, subtitle: details.joined(separator: " · "), at: item.occurrence)
+        }
+        return ScheduledContent(days: days, monthly: monthly, yearly: yearly, places: placed, hasRepeats: hasRepeats, overdue: overdue)
     }
 
     static func count(reminders: [Reminder], now: Date, calendar: Calendar, withPlaces: Bool = true) -> Int {

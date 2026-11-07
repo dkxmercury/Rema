@@ -132,6 +132,16 @@ struct Describer {
         return day
     }
 
+    func pastDay(_ date: Date, now: Date) -> String {
+        if calendar.isDate(date, inSameDayAs: now) {
+            return String(localized: "today", bundle: .app, locale: .app)
+        }
+        if let yesterday = calendar.date(byAdding: .day, value: -1, to: now), calendar.isDate(date, inSameDayAs: yesterday) {
+            return String(localized: "yesterday", bundle: .app, locale: .app)
+        }
+        return date.formatted(Date.FormatStyle(locale: locale, calendar: calendar, timeZone: calendar.timeZone).day().month(.wide))
+    }
+
     func time(_ date: Date) -> String {
         let parts = calendar.dateComponents([.hour, .minute], from: date)
         return String(format: "%02d:%02d", parts.hour ?? 0, parts.minute ?? 0)

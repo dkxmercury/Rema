@@ -28,6 +28,47 @@ final class ScreenSnapshots: XCTestCase {
         }
     }
 
+    func testPast() throws {
+        let calendar = SampleData.calendar
+        func at(_ day: Int, _ hour: Int) -> Schedule {
+            Schedule(start: LocalDate(year: 2026, month: 10, day: day), time: LocalTime(hour: hour, minute: 0), timeZone: "Asia/Tashkent")
+        }
+        let anna = SharedInfo(owner: SharedPerson(id: "anna", name: "Аня"), status: SharedStatus.accepted, members: [SharedMember(id: "me", name: "Саша", status: SharedStatus.accepted)], doneMode: .each)
+        let report = Reminder(title: "Отправить отчёт", schedule: at(5, 12), createdAt: SampleData.now)
+        var pills = Reminder(title: "Купить таблетки", schedule: at(4, 19), createdAt: SampleData.now)
+        pills.shared = anna
+        let paper = Reminder(title: "Забрать справку", schedule: at(3, 10), createdAt: SampleData.now)
+        let reminders = SampleData.reminders + [report, pills, paper]
+        let store = Store(directory: FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString))
+        store.seed(reminders: reminders, places: SampleData.places, sounds: [])
+        let content = ScheduledContent.make(reminders: reminders, places: SampleData.places, now: SampleData.now, calendar: calendar, locale: russian)
+        try render(ScheduledScreen(content: content, store: store, now: SampleData.now, calendar: calendar, locale: russian, onBack: {}), name: "R-PastScheduled", style: .light)
+        try render(ScheduledScreen(content: content, store: store, now: SampleData.now, calendar: calendar, locale: russian, onBack: {}), name: "R-PastScheduled-Dark", style: .dark)
+        let home = HomeContent.make(reminders: reminders, places: SampleData.places, now: SampleData.now, calendar: calendar, locale: russian)
+        try render(HomeScreen(content: home), name: "R-PastHome", style: .light, height: 1100)
+        try render(HomeScreen(content: home), name: "R-PastHome-Dark", style: .dark, height: 1100)
+
+        var parcel = Reminder(title: "Забрать посылку", schedule: at(2, 18), createdAt: SampleData.now)
+        parcel.shared = SharedInfo(owner: SharedPerson(id: "me", name: "Саша"), status: SharedStatus.accepted, members: [SharedMember(id: "anna", name: "Аня", status: SharedStatus.accepted)], doneMode: .each)
+        parcel.markDone(through: calendar.date(from: DateComponents(year: 2026, month: 10, day: 2, hour: 18)) ?? SampleData.now)
+        var movie = Reminder(title: "Кино в субботу", schedule: at(10, 10), createdAt: SampleData.now)
+        movie.shared = anna
+        let rows = ZStack(alignment: .top) {
+            Palette.background.ignoresSafeArea()
+            PanelList {
+                SharedReminderRow(reminder: pills, author: "автор Аня", now: SampleData.now, calendar: calendar, locale: russian, onOpen: {}, onToggle: { _, _ in })
+                Hairline()
+                SharedReminderRow(reminder: parcel, author: "автор вы", now: SampleData.now, calendar: calendar, locale: russian, onOpen: {}, onToggle: { _, _ in })
+                Hairline()
+                SharedReminderRow(reminder: movie, author: "автор Аня", now: SampleData.now, calendar: calendar, locale: russian, onOpen: {}, onToggle: { _, _ in })
+            }
+            .padding(.horizontal, 18)
+            .padding(.top, 80)
+        }
+        try render(rows, name: "R-PastFriend", style: .light)
+        try render(rows, name: "R-PastFriend-Dark", style: .dark)
+    }
+
     func testPriorities() throws {
         try render(HomeScreen(content: SampleData.home, prioritiesPrompt: true), name: "L-TopCard", style: .light)
         let store = sampleStore()

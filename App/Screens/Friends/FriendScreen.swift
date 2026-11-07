@@ -37,10 +37,6 @@ struct FriendScreen: View {
         service.name(of: friendID, fallback: ownName)
     }
 
-    private var describer: Describer {
-        Describer(calendar: calendar, locale: locale)
-    }
-
     private var shared: [Reminder] {
         store.reminders.filter { reminder in
             guard let shared = reminder.shared, reminder.deletedAt == nil else { return false }
@@ -77,12 +73,7 @@ struct FriendScreen: View {
                     } else {
                         PanelList {
                             ForEach(Array(shared.enumerated()), id: \.element.id) { index, reminder in
-                                Button {
-                                    onOpen(reminder.id)
-                                } label: {
-                                    sharedRow(reminder)
-                                }
-                                .buttonStyle(RowPressStyle())
+                                SharedReminderRow(reminder: reminder, author: author(of: reminder), now: now, calendar: calendar, locale: locale, onOpen: { onOpen(reminder.id) }, onToggle: { occurrence, done in toggle(reminder.id, occurrence, done: done) })
                                 if index < shared.count - 1 {
                                     Hairline()
                                 }
@@ -165,28 +156,19 @@ struct FriendScreen: View {
         .overlay(shape.strokeBorder(Palette.wellBorder, lineWidth: 1))
     }
 
-    private func sharedRow(_ reminder: Reminder) -> some View {
-        let next = reminder.schedule.flatMap { Recurrence.next($0, after: now.addingTimeInterval(-60), limit: 1, calendar: calendar).first }
-        let mine = reminder.shared?.isMine == true
-        let subtitle = [next.map { describer.dayAndTime($0, now: now) }, mine ? String(localized: "made by you", bundle: .app, locale: .app) : String(localized: "made by \(shown)", bundle: .app, locale: .app)].compactMap { $0 }.joined(separator: " · ")
-        return HStack(spacing: 14) {
-            Text(verbatim: next.map(describer.time) ?? "")
-                .font(.app(.jost, 18, weight: 500))
-                .monospacedDigit()
-                .timeColumn()
-            VStack(alignment: .leading, spacing: 2) {
-                Text(verbatim: reminder.title)
-                    .font(.app(.golos, 16))
-                    .lineLimit(2)
-                Text(verbatim: subtitle)
-                    .font(.app(.golos, 12))
-                    .foregroundStyle(Palette.secondary)
-                    .lineLimit(1)
+    private func author(of reminder: Reminder) -> String {
+        reminder.shared?.isMine == true ? String(localized: "made by you", bundle: .app, locale: .app) : String(localized: "made by \(shown)", bundle: .app, locale: .app)
+    }
+
+    private func toggle(_ id: UUID, _ occurrence: Date, done: Bool) {
+        Feedback.play(done ? .uncheck : .check)
+        withAnimation(Motion.standard) {
+            if done {
+                store.reopen(id, before: occurrence)
+            } else {
+                store.complete(id, through: occurrence)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .frame(minHeight: 58)
-        .contentShape(Rectangle())
     }
 
     private func act(_ work: @escaping () async throws -> Void) {

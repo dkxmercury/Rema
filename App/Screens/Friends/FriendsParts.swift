@@ -268,3 +268,78 @@ extension SharedService {
     }
 
 }
+
+struct SharedReminderRow: View {
+    let reminder: Reminder
+    let author: String
+    var now = Date()
+    var calendar: Calendar = .current
+    var locale: Locale = AppLanguage.current.locale
+    let onOpen: () -> Void
+    let onToggle: (Date, Bool) -> Void
+
+    private var describer: Describer {
+        Describer(calendar: calendar, locale: locale)
+    }
+
+    // A reminder with nothing ahead shows its last time, so a passed one still says when it was.
+    private var shown: Date? {
+        guard let schedule = reminder.schedule else { return nil }
+        return Recurrence.next(schedule, after: now.addingTimeInterval(-60), limit: 1, calendar: calendar).first ?? Recurrence.last(schedule, before: now, calendar: calendar)
+    }
+
+    private func subtitle(_ shown: Date?, done: Bool) -> String {
+        guard let shown else { return author }
+        let day: String
+        if shown < now {
+            let word = describer.pastDay(shown, now: now)
+            day = done ? word : String(localized: "\(word), not ticked", bundle: .app, locale: .app)
+        } else {
+            day = describer.relativeDay(shown, now: now)
+        }
+        return "\(day) · \(author)"
+    }
+
+    var body: some View {
+        let shown = self.shown
+        let done = shown.map(reminder.isDone) ?? false
+        HStack(spacing: 0) {
+            Button(action: onOpen) {
+                HStack(spacing: 14) {
+                    Text(verbatim: shown.map(describer.time) ?? "")
+                        .font(.app(.jost, 18, weight: 500))
+                        .monospacedDigit()
+                        .foregroundStyle(done ? Palette.secondary : Palette.text)
+                        .timeColumn()
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(verbatim: reminder.title)
+                            .font(.app(.golos, 16))
+                            .strikethrough(done, color: Palette.secondary)
+                            .foregroundStyle(done ? Palette.secondary : Palette.text)
+                            .lineLimit(2)
+                        Text(verbatim: subtitle(shown, done: done))
+                            .font(.app(.golos, 12))
+                            .foregroundStyle(Palette.secondary)
+                            .lineLimit(1)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .frame(minHeight: 58)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(RowPressStyle())
+            // As on the home screen, only today's and earlier times are ticked.
+            if let shown, reminder.isLive, calendar.startOfDay(for: shown) <= calendar.startOfDay(for: now) {
+                Button {
+                    onToggle(shown, done)
+                } label: {
+                    CheckBox(isOn: done)
+                        .frame(width: 44, height: 44)
+                }
+                .buttonStyle(.plain)
+                .padding(.trailing, -9)
+                .accessibilityLabel(Text(done ? LocalizedStringKey("Mark as not done") : LocalizedStringKey("Mark as done")))
+            }
+        }
+    }
+}

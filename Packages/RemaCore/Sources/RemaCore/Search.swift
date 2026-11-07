@@ -43,7 +43,7 @@ public enum ReminderSearch {
             if let next = Recurrence.next(schedule, after: now.addingTimeInterval(-60), limit: 1, calendar: calendar).first,
                !(schedule.rule == nil && reminder.isDone(next)) {
                 upcoming.append(SearchHit(reminderID: reminder.id, date: next, done: false, field: field))
-            } else if let last = lastOccurrence(schedule, before: now, calendar: calendar) {
+            } else if let last = Recurrence.last(schedule, before: now, calendar: calendar) {
                 earlier.append(SearchHit(reminderID: reminder.id, date: last, done: reminder.isDone(last), field: field))
             }
         }
@@ -71,9 +71,11 @@ public enum ReminderSearch {
         }
         return nil
     }
+}
 
+extension Recurrence {
     // The last two years are looked through first, so a repeat that ran more than a thousand times still gives its latest time.
-    private static func lastOccurrence(_ schedule: Schedule, before now: Date, calendar: Calendar) -> Date? {
+    public static func last(_ schedule: Schedule, before now: Date, calendar: Calendar) -> Date? {
         let span: TimeInterval = 2 * 366 * 86_400
         if let recent = Recurrence.next(schedule, after: now.addingTimeInterval(-span), limit: 1000, calendar: calendar).last(where: { $0 < now }) {
             return recent
