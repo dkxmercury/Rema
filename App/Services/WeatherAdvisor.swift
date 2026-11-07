@@ -216,35 +216,35 @@ final class WeatherAdvisor {
         switch event {
         case .storm:
             title = tomorrow ? String(localized: "Thunderstorm tomorrow", bundle: .app, locale: .app) : String(localized: "Thunderstorm today", bundle: .app, locale: .app)
-            body = String(localized: "Take an umbrella and take care outside.", bundle: .app, locale: .app)
+            body = String(localized: "Take an umbrella and take care outside", bundle: .app, locale: .app)
         case .firstSnow:
             title = tomorrow ? String(localized: "First snow tomorrow", bundle: .app, locale: .app) : String(localized: "First snow today", bundle: .app, locale: .app)
-            body = String(localized: "Dress warmer and enjoy it.", bundle: .app, locale: .app)
+            body = String(localized: "Dress warmer and enjoy it", bundle: .app, locale: .app)
         case .snow:
             title = tomorrow ? String(localized: "Snow tomorrow", bundle: .app, locale: .app) : String(localized: "Snow today", bundle: .app, locale: .app)
-            body = String(localized: "Dress warmer and leave a little earlier.", bundle: .app, locale: .app)
+            body = String(localized: "Dress warmer and leave a little earlier", bundle: .app, locale: .app)
         case .rain:
             title = tomorrow ? String(localized: "Rain tomorrow", bundle: .app, locale: .app) : String(localized: "Rain today", bundle: .app, locale: .app)
-            body = String(localized: "Don't forget an umbrella.", bundle: .app, locale: .app)
+            body = String(localized: "Don't forget an umbrella", bundle: .app, locale: .app)
         case .wind(let speed):
             let gusts = Measurement(value: speed, unit: UnitSpeed.metersPerSecond).formatted(.measurement(width: .abbreviated, usage: .wind, numberFormatStyle: .number.precision(.fractionLength(0))).locale(locale))
             title = tomorrow ? String(localized: "Strong wind tomorrow", bundle: .app, locale: .app) : String(localized: "Strong wind today", bundle: .app, locale: .app)
-            body = String(localized: "Gusts up to \(gusts).", bundle: .app, locale: .app)
+            body = String(localized: "Gusts up to \(gusts)", bundle: .app, locale: .app)
         case .frost(let low):
             title = tomorrow ? String(localized: "Frost tomorrow", bundle: .app, locale: .app) : String(localized: "Frost today", bundle: .app, locale: .app)
-            body = String(localized: "Down to \(degrees(low)), dress warmer.", bundle: .app, locale: .app)
+            body = String(localized: "Down to \(degrees(low)), dress warmer", bundle: .app, locale: .app)
         case .heat(let high):
             title = tomorrow ? String(localized: "Heat tomorrow", bundle: .app, locale: .app) : String(localized: "Heat today", bundle: .app, locale: .app)
-            body = String(localized: "Up to \(degrees(high)), drink more water.", bundle: .app, locale: .app)
+            body = String(localized: "Up to \(degrees(high)), drink more water", bundle: .app, locale: .app)
         case .colder(let drop):
             title = tomorrow ? String(localized: "Colder tomorrow", bundle: .app, locale: .app) : String(localized: "Colder today", bundle: .app, locale: .app)
-            body = String(localized: "\(difference(drop)) colder than the day before.", bundle: .app, locale: .app)
+            body = String(localized: "\(difference(drop)) colder than the day before", bundle: .app, locale: .app)
         case .sunAfterRain:
             title = tomorrow ? String(localized: "Sun tomorrow", bundle: .app, locale: .app) : String(localized: "Sun today", bundle: .app, locale: .app)
-            body = String(localized: "Finally, after the rainy days.", bundle: .app, locale: .app)
+            body = String(localized: "Finally, after the rainy days", bundle: .app, locale: .app)
         case .warmWeekend(let high):
             title = String(localized: "A warm weekend", bundle: .app, locale: .app)
-            body = String(localized: "Up to \(degrees(high)), a good time to get outside.", bundle: .app, locale: .app)
+            body = String(localized: "Up to \(degrees(high)), a good time to get outside", bundle: .app, locale: .app)
         }
         return WeatherNote(fireDate: fire, title: title, body: body)
     }

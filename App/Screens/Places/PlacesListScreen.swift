@@ -39,10 +39,10 @@ struct PlacesListScreen: View {
                             .padding(.top, 12)
                     }
                     if location.refused {
-                        PlaceNotice(text: "No access to location, so place reminders will not come.", showsSettings: true)
+                        PlaceNotice(text: "No access to location, so place reminders will not come", showsSettings: true)
                             .padding(.top, 12)
                     }
-                    Text("Up to 20 places. Any name, only you see it.")
+                    Text("Up to 20 places. Any name, only you see it")
                         .font(.app(.golos, 13))
                         .foregroundStyle(Palette.secondary)
                         .multilineTextAlignment(.center)

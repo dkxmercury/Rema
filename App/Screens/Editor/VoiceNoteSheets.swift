@@ -104,7 +104,7 @@ struct VoiceRecordSheet: View {
             .buttonStyle(PressableStyle())
             .disabled(recorder.phase != .recording)
             .padding(.top, 28)
-            Text(shared ? "Everyone in the reminder will hear the note. It plays instead of the sound when the reminder comes." : "The note plays instead of the sound when the reminder comes. You can also listen to it in the reminder itself.")
+            Text(shared ? "Everyone in the reminder will hear the note. It plays instead of the sound when the reminder comes" : "The note plays instead of the sound when the reminder comes. You can also listen to it in the reminder itself")
                 .font(.app(.golos, 13))
                 .lineHeight(18, .golos, 13)
                 .foregroundStyle(Palette.secondary)
@@ -116,7 +116,7 @@ struct VoiceRecordSheet: View {
 
     private var problem: some View {
         VStack(spacing: 14) {
-            Text(recorder.phase == .denied ? "Allow microphone access in Settings to record a voice note." : "Could not start the microphone.")
+            Text(recorder.phase == .denied ? "Allow microphone access in Settings to record a voice note" : "Could not start the microphone")
                 .font(.app(.golos, 15))
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity)

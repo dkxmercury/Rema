@@ -85,7 +85,7 @@ struct SoundScreen: View {
                         .disabled(working)
                     }
                     .padding(.top, 8)
-                    Text("mp3, m4a or wav will do. Files longer than 30 seconds are trimmed, iOS requires it.")
+                    Text("mp3, m4a or wav will do. Files longer than 30 seconds are trimmed, iOS requires it")
                         .font(.app(.golos, 13))
                         .lineHeight(18, .golos, 13)
                         .foregroundStyle(Palette.secondary)

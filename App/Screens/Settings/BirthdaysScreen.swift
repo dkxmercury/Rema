@@ -19,7 +19,7 @@ struct BirthdaysScreen: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     if denied || (!loading && !contacts.isEmpty) {
-                        Text(denied ? LocalizedStringKey("Allow access to contacts in Settings to find birthdays.") : LocalizedStringKey("Rema found birthdays in your contacts. Tick the ones to be reminded of every year."))
+                        Text(denied ? LocalizedStringKey("Allow access to contacts in Settings to find birthdays") : LocalizedStringKey("Rema found birthdays in your contacts. Tick the ones to be reminded of every year"))
                             .font(.app(.golos, 15))
                             .foregroundStyle(Palette.secondary)
                             .fixedSize(horizontal: false, vertical: true)

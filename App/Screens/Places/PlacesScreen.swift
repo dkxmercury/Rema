@@ -40,10 +40,10 @@ struct PlacesScreen: View {
                     list
                         .padding(.top, 12)
                     if location.refused {
-                        PlaceNotice(text: "No access to location, so place reminders will not come.", showsSettings: true)
+                        PlaceNotice(text: "No access to location, so place reminders will not come", showsSettings: true)
                             .padding(.top, 12)
                     } else if overBudget {
-                        PlaceNotice(text: "iPhone watches at most 20 places at once, so this reminder may not come by place.")
+                        PlaceNotice(text: "iPhone watches at most 20 places at once, so this reminder may not come by place")
                             .padding(.top, 12)
                     }
                     Text(trigger == .leave ? LocalizedStringKey("Fires when you leave any of the chosen places") : LocalizedStringKey("Fires when you arrive at any of the chosen places"))

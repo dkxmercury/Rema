@@ -83,11 +83,11 @@ struct TipBubble: View {
 
     private var text: LocalizedStringKey {
         switch tip {
-        case .friends: "Share a reminder with a friend, and it comes to both of you at the same moment."
-        case .voice: "Hold the plus and talk. Let go when you are done."
-        case .widget: "Add a widget and the dial with the next reminder will always be in sight."
-        case .place: "A reminder by place comes even when Rema is closed. Just keep location access on."
-        case .weather: "Rema will tell you about rain, snow or frost the evening before and in the morning."
+        case .friends: "Share a reminder with a friend, and it comes to both of you at the same moment"
+        case .voice: "Hold the plus and talk. Let go when you are done"
+        case .widget: "Add a widget and the dial with the next reminder will always be in sight"
+        case .place: "A reminder by place comes even when Rema is closed. Just keep location access on"
+        case .weather: "Rema will tell you about rain, snow or frost the evening before and in the morning"
         }
     }
 }

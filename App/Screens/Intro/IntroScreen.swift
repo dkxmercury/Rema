@@ -135,13 +135,13 @@ struct IntroScreen: View {
     }
 
     private func writePage(_ art: CGFloat) -> some View {
-        introPage(art, title: "Write the way you speak", text: "Rema finds the date, time, repeat and place in the phrase. You can write in eight languages.") {
+        introPage(art, title: "Write the way you speak", text: "Rema finds the date, time, repeat and place in the phrase. You can write in eight languages") {
             writeIllustration
         }
     }
 
     private func voicePage(_ art: CGFloat) -> some View {
-        introPage(art, title: "Or say it out loud", text: "Hold the plus on the home screen and talk.") {
+        introPage(art, title: "Or say it out loud", text: "Hold the plus on the home screen and talk") {
             voiceIllustration
         }
     }
@@ -292,7 +292,7 @@ struct IntroScreen: View {
         VStack(alignment: .leading, spacing: 0) {
             Text("So nothing slips by")
                 .font(.app(.jost, 30, weight: 500))
-            Text("Rema asks only for what it needs. You can change this in the phone settings.")
+            Text("Rema asks only for what it needs. You can change this in the phone settings")
                 .font(.app(.golos, 16))
                 .lineSpacing(4)
                 .foregroundStyle(Palette.secondary)

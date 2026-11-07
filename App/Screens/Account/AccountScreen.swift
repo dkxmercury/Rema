@@ -53,7 +53,7 @@ struct AccountScreen: View {
                         countRow(icon: Icons.pin, title: "Places", count: summary.places)
                     }
                     .padding(.top, 6)
-                    FormNote(text: "Sign in to this account on another phone and your reminders will appear there.")
+                    FormNote(text: "Sign in to this account on another phone and your reminders will appear there")
                         .padding(.top, 10)
                     Button {
                         signOut(discarding: false)
@@ -66,7 +66,7 @@ struct AccountScreen: View {
                     }
                     .buttonStyle(RaisedButtonStyle())
                     .padding(.top, 22)
-                    FormNote(text: "After you sign out, reminders disappear from this phone and come back the next time you sign in.")
+                    FormNote(text: "After you sign out, reminders disappear from this phone and come back the next time you sign in")
                         .padding(.top, 8)
                     if let problem {
                         FormProblem(text: problem)
@@ -104,9 +104,9 @@ struct AccountScreen: View {
             Button("Cancel", role: .cancel) {}
         } message: {
             if refusedChanges {
-                Text("The account did not accept some changes, they are only on this phone. If you sign out, they will be lost.")
+                Text("The account did not accept some changes, they are only on this phone. If you sign out, they will be lost")
             } else {
-                Text("There is no connection right now. If you sign out, these changes will be lost.")
+                Text("There is no connection right now. If you sign out, these changes will be lost")
             }
         }
     }

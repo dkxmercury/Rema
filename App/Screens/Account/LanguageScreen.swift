@@ -23,7 +23,7 @@ struct LanguageScreen: View {
                     .padding(.vertical, 2)
                     .panel()
                     .padding(.top, 16)
-                    FormNote(text: "The language changes right away. Dates, times and weekdays follow it.")
+                    FormNote(text: "The language changes right away. Dates, times and weekdays follow it")
                         .padding(.top, 12)
                 }
                 .padding(.horizontal, 18)

@@ -12,7 +12,7 @@ struct ListenControl: ControlWidget {
             .tint(Palette.accent)
         }
         .displayName("Say a reminder")
-        .description("Opens Rema already listening.")
+        .description("Opens Rema already listening")
     }
 }
 
@@ -26,6 +26,6 @@ struct ComposeControl: ControlWidget {
             .tint(Palette.accent)
         }
         .displayName("New reminder")
-        .description("Opens Rema with the keyboard ready.")
+        .description("Opens Rema with the keyboard ready")
     }
 }

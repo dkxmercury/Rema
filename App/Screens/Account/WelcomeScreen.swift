@@ -40,7 +40,7 @@ struct WelcomeScreen: View {
                 .lineHeight(36, .jost, 30, weight: 500)
                 .multilineTextAlignment(.center)
                 .padding(.top, 20)
-            Text("Sign in and your reminders will be on all your devices. You can change phones without losing anything.")
+            Text("Sign in and your reminders will be on all your devices. You can change phones without losing anything")
                 .font(.app(.golos, 15))
                 .lineHeight(21, .golos, 15)
                 .foregroundStyle(Palette.secondary)
@@ -128,7 +128,7 @@ struct WelcomeScreen: View {
     }
 
     private var legal: AttributedString {
-        var text = AttributedString(localized: "By continuing, you agree to the [Terms](https://remaapp.cc/terms/) and the [Privacy Policy](https://remaapp.cc/privacy/).", bundle: .app, locale: .app)
+        var text = AttributedString(localized: "By continuing, you agree to the [Terms](https://remaapp.cc/terms/) and the [Privacy Policy](https://remaapp.cc/privacy/)", bundle: .app, locale: .app)
         for run in text.runs where run.link != nil {
             text[run.range].underlineStyle = .single
         }
@@ -148,9 +148,9 @@ struct WelcomeScreen: View {
             } catch let failure as Backend.Failure {
                 problem = failure.message
             } catch GoogleAuthorization.Problem.notConfigured {
-                problem = String(localized: "Signing in with Google is not available yet.", bundle: .app, locale: .app)
+                problem = String(localized: "Signing in with Google is not available yet", bundle: .app, locale: .app)
             } catch {
-                problem = String(localized: "Could not sign in. Try again.", bundle: .app, locale: .app)
+                problem = String(localized: "Could not sign in. Try again", bundle: .app, locale: .app)
             }
         }
     }

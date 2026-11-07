@@ -124,7 +124,7 @@ struct VoiceScreen: View {
         let spoken = await recognizer.finish()
         // Nothing heard is no reason to close the whole screen, it can be said again.
         guard !(spoken ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            recognizer.failure = String(localized: "Something went wrong. Try again.", bundle: .app, locale: .app)
+            recognizer.failure = String(localized: "Something went wrong. Try again", bundle: .app, locale: .app)
             finishing = false
             return
         }

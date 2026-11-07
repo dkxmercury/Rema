@@ -22,7 +22,7 @@ struct NewsScreen: View {
                         .transition(.opacity.combined(with: .move(edge: .top)))
                     }
                     if news.items.isEmpty {
-                        Text(loading ? "Loading…" : "No news yet.")
+                        Text(loading ? "Loading…" : "No news yet")
                             .font(.app(.golos, 15))
                             .foregroundStyle(Palette.secondary)
                             .frame(maxWidth: .infinity)
@@ -105,7 +105,7 @@ struct NewsItemScreen: View {
                     if let item = news.item(id) {
                         article(item)
                     } else {
-                        Text(loading ? "Loading…" : "This news is no longer here.")
+                        Text(loading ? "Loading…" : "This news is no longer here")
                             .font(.app(.golos, 15))
                             .foregroundStyle(Palette.secondary)
                             .frame(maxWidth: .infinity)
@@ -196,7 +196,7 @@ struct NewsConsentSheet: View {
                     .font(.app(.jost, 26, weight: 500))
                     .padding(.top, 18)
                     .accessibilityAddTraits(.isHeader)
-                Text("Sometimes we tell what is new in Rema and share tips. Send this news by push? No more than a couple of times a month and only in the daytime.")
+                Text("Sometimes we tell what is new in Rema and share tips. Send this news by push? No more than a couple of times a month and only in the daytime")
                     .font(.app(.golos, 16))
                     .lineHeight(23, .golos, 16)
                     .multilineTextAlignment(.center)
@@ -204,7 +204,7 @@ struct NewsConsentSheet: View {
                 Button("Send me news") { onAnswer(true) }
                     .buttonStyle(PrimaryButtonStyle())
                     .padding(.top, 24)
-                Text("You can turn this off in Settings.")
+                Text("You can turn this off in Settings")
                     .font(.app(.golos, 13))
                     .foregroundStyle(Palette.secondary)
                     .multilineTextAlignment(.center)

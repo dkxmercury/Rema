@@ -57,7 +57,7 @@ struct FriendScreen: View {
                         .padding(.top, 20)
                         .padding(.bottom, 8)
                     nameField
-                    Note(verbatim: ownName.isEmpty ? String(localized: "Only you see this name, it never goes to your friend.", bundle: .app, locale: .app) : String(localized: "Only you see this name, it never goes to your friend. They call themselves “\(ownName)”.", bundle: .app, locale: .app))
+                    Note(verbatim: ownName.isEmpty ? String(localized: "Only you see this name, it never goes to your friend", bundle: .app, locale: .app) : String(localized: "Only you see this name, it never goes to your friend. They call themselves “\(ownName)”", bundle: .app, locale: .app))
                         .padding(.top, 10)
                     SectionLabel(text: "Shared reminders")
                         .padding(.horizontal, 4)
@@ -95,7 +95,7 @@ struct FriendScreen: View {
                         }
                     }
                     .padding(.top, 14)
-                    Note("Blocking removes the friendship and the shared reminders with this person at once and forbids new invitations.")
+                    Note("Blocking removes the friendship and the shared reminders with this person at once and forbids new invitations")
                         .padding(.top, 10)
                     if let problem {
                         Note(verbatim: problem)
@@ -129,9 +129,9 @@ struct FriendScreen: View {
 
     private var confirmTitle: String {
         switch confirming {
-        case .remove: String(localized: "Remove \(shown) from friends? Your shared reminders with them go away.", bundle: .app, locale: .app)
-        case .block: String(localized: "Block \(shown)? They will not be able to invite you again.", bundle: .app, locale: .app)
-        case .report: String(localized: "Report \(shown)? Rema will look into it within a day.", bundle: .app, locale: .app)
+        case .remove: String(localized: "Remove \(shown) from friends? Your shared reminders with them go away", bundle: .app, locale: .app)
+        case .block: String(localized: "Block \(shown)? They will not be able to invite you again", bundle: .app, locale: .app)
+        case .report: String(localized: "Report \(shown)? Rema will look into it within a day", bundle: .app, locale: .app)
         case nil: ""
         }
     }

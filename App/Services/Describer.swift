@@ -242,7 +242,7 @@ struct Describer {
     func pillsWarning(_ forecast: PillForecast) -> String {
         let left = forecast.pills > 0 ? String(localized: "\(forecast.pills) pills left", bundle: .app, locale: .app) : String(localized: "Pills have run out", bundle: .app, locale: .app)
         let line = [left, pillsEnough(forecast)].compactMap { $0 }.joined(separator: ", ")
-        return "\(line). " + String(localized: "Time to buy more.", bundle: .app, locale: .app)
+        return "\(line). " + String(localized: "Time to buy more", bundle: .app, locale: .app)
     }
 
     func pillsShort(_ forecast: PillForecast) -> String {
@@ -257,7 +257,7 @@ struct Describer {
     func pillsLasting(_ forecast: PillForecast) -> String? {
         guard let enough = pillsEnough(forecast), let last = forecast.lastDose else { return nil }
         let date = last.formatted(Date.FormatStyle(locale: locale, calendar: calendar, timeZone: calendar.timeZone).day().month(.wide))
-        return "\(enough), ".capitalizedFirst(locale) + String(localized: "until \(date)", bundle: .app, locale: .app) + "."
+        return "\(enough), ".capitalizedFirst(locale) + String(localized: "until \(date)", bundle: .app, locale: .app)
     }
 }
 

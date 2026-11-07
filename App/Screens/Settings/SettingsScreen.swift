@@ -116,7 +116,7 @@ struct SettingsScreen: View {
                                     lockDelayRow
                                 }
                             }
-                            Text("Widgets, notifications and the watch stay open. If \(lock.biometryName) does not work, you can enter the phone passcode.")
+                            Text("Widgets, notifications and the watch stay open. If \(lock.biometryName) does not work, you can enter the phone passcode")
                                 .font(.app(.golos, 13))
                                 .lineHeight(18, .golos, 13)
                                 .foregroundStyle(Palette.secondary)
@@ -322,15 +322,15 @@ struct SettingsScreen: View {
             let now = Date()
             let text: String = {
                 if let failure = weather.failure {
-                    return String(localized: "Could not get the forecast (\(failure)).", bundle: .app, locale: .app)
+                    return String(localized: "Could not get the forecast (\(failure))", bundle: .app, locale: .app)
                 }
                 guard let fetched = weather.fetchedAt else {
-                    return String(localized: "The forecast has not come yet.", bundle: .app, locale: .app)
+                    return String(localized: "The forecast has not come yet", bundle: .app, locale: .app)
                 }
-                let updated = String(localized: "Forecast updated \(describer.dayAndTime(fetched, now: now)).", bundle: .app, locale: .app)
-                let next = weather.notes(after: now).first.map { String(localized: "Next notification \(describer.dayAndTime($0.fireDate, now: now)).", bundle: .app, locale: .app) }
-                    ?? String(localized: "No reason to notify today or tomorrow.", bundle: .app, locale: .app)
-                return "\(updated) \(next)"
+                let updated = String(localized: "Forecast updated \(describer.dayAndTime(fetched, now: now))", bundle: .app, locale: .app)
+                let next = weather.notes(after: now).first.map { String(localized: "Next notification \(describer.dayAndTime($0.fireDate, now: now))", bundle: .app, locale: .app) }
+                    ?? String(localized: "No reason to notify today or tomorrow", bundle: .app, locale: .app)
+                return "\(updated). \(next)"
             }()
             Text(verbatim: text)
                 .font(.app(.golos, 13))
@@ -432,7 +432,7 @@ struct SettingsScreen: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Sign in to keep your reminders")
                         .font(.app(.golos, 16, weight: 600))
-                    Text("They will live in your account and appear on any of your phones.")
+                    Text("They will live in your account and appear on any of your phones")
                         .font(.app(.golos, 13))
                         .lineHeight(18, .golos, 13)
                         .foregroundStyle(Palette.secondary)

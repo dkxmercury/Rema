@@ -55,7 +55,7 @@ struct PrioritiesSheet: View {
                         list
                             .padding(.top, 16)
                         if chosen.count >= Priorities.limit {
-                            Text("To choose another, unstar one of the three. You can change this at any time.")
+                            Text("To choose another, unstar one of the three. You can change this at any time")
                                 .font(.app(.golos, 13))
                                 .foregroundStyle(Palette.secondary)
                                 .multilineTextAlignment(.center)

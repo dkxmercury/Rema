@@ -40,9 +40,9 @@ struct HomeNotice: View {
 
     private var text: Text {
         switch alert {
-        case .storageFull: Text("Could not save on this phone, there is not enough space.")
-        case .notificationsOff: Text("Notifications are off, reminders will not come.")
-        case .signInExpired: Text("The sign-in has expired. Sign in again.")
+        case .storageFull: Text("Could not save on this phone, there is not enough space")
+        case .notificationsOff: Text("Notifications are off, reminders will not come")
+        case .signInExpired: Text("The sign-in has expired. Sign in again")
         case .invitation(_, let line), .notShared(let line): Text(verbatim: line)
         }
     }

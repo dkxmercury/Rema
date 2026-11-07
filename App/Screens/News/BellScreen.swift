@@ -34,7 +34,7 @@ struct BellScreen: View {
                     }
                     let rows = bell.rows
                     if rows.isEmpty {
-                        Text(loading ? "Loading…" : "Nothing here yet.")
+                        Text(loading ? "Loading…" : "Nothing here yet")
                             .font(.app(.golos, 15))
                             .foregroundStyle(Palette.secondary)
                             .frame(maxWidth: .infinity)

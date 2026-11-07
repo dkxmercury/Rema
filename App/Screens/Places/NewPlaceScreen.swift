@@ -130,7 +130,7 @@ struct NewPlaceScreen: View {
             }
         } message: {
             if orphans > 0 {
-                Text("\(orphans) reminders") + Text(verbatim: ". ") + Text("Reminders that come only at this place will be deleted too.")
+                Text("\(orphans) reminders") + Text(verbatim: ". ") + Text("Reminders that come only at this place will be deleted too")
             }
         }
         .task {
@@ -282,7 +282,7 @@ struct NewPlaceScreen: View {
         Feedback.play(.error)
         let underlying = (error as NSError?)?.userInfo[NSUnderlyingErrorKey] as? NSError
         let offline = (error as NSError?)?.domain == NSURLErrorDomain || underlying?.domain == NSURLErrorDomain
-        searchProblem = offline ? String(localized: "No internet connection. Try again when you are online.", bundle: .app, locale: .app) : String(localized: "Nothing found", bundle: .app, locale: .app)
+        searchProblem = offline ? String(localized: "No internet connection. Try again when you are online", bundle: .app, locale: .app) : String(localized: "Nothing found", bundle: .app, locale: .app)
     }
 
     private func save() {

@@ -38,7 +38,7 @@ struct ImportScreen: View {
             Palette.background.ignoresSafeArea()
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
-                    Text(denied ? LocalizedStringKey("Allow access to Reminders in Settings to move them over.") : LocalizedStringKey("Rema will move your reminders over from the Reminders app. Dates and repeats stay, places and attachments do not. Nothing is deleted in Reminders."))
+                    Text(denied ? LocalizedStringKey("Allow access to Reminders in Settings to move them over") : LocalizedStringKey("Rema will move your reminders over from the Reminders app. Dates and repeats stay, places and attachments do not. Nothing is deleted in Reminders"))
                         .font(.app(.golos, 15))
                         .foregroundStyle(Palette.secondary)
                         .fixedSize(horizontal: false, vertical: true)

@@ -24,22 +24,22 @@ final class VoiceRecognizer {
             }
             guard speech == .authorized else {
                 needsSettings = true
-                failure = String(localized: "Allow speech recognition in Settings to dictate reminders.", bundle: .app, locale: .app)
+                failure = String(localized: "Allow speech recognition in Settings to dictate reminders", bundle: .app, locale: .app)
                 return
             }
             guard await AVAudioApplication.requestRecordPermission() else {
                 needsSettings = true
-                failure = String(localized: "Allow microphone access in Settings to dictate reminders.", bundle: .app, locale: .app)
+                failure = String(localized: "Allow microphone access in Settings to dictate reminders", bundle: .app, locale: .app)
                 return
             }
             guard let recognizer = VoiceRecognizer.recognizer(for: locale), recognizer.isAvailable else {
-                failure = String(localized: "Speech recognition is not available for this language yet.", bundle: .app, locale: .app)
+                failure = String(localized: "Speech recognition is not available for this language yet", bundle: .app, locale: .app)
                 return
             }
             do {
                 try begin(with: recognizer, hints: hints)
             } catch {
-                failure = String(localized: "Could not start the microphone.", bundle: .app, locale: .app)
+                failure = String(localized: "Could not start the microphone", bundle: .app, locale: .app)
                 stop()
             }
         }
@@ -143,7 +143,7 @@ final class VoiceRecognizer {
                         self.stop()
                         // Silence or a lost connection ends the listening; with nothing heard the screen offers another try.
                         if self.transcript.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                            self.failure = String(localized: "Something went wrong. Try again.", bundle: .app, locale: .app)
+                            self.failure = String(localized: "Something went wrong. Try again", bundle: .app, locale: .app)
                         }
                     }
                 }

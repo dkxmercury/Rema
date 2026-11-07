@@ -74,7 +74,7 @@ struct EmailScreen: View {
                         }
                         .padding(.top, 8)
                         .animation(Motion.small, value: longEnough)
-                        FormNote(text: "Reminders already on this phone will move to the new account.")
+                        FormNote(text: "Reminders already on this phone will move to the new account")
                             .padding(.top, 22)
                     }
                     if let problem {
@@ -124,7 +124,7 @@ struct EmailScreen: View {
             } catch let failure as Backend.Failure {
                 problem = failure.message
             } catch {
-                problem = String(localized: "Something went wrong. Try again.", bundle: .app, locale: .app)
+                problem = String(localized: "Something went wrong. Try again", bundle: .app, locale: .app)
             }
         }
     }

@@ -4,7 +4,7 @@ import SwiftUI
 
 struct AddReminderIntent: AppIntent {
     static let title: LocalizedStringResource = "Create reminder"
-    static let description = IntentDescription("Adds a reminder from a phrase, for example tomorrow at 9 call mom.")
+    static let description = IntentDescription("Adds a reminder from a phrase, for example tomorrow at 9 call mom")
     static let authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
 
     @Parameter(title: "What and when", requestValueDialog: IntentDialog("What and when to remind?"))
@@ -38,13 +38,13 @@ struct AddReminderIntent: AppIntent {
         await Notifier.shared.reschedule()
         Feedback.play(.save)
         let when = IntentSupport.when(reminder, store: store, now: now)
-        return .result(dialog: IntentDialog("Done, I'll remind you."), view: ReminderSnippet(title: reminder.title, when: when))
+        return .result(dialog: IntentDialog("Done, I'll remind you"), view: ReminderSnippet(title: reminder.title, when: when))
     }
 }
 
 struct NextReminderIntent: AppIntent {
     static let title: LocalizedStringResource = "Next reminder"
-    static let description = IntentDescription("Tells what is next and how soon.")
+    static let description = IntentDescription("Tells what is next and how soon")
     static let authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
 
     init() {}
@@ -52,24 +52,24 @@ struct NextReminderIntent: AppIntent {
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog & ShowsSnippetView {
         if AppLock.shared.sealed {
-            return .result(dialog: IntentDialog("Rema is locked, open it on the phone first."), view: ReminderSnippet(title: String(localized: "Rema is locked", bundle: .app, locale: .app), when: ""))
+            return .result(dialog: IntentDialog("Rema is locked, open it on the phone first"), view: ReminderSnippet(title: String(localized: "Rema is locked", bundle: .app, locale: .app), when: ""))
         }
         let store = Store.shared
         store.reloadIfChanged()
         let now = Date()
         guard let next = Agenda.upcoming(after: now, reminders: store.activeReminders, calendar: .current, limit: 1).first,
               let reminder = store.reminder(next.reminderID) else {
-            return .result(dialog: IntentDialog("Nothing ahead."), view: ReminderSnippet(title: String(localized: "Nothing ahead", bundle: .app, locale: .app), when: ""))
+            return .result(dialog: IntentDialog("Nothing ahead"), view: ReminderSnippet(title: String(localized: "Nothing ahead", bundle: .app, locale: .app), when: ""))
         }
         let describer = Describer(locale: AppLanguage.current.locale)
         let when = "\(describer.dayAndTime(next.occurrence, now: now).capitalizedFirst(.current)), \(describer.countdown(from: now, to: next.occurrence))"
-        return .result(dialog: IntentDialog("\(reminder.title). \(when)."), view: ReminderSnippet(title: reminder.title, when: when))
+        return .result(dialog: IntentDialog("\(reminder.title). \(when)"), view: ReminderSnippet(title: reminder.title, when: when))
     }
 }
 
 struct CompleteReminderIntent: AppIntent {
     static let title: LocalizedStringResource = "Mark as done"
-    static let description = IntentDescription("Marks the current or the next reminder as done.")
+    static let description = IntentDescription("Marks the current or the next reminder as done")
     static let authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
 
     init() {}
@@ -77,12 +77,12 @@ struct CompleteReminderIntent: AppIntent {
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
         if AppLock.shared.sealed {
-            return .result(dialog: IntentDialog("Rema is locked, open it on the phone first."))
+            return .result(dialog: IntentDialog("Rema is locked, open it on the phone first"))
         }
         let store = Store.shared
         store.reloadIfChanged()
         guard let target = IntentSupport.current(store: store, now: Date()), let reminder = store.reminder(target.reminderID) else {
-            return .result(dialog: IntentDialog("Nothing to mark."))
+            return .result(dialog: IntentDialog("Nothing to mark"))
         }
         store.complete(target.reminderID, through: target.occurrence)
         await ReminderNotifications.clear(target.reminderID, occurrence: target.occurrence)
@@ -94,7 +94,7 @@ struct CompleteReminderIntent: AppIntent {
 
 struct SnoozeReminderIntent: AppIntent {
     static let title: LocalizedStringResource = "Snooze reminder"
-    static let description = IntentDescription("Moves the current or the next reminder a bit later.")
+    static let description = IntentDescription("Moves the current or the next reminder a bit later")
 
     static let authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
 
@@ -106,13 +106,13 @@ struct SnoozeReminderIntent: AppIntent {
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
         if AppLock.shared.sealed {
-            return .result(dialog: IntentDialog("Rema is locked, open it on the phone first."))
+            return .result(dialog: IntentDialog("Rema is locked, open it on the phone first"))
         }
         let store = Store.shared
         store.reloadIfChanged()
         let now = Date()
         guard let target = IntentSupport.current(store: store, now: now), let reminder = store.reminder(target.reminderID) else {
-            return .result(dialog: IntentDialog("Nothing to snooze."))
+            return .result(dialog: IntentDialog("Nothing to snooze"))
         }
         store.snooze(target.reminderID, until: now.addingTimeInterval(Double(minutes) * 60))
         await ReminderNotifications.clear(target.reminderID, occurrence: target.occurrence)

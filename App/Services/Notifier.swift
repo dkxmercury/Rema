@@ -332,10 +332,10 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         case .snoozed:
             return String(localized: "Snoozed reminder", bundle: .app, locale: .app)
         case .missed:
-            return String(localized: "It was at \(describer.time(item.occurrence)). Open to mark it or move it.", bundle: .app, locale: .app)
+            return String(localized: "It was at \(describer.time(item.occurrence)). Open to mark it or move it", bundle: .app, locale: .app)
         case .nag(let index):
             let interval = store.reminder(item.reminderID)?.nagInterval ?? store.settings.nagInterval
-            let next = index == Scheduler.nagRepeats ? String(localized: "This is the last reminder.", bundle: .app, locale: .app) : String(localized: "I'll repeat in \(interval) minutes until you tap Done.", bundle: .app, locale: .app)
+            let next = index == Scheduler.nagRepeats ? String(localized: "This is the last reminder", bundle: .app, locale: .app) : String(localized: "I'll repeat in \(interval) minutes until you tap Done", bundle: .app, locale: .app)
             return "\(ordinal(index + 1)). \(next)"
         }
     }

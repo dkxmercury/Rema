@@ -107,9 +107,9 @@ struct FriendsTour: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.top, 14)
                 VStack(alignment: .leading, spacing: 18) {
-                    step(1, "Invite a friend with a link or a QR code. Rema does not look people up by email or phone number.")
-                    step(2, "Make a reminder and tap “With friends”. The friend gets an invitation and decides.")
-                    step(3, "Everybody gets it at the same moment. Each ticks it alone, or one “done” counts for everybody.")
+                    step(1, "Invite a friend with a link or a QR code. Rema does not look people up by email or phone number")
+                    step(2, "Make a reminder and tap “With friends”. The friend gets an invitation and decides")
+                    step(3, "Everybody gets it at the same moment. Each ticks it alone, or one “done” counts for everybody")
                 }
                 .padding(.top, 22)
                 Spacer(minLength: 16)
@@ -161,7 +161,7 @@ struct MemberPicker: View {
                 }
                 .padding(.top, 18)
                 if candidates.isEmpty {
-                    Note("Everybody you can invite is already here.")
+                    Note("Everybody you can invite is already here")
                         .padding(.top, 14)
                 } else {
                     FlowLayout(spacing: 8) {
@@ -202,19 +202,19 @@ extension Backend.Failure {
         case .offline:
             return message
         case .unauthorized:
-            return String(localized: "The sign-in has expired. Sign in again.", bundle: .app, locale: .app)
+            return String(localized: "The sign-in has expired. Sign in again", bundle: .app, locale: .app)
         case .rateLimited:
-            return String(localized: "Too many attempts. Try again later.", bundle: .app, locale: .app)
+            return String(localized: "Too many attempts. Try again later", bundle: .app, locale: .app)
         case .conflict(let code) where code == "friend_limit":
-            return String(localized: "There are already 40 friends.", bundle: .app, locale: .app)
+            return String(localized: "There are already 40 friends", bundle: .app, locale: .app)
         case .conflict:
-            return String(localized: "Too many requests, try again tomorrow.", bundle: .app, locale: .app)
+            return String(localized: "Too many requests, try again tomorrow", bundle: .app, locale: .app)
         case .invalid(let code) where code == "not_found":
-            return String(localized: "This person or reminder is no longer here.", bundle: .app, locale: .app)
+            return String(localized: "This person or reminder is no longer here", bundle: .app, locale: .app)
         case .invalid(let code) where code == "unverified":
-            return String(localized: "Confirm your email first. Open the link in the email from Rema.", bundle: .app, locale: .app)
+            return String(localized: "Confirm your email first. Open the link in the email from Rema", bundle: .app, locale: .app)
         default:
-            return String(localized: "Something went wrong. Try again.", bundle: .app, locale: .app)
+            return String(localized: "Something went wrong. Try again", bundle: .app, locale: .app)
         }
     }
 }
@@ -230,7 +230,7 @@ struct ConfirmEmailNote: View {
         VStack(alignment: centered ? .center : .leading, spacing: 10) {
             Note(verbatim: Backend.Failure.invalid("unverified").friendsMessage)
             if sent {
-                Note("If it is not in your inbox, look in spam. You can send it again in a minute.")
+                Note("If it is not in your inbox, look in spam. You can send it again in a minute")
             } else {
                 Button("Send the email again") {
                     Task {
@@ -245,7 +245,7 @@ struct ConfirmEmailNote: View {
                 .buttonStyle(SmallButtonStyle(prominent: false))
             }
             if failed, !sent {
-                Note("Could not send the email. Try again.")
+                Note("Could not send the email. Try again")
             }
         }
         .multilineTextAlignment(centered ? .center : .leading)

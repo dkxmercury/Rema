@@ -244,7 +244,7 @@ struct PhraseScreen: View {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Make a list?")
                             .font(.app(.golos, 16, weight: 600))
-                        Text("You can tick items right in the shop.")
+                        Text("You can tick items right in the shop")
                             .font(.app(.golos, 14))
                             .foregroundStyle(Palette.secondary)
                     }
@@ -531,7 +531,7 @@ struct PhraseScreen: View {
                 .padding(.vertical, 4)
                 .panel()
             }
-            Text("Rema splits the phrase at commas and conjunctions when each part has its own time. Remove extra ones with the cross.")
+            Text("Rema splits the phrase at commas and conjunctions when each part has its own time. Remove extra ones with the cross")
                 .font(.app(.golos, 13))
                 .foregroundStyle(Palette.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -692,7 +692,7 @@ struct PhraseScreen: View {
                 .padding(.horizontal, 4)
                 .padding(.bottom, 8)
             if friendsService.friends.isEmpty {
-                Note("Invite a friend first: Settings, Shared reminders.")
+                Note("Invite a friend first: Settings, Shared reminders")
             } else {
                 FlowLayout(spacing: 8) {
                     ForEach(friendsService.friends) { friend in
@@ -714,7 +714,7 @@ struct PhraseScreen: View {
             }
             .padding(.top, 12)
             if let when {
-                Note(verbatim: String(localized: "Everybody gets it at the same moment, at \(describer.time(when)) your time. Friends see it in their own time. Only you can change it.", bundle: .app, locale: .app))
+                Note(verbatim: String(localized: "Everybody gets it at the same moment, at \(describer.time(when)) your time. Friends see it in their own time. Only you can change it", bundle: .app, locale: .app))
                     .padding(.top, 10)
             }
         }

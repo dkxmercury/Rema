@@ -20,7 +20,7 @@ struct ResetScreen: View {
             Palette.background.ignoresSafeArea()
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
-                    Text("We will send an email with a link. Use it to set a new password.")
+                    Text("We will send an email with a link. Use it to set a new password")
                         .font(.app(.golos, 15))
                         .lineHeight(21, .golos, 15)
                         .foregroundStyle(Palette.secondary)
@@ -72,7 +72,7 @@ struct ResetScreen: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text("Email sent")
                     .font(.app(.golos, 15, weight: 600))
-                Text("If it is not in your inbox, look in spam. You can send it again in a minute.")
+                Text("If it is not in your inbox, look in spam. You can send it again in a minute")
                     .font(.app(.golos, 13))
                     .lineHeight(18, .golos, 13)
                     .foregroundStyle(Palette.secondary)
@@ -99,9 +99,9 @@ struct ResetScreen: View {
                 sentAt = Date()
                 Feedback.play(.save)
             } catch let failure as Backend.Failure {
-                problem = failure == .rateLimited ? failure.message : String(localized: "Could not send the email. Try again.", bundle: .app, locale: .app)
+                problem = failure == .rateLimited ? failure.message : String(localized: "Could not send the email. Try again", bundle: .app, locale: .app)
             } catch {
-                problem = String(localized: "Could not send the email. Try again.", bundle: .app, locale: .app)
+                problem = String(localized: "Could not send the email. Try again", bundle: .app, locale: .app)
             }
         }
     }

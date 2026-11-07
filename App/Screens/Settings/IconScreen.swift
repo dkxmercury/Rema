@@ -17,7 +17,7 @@ struct IconScreen: View {
                         }
                     }
                     .padding(.top, 18)
-                    Text("The icon changes right away, iOS will show a short message about it. Each one has a dark and a tinted look.")
+                    Text("The icon changes right away, iOS will show a short message about it. Each one has a dark and a tinted look")
                         .font(.app(.golos, 13))
                         .lineHeight(18, .golos, 13)
                         .foregroundStyle(Palette.secondary)

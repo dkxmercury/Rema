@@ -91,7 +91,7 @@ struct CityScreen: View {
             } catch {
                 guard !Task.isCancelled else { return }
                 results = []
-                problem = String(localized: "No internet connection. Try again when you are online.", bundle: .app, locale: .app)
+                problem = String(localized: "No internet connection. Try again when you are online", bundle: .app, locale: .app)
             }
         }
     }
@@ -131,7 +131,7 @@ struct CityScreen: View {
                 onBack()
             } else {
                 Feedback.play(.error)
-                problem = String(localized: "Could not tell where you are. Check that Rema has location access.", bundle: .app, locale: .app)
+                problem = String(localized: "Could not tell where you are. Check that Rema has location access", bundle: .app, locale: .app)
             }
         }
     }

@@ -116,8 +116,8 @@ struct PillsSheet: View {
 
     private var summary: String {
         let forecast = PillCount.forecast(course(counted: now), reminders: Self.reminders(store: store, draft: reminder), now: now, calendar: calendar)
-        let hint = String(localized: "Each Done takes a dose out of the box.", bundle: .app, locale: .app)
-        return [describer.pillsLasting(forecast), hint].compactMap { $0 }.joined(separator: " ")
+        let hint = String(localized: "Each Done takes a dose out of the box", bundle: .app, locale: .app)
+        return [describer.pillsLasting(forecast), hint].compactMap { $0 }.joined(separator: ". ")
     }
 
     private func warning(_ days: Int) -> LocalizedStringKey {
@@ -232,7 +232,7 @@ struct BoughtSheet: View {
         let next = added(counted: now)
         let total = String(localized: "It will be \(next.left)", bundle: .app, locale: .app)
         let forecast = PillCount.forecast(next, reminders: store.reminders, now: now, calendar: calendar)
-        return [total + ".", describer.pillsLasting(forecast)].compactMap { $0 }.joined(separator: " ")
+        return [total, describer.pillsLasting(forecast)].compactMap { $0 }.joined(separator: ". ")
     }
 
     var body: some View {

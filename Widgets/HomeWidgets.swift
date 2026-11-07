@@ -10,7 +10,7 @@ struct DialWidget: Widget {
                 .containerBackground(for: .widget) { WidgetBackground() }
         }
         .configurationDisplayName("Dial")
-        .description("The day on a 24-hour dial and the next reminder.")
+        .description("The day on a 24-hour dial and the next reminder")
         .supportedFamilies([.systemSmall, .accessoryCircular])
     }
 }
@@ -23,7 +23,7 @@ struct NextWidget: Widget {
                 .containerBackground(for: .widget) { WidgetBackground() }
         }
         .configurationDisplayName("Next reminder")
-        .description("What is next and how soon.")
+        .description("What is next and how soon")
         .supportedFamilies([.systemSmall, .accessoryInline, .accessoryCircular, .accessoryRectangular])
     }
 }
@@ -36,7 +36,7 @@ struct TodayWidget: Widget {
                 .containerBackground(for: .widget) { WidgetBackground() }
         }
         .configurationDisplayName("Today")
-        .description("Today's reminders, mark them right on the widget.")
+        .description("Today's reminders, mark them right on the widget")
         .supportedFamilies([.systemMedium, .systemLarge])
     }
 }

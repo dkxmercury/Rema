@@ -34,7 +34,7 @@ struct FriendsScreen: View {
                     if account.isSignedIn {
                         content
                     } else {
-                        Note("Sign in to share reminders with friends. Shared reminders live in the account.")
+                        Note("Sign in to share reminders with friends. Shared reminders live in the account")
                             .padding(.top, 14)
                         Button("Sign in", action: onSignIn)
                             .buttonStyle(SmallButtonStyle(prominent: true))
@@ -82,7 +82,7 @@ struct FriendsScreen: View {
             .presentationBackground(Palette.background)
         }
         .confirmationDialog(
-            Text(verbatim: unblocking.map { String(localized: "Unblock \(SharedNames.name(of: $0.id, fallback: $0.name))? They will be able to invite you again.", bundle: .app, locale: .app) } ?? ""),
+            Text(verbatim: unblocking.map { String(localized: "Unblock \(SharedNames.name(of: $0.id, fallback: $0.name))? They will be able to invite you again", bundle: .app, locale: .app) } ?? ""),
             isPresented: Binding(get: { unblocking != nil }, set: { if !$0 { unblocking = nil } }),
             titleVisibility: .visible,
             presenting: unblocking
@@ -114,7 +114,7 @@ struct FriendsScreen: View {
             Note(verbatim: Backend.Failure.offline.friendsMessage)
                 .padding(.top, 14)
         }
-        Note("Friends see only the reminders you share with them. You choose each one's name yourself, they don't see it.")
+        Note("Friends see only the reminders you share with them. You choose each one's name yourself, they don't see it")
             .padding(.top, 14)
         SectionLabel(text: "Your name for friends")
             .padding(.horizontal, 4)

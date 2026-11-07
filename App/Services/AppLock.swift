@@ -178,7 +178,7 @@ struct LockScreen: View {
                 Text("Rema is locked")
                     .font(.app(.jost, 28, weight: 500))
                     .padding(.top, 28)
-                Text("Open it with \(lock.biometryName). Reminders come as usual.")
+                Text("Open it with \(lock.biometryName). Reminders come as usual")
                     .font(.app(.golos, 16))
                     .lineSpacing(4)
                     .foregroundStyle(Palette.secondary)

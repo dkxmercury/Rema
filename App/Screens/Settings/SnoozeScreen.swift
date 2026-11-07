@@ -23,7 +23,7 @@ struct SnoozeScreen: View {
                         }
                     }
                     .padding(.top, 14)
-                    Text("Up to three. They appear as buttons in the notification.")
+                    Text("Up to three. They appear as buttons in the notification")
                         .font(.app(.golos, 13))
                         .lineHeight(18, .golos, 13)
                         .foregroundStyle(Palette.secondary)

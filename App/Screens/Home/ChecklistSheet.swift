@@ -76,7 +76,7 @@ struct ChecklistSheet: View {
                         withAnimation(Motion.standard) { store.addItem(text, to: reminderID) }
                     })
                     if reminder.doneWhenChecked, !finished {
-                        Text("When everything is ticked, the reminder marks itself done and persistent repeats stop.")
+                        Text("When everything is ticked, the reminder marks itself done and persistent repeats stop")
                             .font(.app(.golos, 13))
                             .foregroundStyle(Palette.secondary)
                             .fixedSize(horizontal: false, vertical: true)

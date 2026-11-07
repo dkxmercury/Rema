@@ -73,7 +73,7 @@ struct DiscussionSection: View {
             SectionLabel(text: "Discussion")
                 .padding(.horizontal, 4)
             if model.comments.isEmpty {
-                Text("No messages yet. Write to everyone in the reminder.")
+                Text("No messages yet. Write to everyone in the reminder")
                     .font(.app(.golos, 14))
                     .foregroundStyle(Palette.secondary)
                     .padding(.horizontal, 4)
@@ -81,7 +81,7 @@ struct DiscussionSection: View {
             ForEach(model.comments) { comment in
                 bubble(comment)
             }
-            Text("Everyone in the reminder sees the messages. Press and hold a message to report it.")
+            Text("Everyone in the reminder sees the messages. Press and hold a message to report it")
                 .font(.app(.golos, 12))
                 .lineHeight(17, .golos, 12)
                 .foregroundStyle(Palette.secondary)

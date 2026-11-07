@@ -112,10 +112,10 @@ struct SharedDetailScreen: View {
 
     private var confirmTitle: String {
         switch confirming {
-        case .leave: String(localized: "Leave the reminder? It goes from your phone, the others keep it.", bundle: .app, locale: .app)
+        case .leave: String(localized: "Leave the reminder? It goes from your phone, the others keep it", bundle: .app, locale: .app)
         case .delete: String(localized: "Delete the reminder for everyone in it?", bundle: .app, locale: .app)
-        case .block: String(localized: "Block \(ownerName)? The friendship and the shared reminders with them go away.", bundle: .app, locale: .app)
-        case .report: String(localized: "Report this reminder? Rema will look into it within a day.", bundle: .app, locale: .app)
+        case .block: String(localized: "Block \(ownerName)? The friendship and the shared reminders with them go away", bundle: .app, locale: .app)
+        case .report: String(localized: "Report this reminder? Rema will look into it within a day", bundle: .app, locale: .app)
         case nil: ""
         }
     }
@@ -147,7 +147,7 @@ struct SharedDetailScreen: View {
                 .panel()
                 .padding(.top, 14)
                 if shared.pending {
-                    Note("Not sent yet. It goes to the friends when there is a connection.")
+                    Note("Not sent yet. It goes to the friends when there is a connection")
                         .padding(.top, 10)
                 }
                 if let note = VoiceNotes.note(of: reminder, sounds: store.sounds) {
@@ -200,7 +200,7 @@ struct SharedDetailScreen: View {
                     .presentationBackground(Palette.background)
                 }
                 if shared.doneMode == .one {
-                    Note("One “done” counts for everybody.")
+                    Note("One “done” counts for everybody")
                         .padding(.top, 10)
                 }
                 if talks(shared) {
@@ -234,7 +234,7 @@ struct SharedDetailScreen: View {
                 }
                 .padding(.top, 14)
                 if !shared.isMine {
-                    Note("Blocking removes the friendship and the shared reminders with this person at once and forbids new invitations.")
+                    Note("Blocking removes the friendship and the shared reminders with this person at once and forbids new invitations")
                         .padding(.top, 10)
                 }
                 if let problem {

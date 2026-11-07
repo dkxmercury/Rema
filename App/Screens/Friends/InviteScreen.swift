@@ -26,7 +26,7 @@ struct InviteScreen: View {
                     qrPanel
                         .frame(maxWidth: .infinity)
                         .padding(.top, 18)
-                    Note("A friend points the camera or opens the link. The invitation works once, for a day, and can be withdrawn.")
+                    Note("A friend points the camera or opens the link. The invitation works once, for a day, and can be withdrawn")
                         .padding(.top, 16)
                     PanelList {
                         Button(action: copy) {
@@ -69,7 +69,7 @@ struct InviteScreen: View {
                         .frame(minHeight: 52)
                     }
                     .padding(.top, 12)
-                    Note("Rema does not look people up by email or phone number.")
+                    Note("Rema does not look people up by email or phone number")
                         .padding(.top, 10)
                     if unconfirmed {
                         ConfirmEmailNote()
@@ -137,7 +137,7 @@ struct InviteScreen: View {
             withAnimation(Motion.standard) { code = created.code }
         } catch let failure as Backend.Failure {
             unconfirmed = failure.needsConfirmedEmail
-            problem = failure == .conflict("invite_limit") ? String(localized: "Too many invitations, try again later.", bundle: .app, locale: .app) : failure.friendsMessage
+            problem = failure == .conflict("invite_limit") ? String(localized: "Too many invitations, try again later", bundle: .app, locale: .app) : failure.friendsMessage
         } catch {
             problem = Backend.Failure.server.message
         }

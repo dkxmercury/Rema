@@ -511,7 +511,7 @@ struct EditorScreen: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
             .panel()
-            Text(verbatim: attached ? String(localized: "Rema found \(link.name) in your contacts. The notification will have a Call button.", bundle: .app, locale: .app) : String(localized: "Rema found \(link.name) in your contacts. Add a Call button to the notification?", bundle: .app, locale: .app))
+            Text(verbatim: attached ? String(localized: "Rema found \(link.name) in your contacts. The notification will have a Call button", bundle: .app, locale: .app) : String(localized: "Rema found \(link.name) in your contacts. Add a Call button to the notification?", bundle: .app, locale: .app))
                 .font(.app(.golos, 13))
                 .foregroundStyle(Palette.secondary)
                 .fixedSize(horizontal: false, vertical: true)

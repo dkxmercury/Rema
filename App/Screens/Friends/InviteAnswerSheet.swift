@@ -56,7 +56,7 @@ struct InviteAnswerSheet: View {
                             .multilineTextAlignment(.center)
                             .padding(.top, 10)
                     } else if !friendsNow {
-                        Note("Friends see only the reminders you share with them.")
+                        Note("Friends see only the reminders you share with them")
                             .multilineTextAlignment(.center)
                             .padding(.top, 10)
                     }
@@ -113,18 +113,18 @@ struct InviteAnswerSheet: View {
             let view = try await service.invite(code)
             invite = view
             if view.own {
-                problem = String(localized: "This is your own invitation. Send the link to a friend.", bundle: .app, locale: .app)
+                problem = String(localized: "This is your own invitation. Send the link to a friend", bundle: .app, locale: .app)
             } else if view.state == "expired" {
-                problem = String(localized: "This invitation has expired. Ask for a new one.", bundle: .app, locale: .app)
+                problem = String(localized: "This invitation has expired. Ask for a new one", bundle: .app, locale: .app)
             } else if view.state != "open" {
-                problem = String(localized: "This invitation can no longer be used.", bundle: .app, locale: .app)
+                problem = String(localized: "This invitation can no longer be used", bundle: .app, locale: .app)
             }
         } catch let failure as Backend.Failure {
             switch failure {
             case .offline, .rateLimited, .unauthorized:
                 problem = failure.friendsMessage
             default:
-                problem = String(localized: "This invitation does not exist.", bundle: .app, locale: .app)
+                problem = String(localized: "This invitation does not exist", bundle: .app, locale: .app)
             }
         } catch {
             problem = Backend.Failure.server.message
@@ -141,13 +141,13 @@ struct InviteAnswerSheet: View {
             } catch let failure as Backend.Failure {
                 switch failure {
                 case .conflict(let code) where code == "friend_limit":
-                    problem = String(localized: "There are already 40 friends.", bundle: .app, locale: .app)
+                    problem = String(localized: "There are already 40 friends", bundle: .app, locale: .app)
                 case .offline, .rateLimited, .unauthorized:
                     problem = failure.friendsMessage
                 case .invalid(let code) where code == "unverified":
                     unconfirmed = true
                 default:
-                    problem = String(localized: "This invitation can no longer be used.", bundle: .app, locale: .app)
+                    problem = String(localized: "This invitation can no longer be used", bundle: .app, locale: .app)
                 }
             } catch {
                 problem = Backend.Failure.server.message

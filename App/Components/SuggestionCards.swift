@@ -159,7 +159,7 @@ struct SnoozeHintCard: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Move it to another time?")
                         .font(.app(.golos, 16, weight: 600))
-                    Text("“\(hint.title)” keeps being put off.")
+                    Text("“\(hint.title)” keeps being put off")
                         .font(.app(.golos, 14))
                         .lineSpacing(2)
                         .foregroundStyle(Palette.secondary)
@@ -205,7 +205,7 @@ struct HabitSuggestionCard: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(question)
                         .font(.app(.golos, 16, weight: 600))
-                    Text("This is the third week in a row you set “\(suggestion.title)”.")
+                    Text("This is the third week in a row you set “\(suggestion.title)”")
                         .font(.app(.golos, 14))
                         .lineSpacing(2)
                         .foregroundStyle(Palette.secondary)
