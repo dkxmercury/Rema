@@ -30,6 +30,7 @@ final class ScreenSnapshots: XCTestCase {
 
     func testPast() throws {
         let calendar = SampleData.calendar
+        let locale = russian
         func at(_ day: Int, _ hour: Int) -> Schedule {
             Schedule(start: LocalDate(year: 2026, month: 10, day: day), time: LocalTime(hour: hour, minute: 0), timeZone: "Asia/Tashkent")
         }
@@ -56,11 +57,11 @@ final class ScreenSnapshots: XCTestCase {
         let rows = ZStack(alignment: .top) {
             Palette.background.ignoresSafeArea()
             PanelList {
-                SharedReminderRow(reminder: pills, author: "автор Аня", now: SampleData.now, calendar: calendar, locale: russian, onOpen: {}, onToggle: { _, _ in })
+                SharedReminderRow(reminder: pills, author: "автор Аня", now: SampleData.now, calendar: calendar, locale: locale, onOpen: {}, onToggle: { _, _ in })
                 Hairline()
-                SharedReminderRow(reminder: parcel, author: "автор вы", now: SampleData.now, calendar: calendar, locale: russian, onOpen: {}, onToggle: { _, _ in })
+                SharedReminderRow(reminder: parcel, author: "автор вы", now: SampleData.now, calendar: calendar, locale: locale, onOpen: {}, onToggle: { _, _ in })
                 Hairline()
-                SharedReminderRow(reminder: movie, author: "автор Аня", now: SampleData.now, calendar: calendar, locale: russian, onOpen: {}, onToggle: { _, _ in })
+                SharedReminderRow(reminder: movie, author: "автор Аня", now: SampleData.now, calendar: calendar, locale: locale, onOpen: {}, onToggle: { _, _ in })
             }
             .padding(.horizontal, 18)
             .padding(.top, 80)
