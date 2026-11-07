@@ -350,7 +350,6 @@ struct EditorScreen: View {
         voiceEdited ? voice : draft.voiceNote(in: store.sounds)
     }
 
-    @ViewBuilder
     private var categoryRow: some View {
         let categories = store.settings.categories ?? []
         let current = store.settings.category(draft.category)
@@ -421,6 +420,7 @@ struct EditorScreen: View {
         Feedback.play(.save)
     }
 
+    @ViewBuilder
     private var voiceRow: some View {
         if let note {
             let playing = player.playing == note.id && !player.paused
