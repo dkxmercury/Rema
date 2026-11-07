@@ -10,8 +10,8 @@ struct DialGeometryTests {
         #expect(dial.clockAngle(hour: 9, minute: 0) == 270)
         #expect(dial.clockAngle(hour: 21, minute: 0) == 270)
         #expect(dial.clockAngle(hour: 14, minute: 30) == 75)
-        #expect(dial.clockAngle(minutes: 13 * 60 + 50) == 55)
-        #expect(dial.minuteAngle(minutes: 13 * 60 + 50) == 300)
+        #expect(abs(dial.clockAngle(minutes: 13 * 60 + 50) - 55) < 1e-9)
+        #expect(abs(dial.minuteAngle(minutes: 13 * 60 + 50) - 300) < 1e-9)
     }
 
     @Test func markersLandWhereTheMockupHasThem() {
