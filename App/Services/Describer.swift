@@ -127,7 +127,7 @@ struct Describer {
         }
         let days = calendar.dateComponents([.day], from: calendar.startOfDay(for: now), to: calendar.startOfDay(for: date)).day ?? 0
         if days > 1, days < 7 {
-            return date.formatted(style.weekday(.abbreviated).day().month(.wide))
+            return date.formatted(style.weekday(.abbreviated).day().month(.wide)).lowercasedFirst(locale)
         }
         return day
     }
@@ -265,6 +265,12 @@ extension String {
     func capitalizedFirst(_ locale: Locale) -> String {
         guard let first else { return self }
         return String(first).uppercased(with: locale) + dropFirst()
+    }
+
+    // iOS gives "Сб" even inside a phrase; in these languages a weekday is small there, English and German keep the capital.
+    func lowercasedFirst(_ locale: Locale) -> String {
+        guard let first, ["ru", "uk", "uz", "fr"].contains(locale.language.languageCode?.identifier ?? "") else { return self }
+        return String(first).lowercased(with: locale) + dropFirst()
     }
 }
 
