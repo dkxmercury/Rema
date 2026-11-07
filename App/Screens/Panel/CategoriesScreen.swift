@@ -40,7 +40,7 @@ struct CategoriesScreen: View {
                                         .insetShadow(shape, Palette.wellShadow, blur: 2, y: 1)
                                 }
                         }
-                        .frame(minHeight: 56)
+                        .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
                         .listRowBackground(Palette.panel)
                     }
                     .onMove { source, destination in
@@ -86,7 +86,7 @@ struct CategoriesScreen: View {
                                         .strokeBorder(Palette.tagBorder, style: StrokeStyle(lineWidth: 1, dash: [4, 3]))
                                 }
                         }
-                        .frame(minHeight: 56)
+                        .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
                         .listRowBackground(Palette.panel)
                     }
                 } footer: {
