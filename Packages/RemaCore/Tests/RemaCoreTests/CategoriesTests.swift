@@ -7,10 +7,12 @@ struct CategoriesTests {
 
     @Test func categoriesAreAddedRenamedMovedAndRemoved() throws {
         var settings = Settings.standard(at: created)
-        #expect(settings.addCategory(named: "   ") == nil)
-        let work = try #require(settings.addCategory(named: " Работа "))
-        let home = try #require(settings.addCategory(named: "Дом"))
-        let health = try #require(settings.addCategory(named: "Здоровье"))
+        let blank = settings.addCategory(named: "   ")
+        #expect(blank == nil)
+        let added = [settings.addCategory(named: " Работа "), settings.addCategory(named: "Дом"), settings.addCategory(named: "Здоровье")]
+        let work = try #require(added[0])
+        let home = try #require(added[1])
+        let health = try #require(added[2])
         #expect(work.name == "Работа")
         #expect(Set([work.color, home.color, health.color]).count == 3)
         settings.renameCategory(home.id, to: "Дом и дача")
@@ -31,9 +33,11 @@ struct CategoriesTests {
     @Test func thereIsALimitAndALongNameIsCut() {
         var settings = Settings.standard(at: created)
         for index in 0..<ReminderCategory.limit {
-            #expect(settings.addCategory(named: "Категория \(index)") != nil)
+            let added = settings.addCategory(named: "Категория \(index)")
+            #expect(added != nil)
         }
-        #expect(settings.addCategory(named: "Ещё одна") == nil)
+        let extra = settings.addCategory(named: "Ещё одна")
+        #expect(extra == nil)
         var other = Settings.standard(at: created)
         let long = other.addCategory(named: String(repeating: "я", count: 50))
         #expect(long?.name.count == ReminderCategory.nameLimit)
