@@ -91,7 +91,7 @@ struct AgendaRow: View {
                     Text("missed")
                         .font(.app(.golos, 12, weight: 600))
                         .foregroundStyle(Palette.urgentText)
-                } else if showsSubtitle, row.subtitle != nil || row.alert != nil {
+                } else if showsSubtitle, row.subtitle != nil || row.alert != nil || row.category != nil {
                     subtitle
                         .font(.app(.golos, 12))
                         .foregroundStyle(Palette.secondary)
@@ -108,14 +108,22 @@ struct AgendaRow: View {
                 .accessibilityLabel(Text(row.done ? LocalizedStringKey("Mark as not done") : LocalizedStringKey("Mark as done")))
             }
         }
-        .frame(minHeight: actionable ? 0 : minHeight ?? ((row.subtitle == nil && row.alert == nil) || !showsSubtitle ? 46 : 52))
+        .frame(minHeight: actionable ? 0 : minHeight ?? ((row.subtitle == nil && row.alert == nil && row.category == nil) || !showsSubtitle ? 46 : 52))
     }
 
     private var subtitle: Text {
-        let base = Text(verbatim: row.subtitle ?? "")
-        guard let alert = row.alert else { return base }
-        let warning = Text(verbatim: alert).foregroundStyle(Palette.accentText).fontWeight(.semibold)
-        return row.subtitle == nil ? warning : base + Text(verbatim: " · ") + warning
+        var parts: [Text] = []
+        if let category = row.category {
+            parts.append(Text(verbatim: "● ").foregroundStyle(Palette.category(category.color)) + Text(verbatim: category.name.lowercased(with: AppLanguage.current.locale)))
+        }
+        if let subtitle = row.subtitle {
+            parts.append(Text(verbatim: subtitle))
+        }
+        if let alert = row.alert {
+            parts.append(Text(verbatim: alert).foregroundStyle(Palette.accentText).fontWeight(.semibold))
+        }
+        guard let first = parts.first else { return Text(verbatim: "") }
+        return parts.dropFirst().reduce(first) { $0 + Text(verbatim: " · ") + $1 }
     }
 
     private var swipe: some Gesture {

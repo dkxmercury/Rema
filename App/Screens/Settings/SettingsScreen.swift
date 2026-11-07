@@ -8,16 +8,13 @@ struct SettingsScreen: View {
     var locale: Locale = AppLanguage.current.locale
     var account: AccountScreen.Summary?
     var onSound: () -> Void = {}
-    var onPlaces: () -> Void = {}
     var onSignIn: () -> Void = {}
     var onAccount: () -> Void = {}
     var onLanguage: () -> Void = {}
     var onCity: () -> Void = {}
     var onFeatures: () -> Void = {}
     var onSnooze: () -> Void = {}
-    var onBirthdays: () -> Void = {}
     var onImport: () -> Void = {}
-    var onFriends: () -> Void = {}
     var onNews: () -> Void = {}
     var onIcon: () -> Void = {}
     let onBack: () -> Void
@@ -93,13 +90,6 @@ struct SettingsScreen: View {
                             ToggleRow(icon: Icons.bell, iconColor: Palette.text, title: "Send by push", subtitle: String(localized: "no more than a couple of times a month, in the daytime", bundle: .app, locale: .app), isOn: newsBinding, minHeight: 60)
                         }
                     }
-                    section("Shared reminders") {
-                        PanelList {
-                            NavigationRow(icon: Icons.people, iconColor: Palette.text, title: "Friends", minHeight: 52, action: onFriends) {
-                                value(String(localized: "\(SharedService.shared.state.friends.count) of 40", bundle: .app, locale: .app))
-                            }
-                        }
-                    }
                     section("Language") {
                         PanelList {
                             NavigationRow(icon: Icons.globe, iconColor: Palette.text, title: "App language", minHeight: 52, action: onLanguage) {
@@ -164,15 +154,6 @@ struct SettingsScreen: View {
                             .frame(maxWidth: .infinity)
                             .padding(.top, 4)
                     }
-                    if Remote.shared.isOn(.places) {
-                        section("Places") {
-                            PanelList {
-                                NavigationRow(icon: Icons.pin, iconColor: Palette.text, title: "My places", minHeight: 52, action: onPlaces) {
-                                    value(String(localized: "\(store.activePlaces.count) of \(20)", bundle: .app, locale: .app))
-                                }
-                            }
-                        }
-                    }
                     if weather.available {
                         section("Weather") {
                             PanelList {
@@ -191,10 +172,6 @@ struct SettingsScreen: View {
                     section("iPhone apps") {
                         PanelList {
                             ToggleRow(icon: Icons.calendar, iconColor: Palette.text, title: "iPhone Calendar", subtitle: calendarFeed.denied ? String(localized: "No access to the calendar, allow it in Settings", bundle: .app, locale: .app) : String(localized: "events on Home and in Scheduled", bundle: .app, locale: .app), isOn: calendarBinding, minHeight: 60)
-                            Hairline()
-                            NavigationRow(icon: Icons.person, iconColor: Palette.text, title: "Birthdays from Contacts", minHeight: 52, action: onBirthdays) {
-                                EmptyView()
-                            }
                             Hairline()
                             NavigationRow(icon: Icons.list, iconColor: Palette.text, title: "Move from Reminders", minHeight: 52, action: onImport) {
                                 EmptyView()

@@ -7,6 +7,7 @@ struct BirthdayContact: Identifiable, Equatable {
     let name: String
     let month: Int
     let day: Int
+    var year: Int?
 }
 
 // Contacts are read only when the person asks, for birthdays and for the «Call» button of a reminder about someone.
@@ -27,7 +28,7 @@ enum ContactsFeed {
         try? CNContactStore().enumerateContacts(with: CNContactFetchRequest(keysToFetch: keys)) { contact, _ in
             guard let birthday = contact.birthday, let month = birthday.month, let day = birthday.day else { return }
             let name = [contact.givenName, contact.familyName].filter { !$0.isEmpty }.joined(separator: " ")
-            found.append(BirthdayContact(id: contact.identifier, name: name.isEmpty ? contact.nickname : name, month: month, day: day))
+            found.append(BirthdayContact(id: contact.identifier, name: name.isEmpty ? contact.nickname : name, month: month, day: day, year: birthday.year))
         }
         return found.filter { !$0.name.isEmpty }
     }

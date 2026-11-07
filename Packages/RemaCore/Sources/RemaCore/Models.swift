@@ -182,6 +182,8 @@ public struct Reminder: Codable, Identifiable, Hashable, Sendable {
     public var createdAt: Date
     public var updatedAt: Date
     public var deletedAt: Date?
+    public var category: UUID?
+    public var birthday: BirthdayNote?
 
     public init(
         id: UUID = UUID(),
@@ -203,7 +205,9 @@ public struct Reminder: Codable, Identifiable, Hashable, Sendable {
         snoozedUntil: Date? = nil,
         createdAt: Date,
         updatedAt: Date? = nil,
-        deletedAt: Date? = nil
+        deletedAt: Date? = nil,
+        category: UUID? = nil,
+        birthday: BirthdayNote? = nil
     ) {
         self.id = id
         self.title = title
@@ -225,6 +229,8 @@ public struct Reminder: Codable, Identifiable, Hashable, Sendable {
         self.createdAt = createdAt
         self.updatedAt = updatedAt ?? createdAt
         self.deletedAt = deletedAt
+        self.category = category
+        self.birthday = birthday
     }
 
     // Reminders saved before lists came in have no items in their data.
@@ -250,6 +256,35 @@ public struct Reminder: Codable, Identifiable, Hashable, Sendable {
         createdAt = try container.decode(Date.self, forKey: .createdAt)
         updatedAt = try container.decode(Date.self, forKey: .updatedAt)
         deletedAt = try container.decodeIfPresent(Date.self, forKey: .deletedAt)
+        category = (try? container.decodeIfPresent(UUID.self, forKey: .category)) ?? nil
+        birthday = (try? container.decodeIfPresent(BirthdayNote.self, forKey: .birthday)) ?? nil
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(title, forKey: .title)
+        try container.encodeIfPresent(schedule, forKey: .schedule)
+        try container.encode(preAlerts, forKey: .preAlerts)
+        try container.encode(nag, forKey: .nag)
+        try container.encodeIfPresent(nagInterval, forKey: .nagInterval)
+        try container.encode(urgent, forKey: .urgent)
+        try container.encode(placeIDs, forKey: .placeIDs)
+        try container.encode(placeTrigger, forKey: .placeTrigger)
+        try container.encode(sound, forKey: .sound)
+        try container.encode(items, forKey: .items)
+        try container.encode(doneWhenChecked, forKey: .doneWhenChecked)
+        try container.encode(history, forKey: .history)
+        try container.encodeIfPresent(contact, forKey: .contact)
+        try container.encodeIfPresent(shared, forKey: .shared)
+        try container.encodeIfPresent(completedThrough, forKey: .completedThrough)
+        try container.encodeIfPresent(snoozedUntil, forKey: .snoozedUntil)
+        try container.encode(createdAt, forKey: .createdAt)
+        try container.encode(updatedAt, forKey: .updatedAt)
+        try container.encodeIfPresent(deletedAt, forKey: .deletedAt)
+        // Written even when empty: data without these keys comes from an older build, and the server keeps what it had then.
+        try container.encode(category, forKey: .category)
+        try container.encode(birthday, forKey: .birthday)
     }
 
     public var isPlaceOnly: Bool {
@@ -420,8 +455,10 @@ public struct Settings: Codable, Hashable, Sendable {
     public var priorities: Priorities?
     // The same rule as the picks: no courses left is an empty list, a missing key is an older build.
     public var courses: [PillCourse]?
+    // The same rule again, in the order the person put them.
+    public var categories: [ReminderCategory]?
 
-    public init(defaultSound: SoundChoice, morning: LocalTime, evening: LocalTime, nagInterval: Int, appearance: Appearance, updatedAt: Date, touched: Bool? = nil, snoozeOptions: [Int]? = nil, priorities: Priorities? = nil, courses: [PillCourse]? = nil) {
+    public init(defaultSound: SoundChoice, morning: LocalTime, evening: LocalTime, nagInterval: Int, appearance: Appearance, updatedAt: Date, touched: Bool? = nil, snoozeOptions: [Int]? = nil, priorities: Priorities? = nil, courses: [PillCourse]? = nil, categories: [ReminderCategory]? = nil) {
         self.defaultSound = defaultSound
         self.morning = morning
         self.evening = evening
@@ -432,6 +469,7 @@ public struct Settings: Codable, Hashable, Sendable {
         self.snoozeOptions = snoozeOptions
         self.priorities = priorities
         self.courses = courses
+        self.categories = categories
     }
 
     public func priorityIDs(on day: LocalDate) -> [UUID] {

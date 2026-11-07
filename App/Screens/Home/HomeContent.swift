@@ -22,6 +22,12 @@ struct HomeContent {
         var shared = false
         var priority: Int?
         var alert: String?
+        var category: CategoryTag?
+    }
+
+    struct CategoryTag: Hashable {
+        let name: String
+        let color: Int
     }
 
     struct Event: Identifiable {
@@ -78,7 +84,7 @@ extension HomeContent {
         return trimmed.isEmpty ? String(localized: "Event from the calendar", bundle: .app, locale: .app) : String(trimmed.prefix(Reminder.maximumTitleLength))
     }
 
-    static func make(reminders: [Reminder], places: [Place], now: Date, calendar: Calendar, locale: Locale, missed showsMissed: Bool = false, events entries: [CalendarEntry] = [], priorities: [UUID] = [], courses: [PillCourse] = []) -> HomeContent {
+    static func make(reminders: [Reminder], places: [Place], now: Date, calendar: Calendar, locale: Locale, missed showsMissed: Bool = false, events entries: [CalendarEntry] = [], priorities: [UUID] = [], courses: [PillCourse] = [], categories: [ReminderCategory] = []) -> HomeContent {
         let describer = Describer(calendar: calendar, locale: locale)
         let active = reminders.filter(\.isLive)
         let byID = Dictionary(active.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
@@ -128,7 +134,7 @@ extension HomeContent {
         }
 
         var rows = today.compactMap { item -> Row? in
-            byID[item.reminderID].map { row(item, reminder: $0, places: places, describer: describer, highlighted: isNext(item), missed: isMissed(item)) }
+            byID[item.reminderID].map { row(item, reminder: $0, places: places, describer: describer, highlighted: isNext(item), missed: isMissed(item), categories: categories) }
         }
         // A main thing that comes several times today is numbered once, by its first time.
         var ranked = Set<UUID>()
@@ -190,9 +196,9 @@ extension HomeContent {
             .filter { $0.occurrence < startOfToday }
             .compactMap { item -> Row? in
                 guard let reminder = byID[item.reminderID] else { return nil }
-                let plain = row(item, reminder: reminder, places: places, describer: describer, highlighted: false)
+                let plain = row(item, reminder: reminder, places: places, describer: describer, highlighted: false, categories: categories)
                 let details = [describer.pastDay(item.occurrence, now: now), plain.subtitle].compactMap { $0 }
-                return Row(id: "earlier-" + plain.id, reminderID: plain.reminderID, occurrence: plain.occurrence, time: plain.time, title: plain.title, subtitle: details.joined(separator: " · "), done: false, highlighted: false, shared: plain.shared)
+                return Row(id: "earlier-" + plain.id, reminderID: plain.reminderID, occurrence: plain.occurrence, time: plain.time, title: plain.title, subtitle: details.joined(separator: " · "), done: false, highlighted: false, shared: plain.shared, category: plain.category)
             }
 
         return HomeContent(
@@ -232,7 +238,7 @@ extension HomeContent {
         }
     }
 
-    private static func row(_ item: AgendaItem, reminder: Reminder, places: [Place], describer: Describer, highlighted: Bool, missed: Bool = false) -> Row {
+    private static func row(_ item: AgendaItem, reminder: Reminder, places: [Place], describer: Describer, highlighted: Bool, missed: Bool = false, categories: [ReminderCategory] = []) -> Row {
         Row(
             id: "\(item.reminderID.uuidString)-\(Int(item.occurrence.timeIntervalSince1970))",
             reminderID: item.reminderID,
@@ -243,7 +249,8 @@ extension HomeContent {
             done: item.done,
             highlighted: highlighted,
             missed: missed,
-            shared: reminder.shared != nil
+            shared: reminder.shared != nil,
+            category: reminder.category.flatMap { id in categories.first { $0.id == id } }.map { CategoryTag(name: $0.name, color: $0.color) }
         )
     }
 }

@@ -18,6 +18,16 @@ enum Palette {
     static let urgentIcon = Color(light: 0xC0341D, dark: 0xFF7A63)
     static let urgentText = Color(light: 0xC0341D, dark: 0xFF8E7A)
     static let yearly = Color(light: 0x3F7D3A, dark: 0x7FB86F)
+
+    // The same eight on every screen, a step lighter in the dark.
+    static func category(_ index: Int) -> Color {
+        let colors: [(UInt32, UInt32)] = [
+            (0xE8681E, 0xF7924F), (0x4E9A47, 0x7FB86F), (0x3F7CD6, 0x7FA7E8), (0x9B62D2, 0xBE95E8),
+            (0xD0548F, 0xE88DB8), (0x2E9A92, 0x6CC4BC), (0xC8962A, 0xE2BC5E), (0x8A7A6A, 0xB3A596),
+        ]
+        let pair = colors[(index % colors.count + colors.count) % colors.count]
+        return Color(light: pair.0, dark: pair.1)
+    }
     static let granted = Color(light: 0x2F6A2B, dark: 0x7FB86F)
 
     static let panelHighlight = Color(light: 0xFFFFFF, lightAlpha: 0.9, dark: 0xFFFFFF, darkAlpha: 0.05)

@@ -35,6 +35,8 @@ struct EditorScreen: View {
     @State private var unsavedFiles: [URL] = []
     @State private var saved = false
     @State private var player = VoicePlayer.shared
+    @State private var naming = false
+    @State private var newCategory = ""
     @FocusState private var titleFocused: Bool
 
     private var describer: Describer {
@@ -159,6 +161,11 @@ struct EditorScreen: View {
             }
         }
         .foregroundStyle(Palette.text)
+        .alert("New category", isPresented: $naming) {
+            TextField("Name", text: $newCategory)
+            Button("Add", action: addCategory)
+            Button("Cancel", role: .cancel) {}
+        }
         .confirmationDialog(draft.shared == nil ? Text("Delete reminder?") : Text("Delete the reminder for everyone in it?"), isPresented: $confirmingDelete, titleVisibility: .visible) {
             Button("Delete", role: .destructive) {
                 Feedback.play(.delete)
@@ -293,6 +300,8 @@ struct EditorScreen: View {
                     .fixedSize()
                 }
             }
+            Hairline()
+            categoryRow
             if !showsListSection {
                 Hairline()
                 NavigationRow(icon: Icons.list, iconColor: Palette.text, title: "List", action: {
@@ -342,6 +351,76 @@ struct EditorScreen: View {
     }
 
     @ViewBuilder
+    private var categoryRow: some View {
+        let categories = store.settings.categories ?? []
+        let current = store.settings.category(draft.category)
+        return Menu {
+            Button {
+                draft.category = nil
+            } label: {
+                if current == nil {
+                    Label("No category", systemImage: "checkmark")
+                } else {
+                    Text("No category")
+                }
+            }
+            ForEach(categories) { category in
+                Button {
+                    draft.category = category.id
+                } label: {
+                    if current?.id == category.id {
+                        Label(category.name, systemImage: "checkmark")
+                    } else {
+                        Text(verbatim: category.name)
+                    }
+                }
+            }
+            if categories.count < ReminderCategory.limit {
+                Button {
+                    newCategory = ""
+                    naming = true
+                } label: {
+                    Label("New category", systemImage: "plus")
+                }
+            }
+        } label: {
+            HStack(spacing: 12) {
+                Glyph(paths: Icons.folder, size: 20, lineWidth: 2, color: Palette.text)
+                Text("Category")
+                    .font(.app(.golos, 16, weight: 500))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                if let current {
+                    HStack(spacing: 6) {
+                        Circle()
+                            .fill(Palette.category(current.color))
+                            .frame(width: 8, height: 8)
+                        Text(verbatim: current.name)
+                            .font(.app(.golos, 14))
+                            .lineLimit(1)
+                    }
+                    .layoutPriority(1)
+                } else {
+                    Text("No category")
+                        .font(.app(.golos, 14))
+                        .foregroundStyle(Palette.secondary)
+                }
+                Glyph(paths: Icons.chevron, size: 16, lineWidth: 2, color: Palette.secondary)
+            }
+            .frame(minHeight: 51)
+            .contentShape(Rectangle())
+            .foregroundStyle(Palette.text)
+        }
+    }
+
+    private func addCategory() {
+        let name = newCategory.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !name.isEmpty else { return }
+        var created: ReminderCategory?
+        store.update { created = $0.addCategory(named: name) }
+        draft.category = created?.id
+        Feedback.play(.save)
+    }
+
     private var voiceRow: some View {
         if let note {
             let playing = player.playing == note.id && !player.paused

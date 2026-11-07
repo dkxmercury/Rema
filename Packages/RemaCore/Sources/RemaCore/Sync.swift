@@ -380,6 +380,9 @@ private struct Merger {
             if fields["courses"] == nil {
                 settings.courses = snapshot.settings.courses
             }
+            if fields["categories"] == nil {
+                settings.categories = snapshot.settings.categories
+            }
         }
         state.known[key] = record.clientUpdatedAt
         if settings != snapshot.settings {
@@ -441,6 +444,15 @@ extension Reminder {
         }
         if !kept.isEmpty {
             result.history = Array((result.history + kept).sorted { $0.occurrence < $1.occurrence }.suffix(Self.historyLimit))
+        }
+        // A build from before categories and birthdays sends no key for them, so what this phone has stays.
+        if case .object(let fields) = data {
+            if fields["category"] == nil {
+                result.category = local.category
+            }
+            if fields["birthday"] == nil {
+                result.birthday = local.birthday
+            }
         }
         // What only this phone had goes back to the server a moment newer, so the other phones get it too.
         if result != self {

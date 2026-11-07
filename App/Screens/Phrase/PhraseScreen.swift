@@ -16,6 +16,7 @@ struct PhraseScreen: View {
     var locale: Locale = AppLanguage.current.locale
     var startWithVoice = false
     var autofocus = true
+    var category: UUID?
     let onClose: () -> Void
 
     @State private var text: String
@@ -72,13 +73,14 @@ struct PhraseScreen: View {
         var items: [ChecklistItem]?
     }
 
-    init(store: Store, text: String = "", now: Date? = nil, calendar: Calendar = .current, locale: Locale = AppLanguage.current.locale, startWithVoice: Bool = false, autofocus: Bool = true, onClose: @escaping () -> Void) {
+    init(store: Store, text: String = "", now: Date? = nil, calendar: Calendar = .current, locale: Locale = AppLanguage.current.locale, startWithVoice: Bool = false, autofocus: Bool = true, category: UUID? = nil, onClose: @escaping () -> Void) {
         self.store = store
         self.fixedNow = now
         self.calendar = calendar
         self.locale = locale
         self.startWithVoice = startWithVoice
         self.autofocus = autofocus
+        self.category = category
         self.onClose = onClose
         _text = State(initialValue: text)
         _draft = State(initialValue: Reminder(title: "", schedule: nil, createdAt: now ?? Date()))
@@ -945,7 +947,9 @@ struct PhraseScreen: View {
             guard !multi.isEmpty else { return }
             Feedback.play(.save)
             for entry in multi {
-                store.save(pieceReminder(entry.piece.parsed))
+                var piece = pieceReminder(entry.piece.parsed)
+                piece.category = piece.category ?? category
+                store.save(piece)
             }
             RecentPhrases.remember(text)
             Notifier.shared.requestPermissionIfNeeded()
@@ -983,7 +987,9 @@ struct PhraseScreen: View {
                 }
             }
         }
-        store.save(reminder)
+        var saved = reminder
+        saved.category = saved.category ?? category
+        store.save(saved)
         RecentPhrases.remember(text)
         Notifier.shared.requestPermissionIfNeeded()
         onClose()

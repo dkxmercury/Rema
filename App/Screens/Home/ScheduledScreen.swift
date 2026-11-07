@@ -261,6 +261,16 @@ struct ScheduledScreen: View {
     }
 
     private func row(_ item: ScheduledContent.Item, highlighted: Bool) -> some View {
+        ScheduledItemRow(item: item, highlighted: highlighted)
+    }
+}
+
+// A reminder on a day ahead, the same in «Scheduled» and in a category.
+struct ScheduledItemRow: View {
+    let item: ScheduledContent.Item
+    var highlighted = false
+
+    var body: some View {
         HStack(spacing: 14) {
             if let lead = item.lead, let month = item.month {
                 VStack(alignment: .leading, spacing: 0) {

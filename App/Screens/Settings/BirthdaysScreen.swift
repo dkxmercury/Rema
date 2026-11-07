@@ -180,7 +180,8 @@ struct BirthdaysScreen: View {
                 title: title(contact),
                 schedule: Schedule(start: next(contact), time: LocalTime(hour: 10, minute: 0), rule: .yearly(month: contact.month, day: contact.day)),
                 preAlerts: [1_440],
-                createdAt: Date()
+                createdAt: Date(),
+                birthday: BirthdayNote(name: contact.name, year: contact.year)
             )
             store.save(reminder)
         }

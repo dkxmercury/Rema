@@ -14,7 +14,7 @@ struct HomeScreen: View {
     var onCompose: () -> Void = {}
     var onVoice: () -> Void = {}
     var onCalendar: () -> Void = {}
-    var onSettings: () -> Void = {}
+    var onMenu: () -> Void = {}
     var scheduledCount = 0
     var onScheduled: () -> Void = {}
     var zoom: Namespace.ID?
@@ -373,6 +373,14 @@ struct HomeScreen: View {
 
     private var header: some View {
         HStack(alignment: .bottom, spacing: 12) {
+            Button(action: onMenu) {
+                ZStack {
+                    RaisedCircle()
+                    Glyph(paths: Icons.menu, size: 20, lineWidth: 1.8, color: Palette.text)
+                }
+            }
+            .buttonStyle(PressableStyle())
+            .accessibilityLabel(Text("Menu"))
             VStack(alignment: .leading, spacing: 4) {
                 Text(verbatim: content.dateLine)
                     .font(.app(.golos, 12, weight: 600))
@@ -410,15 +418,6 @@ struct HomeScreen: View {
             .buttonStyle(PressableStyle())
             .accessibilityLabel(Text("Notifications"))
             .accessibilityValue(bellCount > 0 ? Text("\(bellCount) new") : Text(verbatim: ""))
-            .padding(.trailing, -4)
-            Button(action: onSettings) {
-                ZStack {
-                    RaisedCircle()
-                    Glyph(paths: Icons.sliders, size: 20, lineWidth: 1.8, color: Palette.text)
-                }
-            }
-            .buttonStyle(PressableStyle())
-            .accessibilityLabel(Text("Settings"))
             .padding(.trailing, -4)
             Button(action: onCalendar) {
                 ZStack {

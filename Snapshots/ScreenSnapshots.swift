@@ -70,6 +70,54 @@ final class ScreenSnapshots: XCTestCase {
         try render(rows, name: "R-PastFriend-Dark", style: .dark)
     }
 
+    func testSidePanel() throws {
+        let calendar = SampleData.calendar
+        let locale = russian
+        let store = Store(directory: FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString))
+        var ids: [UUID] = []
+        store.update { settings in
+            for name in ["Работа", "Дом", "Здоровье"] {
+                if let category = settings.addCategory(named: name) {
+                    ids.append(category.id)
+                }
+            }
+        }
+        let byTitle = ["Позвонить поставщику": ids[0], "Купить хлеб и молоко": ids[1], "Выпить витамины": ids[2]]
+        var reminders = SampleData.reminders.map { reminder -> Reminder in
+            var copy = reminder
+            copy.category = byTitle[reminder.title]
+            return copy
+        }
+        let report = Reminder(title: "Отправить отчёт", schedule: Schedule(start: LocalDate(year: 2026, month: 10, day: 5), time: LocalTime(hour: 17, minute: 0), timeZone: "Asia/Tashkent"), createdAt: SampleData.now, category: ids[0])
+        let anna = Reminder(title: "День рождения: Анна Смирнова", schedule: Schedule(start: LocalDate(year: 2026, month: 10, day: 12), time: LocalTime(hour: 10, minute: 0), rule: .yearly(month: 10, day: 12), timeZone: "Asia/Tashkent"), preAlerts: [1_440], createdAt: SampleData.now, birthday: BirthdayNote(name: "Анна Смирнова", year: 1996))
+        let mom = Reminder(title: "День рождения: Мама", schedule: Schedule(start: LocalDate(year: 2027, month: 1, day: 3), time: LocalTime(hour: 10, minute: 0), rule: .yearly(month: 1, day: 3), timeZone: "Asia/Tashkent"), createdAt: SampleData.now)
+        reminders += [report, anna, mom]
+        store.seed(reminders: reminders, places: SampleData.places, sounds: [])
+        let home = HomeContent.make(reminders: reminders, places: SampleData.places, now: SampleData.now, calendar: calendar, locale: locale, categories: store.settings.categories ?? [])
+        try render(HomeScreen(content: home), name: "T-Home", style: .light)
+        let panel = ZStack(alignment: .leading) {
+            HomeScreen(content: home)
+            Color.black.opacity(0.38)
+                .ignoresSafeArea()
+            SidePanel(store: store, now: SampleData.now, calendar: calendar, locale: locale, onCategory: { _ in }, onEditCategories: {}, onFriends: {}, onPlaces: {}, onBirthdays: {}, onSettings: {})
+                .frame(maxWidth: 340, maxHeight: .infinity)
+                .background {
+                    UnevenRoundedRectangle(bottomTrailingRadius: 28, topTrailingRadius: 28, style: .circular)
+                        .fill(Palette.background)
+                        .ignoresSafeArea()
+                }
+                .padding(.trailing, 56)
+        }
+        try render(panel, name: "T-Panel", style: .light)
+        try render(panel, name: "T-Panel-Dark", style: .dark)
+        try render(CategoryScreen(store: store, categoryID: ids[0], now: SampleData.now, calendar: calendar, locale: locale, onOpen: { _ in }, onCompose: {}, onBack: {}), name: "T-Category", style: .light)
+        try render(CategoriesScreen(store: store, onBack: {}), name: "T-Categories", style: .light)
+        let call = reminders.first { $0.title == "Позвонить поставщику" } ?? SampleData.server
+        try render(EditorScreen(draft: call, isNew: false, store: store, now: SampleData.now, calendar: calendar, locale: locale, onClose: {}), name: "T-Editor", style: .light)
+        try render(BirthdayListScreen(store: store, now: SampleData.now, calendar: calendar, locale: locale, onOpen: { _ in }, onImport: {}, onBack: {}), name: "T-Birthdays", style: .light)
+        try render(BirthdayAddSheet(store: store, now: SampleData.now, calendar: calendar, locale: locale, onClose: {}), name: "T-BirthdayAdd", style: .light)
+    }
+
     func testPriorities() throws {
         try render(HomeScreen(content: SampleData.home, prioritiesPrompt: true), name: "L-TopCard", style: .light)
         let store = sampleStore()

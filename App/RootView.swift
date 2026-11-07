@@ -10,6 +10,7 @@ struct EditingTarget: Identifiable {
 struct ComposeTarget: Identifiable {
     let id = UUID()
     let voice: Bool
+    var category: UUID?
 }
 
 enum RootRoute: Hashable {
@@ -31,6 +32,9 @@ enum RootRoute: Hashable {
     case newsItem(String)
     case bell
     case icon
+    case category(UUID)
+    case categories
+    case birthdayList
 }
 
 struct SharedTarget: Identifiable {
@@ -115,6 +119,7 @@ struct RootView: View {
     @State private var choosingPriorities = false
     @AppStorage("pillsHidden") private var pillsHidden = ""
     @State private var buyingCourse: PillCourse?
+    @State private var showingPanel = false
     @Environment(\.openURL) private var openURL
     @Namespace private var zoom
 
@@ -174,7 +179,7 @@ struct RootView: View {
                 .presentationBackground(Palette.background)
         }
         .fullScreenCover(item: $composing) { target in
-            PhraseScreen(store: store, startWithVoice: target.voice, onClose: { composing = nil })
+            PhraseScreen(store: store, startWithVoice: target.voice, category: target.category, onClose: { composing = nil })
         }
         .fullScreenCover(isPresented: $inviting) {
             InviteScreen(onClose: { inviting = false })
@@ -290,22 +295,27 @@ struct RootView: View {
                 store: store,
                 account: accountSummary,
                 onSound: { navigation.path.append(.defaultSound) },
-                onPlaces: { navigation.path.append(.places) },
                 onSignIn: { navigation.showingSignIn = true },
                 onAccount: { navigation.path.append(.account) },
                 onLanguage: { showingLanguage = true },
                 onCity: { navigation.path.append(.city) },
                 onFeatures: { navigation.path.append(.features) },
                 onSnooze: { navigation.path.append(.snooze) },
-                onBirthdays: { navigation.path.append(.birthdays) },
                 onImport: { navigation.path.append(.importReminders) },
-                onFriends: { navigation.path.append(.friends) },
                 onNews: { navigation.path.append(.news) },
                 onIcon: { navigation.path.append(.icon) },
                 onBack: { navigation.path.removeLast() }
             )
         case .icon:
             IconScreen { navigation.path.removeLast() }
+        case .category(let id):
+            TimelineView(.everyMinute) { timeline in
+                CategoryScreen(store: store, categoryID: id, now: timeline.date, onOpen: open, onCompose: { composing = ComposeTarget(voice: false, category: id) }, onBack: { navigation.path.removeLast() })
+            }
+        case .categories:
+            CategoriesScreen(store: store) { navigation.path.removeLast() }
+        case .birthdayList:
+            BirthdayListScreen(store: store, onOpen: open, onImport: { navigation.path.append(.birthdays) }, onBack: { navigation.path.removeLast() })
         case .news:
             NewsScreen(onOpen: { navigation.path.append(.newsItem($0)) }, onBack: { navigation.path.removeLast() })
         case .newsItem(let id):
@@ -560,7 +570,8 @@ struct RootView: View {
                     missed: Notifier.missedEnabled,
                     events: calendarFeed.day(timeline.date),
                     priorities: store.settings.priorityIDs(on: LocalDate(timeline.date, in: .current)),
-                    courses: store.settings.courses ?? []
+                    courses: store.settings.courses ?? [],
+                    categories: store.settings.categories ?? []
                 ),
                 onToggle: toggle,
                 onOpen: open,
@@ -570,7 +581,7 @@ struct RootView: View {
                     composing = ComposeTarget(voice: VoiceRecognizer.available)
                 },
                 onCalendar: { showingCalendar = true },
-                onSettings: { navigation.path.append(.settings) },
+                onMenu: { withAnimation(Motion.standard) { showingPanel = true } },
                 scheduledCount: ScheduledContent.count(reminders: store.reminders, now: timeline.date, calendar: .current, withPlaces: remote.isOn(.places)),
                 onScheduled: { navigation.path.append(.scheduled) },
                 zoom: zoom,
@@ -604,7 +615,58 @@ struct RootView: View {
                 onPillsBought: { alert in buyingCourse = store.settings.courses?.first { $0.id == alert.courseID } },
                 onPillsRemind: remindToBuy
             )
+            .overlay { panel(now: timeline.date) }
         }
+    }
+
+    // Categories, friends, places and birthdays slide in from the side; a tap beside it or a swipe back closes it.
+    private func panel(now: Date) -> some View {
+        ZStack(alignment: .leading) {
+            if showingPanel {
+                Color.black.opacity(0.38)
+                    .ignoresSafeArea()
+                    .onTapGesture(perform: closePanel)
+                    .accessibilityHidden(true)
+                    .transition(.opacity)
+                SidePanel(
+                    store: store,
+                    now: now,
+                    places: remote.isOn(.places),
+                    onCategory: { openFromPanel(.category($0)) },
+                    onEditCategories: { openFromPanel(.categories) },
+                    onFriends: { openFromPanel(.friends) },
+                    onPlaces: { openFromPanel(.places) },
+                    onBirthdays: { openFromPanel(.birthdayList) },
+                    onSettings: { openFromPanel(.settings) }
+                )
+                .frame(maxWidth: 340, maxHeight: .infinity)
+                .background {
+                    UnevenRoundedRectangle(bottomTrailingRadius: 28, topTrailingRadius: 28, style: .circular)
+                        .fill(Palette.background)
+                        .shadow(color: .black.opacity(0.22), radius: 16, x: 8)
+                        .ignoresSafeArea()
+                }
+                .padding(.trailing, 56)
+                .simultaneousGesture(DragGesture(minimumDistance: 20).onEnded { value in
+                    if value.translation.width < -60, abs(value.translation.width) > abs(value.translation.height) {
+                        closePanel()
+                    }
+                })
+                .accessibilityAddTraits(.isModal)
+                .accessibilityAction(.escape, closePanel)
+                .transition(.move(edge: .leading))
+            }
+        }
+        .animation(Motion.standard, value: showingPanel)
+    }
+
+    private func closePanel() {
+        withAnimation(Motion.standard) { showingPanel = false }
+    }
+
+    private func openFromPanel(_ route: RootRoute) {
+        showingPanel = false
+        navigation.path.append(route)
     }
 
     // Asked before the evening and only when there is a choice; «Not today» puts it off until tomorrow.
