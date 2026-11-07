@@ -117,7 +117,7 @@ struct Describer {
     }
 
     func relativeDay(_ date: Date, now: Date) -> String {
-        let style = Date.FormatStyle(locale: locale, calendar: calendar, timeZone: calendar.timeZone)
+        let style = Date.FormatStyle(locale: locale, calendar: calendar, timeZone: calendar.timeZone, capitalizationContext: .middleOfSentence)
         let day = date.formatted(style.day().month(.wide))
         if calendar.isDate(date, inSameDayAs: now) {
             return String(localized: "today, \(day)", bundle: .app, locale: .app)
