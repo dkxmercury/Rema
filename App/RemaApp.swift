@@ -122,6 +122,7 @@ struct RemaApp: App {
                     }
                     await BellService.shared.refresh()
                     await NewsService.shared.send()
+                    await Notifier.shared.askForAlarms()
                 }
             case .inactive:
                 AppLock.shared.becameInactive()

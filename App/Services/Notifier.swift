@@ -120,8 +120,33 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
             if await center.notificationSettings().authorizationStatus == .notDetermined {
                 _ = try? await center.requestAuthorization(options: [.alert, .sound, .badge])
             }
+            await askForAlarms()
             await reschedule()
         }
+    }
+
+    // Persistent reminders ring as alarms on iOS 26; the permission is asked once there is one to ring for.
+    @MainActor
+    func askForAlarms() async {
+        #if DEBUG
+        if DemoMode.isOn {
+            return
+        }
+        #endif
+        guard #available(iOS 26.0, *) else { return }
+        if await Alarms.ask(for: store.reminders) {
+            scheduleSoon()
+        }
+    }
+
+    @MainActor
+    func finishAlarm(_ id: UUID, occurrence: Date, alarm: UUID?) async {
+        store.reloadIfChanged()
+        apply("done", to: id, occurrence: occurrence)
+        if #available(iOS 26.0, *), let alarm {
+            Alarms.stop(alarm)
+        }
+        await reschedule()
     }
 
     func scheduleSoon() {
@@ -177,16 +202,18 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         let center = UNUserNotificationCenter.current()
         // Snooze buttons follow the settings, which another phone may have changed.
         center.setNotificationCategories(categories)
+        let now = Date()
+        // Alarms need no notification permission, so they are set before it is checked.
+        let rung = await syncAlarms(now: now)
         let status = await center.notificationSettings().authorizationStatus
         NotificationAccess.shared.update(status)
         guard status == .authorized || status == .provisional || status == .ephemeral else { return }
-        let now = Date()
         let followUp = Self.missedEnabled ? Int(Remote.shared.number(.missedFollowUp)) : nil
         let places = placeRequests()
         let summaries = summaryRequests(now: now)
         let weather = WeatherAdvisor.shared.notes(after: now)
         // Places and weather take their slots first; the planner picks what matters most for the rest.
-        let plan = Scheduler.plan(reminders: store.reminders, settings: store.settings, now: now, calendar: .current, capacity: max(0, Scheduler.capacity - places.count - summaries.count - weather.count), followUp: followUp)
+        let plan = Scheduler.plan(reminders: store.reminders, settings: store.settings, now: now, calendar: .current, capacity: max(0, Scheduler.capacity - places.count - summaries.count - weather.count), followUp: followUp, excluding: rung)
         var requests = places + summaries
         for note in weather {
             let content = UNMutableNotificationContent()
@@ -232,6 +259,13 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         }
         let missed = Self.missedEnabled ? Agenda.missed(now, reminders: store.activeReminders, calendar: .current).count : 0
         try? await center.setBadgeCount(missed)
+    }
+
+    @MainActor
+    private func syncAlarms(now: Date) async -> Set<String> {
+        guard #available(iOS 26.0, *) else { return [] }
+        let rings = AlarmPlan.rings(reminders: store.reminders, settings: store.settings, now: now, calendar: .current)
+        return await Alarms.sync(rings, store: store)
     }
 
     // In the morning the list of today, in the evening the list of tomorrow; a day with nothing gets no summary.

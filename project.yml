@@ -42,6 +42,7 @@ targets:
         PROVISIONING_PROFILE_SPECIFIER: $(REMA_PROFILE_APP)
         CODE_SIGN_ENTITLEMENTS: App/Rema.entitlements
         SWIFT_ACTIVE_COMPILATION_CONDITIONS: $(inherited) APP
+        OTHER_LDFLAGS: $(inherited) -weak_framework AlarmKit
         INFOPLIST_KEY_NSSupportsLiveActivities: YES
         TARGETED_DEVICE_FAMILY: "1"
         GENERATE_INFOPLIST_FILE: YES

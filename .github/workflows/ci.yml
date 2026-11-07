@@ -48,6 +48,15 @@ jobs:
           grep -E "error:|warning:|BUILD (SUCCEEDED|FAILED)" build.log || true
           grep -q "BUILD SUCCEEDED" build.log
 
+      - name: Weak AlarmKit
+        run: |
+          app=$(find ~/Library/Developer/Xcode/DerivedData -type d -path "*/Build/Products/Debug-iphonesimulator/Rema.app" | head -1)
+          commands=$(for file in "$app/Rema" "$app"/*.dylib; do [ -f "$file" ] && otool -l "$file"; done | grep -B2 "AlarmKit.framework" || true)
+          echo "$commands"
+          # AlarmKit exists only from iOS 26 and Rema runs from iOS 17, a strong link would stop it from starting there.
+          echo "$commands" | grep -q LC_LOAD_WEAK_DYLIB
+          ! echo "$commands" | grep -qw LC_LOAD_DYLIB
+
       - name: Screens
         run: |
           DEVICE=$(xcrun simctl list devices available -j | python3 -c "import json,sys;d=json.load(sys.stdin)['devices'];c=[x for k,v in sorted(d.items(),reverse=True) if 'iOS' in k for x in v if x['name'].startswith('iPhone')];p=next((x for x in c if x['name']=='iPhone 16e'),c[0]);print(p['udid'],p['name'],file=sys.stderr);print(p['udid'])")

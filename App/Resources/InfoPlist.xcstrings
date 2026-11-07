@@ -54,6 +54,59 @@
         }
       }
     },
+    "NSAlarmKitUsageDescription": {
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التذكيرات الملحّة ترن مثل المنبّه على كامل الشاشة وحتى في الوضع الصامت، حتى تضغط «تم»"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beharrliche Erinnerungen klingeln wie ein Wecker, im Vollbild und sogar im Stummmodus, bis du auf „Fertig“ tippst"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Persistent reminders ring like an alarm, on the full screen and even in silent mode, until you tap Done"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les rappels insistants sonnent comme un réveil, en plein écran et même en mode silencieux, jusqu’à ce que vous touchiez « Terminé »"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Настойчивые напоминания звонят как будильник, на весь экран и даже в беззвучном режиме, пока не нажмёте «Готово»"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Наполегливі нагадування дзвонять як будильник, на весь екран і навіть у беззвучному режимі, доки не натиснете «Готово»"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Такрор-такрор эслатмалар будильник каби бутун экранда, ҳатто овозсиз режимда ҳам, «Тайёр» тугмасини босмагунингизча жиринглайди"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Takror-takror eslatmalar budilnik kabi butun ekranda, hatto ovozsiz rejimda ham, «Tayyor» tugmasini bosmaguningizcha jiringlaydi"
+          }
+        }
+      }
+    },
     "NSCalendarsFullAccessUsageDescription": {
       "extractionState": "extracted_with_value",
       "localizations": {

@@ -42521,6 +42521,254 @@
         }
       }
     },
+    "like an alarm every %lld minutes, until I mark it": {
+      "localizations": {
+        "ar": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "كمنبّه كل %lld دقائق حتى أضع علامة"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "كمنبّه كل %lld دقيقة حتى أضع علامة"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "كمنبّه كل دقيقة حتى أضع علامة"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "كمنبّه كل %lld دقيقة حتى أضع علامة"
+                }
+              },
+              "two": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "كمنبّه كل دقيقتين حتى أضع علامة"
+                }
+              },
+              "zero": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "كمنبّه كل %lld دقيقة حتى أضع علامة"
+                }
+              }
+            }
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "wie ein Wecker jede Minute, bis ich abhake"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "wie ein Wecker alle %lld Minuten, bis ich abhake"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "like an alarm every %lld minute, until I mark it"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "like an alarm every %lld minutes, until I mark it"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "comme un réveil toutes les %lld minutes, jusqu’à ce que je coche"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "comme un réveil chaque minute, jusqu’à ce que je coche"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "comme un réveil toutes les %lld minutes, jusqu’à ce que je coche"
+                }
+              }
+            }
+          }
+        },
+        "ru": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "как будильник каждые %lld минуты, пока не отмечу"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "как будильник каждые %lld минут, пока не отмечу"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "как будильник каждую %lld минуту, пока не отмечу"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "как будильник каждые %lld минуты, пока не отмечу"
+                }
+              }
+            }
+          }
+        },
+        "uk": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "як будильник кожні %lld хвилини, доки не позначу"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "як будильник кожні %lld хвилин, доки не позначу"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "як будильник кожну %lld хвилину, доки не позначу"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "як будильник кожні %lld хвилини, доки не позначу"
+                }
+              }
+            }
+          }
+        },
+        "uz-Cyrl": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "белгилагунимча ҳар %lld дақиқада будильник каби"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "белгилагунимча ҳар %lld дақиқада будильник каби"
+                }
+              }
+            }
+          }
+        },
+        "uz-Latn": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "belgilagunimcha har %lld daqiqada budilnik kabi"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "belgilagunimcha har %lld daqiqada budilnik kabi"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "like an alarm every minute, until I mark it": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كمنبّه كل دقيقة حتى أضع علامة"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "wie ein Wecker jede Minute, bis ich abhake"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "comme un réveil chaque minute, jusqu’à ce que je coche"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "как будильник каждую минуту, пока не отмечу"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "як будильник кожну хвилину, доки не позначу"
+          }
+        },
+        "uz-Cyrl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "белгилагунимча ҳар дақиқада будильник каби"
+          }
+        },
+        "uz-Latn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "belgilagunimcha har daqiqada budilnik kabi"
+          }
+        }
+      }
+    },
     "made by %@": {
       "localizations": {
         "ar": {

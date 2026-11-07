@@ -27,6 +27,25 @@ extension PlannedNotification {
         case .nag, .missed: false
         }
     }
+
+    var rings: Bool {
+        switch kind {
+        case .main, .snoozed, .nag: true
+        case .early, .missed: false
+        }
+    }
+}
+
+// A persistent reminder rings as a full-screen alarm where the phone allows it; the nearest rings get one, the rest stay notifications.
+public enum AlarmPlan {
+    public static let window: TimeInterval = 48 * 3_600
+    public static let limit = 64
+
+    public static func rings(reminders: [Reminder], settings: Settings, now: Date, calendar: Calendar) -> [PlannedNotification] {
+        let horizon = now.addingTimeInterval(window)
+        let planned = Scheduler.plan(reminders: reminders.filter(\.nag), settings: settings, now: now, calendar: calendar, capacity: .max)
+        return Array(planned.filter { $0.rings && $0.fireDate <= horizon }.prefix(limit))
+    }
 }
 
 public enum Scheduler {
@@ -40,11 +59,12 @@ public enum Scheduler {
         now: Date,
         calendar: Calendar,
         capacity: Int = Scheduler.capacity,
-        followUp: Int? = nil
+        followUp: Int? = nil,
+        excluding: Set<String> = []
     ) -> [PlannedNotification] {
         var planned: [PlannedNotification] = []
         for reminder in reminders where reminder.isLive {
-            planned.append(contentsOf: plan(reminder, settings: settings, now: now, calendar: calendar, followUp: followUp))
+            planned.append(contentsOf: plan(reminder, settings: settings, now: now, calendar: calendar, followUp: followUp).filter { !excluding.contains($0.identifier) })
         }
         let sorted = planned.sorted { lhs, rhs in
             lhs.fireDate == rhs.fireDate ? lhs.identifier < rhs.identifier : lhs.fireDate < rhs.fireDate

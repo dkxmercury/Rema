@@ -649,10 +649,22 @@ struct EditorScreen: View {
 
     private var nagSubtitle: String {
         let minutes = draft.nagInterval ?? store.settings.nagInterval
+        if ringsAsAlarm {
+            if minutes == 1 {
+                return String(localized: "like an alarm every minute, until I mark it", bundle: .app, locale: .app)
+            }
+            return String(localized: "like an alarm every \(minutes) minutes, until I mark it", bundle: .app, locale: .app)
+        }
         if minutes == 1 {
             return String(localized: "every minute, until I mark it", bundle: .app, locale: .app)
         }
         return String(localized: "every \(minutes) minutes, until I mark it", bundle: .app, locale: .app)
+    }
+
+    // Without sound an alarm makes no sense, so a silent reminder keeps ringing as notifications.
+    private var ringsAsAlarm: Bool {
+        guard #available(iOS 26.0, *), !Alarms.refused else { return false }
+        return VoiceNotes.note(of: draft, sounds: store.sounds) != nil || SoundPlayer.url(for: draft.sound, settings: store.settings, sounds: store.sounds) != nil
     }
 
     private var soundRow: some View {
