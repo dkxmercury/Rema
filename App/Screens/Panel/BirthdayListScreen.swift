@@ -149,7 +149,8 @@ struct BirthdayListScreen: View {
         switch entry.daysLeft {
         case 0: String(localized: "today", bundle: .app, locale: .app)
         case 1: String(localized: "tomorrow", bundle: .app, locale: .app)
-        default: String(localized: "in \(entry.daysLeft) days", bundle: .app, locale: .app)
+        case ...Birthdays.soon: String(localized: "in \(entry.daysLeft) days", bundle: .app, locale: .app)
+        default: String(localized: "in \(max(1, Int((Double(entry.daysLeft) / 30.44).rounded()))) months", bundle: .app, locale: .app)
         }
     }
 }
@@ -204,7 +205,7 @@ struct BirthdayAddSheet: View {
         let formatter = DateFormatter()
         formatter.locale = locale
         formatter.calendar = calendar
-        return formatter.standaloneMonthSymbols ?? []
+        return formatter.monthSymbols ?? []
     }
 
     private var years: [Int] {

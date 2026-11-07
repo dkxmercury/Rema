@@ -4,9 +4,16 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct SoundScreen: View {
+    enum Length: Hashable {
+        case all
+        case short
+        case long
+    }
+
     let store: Store
     @Binding var choice: SoundChoice
     var locale: Locale = AppLanguage.current.locale
+    @State var length = Length.all
     let onBack: () -> Void
 
     @State private var importing = false
@@ -25,6 +32,14 @@ struct SoundScreen: View {
         store.sounds.filter { $0.deletedAt == nil && !$0.isVoiceNote }
     }
 
+    private var builtIn: [BuiltInSound] {
+        switch length {
+        case .all: BuiltInSound.allCases
+        case .short: BuiltInSound.allCases.filter { $0 != .silent && !$0.isLong }
+        case .long: BuiltInSound.allCases.filter(\.isLong)
+        }
+    }
+
     var body: some View {
         ZStack {
             Palette.background.ignoresSafeArea()
@@ -32,9 +47,11 @@ struct SoundScreen: View {
                 VStack(alignment: .leading, spacing: 0) {
                     SectionLabel(text: "Built-in")
                         .padding(.top, 16)
+                    Segmented(options: [(Length.all, "All"), (Length.short, "Short"), (Length.long, "Long")], selection: $length, fontSize: 14)
+                        .padding(.top, 8)
                     PanelList {
-                        ForEach(Array(BuiltInSound.allCases.enumerated()), id: \.element) { index, sound in
-                            let last = index == BuiltInSound.allCases.count - 1
+                        ForEach(Array(builtIn.enumerated()), id: \.element) { index, sound in
+                            let last = index == builtIn.count - 1
                             row(
                                 title: describer.builtInName(sound),
                                 selected: effective == .builtIn(sound.rawValue),
@@ -106,6 +123,8 @@ struct SoundScreen: View {
         }
         .foregroundStyle(Palette.text)
         .animation(Motion.standard, value: customSounds)
+        .animation(Motion.standard, value: length)
+        .onDisappear(perform: SoundPlayer.stopPreview)
         .fileImporter(isPresented: $importing, allowedContentTypes: [.audio]) { result in
             guard case .success(let url) = result else { return }
             load(url)

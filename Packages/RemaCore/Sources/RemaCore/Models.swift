@@ -521,10 +521,33 @@ public enum BuiltInSound: String, CaseIterable, Codable, Sendable {
     case drops
     case ticktock
     case soft
+    case marimba
+    case kalimba
+    case crystal
+    case bubbles
+    case wood
+    case morning
+    case musicbox
+    case sunrise
+    case chimes
+    case harp
+    case rising
     case silent
+
+    // A sound added in a newer build plays as Mechanika here instead of going silent.
+    public static func named(_ id: String) -> BuiltInSound {
+        BuiltInSound(rawValue: id) ?? .mechanika
+    }
 
     public var fileName: String? {
         self == .silent ? nil : "sound-\(rawValue).caf"
+    }
+
+    public var isLong: Bool {
+        switch self {
+        case .musicbox, .sunrise, .chimes, .harp, .rising: true
+        default: false
+        }
     }
 }
 

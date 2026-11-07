@@ -185,7 +185,7 @@ struct Describer {
         case .standard:
             return soundName(settings.defaultSound, settings: settings, sounds: sounds)
         case .builtIn(let id):
-            return builtInName(BuiltInSound(rawValue: id) ?? .mechanika)
+            return builtInName(BuiltInSound.named(id))
         case .custom(let id):
             guard let sound = sounds.first(where: { $0.id == id && $0.deletedAt == nil }) else { return builtInName(.mechanika) }
             return sound.isVoiceNote ? String(localized: "Voice note", bundle: .app, locale: .app) : sound.name
@@ -199,6 +199,17 @@ struct Describer {
         case .drops: return String(localized: "Drops", bundle: .app, locale: .app)
         case .ticktock: return String(localized: "Tick-tock", bundle: .app, locale: .app)
         case .soft: return String(localized: "Soft", bundle: .app, locale: .app)
+        case .marimba: return String(localized: "Marimba", bundle: .app, locale: .app)
+        case .kalimba: return String(localized: "Kalimba", bundle: .app, locale: .app)
+        case .crystal: return String(localized: "Crystal", bundle: .app, locale: .app)
+        case .bubbles: return String(localized: "Bubbles", bundle: .app, locale: .app)
+        case .wood: return String(localized: "Woodblock", bundle: .app, locale: .app)
+        case .morning: return String(localized: "Morning", bundle: .app, locale: .app)
+        case .musicbox: return String(localized: "Music box", bundle: .app, locale: .app)
+        case .sunrise: return String(localized: "Sunrise", bundle: .app, locale: .app)
+        case .chimes: return String(localized: "Wind chimes", bundle: .app, locale: .app)
+        case .harp: return String(localized: "Harp", bundle: .app, locale: .app)
+        case .rising: return String(localized: "Rising", bundle: .app, locale: .app)
         case .silent: return String(localized: "No sound", bundle: .app, locale: .app)
         }
     }

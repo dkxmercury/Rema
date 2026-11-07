@@ -9,6 +9,7 @@ struct CategoriesScreen: View {
     @State private var names: [UUID: String] = [:]
     @State private var newName = ""
     @FocusState private var focused: UUID?
+    @FocusState private var adding: Bool
 
     private var categories: [ReminderCategory] {
         store.settings.categories ?? []
@@ -30,8 +31,16 @@ struct CategoriesScreen: View {
                                 .submitLabel(.done)
                                 .focused($focused, equals: category.id)
                                 .onSubmit { commit(category.id) }
+                                .padding(.horizontal, 10)
+                                .frame(height: 40)
+                                .background {
+                                    let shape = RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                    shape
+                                        .fill(Palette.well)
+                                        .insetShadow(shape, Palette.wellShadow, blur: 2, y: 1)
+                                }
                         }
-                        .frame(minHeight: 44)
+                        .frame(minHeight: 56)
                         .listRowBackground(Palette.panel)
                     }
                     .onMove { source, destination in
@@ -49,21 +58,44 @@ struct CategoriesScreen: View {
                     }
                     if categories.count < ReminderCategory.limit {
                         HStack(spacing: 12) {
-                            Glyph(paths: Icons.plus, size: 16, lineWidth: 2.4, color: Palette.accentText)
-                                .frame(width: 12)
-                                .accessibilityHidden(true)
+                            Button {
+                                if newName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                                    adding = true
+                                } else {
+                                    add()
+                                }
+                            } label: {
+                                ZStack {
+                                    Circle()
+                                        .fill(Palette.yearly)
+                                    Glyph(paths: Icons.plus, size: 12, lineWidth: 3, color: .white)
+                                }
+                                .frame(width: 22, height: 22)
+                            }
+                            .buttonStyle(PressableStyle())
+                            .accessibilityLabel(Text("New category"))
                             TextField("New category", text: $newName)
                                 .font(.app(.golos, 16))
                                 .submitLabel(.done)
+                                .focused($adding)
                                 .onSubmit(add)
+                                .padding(.horizontal, 10)
+                                .frame(height: 40)
+                                .overlay {
+                                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                        .strokeBorder(Palette.tagBorder, style: StrokeStyle(lineWidth: 1, dash: [4, 3]))
+                                }
                         }
-                        .frame(minHeight: 44)
+                        .frame(minHeight: 56)
                         .listRowBackground(Palette.panel)
                     }
                 } footer: {
                     Text("The name changes right in the field, the order by dragging the bars on the right. If you delete a category, its reminders stay, just without a category")
                         .font(.app(.golos, 13))
+                        .lineHeight(18, .golos, 13)
                         .foregroundStyle(Palette.secondary)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
                         .padding(.top, 6)
                 }
             }
@@ -73,9 +105,24 @@ struct CategoriesScreen: View {
         }
         .foregroundStyle(Palette.text)
         .pinnedHeader {
-            ScreenHeader(title: "Categories", leading: .back) {
-                commitAll()
-                onBack()
+            ZStack {
+                Text("Categories")
+                    .font(.app(.jost, 18, weight: 500))
+                    .lineLimit(1)
+                    .accessibilityAddTraits(.isHeader)
+                HStack {
+                    RoundIconButton(icon: Icons.back, label: "Back", action: close)
+                    Spacer(minLength: 8)
+                    Button(action: close) {
+                        Text("Done")
+                            .font(.app(.golos, 16, weight: 600))
+                            .foregroundStyle(Palette.accentTextOnBackground)
+                            .padding(.horizontal, 4)
+                            .frame(minHeight: 44)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(PressableStyle())
+                }
             }
         }
         .onChange(of: focused) { old, _ in
@@ -95,10 +142,12 @@ struct CategoriesScreen: View {
         names[id] = nil
     }
 
-    private func commitAll() {
+    private func close() {
         for id in Array(names.keys) {
             commit(id)
         }
+        add()
+        onBack()
     }
 
     private func add() {

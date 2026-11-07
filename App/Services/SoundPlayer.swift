@@ -24,7 +24,7 @@ enum SoundPlayer {
         case .standard:
             return nil
         case .builtIn(let id):
-            guard let file = BuiltInSound(rawValue: id)?.fileName else { return nil }
+            guard let file = BuiltInSound.named(id).fileName else { return nil }
             return librarySounds.appendingPathComponent(file)
         case .custom(let id):
             // A deleted sound falls back to Mechanika, the same name the screens show for it.
@@ -42,12 +42,17 @@ enum SoundPlayer {
         player?.play()
     }
 
+    static func stopPreview() {
+        player?.stop()
+        player = nil
+    }
+
     static func notificationSound(_ choice: SoundChoice, settings: Settings, sounds: [CustomSound]) -> UNNotificationSound? {
         switch resolve(choice, settings: settings) {
         case .standard:
             return .default
         case .builtIn(let id):
-            guard let file = BuiltInSound(rawValue: id)?.fileName else { return nil }
+            guard let file = BuiltInSound.named(id).fileName else { return nil }
             return UNNotificationSound(named: UNNotificationSoundName(file))
         case .custom(let id):
             guard let sound = sounds.first(where: { $0.id == id && $0.deletedAt == nil }) else { return notificationSound(.builtIn(BuiltInSound.mechanika.rawValue), settings: settings, sounds: sounds) }

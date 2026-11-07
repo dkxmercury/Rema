@@ -82,6 +82,19 @@ struct ModelsTests {
         #expect(settings.appearance == .system)
     }
 
+    @Test func soundFromANewerBuildPlaysAsMechanika() {
+        #expect(BuiltInSound.named("gong") == .mechanika)
+        #expect(BuiltInSound.named("harp") == .harp)
+        #expect(BuiltInSound.named("silent").fileName == nil)
+    }
+
+    @Test func everySoundButSilenceHasItsOwnFile() {
+        let files = BuiltInSound.allCases.compactMap(\.fileName)
+        #expect(files.count == BuiltInSound.allCases.count - 1)
+        #expect(Set(files).count == files.count)
+        #expect(BuiltInSound.allCases.filter(\.isLong) == [.musicbox, .sunrise, .chimes, .harp, .rising])
+    }
+
     @Test func localDatesCompare() {
         #expect(LocalDate(year: 2026, month: 10, day: 5) < LocalDate(year: 2026, month: 10, day: 6))
         #expect(LocalDate(year: 2026, month: 12, day: 31) < LocalDate(year: 2027, month: 1, day: 1))

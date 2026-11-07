@@ -91,7 +91,9 @@ final class ScreenSnapshots: XCTestCase {
         let report = Reminder(title: "Отправить отчёт", schedule: Schedule(start: LocalDate(year: 2026, month: 10, day: 5), time: LocalTime(hour: 17, minute: 0), timeZone: "Asia/Tashkent"), createdAt: SampleData.now, category: ids[0])
         let anna = Reminder(title: "День рождения: Анна Смирнова", schedule: Schedule(start: LocalDate(year: 2026, month: 10, day: 12), time: LocalTime(hour: 10, minute: 0), rule: .yearly(month: 10, day: 12), timeZone: "Asia/Tashkent"), preAlerts: [1_440], createdAt: SampleData.now, birthday: BirthdayNote(name: "Анна Смирнова", year: 1996))
         let mom = Reminder(title: "День рождения: Мама", schedule: Schedule(start: LocalDate(year: 2027, month: 1, day: 3), time: LocalTime(hour: 10, minute: 0), rule: .yearly(month: 1, day: 3), timeZone: "Asia/Tashkent"), createdAt: SampleData.now)
-        reminders += [report, anna, mom]
+        let meeting = Reminder(title: "Планёрка", schedule: Schedule(start: LocalDate(year: 2026, month: 10, day: 6), time: LocalTime(hour: 10, minute: 0), rule: .weekdays, timeZone: "Asia/Tashkent"), createdAt: SampleData.now, category: ids[0])
+        let invoice = Reminder(title: "Оплатить счёт поставщика", schedule: Schedule(start: LocalDate(year: 2026, month: 10, day: 12), time: LocalTime(hour: 12, minute: 0), timeZone: "Asia/Tashkent"), urgent: true, createdAt: SampleData.now, category: ids[0])
+        reminders += [report, anna, mom, meeting, invoice]
         store.seed(reminders: reminders, places: SampleData.places, sounds: [])
         let home = HomeContent.make(reminders: reminders, places: SampleData.places, now: SampleData.now, calendar: calendar, locale: locale, categories: store.settings.categories ?? [])
         try render(HomeScreen(content: home), name: "T-Home", style: .light)
@@ -255,7 +257,9 @@ final class ScreenSnapshots: XCTestCase {
     }
 
     func testSound() throws {
-        try render(SoundScreen(store: sampleStore(), choice: .constant(.custom(SampleData.gong.id)), locale: russian, onBack: {}), name: "D-Sound", style: .light)
+        try render(SoundScreen(store: sampleStore(), choice: .constant(.custom(SampleData.gong.id)), locale: russian, onBack: {}), name: "D-Sound", style: .light, height: 1500)
+        try render(SoundScreen(store: sampleStore(), choice: .constant(.builtIn("harp")), locale: russian, length: .long, onBack: {}), name: "S-Sound-Long", style: .light)
+        try render(SoundScreen(store: sampleStore(), choice: .constant(.builtIn("kalimba")), locale: russian, length: .short, onBack: {}), name: "S-Sound-Short-Dark", style: .dark, height: 1200)
     }
 
     func testPlaces() throws {
