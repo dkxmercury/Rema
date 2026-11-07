@@ -185,6 +185,11 @@ public struct Reminder: Codable, Identifiable, Hashable, Sendable {
     public var category: UUID?
     public var birthday: BirthdayNote?
 
+    enum CodingKeys: String, CodingKey {
+        case id, title, schedule, preAlerts, nag, nagInterval, urgent, placeIDs, placeTrigger, sound, items, doneWhenChecked
+        case history, contact, shared, completedThrough, snoozedUntil, createdAt, updatedAt, deletedAt, category, birthday
+    }
+
     public init(
         id: UUID = UUID(),
         title: String,
